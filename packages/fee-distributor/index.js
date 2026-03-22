@@ -1,25 +1,23 @@
 /**
- * @package @rawagon/fee-distributor
- * Client for the FeeDistributor smart contract.
- * Calculates QWKS savings, submits inflow, reads staking state.
+ * @rawagon/fee-distributor
+ * QWKS savings calculator + staking transition point + Base L2 RPC
  */
+'use strict';
 
 const BASE_RPC = 'https://mainnet.base.org';
 const TX_COST_USD = 0.000825; // live Base L2 contract call cost
 
 async function rpc(method, params = []) {
-  const res = await fetch(BASE_RPC, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jsonrpc: '2.0', method, params, id: 1 }),
+  const r = await fetch(BASE_RPC, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc:'2.0', method, params, id:1 })
   });
-  const data = await res.json();
-  return data.result;
+  return (await r.json()).result;
 }
 
 async function liveGasPrice() {
   const hex = await rpc('eth_gasPrice');
-  return parseInt(hex, 16) / 1e9; // Gwei
+  return parseInt(hex, 16) / 1e9;
 }
 
 async function baseBlock() {
@@ -28,53 +26,57 @@ async function baseBlock() {
 }
 
 /**
- * Calculate verified savings for a QWKS business customer.
- * @param {number} monthlyVolume   Monthly transaction volume in USD
- * @param {number} txCount         Number of transactions per month
- * @param {number} baselineRatePct Current Visa/Stripe rate (e.g. 2.5)
- * @param {number} ethPrice        Current ETH price in USD
+ * Calculate QWKS savings for a business.
+ * @param {number} monthlyVolume  USD per month in card transactions
+ * @param {number} txPerMonth     Transaction count per month
+ * @param {number} visaRatePct    Current processor rate (e.g. 2.5)
+ * @param {number} txCostUSD      Per-tx cost override (optional)
  */
-function calcSavings(monthlyVolume, txCount, baselineRatePct = 2.5, ethPrice = 2100) {
-  const annualVol = monthlyVolume * 12;
-  const visaAnnual = annualVol * (baselineRatePct / 100);
-  const qwksTxCost = TX_COST_USD;
-  const qwksAnnual = txCount * 12 * qwksTxCost;
-  const savingsAnnual = visaAnnual - qwksAnnual;
-  const qwksFee = savingsAnnual * 0.10; // 10% of savings
-  const netToCustomer = savingsAnnual - qwksFee;
-  const roiPct = (netToCustomer / qwksFee) * 100;
-
-  return {
-    visaAnnual: Math.round(visaAnnual),
-    qwksAnnual: qwksAnnual.toFixed(2),
-    savingsAnnual: Math.round(savingsAnnual),
-    qwksFee: Math.round(qwksFee),
-    netToCustomer: Math.round(netToCustomer),
-    roiPct: Math.round(roiPct),
-    qwksCostAsPct: ((qwksTxCost / (monthlyVolume / txCount)) * 100).toFixed(6),
-  };
+function savings(monthlyVolume, txPerMonth, visaRatePct = 2.5, txCostUSD = TX_COST_USD) {
+  const annualVol  = monthlyVolume * 12;
+  const visaAnnual = annualVol * (visaRatePct / 100);
+  const qwksAnnual = txPerMonth * 12 * txCostUSD;
+  const netSaving  = visaAnnual - qwksAnnual;
+  const qwksFee    = netSaving * 0.10;
+  const toCustomer = netSaving - qwksFee;
+  const roiPct     = Math.round((toCustomer / qwksFee) * 100);
+  return { visaAnnual, qwksAnnual: parseFloat(qwksAnnual.toFixed(4)),
+           netSaving: parseFloat(netSaving.toFixed(2)),
+           qwksFee: parseFloat(qwksFee.toFixed(2)),
+           toCustomer: parseFloat(toCustomer.toFixed(2)), roiPct };
 }
+const calcSavings = savings; // alias
 
 /**
- * Calculate LTN staking transition point.
- * @param {number} annualFee       Annual QWKS subscription fee in USD
- * @param {number} ltnAccumRate    LTN earned per month
- * @param {number} ltnPriceUSD     Current LTN price
- * @param {number} stakingApy      Staking APY as decimal (0.12 = 12%)
+ * Calculate the LTN staking transition point.
+ * P* = annualFee / (ltnPrice * stakingApy)
+ * At P*, staking yield = subscription fee (customer pays net $0)
  */
-function stakingTransitionPoint(annualFee, ltnAccumRate, ltnPriceUSD, stakingApy = 0.12) {
-  // P* = annualFee / (ltnPriceUSD * stakingApy)
-  const pStar = annualFee / (ltnPriceUSD * stakingApy);
-  const monthsToTransition = pStar / ltnAccumRate;
-  const yearsToTransition = monthsToTransition / 12;
-
+function transition(annualFee, ltnPerMonth, ltnPrice, stakingApy = 0.12) {
+  const ltnNeeded = annualFee / (ltnPrice * stakingApy);
+  const months = ltnNeeded / ltnPerMonth;
   return {
-    requiredLTN: Math.round(pStar),
-    monthsToReach: Math.round(monthsToTransition),
-    yearsToReach: yearsToTransition.toFixed(1),
-    annualYieldAtTransition: (pStar * ltnPriceUSD * stakingApy).toFixed(2),
-    interpretation: `At ${ltnAccumRate} LTN/month, you reach fee-neutral status in ${yearsToTransition.toFixed(1)} years`,
+    ltnNeeded: Math.round(ltnNeeded),
+    months: Math.round(months),
+    years: parseFloat((months / 12).toFixed(1)),
+    annualYieldAtTransition: parseFloat((ltnNeeded * ltnPrice * stakingApy).toFixed(2)),
   };
 }
+const stakingTransitionPoint = transition; // alias
 
-module.exports = { rpc, liveGasPrice, baseBlock, calcSavings, stakingTransitionPoint };
+/** FeeDistributor inflow for a given transaction volume */
+function feeDistInflow(networkVolumeUSD) {
+  return networkVolumeUSD * 0.001; // 0.1% of volume
+}
+
+/** Per-LTN yield given total fee inflow and total staked */
+function yieldPerLTN(annualFeeInflow, totalLTNStaked) {
+  return annualFeeInflow / totalLTNStaked;
+}
+
+module.exports = {
+  rpc, liveGasPrice, baseBlock,
+  savings, calcSavings,
+  transition, stakingTransitionPoint,
+  feeDistInflow, yieldPerLTN
+};

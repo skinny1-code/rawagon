@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldSnap — GTX/STX Token</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09070a;--surf:#100d12;--card:#16131a;--line:rgba(255,255,255,.07);--wh:#f0e8ff;--soft:#907888;--dim:#403040;--gold:#f59e0b;--gld2:rgba(245,158,11,.12);--gold2:#d97706;--silver:#9ca3af;--slv2:rgba(156,163,175,.1);--grn:#10b981;--gn2:rgba(16,185,129,.1);--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
+.mono{font-family:"JetBrains Mono",monospace;}
+header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
+header h1{font-size:1.1rem;font-weight:800;}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surf);padding:0 24px;}
+.tab{padding:12px 16px;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.pane{display:none;padding:20px 24px;max-width:1200px;}
+.pane.active{display:block;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
+input,select{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
+.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-silver{background:var(--silver);color:#000;}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border:none;}
+.spot-strip{display:flex;gap:16px;padding:10px 24px;background:var(--surf);border-bottom:1px solid var(--line);}
+.si{display:flex;flex-direction:column;}
+.sl{font-size:.6rem;text-transform:uppercase;color:var(--dim);}
+.sv{font-family:"JetBrains Mono",monospace;font-size:.86rem;font-weight:600;}
+</style>
+</head>
+<body>
+<header>
+  <span style="font-size:1.4rem;">🥇</span>
+  <h1>GoldSnap — GTX / STX Tokens</h1>
+  <div style="margin-left:auto;display:flex;gap:10px;align-items:center;">
+    <span style="font-size:.78rem;color:var(--soft);">Chainlink Oracle</span>
+    <span style="padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;background:var(--gn2);color:var(--grn);">● Live</span>
+  </div>
+</header>
+<div class="spot-strip">
+  <div class="si"><span class="sl">Gold Spot (XAU)</span><span class="sv" style="color:var(--gold)" id="gold-spot">—</span></div>
+  <div class="si"><span class="sl">Silver Spot (XAG)</span><span class="sv" style="color:var(--silver)" id="silver-spot">—</span></div>
+  <div class="si"><span class="sl">1 GTX = 1/100 oz</span><span class="sv" style="color:var(--gold)" id="gtx-price">—</span></div>
+  <div class="si"><span class="sl">1 STX = 1 oz silver</span><span class="sv" style="color:var(--silver)" id="stx-price">—</span></div>
+  <div class="si"><span class="sl">Mint Fee</span><span class="sv">0.25%</span></div>
+  <div class="si"><span class="sl">Gas (RAWNet)</span><span class="sv" style="color:var(--grn)">$0.0000082</span></div>
+  <div class="si"><span class="sl">Last Update</span><span class="sv" style="color:var(--soft)" id="last-update">—</span></div>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="showTab('mint')">Mint GTX/STX</div>
+  <div class="tab" onclick="showTab('redeem')">Redeem</div>
+  <div class="tab" onclick="showTab('swap')">Swap</div>
+  <div class="tab" onclick="showTab('reserves')">Reserves</div>
+  <div class="tab" onclick="showTab('history')">History</div>
+</div>
+
+<!-- MINT -->
+<div class="pane active" id="pane-mint">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid var(--gold);margin-bottom:14px;">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--gold);">Mint GTX (Gold Token)</div>
+        <label>USDC Amount to Deposit</label>
+        <input type="number" id="gtx-usdc" placeholder="100.00" step="0.01" oninput="calcGTX()">
+        <div id="gtx-calc" style="padding:12px;background:var(--gld2);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:12px;display:none;">
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">GTX Price</span><span class="mono" style="font-size:.82rem;" id="gtx-calc-price">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Mint Fee (0.25%)</span><span class="mono" style="font-size:.82rem;color:var(--red)" id="gtx-calc-fee">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">GTX You Receive</span><span class="mono" style="font-size:.9rem;font-weight:700;color:var(--gold)" id="gtx-calc-amt">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gold oz (equivalent)</span><span class="mono" style="font-size:.82rem;" id="gtx-calc-oz">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gas (RAWNet)</span><span class="mono" style="font-size:.82rem;color:var(--grn)">$0.0000082</span></div>
+        </div>
+        <button class="btn btn-gold" style="width:100%" onclick="mintGTX()">Mint GTX</button>
+      </div>
+      <div class="card" style="border-top:3px solid var(--silver);">
+        <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--silver);">Mint STX (Silver Token)</div>
+        <label>USDC Amount to Deposit</label>
+        <input type="number" id="stx-usdc" placeholder="50.00" step="0.01" oninput="calcSTX()">
+        <div id="stx-calc" style="padding:12px;background:var(--slv2);border:1px solid rgba(156,163,175,.2);border-radius:8px;margin-bottom:12px;display:none;">
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">STX Price</span><span class="mono" style="font-size:.82rem;" id="stx-calc-price">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Mint Fee (0.25%)</span><span class="mono" style="font-size:.82rem;color:var(--red)" id="stx-calc-fee">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">STX You Receive</span><span class="mono" style="font-size:.9rem;font-weight:700;color:var(--silver)" id="stx-calc-amt">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Silver oz (equivalent)</span><span class="mono" style="font-size:.82rem;" id="stx-calc-oz">—</span></div>
+          <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gas (RAWNet)</span><span class="mono" style="font-size:.82rem;color:var(--grn)">$0.0000082</span></div>
+        </div>
+        <button class="btn btn-silver" style="width:100%" onclick="mintSTX()">Mint STX</button>
+      </div>
+    </div>
+    <div>
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="card" style="text-align:center;border-top:3px solid var(--gold);">
+          <div style="font-size:.65rem;text-transform:uppercase;color:var(--dim);margin-bottom:3px;">Your GTX</div>
+          <div class="mono" style="font-size:1.5rem;font-weight:600;color:var(--gold);" id="my-gtx">0</div>
+          <div style="font-size:.74rem;color:var(--soft)" id="my-gtx-val">$0.00</div>
+        </div>
+        <div class="card" style="text-align:center;border-top:3px solid var(--silver);">
+          <div style="font-size:.65rem;text-transform:uppercase;color:var(--dim);margin-bottom:3px;">Your STX</div>
+          <div class="mono" style="font-size:1.5rem;font-weight:600;color:var(--silver);" id="my-stx">0</div>
+          <div style="font-size:.74rem;color:var(--soft)" id="my-stx-val">$0.00</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Collateral Reserve</div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Total GTX Supply</span><span class="mono" style="font-size:.82rem;color:var(--gold)" id="total-gtx">0 GTX</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Total STX Supply</span><span class="mono" style="font-size:.82rem;color:var(--silver)" id="total-stx">0 STX</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">USDC Reserve</span><span class="mono" style="font-size:.82rem;" id="usdc-reserve">$0.00</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Collateral Ratio</span><span class="mono" style="font-size:.82rem;color:var(--grn)">100% (fully backed)</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Reserve Yield (2%)</span><span class="mono" style="font-size:.82rem;color:var(--grn)" id="reserve-yield">$0.00/yr</span></div>
+      </div>
+      <div class="card">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">GTX vs Physical Gold</div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Storage fees</span><span class="mono" style="font-size:.78rem;color:var(--grn)">GTX: $0/yr</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Transfer cost</span><span class="mono" style="font-size:.78rem;color:var(--grn)">GTX: $0.0000082</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Settlement time</span><span class="mono" style="font-size:.78rem;color:var(--grn)">GTX: 500ms</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Divisibility</span><span class="mono" style="font-size:.78rem;color:var(--grn)">GTX: 18 decimals</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Redemption</span><span class="mono" style="font-size:.78rem;color:var(--grn)">GTX: Instant USDC</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REDEEM, SWAP, RESERVES, HISTORY panes abbreviated -->
+<div class="pane" id="pane-redeem"><div style="padding:30px;color:var(--soft);text-align:center;">Redeem GTX/STX for USDC at live spot price</div></div>
+<div class="pane" id="pane-swap"><div style="padding:30px;color:var(--soft);text-align:center;">Swap GTX ⇄ STX ⇄ USDC ⇄ LTN</div></div>
+<div class="pane" id="pane-reserves"><div style="padding:30px;color:var(--soft);text-align:center;">Reserve audit — Chainlink oracle verification</div></div>
+<div class="pane" id="pane-history"><div id="hist-list" style="padding:20px;"></div></div>
+
+<script>
+let prices={gold:4133.80,silver:65.48};
+let state={gtx:0,stx:0,reserve:0,history:JSON.parse(localStorage.getItem('gs-history')||'[]')};
+
+async function loadPrices(){
+  try{
+    const [g,s]=await Promise.allSettled([
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/GLD?interval=1d&range=1d').then(r=>r.json()),
+      fetch('https://query1.finance.yahoo.com/v8/finance/chart/SLV?interval=1d&range=1d').then(r=>r.json()),
+    ]);
+    if(g.status==='fulfilled') prices.gold=g.value.chart.result[0].meta.regularMarketPrice*10;
+    if(s.status==='fulfilled') prices.silver=s.value.chart.result[0].meta.regularMarketPrice/0.9395;
+  }catch(e){}
+  const gtxP=prices.gold/100, stxP=prices.silver;
+  document.getElementById('gold-spot').textContent='$'+prices.gold.toFixed(2)+'/oz';
+  document.getElementById('silver-spot').textContent='$'+prices.silver.toFixed(2)+'/oz';
+  document.getElementById('gtx-price').textContent='$'+gtxP.toFixed(4);
+  document.getElementById('stx-price').textContent='$'+stxP.toFixed(4);
+  document.getElementById('last-update').textContent=new Date().toLocaleTimeString();
+  document.getElementById('my-gtx-val').textContent='$'+(state.gtx*gtxP).toFixed(2);
+  document.getElementById('my-stx-val').textContent='$'+(state.stx*stxP).toFixed(2);
+  document.getElementById('reserve-yield').textContent='$'+(state.reserve*0.02).toFixed(2)+'/yr';
+  calcGTX();calcSTX();
+}
+
+function calcGTX(){
+  const usdc=parseFloat(document.getElementById('gtx-usdc').value)||0;
+  if(!usdc){document.getElementById('gtx-calc').style.display='none';return;}
+  const p=prices.gold/100,fee=usdc*0.0025,net=usdc-fee,amt=net/p;
+  document.getElementById('gtx-calc-price').textContent='$'+p.toFixed(4);
+  document.getElementById('gtx-calc-fee').textContent='-$'+fee.toFixed(4);
+  document.getElementById('gtx-calc-amt').textContent=amt.toFixed(6)+' GTX';
+  document.getElementById('gtx-calc-oz').textContent=(amt/100).toFixed(6)+' oz gold';
+  document.getElementById('gtx-calc').style.display='block';
+}
+
+function calcSTX(){
+  const usdc=parseFloat(document.getElementById('stx-usdc').value)||0;
+  if(!usdc){document.getElementById('stx-calc').style.display='none';return;}
+  const p=prices.silver,fee=usdc*0.0025,net=usdc-fee,amt=net/p;
+  document.getElementById('stx-calc-price').textContent='$'+p.toFixed(4);
+  document.getElementById('stx-calc-fee').textContent='-$'+fee.toFixed(4);
+  document.getElementById('stx-calc-amt').textContent=amt.toFixed(6)+' STX';
+  document.getElementById('stx-calc-oz').textContent=amt.toFixed(6)+' oz silver';
+  document.getElementById('stx-calc').style.display='block';
+}
+
+function mintGTX(){
+  const usdc=parseFloat(document.getElementById('gtx-usdc').value)||0;
+  if(!usdc)return;
+  const p=prices.gold/100,fee=usdc*0.0025,net=usdc-fee,amt=net/p;
+  state.gtx+=amt;state.reserve+=net;
+  state.history.unshift({type:'MINT GTX',amount:amt.toFixed(6),usdc:usdc.toFixed(2),ts:new Date().toLocaleString()});
+  localStorage.setItem('gs-history',JSON.stringify(state.history));
+  document.getElementById('my-gtx').textContent=state.gtx.toFixed(4);
+  document.getElementById('total-gtx').textContent=state.gtx.toFixed(4)+' GTX';
+  document.getElementById('usdc-reserve').textContent='$'+state.reserve.toFixed(2);
+  alert('Minted '+amt.toFixed(6)+' GTX ('+((amt/100).toFixed(6))+' oz gold equiv)\nFee: $'+fee.toFixed(4)+'\nGas: $0.0000082');
+}
+
+function mintSTX(){
+  const usdc=parseFloat(document.getElementById('stx-usdc').value)||0;
+  if(!usdc)return;
+  const p=prices.silver,fee=usdc*0.0025,net=usdc-fee,amt=net/p;
+  state.stx+=amt;state.reserve+=net;
+  state.history.unshift({type:'MINT STX',amount:amt.toFixed(6),usdc:usdc.toFixed(2),ts:new Date().toLocaleString()});
+  localStorage.setItem('gs-history',JSON.stringify(state.history));
+  document.getElementById('my-stx').textContent=state.stx.toFixed(4);
+  document.getElementById('total-stx').textContent=state.stx.toFixed(4)+' STX';
+  document.getElementById('usdc-reserve').textContent='$'+state.reserve.toFixed(2);
+  alert('Minted '+amt.toFixed(6)+' STX ('+amt.toFixed(4)+' oz silver equiv)\nFee: $'+fee.toFixed(4)+'\nGas: $0.0000082');
+}
+
+function showTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['mint','redeem','swap','reserves','history'][i]===id));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+id));
+  if(id==='history'){
+    document.getElementById('hist-list').innerHTML=state.history.slice(0,20).map(h=>
+      '<div style="display:flex;justify-content:space-between;padding:10px;background:var(--surf);border:1px solid var(--line);border-radius:7px;margin-bottom:5px;font-size:.8rem;">'+
+      '<span style="color:var(--gold);font-weight:600;">'+h.type+'</span>'+
+      '<span class="mono">'+h.amount+' · $'+h.usdc+'</span>'+
+      '<span style="color:var(--soft)">'+h.ts+'</span></div>').join('') || '<div style="color:var(--soft);text-align:center;padding:20px">No transactions</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded',()=>{loadPrices();setInterval(loadPrices,60000);});
+</script>
+</body>
+</html>

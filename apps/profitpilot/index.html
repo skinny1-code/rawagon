@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ProfitPilot — Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060a0a;--surf:#0a1010;--card:#101818;--line:rgba(255,255,255,.07);--wh:#e0f0ef;--soft:#508888;--dim:#204040;--teal:#06b6d4;--tl2:rgba(6,182,212,.1);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gold:#f59e0b;--red:#ef4444;--purp:#8b5cf6;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
+.mono{font-family:"JetBrains Mono",monospace;}
+header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
+header h1{font-size:1.1rem;font-weight:800;}
+.page{padding:20px 24px;max-width:1400px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+.metric{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:600;line-height:1;}
+.metric.teal{color:var(--teal);}.metric.grn{color:var(--grn);}.metric.gold{color:var(--gold);}
+.mlbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:4px;}
+.msub{font-size:.68rem;color:var(--soft);margin-top:3px;}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border:none;}
+.bar-wrap{flex:1;background:var(--line);border-radius:3px;overflow:hidden;height:6px;margin:0 10px;}
+.bar-fill{height:100%;border-radius:3px;transition:width .6s;}
+input,select{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
+label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
+.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn-teal{background:var(--teal);color:#000;}
+</style>
+</head>
+<body>
+<header>
+  <span style="font-size:1.4rem;">📊</span>
+  <h1>ProfitPilot — Cross-Product Analytics</h1>
+  <div style="margin-left:auto;display:flex;gap:10px;align-items:center;">
+    <select style="width:auto;margin:0;font-size:.78rem;">
+      <option>Last 30 days</option><option>Last 90 days</option><option>This year</option><option>All time</option>
+    </select>
+    <span style="padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;background:var(--tl2);color:var(--teal);">RAWNet Live</span>
+  </div>
+</header>
+<div class="page">
+
+  <!-- KPI row -->
+  <div class="g4" style="margin-bottom:16px;">
+    <div class="card" style="border-top:3px solid var(--teal);">
+      <div class="mlbl">Network Revenue</div>
+      <div class="metric teal" id="kpi-rev">$24.7M</div>
+      <div class="msub">↑ 34% vs last period</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--grn);">
+      <div class="mlbl">Total Transactions</div>
+      <div class="metric grn" id="kpi-txns">4.7M</div>
+      <div class="msub">↑ 18% this month</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--gold);">
+      <div class="mlbl">Avg Transaction Cost</div>
+      <div class="metric gold" id="kpi-cost">$0.0000082</div>
+      <div class="msub">RAWNet · 100x vs Base</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--purp);">
+      <div class="mlbl">LTN Burned</div>
+      <div class="metric" style="color:var(--purp)" id="kpi-burn">56,400</div>
+      <div class="msub">0.001 LTN per tx</div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:14px;">
+    <!-- Revenue by product -->
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">Revenue by Product</div>
+      <div id="rev-chart">
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">AutoIQ / IQTitle</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:var(--teal);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$13.0M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">QWKS Protocol</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:57%;background:var(--gold);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$7.5M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">ProfitPilot</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:23%;background:var(--teal);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$3.0M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">Droppa</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:29%;background:var(--purp);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--purp)">$3.7M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">BitPawn</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:7%;background:var(--gold);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$1.0M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">AllCard</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:7%;background:var(--teal);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$0.9M</span>
+        </div>
+        <div class="row">
+          <span style="font-size:.78rem;min-width:120px">GoldSnap</span>
+          <div class="bar-wrap"><div class="bar-fill" style="width:1%;background:var(--gold);"></div></div>
+          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$0.1M</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost analysis -->
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">Cost Structure</div>
+      <div class="row">
+        <span style="font-size:.78rem">RAWNet gas (total)</span>
+        <span class="mono" style="font-size:.78rem;color:var(--grn)">$38.55</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem">Engineering team</span>
+        <span class="mono" style="font-size:.78rem">$1.8M</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem">Operations + support</span>
+        <span class="mono" style="font-size:.78rem">$1.2M</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem">Cloud infrastructure</span>
+        <span class="mono" style="font-size:.78rem">$180K</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem">Legal + compliance</span>
+        <span class="mono" style="font-size:.78rem">$200K</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem;font-weight:700">Total costs</span>
+        <span class="mono" style="font-size:.78rem;color:var(--red)">$4.4M</span>
+      </div>
+      <div class="row">
+        <span style="font-size:.78rem;font-weight:700">EBITDA</span>
+        <span class="mono" style="font-size:.82rem;font-weight:700;color:var(--grn)">$24.7M (84.9%)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="g3" style="margin-bottom:14px;">
+    <!-- LTN staking -->
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--purp);">LTN Token Metrics</div>
+      <div class="row"><span style="font-size:.78rem">Price</span><span class="mono" style="font-size:.78rem;color:var(--purp)">$0.084</span></div>
+      <div class="row"><span style="font-size:.78rem">Total supply</span><span class="mono" style="font-size:.78rem">1,000,000,000</span></div>
+      <div class="row"><span style="font-size:.78rem">Burned (YTD)</span><span class="mono" style="font-size:.78rem;color:var(--red)">56,400 LTN</span></div>
+      <div class="row"><span style="font-size:.78rem">Total staked</span><span class="mono" style="font-size:.78rem;color:var(--purp)">40,000,000 LTN</span></div>
+      <div class="row"><span style="font-size:.78rem">FeeDistributor inflow</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$3.44M/yr</span></div>
+      <div class="row"><span style="font-size:.78rem">Staking APY (actual)</span><span class="mono" style="font-size:.78rem;color:var(--grn)">10.3%</span></div>
+      <div class="row"><span style="font-size:.78rem">Treasury value</span><span class="mono" style="font-size:.78rem;color:var(--gold)">$16.8M</span></div>
+    </div>
+
+    <!-- Network health -->
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--teal);">RAWNet Health</div>
+      <div class="row"><span style="font-size:.78rem">Chain ID</span><span class="mono" style="font-size:.78rem;color:var(--teal)">720701 (testnet)</span></div>
+      <div class="row"><span style="font-size:.78rem">Block time</span><span class="mono" style="font-size:.78rem;color:var(--grn)">500ms</span></div>
+      <div class="row"><span style="font-size:.78rem">Gas price</span><span class="mono" style="font-size:.78rem;color:var(--grn)">0.00006 Gwei</span></div>
+      <div class="row"><span style="font-size:.78rem">Per-tx cost</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$0.0000082</span></div>
+      <div class="row"><span style="font-size:.78rem">Batch size</span><span class="mono" style="font-size:.78rem">10,000 txns</span></div>
+      <div class="row"><span style="font-size:.78rem">ZK proof system</span><span class="mono" style="font-size:.78rem">Groth16 / SP1</span></div>
+      <div class="row"><span style="font-size:.78rem">DA layer</span><span class="mono" style="font-size:.78rem">EigenDA</span></div>
+      <div class="row"><span style="font-size:.78rem">Settlement</span><span class="mono" style="font-size:.78rem">Base L2</span></div>
+    </div>
+
+    <!-- Migration stats -->
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--gold);">Migration Pipeline</div>
+      <div class="row"><span style="font-size:.78rem">Businesses onboarded</span><span class="mono" style="font-size:.78rem;color:var(--gold)">5,000</span></div>
+      <div class="row"><span style="font-size:.78rem">Avg baseline rate</span><span class="mono" style="font-size:.78rem;color:var(--red)">2.5% (Visa)</span></div>
+      <div class="row"><span style="font-size:.78rem">Avg monthly volume</span><span class="mono" style="font-size:.78rem">$45,000</span></div>
+      <div class="row"><span style="font-size:.78rem">Annual savings delivered</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$67.5M</span></div>
+      <div class="row"><span style="font-size:.78rem">QWKS fee on savings</span><span class="mono" style="font-size:.78rem;color:var(--gold)">$6.75M</span></div>
+      <div class="row"><span style="font-size:.78rem">Avg onboarding time</span><span class="mono" style="font-size:.78rem;color:var(--grn)">47 minutes</span></div>
+      <div class="row"><span style="font-size:.78rem">Trial conversion rate</span><span class="mono" style="font-size:.78rem;color:var(--grn)">78%</span></div>
+    </div>
+  </div>
+
+  <!-- ROI Calculator -->
+  <div class="card">
+    <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--teal);">Business ROI Calculator</div>
+    <div class="g3" style="gap:12px;align-items:end;">
+      <div>
+        <label>Monthly Card Volume ($)</label>
+        <input type="number" id="roi-vol" value="50000" oninput="calcROI()">
+      </div>
+      <div>
+        <label>Transactions / Month</label>
+        <input type="number" id="roi-txns" value="500" oninput="calcROI()">
+      </div>
+      <div>
+        <label>Current Processor Rate (%)</label>
+        <input type="number" id="roi-rate" value="2.5" step="0.1" oninput="calcROI()">
+      </div>
+    </div>
+    <div id="roi-result" class="g4" style="gap:10px;margin-top:14px;"></div>
+  </div>
+
+</div>
+
+<script>
+function calcROI(){
+  const vol=parseFloat(document.getElementById('roi-vol').value)||50000;
+  const txns=parseFloat(document.getElementById('roi-txns').value)||500;
+  const rate=parseFloat(document.getElementById('roi-rate').value)||2.5;
+  const visa=vol*12*(rate/100);
+  const rawnet=txns*12*0.0000082;
+  const base=txns*12*0.000825;
+  const savings=visa-rawnet;
+  const qwksFee=savings*0.10;
+  document.getElementById('roi-result').innerHTML=
+    `<div class="card" style="text-align:center;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);">
+      <div class="mlbl">Current Annual Cost</div>
+      <div class="metric" style="color:var(--red)">$${visa.toLocaleString('en',{maximumFractionDigits:0})}</div>
+      <div class="msub">${rate}% on $${(vol*12).toLocaleString()}/yr</div>
+    </div>
+    <div class="card" style="text-align:center;background:var(--tl2);border-color:rgba(6,182,212,.2);">
+      <div class="mlbl">RAWNet Annual Cost</div>
+      <div class="metric teal">$${rawnet.toFixed(4)}</div>
+      <div class="msub">$0.0000082/tx · ${txns*12} txns</div>
+    </div>
+    <div class="card" style="text-align:center;background:var(--gn2);border-color:rgba(16,185,129,.2);">
+      <div class="mlbl">Annual Savings</div>
+      <div class="metric grn">$${savings.toLocaleString('en',{maximumFractionDigits:0})}</div>
+      <div class="msub">QWKS fee: $${qwksFee.toFixed(0)}</div>
+    </div>
+    <div class="card" style="text-align:center;background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);">
+      <div class="mlbl">You Keep (90%)</div>
+      <div class="metric gold">$${(savings*0.90).toLocaleString('en',{maximumFractionDigits:0})}</div>
+      <div class="msub">ROI: ${Math.round((savings*0.90/qwksFee)*100)}% on fee</div>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded',calcROI);
+</script>
+</body>
+</html>

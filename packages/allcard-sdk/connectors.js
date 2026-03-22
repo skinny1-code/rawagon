@@ -478,3 +478,40 @@ class ConnectorRegistry {
 }
 
 module.exports = { ConnectorRegistry, DMVConnector, BankConnector, InsuranceConnector, DealershipConnector, BaseConnector };
+
+// ── AllCard class (main export) ──────────────────────────────
+const crypto = require('crypto');
+
+const MODES = {
+  identity:'4532', debit:'5412', crypto:'4111', health:'3714',
+  vehicle:'6011',  gov:'3782',   badge:'5105',  retirement:'4000'
+};
+
+class AllCard {
+  constructor(masterKeyHex) {
+    this.key = masterKeyHex || crypto.randomBytes(32).toString('hex');
+    this._nonce = 0;
+  }
+
+  /** Derive next single-use PAN for a given mode */
+  shift(mode = 'identity') {
+    const prefix = MODES[mode] || MODES.identity;
+    const path = `${mode}:${this._nonce++}`;
+    const h = crypto.createHmac('sha256', Buffer.from(this.key,'hex'))
+      .update(path).digest();
+    const raw = BigInt('0x' + h.slice(0,8).toString('hex'));
+    const d = String(raw % 9000000000000000n + 1000000000000000n);
+    return {
+      pan: `${prefix}${d.slice(4,8)} ${d.slice(8,12)} ${d.slice(12,16)}`,
+      mode, nonce: this._nonce - 1, network: 'RAWNet'
+    };
+  }
+
+  /** Generate ZK commitment for credential set */
+  commit(credentials) {
+    return '0x' + crypto.createHmac('sha256', Buffer.from(this.key,'hex'))
+      .update(JSON.stringify(credentials)).digest('hex');
+  }
+}
+
+module.exports = { ...module.exports, AllCard, MODES };

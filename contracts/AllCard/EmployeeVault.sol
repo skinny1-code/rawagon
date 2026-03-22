@@ -8,6 +8,8 @@ pragma solidity ^0.8.24;
  * @dev Patent pending: RAW-2026-PROV-001 (Zero-Knowledge Commerce System)
  */
 contract EmployeeVault {
+    address public owner;
+    constructor() { owner = msg.sender; }
     // commitment = keccak256(AES-encrypted vault root on employee's device)
     mapping(address => bytes32) public commitment;
     mapping(address => address) public employerOf;

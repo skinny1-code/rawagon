@@ -1,0 +1,35 @@
+{
+  "name": "RAWNet",
+  "chainId": 72070,
+  "nativeCurrency": {
+    "name": "RAW Ether",
+    "symbol": "rETH",
+    "decimals": 18
+  },
+  "rpc": [
+    "https://rpc.rawnet.io"
+  ],
+  "testnetRpc": [
+    "https://testnet-rpc.rawnet.io"
+  ],
+  "performance": {
+    "blockTime_ms": 500,
+    "targetGasPrice_gwei": 6e-05,
+    "batchSize_txns": 10000,
+    "costPerTxn_usd": 8.2e-06,
+    "vsBaseL2": "100x cheaper",
+    "vsVisa": "304878x cheaper",
+    "proofSystem": "Groth16-SP1",
+    "dataAvailability": "EigenDA"
+  },
+  "architecture": {
+    "type": "ZK-Rollup on OP Stack",
+    "settlement": "Base L2",
+    "sequencer": "RAWagon Systems LLC",
+    "proofGeneration": "SP1/Risc0 ZK-EVM"
+  },
+  "testnet": {
+    "chainId": 720701,
+    "faucet": "https://faucet.testnet.rawnet.io"
+  }
+}

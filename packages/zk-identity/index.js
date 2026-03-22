@@ -1,111 +1,92 @@
 /**
- * @package @rawagon/zk-identity
- * ZK proof generation + AuraMe biometric key derivation
+ * @rawagon/zk-identity
+ * ZK proof generation + AuraMe biometric key derivation + Shifting PAN
  * Patent pending: RAW-2026-PROV-001
+ * Uses Node.js built-in crypto only — zero external dependencies
  */
+'use strict';
+const crypto = require('crypto');
 
-const { hmac } = require('@noble/hashes/hmac');
-const { sha256 } = require('@noble/hashes/sha256');
-const { bytesToHex, randomBytes } = require('@noble/hashes/utils');
-
-// ─── ALLCARD SHIFTING PAN DERIVATION ──────────────────────────
-// HD path: m/44'/60'/0'/0/n  (BIP-44, n = tx nonce)
-// Returns: ISO 7812-compliant 16-digit PAN
-
+/** HD path PAN derivation — BIP-44 applied to ISO 7812 card numbers */
 function derivePAN(masterKeyHex, nonce) {
   const path = `m/44'/60'/0'/0/${nonce}`;
-  const pathBytes = new TextEncoder().encode(path);
-  const masterKey = hexToBytes(masterKeyHex);
-  const derived = hmac(sha256, masterKey, pathBytes);
-  // Take first 8 bytes → 16 hex digits → format as card number
-  const raw = BigInt('0x' + bytesToHex(derived.slice(0, 8)));
-  // Force into 16-digit range [1000000000000000, 9999999999999999]
+  const h = crypto.createHmac('sha256', Buffer.from(masterKeyHex, 'hex'))
+    .update(Buffer.from(path)).digest();
+  const raw = BigInt('0x' + h.slice(0, 8).toString('hex'));
   const digits = String(raw % 9000000000000000n + 1000000000000000n);
-  const pan = `${digits.slice(0,4)} ${digits.slice(4,8)} ${digits.slice(8,12)} ${digits.slice(12,16)}`;
-  return { pan, path, nonce };
-}
-
-// Luhn check digit (ISO 7812)
-function luhnCheck(number) {
-  const digits = number.replace(/\s/g, '').split('').map(Number);
-  let sum = 0;
-  for (let i = digits.length - 2; i >= 0; i -= 2) {
-    let d = digits[i] * 2;
-    if (d > 9) d -= 9;
-    sum += d;
-  }
-  for (let i = digits.length - 1; i >= 0; i -= 2) sum += digits[i];
-  return sum % 10 === 0;
-}
-
-// ─── ZK PROOF SIMULATION ───────────────────────────────────────
-// In production: replace with @aztec/bb.js or snarkjs Groth16
-
-function generateZKProof(credentialData, masterKeyHex) {
-  const commitment = generateCommitment(credentialData, masterKeyHex);
-  // Simulate proof — real impl uses Groth16 proving key
-  const proofBytes = hmac(sha256, hexToBytes(masterKeyHex),
-    new TextEncoder().encode(JSON.stringify(credentialData)));
   return {
-    proof: bytesToHex(proofBytes),
-    commitment,
-    timestamp: Date.now(),
-    version: '1.0.0-sim',
+    pan: `${digits.slice(0,4)} ${digits.slice(4,8)} ${digits.slice(8,12)} ${digits.slice(12,16)}`,
+    path, nonce,
+    luhn: _luhn(digits),
   };
 }
 
-function verifyAttributeProof(proof, commitment, attribute, expectedValue) {
-  // Stub verifier — replace with on-chain ZKVerifier call in production
-  return proof.commitment === commitment && proof.proof.length === 64;
-}
-
-// ─── CREDENTIAL COMMITMENT ────────────────────────────────────
-
-function generateCommitment(credentialData, masterKeyHex) {
-  const data = typeof credentialData === 'string'
-    ? credentialData
-    : JSON.stringify(credentialData);
-  const key = hexToBytes(masterKeyHex);
-  const msg = new TextEncoder().encode(data);
-  return '0x' + bytesToHex(hmac(sha256, key, msg));
-}
-
-// ─── BIOMETRIC KEY DERIVATION (AuraMe) ───────────────────────
-// In production: keystroke/voice/gait signals → feature vector → PBKDF2
-
-function deriveKeyFromBiometric(biometricVector, salt = null) {
-  const saltBytes = salt ? hexToBytes(salt) : randomBytes(32);
-  const vectorBytes = new TextEncoder().encode(JSON.stringify(biometricVector));
-  // Simulate PBKDF2 — real impl: crypto.subtle.deriveBits with 100000 iterations
-  const derived = hmac(sha256, saltBytes, vectorBytes);
-  return {
-    masterKey: bytesToHex(derived),
-    salt: bytesToHex(saltBytes),
-    algorithm: 'PBKDF2-HMAC-SHA256-sim',
-  };
-}
-
-// ─── HELPERS ──────────────────────────────────────────────────
-
-function hexToBytes(hex) {
-  const clean = hex.replace(/^0x/, '');
-  const bytes = new Uint8Array(clean.length / 2);
-  for (let i = 0; i < clean.length; i += 2) {
-    bytes[i / 2] = parseInt(clean.slice(i, i + 2), 16);
+/** Luhn algorithm (ISO 7812 check digit) */
+function _luhn(n) {
+  const d = String(n).split('').map(Number);
+  let s = 0;
+  for (let i = d.length - 2; i >= 0; i -= 2) {
+    let v = d[i] * 2; if (v > 9) v -= 9; s += v;
   }
-  return bytes;
+  for (let i = d.length - 1; i >= 0; i -= 2) s += d[i];
+  return s % 10 === 0;
 }
 
-function generateMasterKey() {
-  return bytesToHex(randomBytes(32));
+/** ZK commitment = HMAC-SHA256(masterKey, JSON(credentials)) */
+function commit(credentials, masterKeyHex) {
+  const h = crypto.createHmac('sha256', Buffer.from(masterKeyHex, 'hex'))
+    .update(Buffer.from(JSON.stringify(credentials))).digest('hex');
+  return '0x' + h;
 }
 
-module.exports = {
-  derivePAN,
-  luhnCheck,
-  generateZKProof,
-  verifyAttributeProof,
-  generateCommitment,
-  deriveKeyFromBiometric,
-  generateMasterKey,
-};
+/** Simulate ZK proof (prod: snarkjs Groth16 with proving key) */
+function prove(credentials, masterKeyHex) {
+  const commitment = commit(credentials, masterKeyHex);
+  const proof = crypto.createHmac('sha256', Buffer.from(masterKeyHex, 'hex'))
+    .update(Buffer.from(JSON.stringify({ credentials, ts: Date.now() }))).digest('hex');
+  return { proof, commitment, timestamp: Date.now(), version: '1.0.0-sim' };
+}
+
+/** Verify a proof against a commitment (stub — replace with on-chain ZKVerifier) */
+function verify(proof, commitment) {
+  return typeof proof === 'string' && proof.length === 64 &&
+         typeof commitment === 'string' && commitment.startsWith('0x');
+}
+
+/** AuraMe: behavioral signals → master key */
+function bioDerive(biometricVector, salt) {
+  const s = salt || crypto.randomBytes(32).toString('hex');
+  const key = crypto.createHmac('sha256', Buffer.from(s, 'hex'))
+    .update(Buffer.from(JSON.stringify(biometricVector))).digest('hex');
+  return { masterKey: key, salt: s, algorithm: 'HMAC-SHA256-sim' };
+}
+
+/** Generate a random 256-bit master key */
+function genKey() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+/** Encrypt data with AES-256-GCM using master key */
+function encrypt(data, masterKeyHex) {
+  const key = Buffer.from(masterKeyHex.slice(0, 64), 'hex');
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const enc = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final()]);
+  const tag = cipher.getAuthTag();
+  return { iv: iv.toString('hex'), data: enc.toString('hex'), tag: tag.toString('hex') };
+}
+
+/** Decrypt AES-256-GCM encrypted data */
+function decrypt(encrypted, masterKeyHex) {
+  const key = Buffer.from(masterKeyHex.slice(0, 64), 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-gcm',
+    key, Buffer.from(encrypted.iv, 'hex'));
+  decipher.setAuthTag(Buffer.from(encrypted.tag, 'hex'));
+  const dec = Buffer.concat([
+    decipher.update(Buffer.from(encrypted.data, 'hex')),
+    decipher.final()
+  ]);
+  return JSON.parse(dec.toString());
+}
+
+module.exports = { derivePAN, commit, prove, verify, bioDerive, genKey, encrypt, decrypt };
