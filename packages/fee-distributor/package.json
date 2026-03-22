@@ -1,0 +1,9 @@
+{
+  "name": "@rawagon/fee-distributor",
+  "version": "0.1.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "build": "echo 'Build fee-distributor'"
+  }
+}

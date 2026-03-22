@@ -1,0 +1,15 @@
+{
+  "name": "@rawagon/rawagon-os",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "serve . -p 3000",
+    "build": "echo 'Build rawagon-os'",
+    "test": "echo 'Tests for rawagon-os'"
+  },
+  "dependencies": {
+    "@rawagon/zk-identity": "workspace:*",
+    "@rawagon/allcard-sdk": "workspace:*",
+    "@rawagon/fee-distributor": "workspace:*"
+  }
+}

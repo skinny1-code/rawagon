@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1.nce AllCard — One card. Every credential. Yours alone.</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ─── FOUNDATION ─── */
+:root {
+  --void:#04040a;--deep:#08080f;--surf:#0d0d18;--panel:#11111e;--line:rgba(255,255,255,.06);
+  --wh:#f0f0ff;--soft:#8888aa;--muted:#444466;
+  --gold:#d4a853;--gold2:rgba(212,168,83,.12);--gold3:rgba(212,168,83,.06);
+  --teal:#2dd4bf;--t2:rgba(45,212,191,.1);
+  --grn:#34d399;--g2:rgba(52,211,153,.1);
+  --red:#f87171;--r2:rgba(248,113,113,.1);
+  --blue:#60a5fa;--b2:rgba(96,165,250,.1);
+  --purp:#a78bfa;--p2:rgba(167,139,250,.1);
+  --silver:#c0c8d8;--s2:rgba(192,200,216,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{background:var(--void);color:var(--wh);font-family:'Syne',sans-serif;font-weight:400;overflow-x:hidden;min-height:100vh;}
+.mono{font-family:'Space Mono',monospace;}
+.serif{font-family:'Instrument Serif',serif;}
+
+/* ─── NOISE LAYER ─── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+
+/* ─── SCREENS ─── */
+.scr{display:none;min-height:100vh;position:relative;z-index:1;}
+.scr.on{display:flex;flex-direction:column;}
+
+/* ─── NAV ─── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 48px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(4,4,10,.92);backdrop-filter:blur(24px);z-index:100;}
+.logo{font-size:1.5rem;font-weight:800;letter-spacing:-.04em;color:var(--gold);cursor:pointer;}
+.logo span{color:var(--wh);opacity:.3;}
+.nav-actions{display:flex;align-items:center;gap:10px;}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 20px;border-radius:6px;font-family:'Syne',sans-serif;font-size:.84rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;letter-spacing:.01em;}
+.btn-gold{background:var(--gold);color:#000;font-weight:700;}
+.btn-gold:hover{background:#e8ba60;transform:translateY(-1px);}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--soft);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold);}
+.btn-outline:hover{background:var(--gold2);}
+.btn-teal{background:var(--t2);border:1px solid rgba(45,212,191,.25);color:var(--teal);}
+.btn-red{background:var(--r2);border:1px solid rgba(248,113,113,.25);color:var(--red);}
+.btn-sm{padding:7px 14px;font-size:.78rem;}
+.btn-full{width:100%;padding:14px;}
+.btn-lg{padding:14px 32px;font-size:.96rem;}
+
+/* ─── CARDS ─── */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;}
+.cl{font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+
+/* ─── FORM ─── */
+.fl{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px;}
+.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:12px 14px;color:var(--wh);font-family:'Syne',sans-serif;font-size:.9rem;outline:none;transition:border-color .18s;}
+.fi:focus{border-color:var(--gold);}
+.fi::placeholder{color:var(--muted);}
+select.fi option{background:var(--deep);}
+.fg{margin-top:14px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+
+/* ─── BADGE ─── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:100px;font-size:.65rem;font-weight:600;letter-spacing:.05em;}
+.b-gd{background:var(--gold2);color:var(--gold);border:1px solid rgba(212,168,83,.25);}
+.b-gr{background:var(--g2);color:var(--grn);border:1px solid rgba(52,211,153,.25);}
+.b-tl{background:var(--t2);color:var(--teal);border:1px solid rgba(45,212,191,.25);}
+.b-bl{background:var(--b2);color:var(--blue);border:1px solid rgba(96,165,250,.25);}
+.b-rd{background:var(--r2);color:var(--red);border:1px solid rgba(248,113,113,.25);}
+.b-mu{background:rgba(255,255,255,.05);color:var(--soft);border:1px solid var(--line);}
+
+/* ─── LIVE DOT ─── */
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--grn);display:inline-block;animation:ld 2s infinite;}
+@keyframes ld{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* ─── SHIMMER ─── */
+.shim{background:linear-gradient(90deg,var(--surf) 25%,var(--panel) 50%,var(--surf) 75%);background-size:200% 100%;animation:shim 1.5s infinite;}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ─── MODAL ─── */
+.ov{position:fixed;inset:0;background:rgba(4,4,10,.92);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.open{display:flex;}
+.modal{background:var(--panel);border:1px solid rgba(212,168,83,.2);border-radius:18px;width:100%;max-width:540px;max-height:90vh;display:flex;flex-direction:column;animation:popIn .22s ease;box-shadow:0 32px 80px rgba(0,0,0,.7);overflow:hidden;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);pointer-events:none;}
+.modal.wide{max-width:780px;}
+@keyframes popIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+.mhdr{padding:22px 22px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.mt{font-size:1.2rem;font-weight:700;letter-spacing:-.02em;}
+.mx{width:30px;height:30px;background:var(--surf);border:none;border-radius:6px;color:var(--soft);cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+.mx:hover{color:var(--wh);}
+.mbody{padding:20px 22px;overflow-y:auto;flex:1;}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 16px;font-size:.82rem;z-index:9999;display:none;align-items:center;gap:8px;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.toast.show{display:flex;animation:popIn .2s ease;}
+.toast.ok{border-color:rgba(52,211,153,.4);}
+.toast.err{border-color:rgba(248,113,113,.4);}
+.toast.info{border-color:rgba(212,168,83,.4);}
+
+/* ══════════════════════════════════════
+   ALLCARD — THE PHYSICAL CARD COMPONENT
+══════════════════════════════════════ */
+.allcard{
+  width:380px;height:240px;border-radius:18px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0a0a16 0%,#141428 40%,#0d0d1e 70%,#06060f 100%);
+  border:1px solid rgba(212,168,83,.3);
+  box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04),inset 0 1px 0 rgba(255,255,255,.06);
+  cursor:pointer;transition:all .3s ease;flex-shrink:0;
+}
+.allcard:hover{transform:translateY(-4px) rotateX(2deg);box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 40px rgba(212,168,83,.08);}
+.allcard.active-card{transform:scale(1.02);border-color:rgba(212,168,83,.6);}
+/* chip */
+.card-chip{position:absolute;top:52px;left:28px;width:38px;height:28px;border-radius:5px;background:linear-gradient(135deg,#d4a853,#a07830,#d4a853);box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.card-chip::before{content:'';position:absolute;top:9px;left:0;right:0;height:1px;background:rgba(0,0,0,.3);}
+.card-chip::after{content:'';position:absolute;left:9px;top:0;bottom:0;width:1px;background:rgba(0,0,0,.3);}
+/* holographic shimmer */
+.card-holo{position:absolute;inset:0;background:linear-gradient(45deg,transparent 30%,rgba(45,212,191,.04) 45%,rgba(212,168,83,.06) 55%,transparent 70%);animation:holoShift 4s ease-in-out infinite;}
+@keyframes holoShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+/* mesh pattern */
+.card-mesh{position:absolute;inset:0;background-image:linear-gradient(rgba(212,168,83,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,.04) 1px,transparent 1px);background-size:18px 18px;opacity:.6;}
+/* logo */
+.card-logo{position:absolute;top:18px;left:26px;font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--gold);letter-spacing:-.02em;}
+.card-logo span{color:rgba(255,255,255,.25);}
+/* zk badge */
+.card-zk{position:absolute;top:20px;right:22px;font-family:'Space Mono',monospace;font-size:.55rem;color:rgba(45,212,191,.7);letter-spacing:.08em;}
+/* shifting number */
+.card-num{position:absolute;bottom:68px;left:26px;right:26px;font-family:'Space Mono',monospace;font-size:1.0rem;font-weight:700;letter-spacing:.22em;color:rgba(255,255,255,.8);text-shadow:0 0 10px rgba(212,168,83,.3);}
+/* name/expiry */
+.card-footer{position:absolute;bottom:22px;left:26px;right:26px;display:flex;align-items:flex-end;justify-content:space-between;}
+.card-name{font-family:'Syne',sans-serif;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.08em;text-transform:uppercase;}
+.card-expiry{font-family:'Space Mono',monospace;font-size:.62rem;color:rgba(255,255,255,.45);}
+.card-expiry-lbl{font-size:.48rem;color:rgba(255,255,255,.3);display:block;margin-bottom:1px;}
+/* mode indicator */
+.card-mode{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:.52rem;color:var(--gold);letter-spacing:.1em;opacity:.6;}
+/* NFC wave */
+.card-nfc{position:absolute;top:18px;right:56px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;}
+.nfc-ring{position:absolute;border:1px solid rgba(45,212,191,.4);border-radius:50%;animation:nfcPulse 2s ease-out infinite;}
+.nfc-ring:nth-child(1){width:8px;height:8px;animation-delay:0s;}
+.nfc-ring:nth-child(2){width:14px;height:14px;animation-delay:.3s;}
+.nfc-ring:nth-child(3){width:18px;height:18px;animation-delay:.6s;}
+@keyframes nfcPulse{0%{opacity:.8}100%{opacity:0;transform:scale(1.3)}}
+
+/* MINI CARDS (selector) */
+.mini-card{width:64px;height:40px;border-radius:6px;background:linear-gradient(135deg,#0d0d1e,#141428);border:1px solid var(--line);cursor:pointer;transition:all .2s;flex-shrink:0;position:relative;overflow:hidden;}
+.mini-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(212,168,83,.06));}
+.mini-card:hover,.mini-card.sel{border-color:var(--gold);box-shadow:0 0 12px rgba(212,168,83,.2);}
+.mini-card-label{font-size:.4rem;font-family:'Space Mono',monospace;letter-spacing:.06em;color:rgba(255,255,255,.4);position:absolute;bottom:4px;left:5px;text-transform:uppercase;}
+
+/* ══════════════════════════════════════
+   VAULT ARCHITECTURE DIAGRAM
+══════════════════════════════════════ */
+.vault-layer{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden;}
+.vault-layer::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.vault-layer.l-device::before{background:var(--grn);}
+.vault-layer.l-zk::before{background:var(--teal);}
+.vault-layer.l-chain::before{background:var(--gold);}
+.vault-layer.l-never::before{background:var(--red);}
+.vl-title{font-size:.8rem;font-weight:700;margin-bottom:3px;}
+.vl-desc{font-size:.73rem;color:var(--soft);line-height:1.6;}
+.vl-badge{position:absolute;top:14px;right:16px;}
+
+/* ══════════════════════════════════════
+   CREDENTIAL TYPES
+══════════════════════════════════════ */
+.cred-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.cred-card{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px 12px;text-align:center;cursor:pointer;transition:all .2s;}
+.cred-card:hover,.cred-card.active{border-color:var(--gold);background:var(--panel);}
+.cred-card.active{box-shadow:0 0 16px rgba(212,168,83,.12);}
+.cred-ico{font-size:1.5rem;margin-bottom:7px;}
+.cred-name{font-size:.7rem;font-weight:600;letter-spacing:.04em;margin-bottom:2px;}
+.cred-type{font-size:.62rem;color:var(--muted);}
+
+/* ══════════════════════════════════════
+   IDENTITY VERIFICATION
+══════════════════════════════════════ */
+.verify-ring{width:120px;height:120px;position:relative;margin:0 auto;}
+.vr-svg{position:absolute;inset:0;width:100%;height:100%;}
+.vr-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:3;}
+.vr-fill{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;transform-origin:center;transform:rotate(-90deg);stroke-dasharray:340;transition:stroke-dashoffset 1s ease;}
+.vr-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.vr-pct{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--teal);line-height:1;}
+.vr-lbl{font-size:.55rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+
+/* biometric bars */
+.bio-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.bb-label{font-size:.72rem;color:var(--soft);width:110px;flex-shrink:0;}
+.bb-track{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.bb-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.bb-val{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--wh);min-width:36px;text-align:right;}
+
+/* ══════════════════════════════════════
+   TRUST & POA
+══════════════════════════════════════ */
+.trust-member{display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px;}
+.tm-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.88rem;font-weight:700;color:#000;flex-shrink:0;}
+.tm-name{font-size:.86rem;font-weight:600;}
+.tm-role{font-size:.72rem;color:var(--soft);margin-top:1px;}
+
+/* ══════════════════════════════════════
+   SHIFTING NUMBER ANIMATION
+══════════════════════════════════════ */
+.shifting-num{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;letter-spacing:.25em;color:var(--gold);text-align:center;padding:20px;background:var(--surf);border:1px solid var(--line);border-radius:10px;position:relative;overflow:hidden;}
+.shifting-num::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(212,168,83,.05),transparent);animation:scanLine 3s linear infinite;}
+@keyframes scanLine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+/* ══════════════════════════════════════
+   PROGRESS STEPS
+══════════════════════════════════════ */
+.step-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.74rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.step-done .step-num{background:var(--g2);color:var(--grn);}
+.step-active .step-num{background:var(--gold2);color:var(--gold);}
+.step-pend .step-num{background:var(--panel);color:var(--muted);}
+.step-title{font-size:.88rem;font-weight:600;}
+.step-detail{font-size:.75rem;color:var(--soft);margin-top:2px;line-height:1.55;}
+
+/* ══════════════════════════════════════
+   LANDING
+══════════════════════════════════════ */
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 24px;gap:28px;position:relative;}
+.hero-glow{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(212,168,83,.06),transparent 60%);pointer-events:none;}
+.hero-h1{font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;line-height:1.04;letter-spacing:-.04em;}
+.hero-h1 em{font-style:italic;font-family:'Instrument Serif',serif;color:var(--gold);font-size:1.1em;}
+.hero-sub{font-size:1.05rem;color:var(--soft);max-width:540px;line-height:1.8;font-weight:400;}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.hero-note{font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:10px;}
+.hero-note::before,.hero-note::after{content:'';width:50px;height:1px;background:var(--line);}
+.stats-bar{display:flex;gap:32px;flex-wrap:wrap;justify-content:center;padding:24px 48px;background:rgba(255,255,255,.02);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.stat-item{text-align:center;}
+.stat-v{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--gold);}
+.stat-l{font-size:.68rem;color:var(--muted);letter-spacing:.08em;margin-top:2px;}
+/* Feature bands */
+.feat-band{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:1100px;margin:0 auto;padding:0 48px 60px;}
+.feat{background:var(--deep);border:1px solid var(--line);padding:32px 28px;transition:all .2s;}
+.feat:first-child{border-radius:12px 0 0 12px;}
+.feat:last-child{border-radius:0 12px 12px 0;}
+.feat:hover{border-color:rgba(212,168,83,.2);}
+.feat-ico{font-size:1.6rem;margin-bottom:14px;}
+.feat-h{font-size:.95rem;font-weight:700;margin-bottom:7px;letter-spacing:-.01em;}
+.feat-p{font-size:.82rem;color:var(--soft);line-height:1.7;}
+
+/* ══════════════════════════════════════
+   DASHBOARD LAYOUT
+══════════════════════════════════════ */
+.dash-layout{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 65px);}
+.sidebar{background:var(--deep);border-right:1px solid var(--line);padding:24px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;}
+.sb-section{font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px;padding:0 8px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .18s;color:var(--soft);font-size:.84rem;font-weight:500;}
+.sb-item:hover,.sb-item.on{background:var(--gold2);color:var(--gold);}
+.sb-item.on{font-weight:700;}
+.sb-item-ico{font-size:1rem;width:20px;text-align:center;}
+.main-content{padding:28px 32px;overflow-y:auto;}
+.view{display:none;}
+.view.on{display:block;}
+.view-title{font-size:1.6rem;font-weight:800;letter-spacing:-.03em;margin-bottom:20px;}
+
+/* ══════════════════════════════════════
+   CARD DISPLAY AREA
+══════════════════════════════════════ */
+.card-stage{display:flex;flex-direction:column;align-items:center;gap:18px;padding:32px;background:linear-gradient(135deg,rgba(212,168,83,.04),rgba(45,212,191,.02));border:1px solid var(--line);border-radius:16px;margin-bottom:22px;position:relative;overflow:hidden;}
+.card-stage::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at center,rgba(212,168,83,.04),transparent 60%);pointer-events:none;}
+.card-selector{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.card-action-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+
+/* ══════════════════════════════════════
+   SECURE VAULT UI
+══════════════════════════════════════ */
+.vault-field{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:10px;position:relative;}
+.vf-label{font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.vf-value{font-family:'Space Mono',monospace;font-size:.9rem;color:var(--wh);letter-spacing:.04em;}
+.vf-value.redacted{filter:blur(6px);user-select:none;transition:filter .3s;}
+.vf-value.revealed{filter:none;}
+.vf-reveal{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--soft);cursor:pointer;font-size:.8rem;font-family:'Syne',sans-serif;transition:color .18s;}
+.vf-reveal:hover{color:var(--gold);}
+.vf-lock{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.9rem;}
+
+/* Encryption indicator */
+.enc-badge{display:inline-flex;align-items:center;gap:5px;background:var(--g2);border:1px solid rgba(52,211,153,.2);border-radius:4px;padding:3px 8px;font-size:.64rem;font-family:'Space Mono',monospace;color:var(--grn);}
+.enc-badge::before{content:'🔒';font-size:.65rem;}
+
+/* ══════════════════════════════════════
+   PHYSICAL CARD ORDER
+══════════════════════════════════════ */
+.physical-card-preview{width:100%;max-width:340px;aspect-ratio:1.586;border-radius:16px;background:linear-gradient(135deg,#0a0a16 0%,#141428 50%,#0a0a16 100%);border:1px solid rgba(212,168,83,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:0 auto;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(212,168,83,.06);position:relative;overflow:hidden;}
+.physical-card-preview::after{content:'SPECIMEN — NOT FOR USE';position:absolute;font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.15em;color:rgba(248,113,113,.4);transform:rotate(-15deg);font-weight:700;pointer-events:none;}
+.pcp-name{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);}
+.pcp-id{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--gold);letter-spacing:.14em;}
+.pcp-note{font-family:'Space Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.25);letter-spacing:.08em;}
+
+/* ══════════════════════════════════════
+   ONBOARDING
+══════════════════════════════════════ */
+.onb-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;}
+.onb-card{background:var(--panel);border:1px solid rgba(212,168,83,.15);border-radius:20px;width:100%;max-width:500px;padding:40px 36px;position:relative;}
+.onb-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);border-radius:20px 20px 0 0;}
+.pips{display:flex;gap:5px;margin-bottom:28px;}
+.pip{flex:1;height:2px;border-radius:2px;background:var(--line);transition:background .25s;}
+.pip.on{background:var(--gold);}.pip.done{background:rgba(212,168,83,.35);}
+
+/* TOGGLE */
+.tog{width:42px;height:23px;border-radius:100px;background:var(--grn);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
+.tog::after{content:'';position:absolute;top:3px;left:21px;width:17px;height:17px;background:#fff;border-radius:50%;transition:left .2s;}
+.tog.off{background:var(--line);}
+.tog.off::after{left:3px;}
+
+@media(max-width:900px){
+  .dash-layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .feat-band{grid-template-columns:1fr;padding:0 24px 40px;}
+  .cred-grid{grid-template-columns:repeat(2,1fr);}
+  .allcard{width:320px;height:200px;}
+  .nav{padding:16px 24px;}
+  .hero-h1{font-size:2.6rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     LANDING
+══════════════════════════════════ -->
+<div id="land" class="scr on">
+  <nav class="nav">
+    <div class="logo">1<span>.</span>nce <span style="font-size:.75rem;color:var(--muted);font-weight:400;letter-spacing:.02em;">AllCard</span></div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" onclick="go('onb')">Sign in</button>
+      <button class="btn btn-gold btn-sm" onclick="go('onb')">Issue your AllCard</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="badge b-gd" style="margin-bottom:4px;">ZK-Encrypted · Chain-anchored · Yours alone</div>
+    <h1 class="hero-h1">One card.<br><em>Every credential.</em><br>Forever sovereign.</h1>
+    <p class="hero-sub">Your identity, finances, insurance, government IDs, and access credentials — unified under one AI-verified, zero-knowledge card. Data never stored on-chain. Never held by anyone but you.</p>
+    <div class="hero-cta">
+      <button class="btn btn-gold btn-lg" onclick="go('onb')">Issue your AllCard →</button>
+      <button class="btn btn-ghost btn-lg" onclick="demoGo()">View demo card</button>
+    </div>
+    <div class="hero-note">Your raw data never leaves your device · ZK proofs only on-chain · Shifting card numbers per transaction</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-v">12</div><div class="stat-l">Credential types</div></div>
+    <div class="stat-item"><div class="stat-v">0</div><div class="stat-l">Data stored on-chain</div></div>
+    <div class="stat-item"><div class="stat-v">AES-256</div><div class="stat-l">Local encryption</div></div>
+    <div class="stat-item"><div class="stat-v">∞</div><div class="stat-l">Shifting card numbers</div></div>
+    <div class="stat-item"><div class="stat-v">ZK</div><div class="stat-l">Proof architecture</div></div>
+  </div>
+  <div class="feat-band">
+    <div class="feat"><div class="feat-ico">🔐</div><div class="feat-h">Nothing on-chain but a proof</div><div class="feat-p">Your SSN, bank account, health records, and biometrics are encrypted AES-256 on your device only. The chain holds a zero-knowledge commitment — a hash that proves you control the data, containing none of it.</div></div>
+    <div class="feat"><div class="feat-ico">⟳</div><div class="feat-h">Shifting card number per use</div><div class="feat-p">Like a hardware wallet generating a fresh address per receive, your AllCard derives a new card number for every transaction from your master key. No one can link your purchases. Physical card shows only a temporary derived ID.</div></div>
+    <div class="feat"><div class="feat-ico">⚖️</div><div class="feat-h">Recoverable only by you</div><div class="feat-p">Social recovery via multi-sig: 3-of-5 trusted contacts (family, attorney) can trigger recovery — none of them see your data. Power of attorney and revocable trusts can be granted access scopes with on-chain time locks.</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ONBOARDING
+══════════════════════════════════ -->
+<div id="onb" class="scr">
+  <nav class="nav"><div class="logo" onclick="go('land')">1<span>.</span>nce</div></nav>
+  <div class="onb-wrap">
+    <div class="onb-card">
+      <div class="pips"><div class="pip on" id="p1"></div><div class="pip" id="p2"></div><div class="pip" id="p3"></div><div class="pip" id="p4"></div><div class="pip" id="p5"></div></div>
+
+      <div id="os1">
+        <div style="font-size:2rem;margin-bottom:12px;">👤</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;">Create your sovereign identity</div>
+        <div style="font-size:.84rem;color:var(--soft);line-height:1.65;margin-bottom:4px;">This data is encrypted locally with your biometric key. It never leaves your device in raw form.</div>
+        <div class="fg"><label class="fl">Legal full name</label><input class="fi" id="n-name" value="Alexandra Johnson" placeholder="Full legal name"></div>
+        <div class="frow">
+          <div><label class="fl">Date of birth</label><input class="fi" type="date" id="n-dob" value="1990-03-14"></div>
+          <div><label class="fl">Social Security #</label><input class="fi" id="n-ssn" placeholder="•••-••-••••" type="password" value="000-00-0000"></div>
+        </div>
+        <div class="fg"><label class="fl">Home address</label><input class="fi" id="n-addr" value="123 Market St, San Francisco, CA 94105"></div>
+        <div class="frow">
+          <div><label class="fl">Email</label><input class="fi" id="n-email" value="alex@example.com"></div>
+          <div><label class="fl">Phone</label><input class="fi" id="n-phone" value="+1 (415) 555-0199"></div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:var(--g2);border:1px solid rgba(52,211,153,.15);border-radius:8px;font-size:.78rem;color:var(--grn);line-height:1.6;">🔒 All fields encrypted with AES-256-GCM using your biometric-derived key before storage. Nothing transmitted.</div>
+        <button class="btn btn-gold btn-full" style="margin-top:16px;" onclick="onbGo(2)">Encrypt & continue →</button>
+      </div>
+
+      <div id="os2" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:12px;">⬡</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;">Bind your biometric master key</div>
+        <div style="font-size:.84rem;color:var(--soft);line-height:1.65;">Your biometric generates a 256-bit key on-device. This key encrypts all stored data. The key never leaves the secure enclave.</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:20px 0;">
+          <div class="verify-ring">
+            <svg class="vr-svg" viewBox="0 0 120 120"><circle class="vr-track" cx="60" cy="60" r="54"/><circle class="vr-fill" id="bio-ring" cx="60" cy="60" r="54" style="stroke-dashoffset:340;"/></svg>
+            <div class="vr-inner"><div class="vr-pct" id="bio-pct">0%</div><div class="vr-lbl">Binding</div></div>
+          </div>
+          <div id="bio-status" style="font-family:'Space Mono',monospace;font-size:.72rem;color:var(--teal);">Waiting for biometric...</div>
+        </div>
+        <button style="width:100%;background:var(--surf);border:1px dashed var(--line);border-radius:8px;padding:12px;color:var(--soft);font-family:'Syne',sans-serif;font-size:.86rem;cursor:pointer;margin-bottom:8px;transition:all .18s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--line)'" onclick="runBio()">😊 &nbsp;Face ID — derive key from facial geometry</button>
+        <button style="width:100%;background:var(--surf);border:1px dashed var(--line);border-radius:8px;padding:12px;color:var(--soft);font-family:'Syne',sans-serif;font-size:.86rem;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--line)'" onclick="runBio()">🔑 &nbsp;Hardware key — YubiKey FIDO2</button>
+        <div id="bio-ok" style="display:none;margin-top:12px;"><button class="btn btn-gold btn-full" onclick="onbGo(3)">Master key bound →</button></div>
+      </div>
+
+      <div id="os3" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:12px;">🏦</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;">Link financial accounts</div>
+        <div style="font-size:.84rem;color:var(--soft);line-height:1.65;margin-bottom:14px;">Account numbers are encrypted locally. The AllCard derives fresh virtual card numbers per transaction from your master key.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;" onclick="this.querySelector('input').click()">
+            <input type="checkbox" style="accent-color:var(--gold);width:15px;height:15px;" checked>
+            <span style="font-size:1.1rem;">🏦</span>
+            <div><div style="font-size:.87rem;font-weight:600;">Bank accounts (via Plaid)</div><div style="font-size:.72rem;color:var(--muted);">Checking · Savings · Brokerage</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;" onclick="this.querySelector('input').click()">
+            <input type="checkbox" style="accent-color:var(--gold);width:15px;height:15px;" checked>
+            <span style="font-size:1.1rem;">₿</span>
+            <div><div style="font-size:.87rem;font-weight:600;">Crypto wallets</div><div style="font-size:.72rem;color:var(--muted);">ETH · BTC · USDC · LTN</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;" onclick="this.querySelector('input').click()">
+            <input type="checkbox" style="accent-color:var(--gold);width:15px;height:15px;" checked>
+            <span style="font-size:1.1rem;">📊</span>
+            <div><div style="font-size:.87rem;font-weight:600;">Retirement · 401(k) · IRA</div><div style="font-size:.72rem;color:var(--muted);">Fidelity · Vanguard · Schwab</div></div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;cursor:pointer;" onclick="this.querySelector('input').click()">
+            <input type="checkbox" style="accent-color:var(--gold);width:15px;height:15px;">
+            <span style="font-size:1.1rem;">💳</span>
+            <div><div style="font-size:.87rem;font-weight:600;">Existing debit/credit cards</div><div style="font-size:.72rem;color:var(--muted);">Import to virtual card system</div></div>
+          </label>
+        </div>
+        <button class="btn btn-gold btn-full" style="margin-top:16px;" onclick="onbGo(4)">Encrypt accounts →</button>
+      </div>
+
+      <div id="os4" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:12px;">⚖️</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:6px;">Set recovery & access</div>
+        <div style="font-size:.84rem;color:var(--soft);line-height:1.65;margin-bottom:14px;">Your data is recoverable only through cryptographic proof. Set who can access under specific conditions.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+          <div style="background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:13px;">
+            <div style="font-size:.84rem;font-weight:600;margin-bottom:3px;">Social recovery (3-of-5)</div>
+            <div style="font-size:.73rem;color:var(--muted);margin-bottom:10px;">5 trusted contacts — any 3 can trigger recovery. None see your data alone.</div>
+            <input class="fi" placeholder="Add guardian email or wallet address..." style="font-size:.82rem;">
+          </div>
+          <div style="background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:13px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="flex:1;"><div style="font-size:.84rem;font-weight:600;margin-bottom:3px;">Power of Attorney</div><div style="font-size:.73rem;color:var(--muted);">Attorney or designee with scoped access. Requires court order or pre-signed authorization stored in vault.</div></div>
+            <div class="tog off" onclick="this.classList.toggle('off')"></div>
+          </div>
+          <div style="background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:13px;display:flex;align-items:flex-start;gap:12px;">
+            <div style="flex:1;"><div style="font-size:.84rem;font-weight:600;margin-bottom:3px;">Revocable trust</div><div style="font-size:.73rem;color:var(--muted);">Grant beneficiaries time-locked access to specific credential scopes after death or incapacity.</div></div>
+            <div class="tog off" onclick="this.classList.toggle('off')"></div>
+          </div>
+        </div>
+        <button class="btn btn-gold btn-full" onclick="onbGo(5)">Configure recovery →</button>
+      </div>
+
+      <div id="os5" style="display:none;text-align:center;">
+        <div style="width:72px;height:72px;background:linear-gradient(135deg,var(--gold2),var(--t2));border:1px solid rgba(212,168,83,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:8px auto 16px;font-size:1.8rem;">✦</div>
+        <div style="font-size:1.4rem;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;">Issuing your AllCard</div>
+        <div style="font-size:.84rem;color:var(--soft);margin-bottom:20px;">Generating ZK commitments · Deriving card keys · Publishing identity proof...</div>
+        <div id="issue-steps" style="text-align:left;margin-bottom:16px;"></div>
+        <div id="issue-cta" style="display:none;"><button class="btn btn-gold btn-full" onclick="go('dash')">Open your AllCard →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DASHBOARD
+══════════════════════════════════ -->
+<div id="dash" class="scr">
+  <nav class="nav">
+    <div class="logo" onclick="go('land')">1<span>.</span>nce <span style="font-size:.72rem;color:var(--muted);font-weight:400;">AllCard</span></div>
+    <div class="nav-actions">
+      <span class="enc-badge">Vault encrypted</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;font-size:.75rem;color:var(--teal);font-family:'Space Mono',monospace;"><span class="ldot"></span> Live</span>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('settings')">⚙</button>
+    </div>
+  </nav>
+  <div class="dash-layout">
+    <aside class="sidebar">
+      <div style="padding:4px 8px 12px;">
+        <div style="font-size:.84rem;font-weight:700;color:var(--wh);" id="sb-name">Alexandra Johnson</div>
+        <div style="font-family:'Space Mono',monospace;font-size:.64rem;color:var(--gold);margin-top:2px;">1NCE-7742-A</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;"><span class="badge b-gr" style="font-size:.58rem;">Identity ✓</span><span class="badge b-gd" style="font-size:.58rem;">AllCard Active</span></div>
+      </div>
+      <div class="sb-section">AllCard</div>
+      <div class="sb-item on" onclick="showView('v-card')"><span class="sb-item-ico">✦</span>My AllCard</div>
+      <div class="sb-item" onclick="showView('v-credentials')"><span class="sb-item-ico">🗂</span>All Credentials</div>
+      <div class="sb-item" onclick="showView('v-physical')"><span class="sb-item-ico">🖨</span>Physical Card</div>
+      <div class="sb-section">Finance</div>
+      <div class="sb-item" onclick="showView('v-banking')"><span class="sb-item-ico">🏦</span>Banking</div>
+      <div class="sb-item" onclick="showView('v-debit')"><span class="sb-item-ico">💳</span>Debit & Spend</div>
+      <div class="sb-item" onclick="showView('v-retirement')"><span class="sb-item-ico">📊</span>Retirement & 401k</div>
+      <div class="sb-item" onclick="showView('v-crypto')"><span class="sb-item-ico">₿</span>Crypto & Stable</div>
+      <div class="sb-section">Government</div>
+      <div class="sb-item" onclick="showView('v-govid')"><span class="sb-item-ico">🏛</span>Gov ID & SSA</div>
+      <div class="sb-item" onclick="showView('v-vehicle')"><span class="sb-item-ico">🚗</span>Vehicle & License</div>
+      <div class="sb-item" onclick="showView('v-clearance')"><span class="sb-item-ico">🔏</span>Clearance & Badge</div>
+      <div class="sb-section">Health & Insurance</div>
+      <div class="sb-item" onclick="showView('v-health')"><span class="sb-item-ico">🏥</span>Health Insurance</div>
+      <div class="sb-section">Recovery</div>
+      <div class="sb-item" onclick="showView('v-trust')"><span class="sb-item-ico">⚖️</span>Trust & POA</div>
+      <div class="sb-item" onclick="showView('v-vault')"><span class="sb-item-ico">🔐</span>Secure Vault</div>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- ── MY ALLCARD ── -->
+      <div id="v-card" class="view on">
+        <div class="view-title">My AllCard</div>
+        <div class="card-stage">
+          <!-- THE CARD -->
+          <div class="allcard" id="main-card" onclick="flipCard()">
+            <div class="card-mesh"></div>
+            <div class="card-holo"></div>
+            <div class="card-logo">1<span>.</span>nce</div>
+            <div class="card-zk">⬡ ZK-SOVEREIGN</div>
+            <div class="card-nfc"><div class="nfc-ring"></div><div class="nfc-ring"></div><div class="nfc-ring"></div></div>
+            <div class="card-chip"></div>
+            <div class="card-num" id="card-num">•••• •••• •••• ••••</div>
+            <div class="card-footer">
+              <div>
+                <div class="card-name" id="card-name">Alexandra Johnson</div>
+                <div class="card-mode" id="card-mode">ALLCARD · MULTI-RAIL</div>
+              </div>
+              <div>
+                <div class="card-expiry"><span class="card-expiry-lbl">VALID THRU</span><span id="card-exp">••/••</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- CARD SELECTOR -->
+          <div class="card-selector">
+            <div class="mini-card sel" onclick="setCardMode('identity',this)" title="Identity"><div class="mini-card-label">ID</div></div>
+            <div class="mini-card" onclick="setCardMode('debit',this)" title="Debit/Fiat"><div class="mini-card-label">DEBIT</div></div>
+            <div class="mini-card" onclick="setCardMode('crypto',this)" title="Crypto"><div class="mini-card-label">CRYPTO</div></div>
+            <div class="mini-card" onclick="setCardMode('health',this)" title="Health"><div class="mini-card-label">HEALTH</div></div>
+            <div class="mini-card" onclick="setCardMode('vehicle',this)" title="Vehicle"><div class="mini-card-label">VEHICLE</div></div>
+            <div class="mini-card" onclick="setCardMode('gov',this)" title="Government"><div class="mini-card-label">GOV</div></div>
+            <div class="mini-card" onclick="setCardMode('badge',this)" title="Badge/Clearance"><div class="mini-card-label">BADGE</div></div>
+            <div class="mini-card" onclick="setCardMode('retirement',this)" title="Retirement"><div class="mini-card-label">401K</div></div>
+          </div>
+          <div class="card-action-bar">
+            <button class="btn btn-ghost btn-sm" onclick="shiftCardNumber()">⟳ Shift number</button>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('scan-card')">📱 Scan to pay</button>
+            <button class="btn btn-ghost btn-sm" onclick="showView('v-physical')">🖨 Order physical</button>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('freeze-card')">🔒 Freeze card</button>
+          </div>
+        </div>
+
+        <!-- SHIFTING NUMBER EXPLAINER -->
+        <div class="card" style="margin-bottom:16px;">
+          <div class="cl">How shifting card numbers work</div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;">
+            <div>
+              <div style="font-size:.84rem;color:var(--soft);line-height:1.7;margin-bottom:10px;">Every transaction derives a fresh 16-digit card number from your master private key using deterministic derivation (BIP-44 HD path). The merchant never sees your real account — only the derived number. After use, it's burned. Your base key never changes.</div>
+              <div style="font-size:.74rem;color:var(--muted);font-family:'Space Mono',monospace;">masterKey → HMAC-SHA256(path:tx_nonce) → derived_card_number</div>
+            </div>
+            <div style="min-width:160px;">
+              <div class="shifting-num" id="shift-demo" style="font-size:.88rem;">4532 •••• •••• ••••</div>
+              <div style="font-size:.66rem;color:var(--muted);text-align:center;margin-top:5px;font-family:'Space Mono',monospace;">shifts per transaction</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK STATS -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div class="card" style="text-align:center;">
+            <div class="cl" style="margin-bottom:4px;">Net worth</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--gold);" id="nw">$284,391</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="cl" style="margin-bottom:4px;">Credentials</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--teal);">12</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="cl" style="margin-bottom:4px;">Identity score</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--grn);">98 / 100</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="cl" style="margin-bottom:4px;">Card shifts</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;" id="shift-count">247</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ALL CREDENTIALS ── -->
+      <div id="v-credentials" class="view">
+        <div class="view-title">All Credentials</div>
+        <div class="card" style="margin-bottom:18px;">
+          <div class="cl" style="margin-bottom:12px;">Credential vault — all items encrypted locally, ZK-attested on-chain</div>
+          <div class="cred-grid" id="cred-grid"></div>
+        </div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:12px;">Data architecture — where your data lives</div>
+          <div class="vault-layer l-device">
+            <div class="vl-title">🔐 On-device encrypted vault</div>
+            <div class="vl-desc">SSN · Bank account numbers · Card numbers · Biometrics · Health records · All PII · Private keys · Passwords</div>
+            <div class="vl-badge"><span class="badge b-gr">AES-256-GCM</span></div>
+          </div>
+          <div class="vault-layer l-zk">
+            <div class="vl-title">⬡ ZK proofs (transmitted only)</div>
+            <div class="vl-desc">Cryptographic proofs that you possess valid credentials — contain zero information about the credentials themselves. Used for verification at point-of-interaction.</div>
+            <div class="vl-badge"><span class="badge b-tl">Pedersen commitments</span></div>
+          </div>
+          <div class="vault-layer l-chain">
+            <div class="vl-title">⛓ On-chain (commitments only)</div>
+            <div class="vl-desc">Merkle root of your credential set · ZK identity commitment · Recovery guardian hashes · Trust/POA time-lock contracts · NFT attestation ID</div>
+            <div class="vl-badge"><span class="badge b-gd">Hash only</span></div>
+          </div>
+          <div class="vault-layer l-never">
+            <div class="vl-title">✕ Never stored anywhere external</div>
+            <div class="vl-desc">Your raw SSN, account numbers, medical records, biometric templates, private keys, and PAN (Primary Account Number) are never uploaded, never transmitted, never held by any server.</div>
+            <div class="vl-badge"><span class="badge b-rd">Zero-knowledge</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PHYSICAL CARD ── -->
+      <div id="v-physical" class="view">
+        <div class="view-title">Order Physical Card</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+          <div>
+            <div class="card" style="margin-bottom:14px;background:rgba(212,168,83,.04);border-color:rgba(212,168,83,.2);">
+              <div class="cl" style="margin-bottom:8px;">⚠ Physical card — important</div>
+              <div style="font-size:.82rem;color:var(--soft);line-height:1.72;">The physical card <strong style="color:var(--wh);">contains no real numbers</strong>. It has a derived public identifier — a 16-digit number generated from your master key at time of issuance. This number shifts again the moment you use the card.<br><br>The base account number, SSN, and all private identifiers exist <strong style="color:var(--wh);">only in your encrypted vault</strong>. If the physical card is lost or stolen, there is nothing to steal. Cancel and re-issue in seconds.</div>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:12px;">Card customization</div>
+              <div class="fg"><label class="fl">Display name</label><input class="fi" id="phys-name" value="ALEXANDRA JOHNSON"></div>
+              <div class="fg"><label class="fl">Card material</label>
+                <select class="fi">
+                  <option>Metal — brushed titanium</option>
+                  <option>Metal — matte black</option>
+                  <option>Plastic — standard</option>
+                </select>
+              </div>
+              <div class="fg"><label class="fl">Credential modes to include</label>
+                <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px;">
+                  ${['Identity + Social Security','Debit (fiat + stable + crypto)','Health insurance','Vehicle registration + license','Government ID','Clearance/Badge access'].map(c=>`<label style="display:flex;align-items:center;gap:9px;font-size:.82rem;color:var(--soft);cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--gold);"> ${c}</label>`).join('')}
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:12px;background:var(--surf);border-radius:8px;font-size:.78rem;color:var(--muted);line-height:1.6;">Physical card ships within 5–7 business days. Card number shown is a derived public ID only — not your base account. Lost cards: cancel instantly via app, re-issue same day.</div>
+              <button class="btn btn-gold btn-full" style="margin-top:14px;" onclick="toast('Physical card order placed. Ships in 5-7 business days.','ok')">Order physical card — $9.99</button>
+            </div>
+          </div>
+          <div>
+            <div style="padding:24px;background:var(--surf);border:1px solid var(--line);border-radius:14px;text-align:center;margin-bottom:14px;">
+              <div class="cl" style="margin-bottom:16px;">Preview (not actual numbers)</div>
+              <div class="physical-card-preview">
+                <div style="font-size:1.1rem;font-weight:800;color:var(--gold);margin-bottom:8px;">1<span style="opacity:.3;">.</span>nce</div>
+                <div class="pcp-name" id="phys-preview-name">ALEXANDRA JOHNSON</div>
+                <div class="pcp-id" id="phys-preview-id">•••• •••• •••• ••••</div>
+                <div class="pcp-note">PUBLIC DERIVED ID ONLY · NOT BASE ACCOUNT</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:10px;">Security model</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                ${[
+                  ['Base account number','Only in encrypted vault on device','grn'],
+                  ['SSN / Tax ID','Never on card — ZK proof only','grn'],
+                  ['Card PAN','Derived public ID, shifts per use','tl'],
+                  ['If card is stolen','Zero real data exposed','gr'],
+                  ['Card cancel','Instant app-based revocation','gd'],
+                ].map(([l,v,c])=>`<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:9px 12px;background:var(--surf);border-radius:6px;gap:10px;"><span style="font-size:.78rem;color:var(--soft);">${l}</span><span class="badge b-${c}" style="font-size:.62rem;flex-shrink:0;">${v}</span></div>`).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BANKING ── -->
+      <div id="v-banking" class="view">
+        <div class="view-title">Banking & Accounts</div>
+        <div style="background:var(--g2);border:1px solid rgba(52,211,153,.15);border-radius:10px;padding:13px 16px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.1rem;">🔐</span>
+          <div style="font-size:.82rem;color:var(--grn);line-height:1.6;">Account numbers are encrypted in your local vault. You're viewing authenticated data via ZK proof — numbers below are revealed only after biometric confirmation and exist only in your session memory.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="card">
+            <div class="cl">Chase Checking</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--wh);margin:8px 0;">$12,440.22</div>
+            <div class="vault-field"><div class="vf-label">Account number</div><div class="vf-value redacted" id="chase-acct">000000000001234</div><button class="vf-reveal" onclick="revealField('chase-acct',this)">🔓 Reveal</button></div>
+            <div class="vault-field"><div class="vf-label">Routing number</div><div class="vf-value redacted" id="chase-rt">021000021</div><button class="vf-reveal" onclick="revealField('chase-rt',this)">🔓 Reveal</button></div>
+            <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-outline btn-sm" style="flex:1;" onclick="openModal('send-money')">Send</button><button class="btn btn-ghost btn-sm" style="flex:1;">Deposit</button></div>
+          </div>
+          <div class="card">
+            <div class="cl">Ally Savings · 4.50% APY</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--wh);margin:8px 0;">$42,650.80</div>
+            <div class="vault-field"><div class="vf-label">Account number</div><div class="vf-value redacted" id="ally-acct">000000004420001</div><button class="vf-reveal" onclick="revealField('ally-acct',this)">🔓 Reveal</button></div>
+            <div class="vault-field"><div class="vf-label">Routing number</div><div class="vf-value redacted" id="ally-rt">124003116</div><button class="vf-reveal" onclick="revealField('ally-rt',this)">🔓 Reveal</button></div>
+            <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn btn-outline btn-sm" style="flex:1;">Transfer</button><button class="btn btn-ghost btn-sm" style="flex:1;">History</button></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:10px;">Card vault — all derived, none real</div>
+          <div style="font-size:.82rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">Your AllCard derives a fresh virtual card number for each use. Your real Visa/MC PAN is encrypted in vault. Below are the current derived identifiers — they shift after each transaction.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;" id="virtual-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── DEBIT ── -->
+      <div id="v-debit" class="view">
+        <div class="view-title">Debit & Spend</div>
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start;">
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="cl" style="margin-bottom:10px;">Rail selector — choose how to pay</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                ${[['🏦','Fiat (USD)','Chase checking'],['🔵','USDC stablecoin','Coinbase · 1:1 USD'],['🪙','LTN token','Native AllCard token'],['₿','Bitcoin','Segwit wallet'],['Ξ','Ethereum','EVM wallet'],['⊕','Auto-best','AI selects cheapest rail']].map(([ic,nm,ds])=>`<div style="background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .2s;" onclick="selectRail(this)" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'"><div style="font-size:1.3rem;margin-bottom:5px;">${ic}</div><div style="font-size:.77rem;font-weight:700;">${nm}</div><div style="font-size:.65rem;color:var(--muted);margin-top:1px;">${ds}</div></div>`).join('')}
+              </div>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:8px;">Recent spend</div>
+              <div id="spend-list"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:13px;">
+              <div class="cl" style="margin-bottom:10px;">Quick send</div>
+              <div style="font-family:'Space Mono',monospace;font-size:2.4rem;font-weight:700;text-align:center;color:var(--wh);margin:14px 0 4px;">$<span id="send-amt">0</span></div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0;">
+                ${['1','2','3','4','5','6','7','8','9','⌫','0','✓'].map(k=>`<div style="background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:11px;text-align:center;cursor:pointer;font-size:1rem;transition:all .15s;" onclick="numKey('${k}')" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--line)'">${k}</div>`).join('')}
+              </div>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:8px;">Balances</div>
+              <div style="display:flex;flex-direction:column;gap:7px;" id="balances-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── RETIREMENT ── -->
+      <div id="v-retirement" class="view">
+        <div class="view-title">Retirement & Benefits</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          ${[['Fidelity 401(k)','$184,200.42','Through ADP payroll · 4% employer match','tl'],['Roth IRA','$22,400.00','Fidelity · Max contributed 2024','gd'],['Social Security','$2,140/mo est.','At full retirement age 67 · SSA verified','gr'],['Government Benefits','$0 current','Eligible: FHA loan · Benefits.gov checked','mu']].map(([nm,val,sub,c])=>`<div class="card"><div class="cl">${nm}</div><div style="font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;margin:6px 0;">${val}</div><div style="font-size:.76rem;color:var(--soft);">${sub}</div><div style="margin-top:10px;"><span class="badge b-${c}" style="font-size:.63rem;">Active</span></div></div>`).join('')}
+        </div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:12px;">Benefit cards — tap to activate on AllCard</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${[['📊','401(k) access card','Use AllCard to authorize employer contributions and distributions. No account number transmitted.'],['🏥','Medicare card','When eligible — age 65. AllCard becomes your Medicare ID. Claims filed via ZK proof of enrollment.'],['🎖','Social Security','AllCard contains your SSA benefit credential. Replaces paper SS card. Access via biometric only.'],['🍎','EBT / SNAP','If applicable, AllCard operates as your EBT card. Balance updated in real-time from government feed.']].map(([ic,nm,ds])=>`<div style="display:flex;align-items:flex-start;gap:12px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:13px;"><span style="font-size:1.2rem;">${ic}</span><div style="flex:1;"><div style="font-size:.86rem;font-weight:600;margin-bottom:2px;">${nm}</div><div style="font-size:.75rem;color:var(--soft);line-height:1.55;">${ds}</div></div><button class="btn btn-ghost btn-sm" onclick="toast('${nm} activated on AllCard','ok')">Activate</button></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GOVERNMENT ID ── -->
+      <div id="v-govid" class="view">
+        <div class="view-title">Government ID & Social Security</div>
+        <div style="background:var(--r2);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:13px 16px;margin-bottom:18px;font-size:.82rem;color:var(--red);line-height:1.65;">⚠ The fields below are revealed only after biometric confirmation. SSN and government IDs are stored exclusively in your AES-256 encrypted device vault. A ZK proof of validity is used in all government interactions — the raw number is never transmitted.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="card">
+            <div class="cl">Social Security</div>
+            <div class="vault-field"><div class="vf-label">Social Security Number</div><div class="vf-value redacted" id="ssn-val">•••-••-••••</div><button class="vf-reveal" onclick="confirmReveal('ssn-val',this,'SSN')">🔐 Confirm identity to reveal</button></div>
+            <div style="margin-top:12px;"><div style="font-size:.78rem;color:var(--soft);margin-bottom:8px;line-height:1.6;">Your SSN is referenced via ZK proof when used for tax filings, employment, or credit checks. The number itself is transmitted to no one.</div><button class="btn btn-outline btn-sm" onclick="toast('Opening SS benefits portal...','info')">SS Benefits →</button></div>
+          </div>
+          <div class="card">
+            <div class="cl">Driver's License</div>
+            <div class="vault-field"><div class="vf-label">License number</div><div class="vf-value redacted" id="dl-val">CA-X0000000</div><button class="vf-reveal" onclick="confirmReveal('dl-val',this,'License #')">🔐 Reveal</button></div>
+            <div class="vault-field" style="margin-top:8px;"><div class="vf-label">Expiry</div><div class="vf-value">December 2025</div></div>
+            <button class="btn btn-teal btn-sm" style="margin-top:10px;" onclick="toast('Generating ZK license proof for digital wallet...','ok')">Add to digital wallet</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:12px;">Government credential cards</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;" id="gov-creds"></div>
+        </div>
+      </div>
+
+      <!-- ── VEHICLE ── -->
+      <div id="v-vehicle" class="view">
+        <div class="view-title">Vehicle · Registration · Insurance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="card">
+            <div class="cl">2022 Tesla Model 3</div>
+            <div style="font-size:3.5rem;text-align:center;padding:12px 0;">🚗</div>
+            <div class="vault-field"><div class="vf-label">VIN</div><div class="vf-value redacted" id="vin-vault">5YJ3E1EA4RF000000</div><button class="vf-reveal" onclick="confirmReveal('vin-vault',this,'VIN')">🔐 Reveal</button></div>
+            <div class="vault-field" style="margin-top:8px;"><div class="vf-label">Registration</div><div class="vf-value">CA · Valid through Jul 2025</div></div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="toast('Renewing registration via CA DMV API...','info')">Renew</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('VIN decode from NHTSA...','info')">NHTSA check</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="cl">State Farm Auto Insurance</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--grn);margin:8px 0;">Active · $142/mo</div>
+            <div class="vault-field"><div class="vf-label">Policy number</div><div class="vf-value redacted" id="ins-pol">SF-8821-99-A</div><button class="vf-reveal" onclick="confirmReveal('ins-pol',this,'Policy #')">🔐 Reveal</button></div>
+            <div class="vault-field" style="margin-top:8px;"><div class="vf-label">Coverage</div><div class="vf-value">100/300/100 · Comp/Coll</div></div>
+            <div style="display:flex;gap:8px;margin-top:12px;">
+              <button class="btn btn-outline btn-sm" onclick="openModal('file-claim')">File claim</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Generating ID card...','info')">ID card</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:10px;">AllCard tap — what gets shared when you show your card for vehicle ID</div>
+          <div style="font-size:.82rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">When a law enforcement officer or DMV official scans your AllCard, they receive a ZK proof confirming: <strong style="color:var(--wh);">registration is valid · insurance is current · license is active · no outstanding warrants (if access cleared)</strong>. The underlying numbers stay encrypted on your device.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-teal btn-sm" onclick="toast('Traffic stop mode enabled — showing ZK proof to officer','ok')">🚦 Traffic stop mode</button>
+            <button class="btn btn-ghost btn-sm" onclick="toast('Generating roadside digital ID...','info')">Digital roadside ID</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CLEARANCE ── -->
+      <div id="v-clearance" class="view">
+        <div class="view-title">Clearance · Badge · Law Enforcement</div>
+        <div style="background:var(--b2);border:1px solid rgba(96,165,250,.2);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+          <div style="font-size:.88rem;color:var(--blue);font-weight:600;margin-bottom:4px;">Government & Law Enforcement Access Protocol</div>
+          <div style="font-size:.8rem;color:var(--soft);line-height:1.7;">AllCard supports digital badge credentials for government officials, law enforcement, and security-cleared individuals. Access is tiered by clearance level and confirmed via biometric each use. The clearance level itself is a ZK commitment — scanning the card produces proof of clearance without revealing the clearance designation to unauthorized readers.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="card">
+            <div class="cl" style="margin-bottom:12px;">Active credentials</div>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              ${[['🏛','Citizen ID','General public identity · replaces state ID'],['🚔','Law Enforcement Badge','Officer credentials · biometric-locked'],['🔏','Security Clearance','Level access · ZK-proofed on scan'],['🏥','Medical Professional','License + NPI · FHIR authenticated']].map(([ic,nm,ds])=>`<div style="display:flex;align-items:center;gap:11px;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;"><span style="font-size:1.2rem;">${ic}</span><div style="flex:1;"><div style="font-size:.85rem;font-weight:600;">${nm}</div><div style="font-size:.72rem;color:var(--muted);margin-top:1px;">${ds}</div></div><span class="badge b-bl" style="font-size:.62rem;">On card</span></div>`).join('')}
+            </div>
+          </div>
+          <div class="card">
+            <div class="cl" style="margin-bottom:12px;">Access control · tap-to-verify</div>
+            <div style="font-size:.82rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">Each access event requires biometric confirmation. The reader receives only what it's authorized to see — based on its registered access level. A door reader confirms "this person has building access." A federal terminal confirms clearance level. Nothing more.</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-teal" onclick="toast('Badge tap simulated — access granted via ZK proof','ok')">Simulate badge tap →</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Opening access log...','info')">View access log</button>
+              <button class="btn btn-ghost btn-sm" onclick="openModal('request-clearance')">Request clearance upgrade</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HEALTH ── -->
+      <div id="v-health" class="view">
+        <div class="view-title">Health Insurance Card</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+          <div class="card">
+            <div class="cl">BlueCross BlueShield PPO Gold</div>
+            <div style="font-family:'Space Mono',monospace;font-size:1.1rem;color:var(--grn);margin:6px 0 12px;">Active · $380/mo</div>
+            <div class="vault-field"><div class="vf-label">Member ID</div><div class="vf-value redacted" id="bcbs-id">XYZ000000000</div><button class="vf-reveal" onclick="confirmReveal('bcbs-id',this,'Member ID')">🔐 Reveal</button></div>
+            <div class="vault-field" style="margin-top:8px;"><div class="vf-label">Group number</div><div class="vf-value redacted" id="bcbs-grp">GRP12345678</div><button class="vf-reveal" onclick="confirmReveal('bcbs-grp',this,'Group #')">🔐 Reveal</button></div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+              <button class="btn btn-outline btn-sm" onclick="openModal('file-claim')">File claim</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Deductible tracker loaded...','info')">Deductible</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="cl">How the health card works</div>
+            <div style="font-size:.82rem;color:var(--soft);line-height:1.75;margin-bottom:10px;">When you tap your AllCard at a provider's reader, it produces a ZK proof that you have active coverage under the correct group plan. The provider's system confirms eligibility in real time via BCBS API — your member ID is sent only to the insurer, never stored by the provider.</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-teal btn-sm" onclick="toast('Health card mode activated — tap to share with provider','ok')">🏥 Provider tap mode</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Pulling BCBS coverage details...','info')">Coverage summary</button>
+              <button class="btn btn-ghost btn-sm" onclick="toast('Loading EOBs...','info')">View EOBs</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TRUST & POA ── -->
+      <div id="v-trust" class="view">
+        <div class="view-title">Trust & Power of Attorney</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="cl" style="margin-bottom:12px;">Recovery guardians (3-of-5 multi-sig)</div>
+              <div id="guardians-list"></div>
+              <button class="btn btn-ghost btn-sm" style="margin-top:10px;width:100%;" onclick="toast('Adding guardian — they receive encrypted key shard','info')">+ Add guardian</button>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:12px;">Power of Attorney</div>
+              <div style="font-size:.82rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">Grant an attorney or designee scoped access to specific credential categories. Access is time-locked and requires court order or pre-signed on-chain authorization document.</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                ${[['Financial accounts','Grant / Revoke'],['Health records','Grant / Revoke'],['Government IDs','Grant / Revoke'],['Vehicle records','Grant / Revoke']].map(([scope,action])=>`<div style="display:flex;align-items:center;justify-content:space-between;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;"><span style="font-size:.82rem;">${scope}</span><div style="display:flex;gap:6px;"><button class="btn btn-teal btn-sm" style="font-size:.7rem;padding:5px 10px;" onclick="toast('${scope} access granted to POA','ok')">Grant</button><button class="btn btn-red btn-sm" style="font-size:.7rem;padding:5px 10px;" onclick="toast('${scope} access revoked','ok')">Revoke</button></div></div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="cl" style="margin-bottom:12px;">Revocable trust configuration</div>
+              <div style="font-size:.82rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">Grant beneficiaries access to specific credential scopes after a triggering event (death, incapacity). Access unlocks after multi-sig confirmation from guardians + time delay.</div>
+              <div class="fg"><label class="fl">Triggering condition</label><select class="fi"><option>Death certificate on file</option><option>Medical incapacity (doctor sign-off)</option><option>After date: — specify</option><option>Multi-sig guardian vote (3-of-5)</option></select></div>
+              <div class="fg"><label class="fl">Unlock delay after trigger</label><select class="fi"><option>72 hours</option><option>7 days</option><option>30 days</option><option>Immediate</option></select></div>
+              <button class="btn btn-gold btn-full" style="margin-top:14px;" onclick="toast('Trust configuration saved on-chain (hash only)','ok')">Save trust configuration →</button>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:10px;">Recovery model</div>
+              <div style="font-size:.82rem;color:var(--soft);line-height:1.75;">Your encrypted vault is split into 5 key shards via Shamir's Secret Sharing. Any 3 guardians combining their shards can reconstitute the decryption key. No single guardian can access your data alone. Shards are stored encrypted on each guardian's device — never a server.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VAULT ── -->
+      <div id="v-vault" class="view">
+        <div class="view-title">Secure Vault</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+          <div>
+            <div class="card" style="margin-bottom:14px;background:rgba(52,211,153,.04);border-color:rgba(52,211,153,.15);">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;"><div style="font-size:2rem;">🔐</div><div><div style="font-size:1.1rem;font-weight:800;">Vault: Locked</div><div style="font-size:.76rem;color:var(--grn);margin-top:2px;">AES-256-GCM · Biometric key · Device-only</div></div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:14px 0;">
+                <div class="verify-ring">
+                  <svg class="vr-svg" viewBox="0 0 120 120"><circle class="vr-track" cx="60" cy="60" r="54"/><circle class="vr-fill" id="vault-ring" cx="60" cy="60" r="54" style="stroke-dashoffset:340;stroke:var(--grn);"/></svg>
+                  <div class="vr-inner"><div class="vr-pct" id="vault-pct" style="color:var(--grn);">0%</div><div class="vr-lbl">Verifying</div></div>
+                </div>
+                <div style="font-size:.78rem;color:var(--soft);text-align:center;">Biometric required to access vault contents.</div>
+              </div>
+              <button class="btn btn-gold btn-full" onclick="unlockVault()">🔓 Unlock with biometric</button>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:12px;">Vault contents</div>
+              <div id="vault-contents" style="display:flex;flex-direction:column;gap:8px;">
+                ${['SSN · Tax ID','Bank account numbers','Card PANs + CVVs','Driver\'s license number','Vehicle VINs','Insurance policy numbers','Health insurance member IDs','Private keys (crypto wallets)','Biometric templates','Government clearance credentials'].map(item=>`<div style="display:flex;align-items:center;justify-content:space-between;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:9px 12px;"><span style="font-size:.8rem;color:var(--soft);">${item}</span><span style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);">••••••••</span></div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="cl" style="margin-bottom:10px;">Encryption status</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                ${[['Encryption algorithm','AES-256-GCM'],['Key derivation','PBKDF2 + biometric seed'],['Key storage','Secure Enclave (T2/SE) only'],['IV rotation','Per-write, random 96-bit'],['Chain commitment','Pedersen hash, no data'],['Recovery mechanism',"Shamir 3-of-5 SSS"],['Physical card data','Derived ID only, never base'],['Transmission','ZK proofs only, never raw']].map(([l,v])=>`<div style="display:flex;justify-content:space-between;padding:8px 12px;background:var(--surf);border-radius:6px;font-size:.78rem;"><span style="color:var(--soft);">${l}</span><span style="font-family:'Space Mono',monospace;color:var(--wh);font-size:.7rem;">${v}</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="card">
+              <div class="cl" style="margin-bottom:8px;">Vault audit log (last 5 accesses)</div>
+              <div style="display:flex;flex-direction:column;gap:7px;" id="audit-log"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CRYPTO ── -->
+      <div id="v-crypto" class="view">
+        <div class="view-title">Crypto & Stablecoin</div>
+        <div class="card" style="margin-bottom:14px;background:rgba(212,168,83,.04);border-color:rgba(212,168,83,.15);">
+          <div class="cl" style="margin-bottom:8px;">Wallet security model</div>
+          <div style="font-size:.82rem;color:var(--soft);line-height:1.72;">Your private keys are derived from your biometric master key and stored exclusively in your device's secure enclave. The AllCard's crypto rail uses stealth addresses — each receive operation generates a fresh one-time address so your full on-chain history cannot be traced back to a single identity.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;" id="crypto-balances"></div>
+        <div class="card">
+          <div class="cl" style="margin-bottom:10px;">Wallet addresses — stealth derived</div>
+          <div style="font-size:.8rem;color:var(--soft);margin-bottom:12px;line-height:1.65;">Each receive generates a fresh stealth address from your viewing key. Senders can't link your addresses. Only you (with your master key) can scan the chain to find all incoming funds.</div>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            ${[['ETH','0x7f3a...9c2b','Stealth · rotates per receive'],['BTC','bc1q7f...3x9k','HD wallet · m/84\'/0\'/0\'/0/247'],['USDC','0x7f3a...9c2b','Same stealth ETH address'],['LTN','0x4e2c...7a1f','Living Token · AllCard native']].map(([sym,addr,note])=>`<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surf);border:1px solid var(--line);border-radius:8px;"><div style="font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;min-width:40px;color:var(--gold);">${sym}</div><div style="flex:1;"><div style="font-family:'Space Mono',monospace;font-size:.76rem;">${addr}</div><div style="font-size:.67rem;color:var(--muted);margin-top:1px;">${note}</div></div><button class="btn btn-ghost btn-sm" style="font-size:.7rem;" onclick="toast('Address copied','ok')">Copy</button></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="ov" id="ov" onclick="closeModal(event)">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div class="mhdr"><div class="mt" id="mt"></div><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mbody" id="mb"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="tst"><span id="tico"></span><span id="tmsg"></span><span style="margin-left:auto;cursor:pointer;color:var(--muted);" onclick="this.parentElement.classList.remove('show','ok','err','info')">✕</span></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const S = {
+  name:'Alexandra Johnson', cardMode:'identity', cardNum:'', shiftCount:247,
+  sendAmt:'', unlocked:false,
+  vaultPin:'', biometricBound:false,
+};
+
+// ═══════════════════════════════════════════════
+// CARD NUMBER SYSTEM (shifting)
+// ═══════════════════════════════════════════════
+const CARD_MODES = {
+  identity: {label:'ALLCARD · IDENTITY',  color:'#d4a853', prefix:'4532'},
+  debit:    {label:'ALLCARD · DEBIT',     color:'#2dd4bf', prefix:'5412'},
+  crypto:   {label:'ALLCARD · CRYPTO',    color:'#a78bfa', prefix:'4111'},
+  health:   {label:'ALLCARD · HEALTH',    color:'#34d399', prefix:'3714'},
+  vehicle:  {label:'ALLCARD · VEHICLE',   color:'#60a5fa', prefix:'6011'},
+  gov:      {label:'ALLCARD · GOVERNMENT',color:'#d4a853', prefix:'3782'},
+  badge:    {label:'ALLCARD · BADGE',     color:'#f87171', prefix:'5105'},
+  retirement:{label:'ALLCARD · BENEFITS', color:'#fb923c', prefix:'4000'},
+};
+
+function deriveCardNumber(mode, nonce) {
+  // Simulated HD derivation — in production: HMAC-SHA256(masterKey, mode+nonce)
+  const prefix = CARD_MODES[mode]?.prefix || '4532';
+  const r = () => Math.floor(Math.random() * 10);
+  return `${prefix} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()}`;
+}
+
+function deriveExpiry() {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 4);
+  return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getFullYear()).slice(-2)}`;
+}
+
+function setCardMode(mode, el) {
+  S.cardMode = mode;
+  document.querySelectorAll('.mini-card').forEach(c => c.classList.remove('sel'));
+  if (el) el.classList.add('sel');
+  const cfg = CARD_MODES[mode];
+  const num = deriveCardNumber(mode, S.shiftCount);
+  S.cardNum = num;
+  setEl('card-num', num);
+  setEl('card-mode', cfg.label);
+  setEl('card-exp', deriveExpiry());
+  // Flash animation
+  const card = document.getElementById('main-card');
+  if (card) { card.style.borderColor = cfg.color; setTimeout(()=>card.style.borderColor='rgba(212,168,83,.3)',800); }
+}
+
+function shiftCardNumber() {
+  S.shiftCount++;
+  setEl('shift-count', S.shiftCount);
+  setCardMode(S.cardMode, null);
+  // Animate shift demo
+  const el = document.getElementById('shift-demo');
+  if (el) {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = deriveCardNumber(S.cardMode, S.shiftCount).replace(/ \d{4}$/, ' ••••');
+      el.style.opacity = '1';
+      el.style.transition = 'opacity .3s';
+    }, 200);
+  }
+  toast('Card number shifted — previous number burned', 'ok');
+}
+
+function flipCard() {
+  const card = document.getElementById('main-card');
+  if (card) {
+    card.style.transform = 'rotateY(10deg) scale(0.98)';
+    setTimeout(() => card.style.transform = '', 300);
+  }
+  shiftCardNumber();
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function go(id) {
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('on');
+  if (id === 'dash') initDash();
+  if (id === 'onb')  { showOStep(1); }
+  window.scrollTo(0,0);
+}
+
+function demoGo() {
+  S.name = 'Alexandra Johnson';
+  go('dash');
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  const el = document.getElementById(id); if (el) el.classList.add('on');
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+}
+
+function setEl(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
+
+// ═══════════════════════════════════════════════
+// ONBOARDING
+// ═══════════════════════════════════════════════
+function showOStep(n) {
+  [1,2,3,4,5].forEach(i => {
+    const e = document.getElementById('os'+i); if(e) e.style.display = i===n?'block':'none';
+    const p = document.getElementById('p'+i); if(p) { p.classList.toggle('on',i===n); p.classList.toggle('done',i<n); }
+  });
+}
+
+function onbGo(n) {
+  if (n===2) { S.name = document.getElementById('n-name')?.value || S.name; }
+  if (n===5) { showOStep(5); startIssuing(); return; }
+  showOStep(n);
+}
+
+function runBio() {
+  const st = document.getElementById('bio-status');
+  const ring = document.getElementById('bio-ring');
+  const pct = document.getElementById('bio-pct');
+  if (!st) return;
+  st.textContent = 'Reading biometric...'; st.style.color = 'var(--gold)';
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress = Math.min(progress + Math.random() * 8, 100);
+    const offset = 340 - (340 * progress / 100);
+    if (ring) ring.style.strokeDashoffset = offset;
+    if (pct) pct.textContent = Math.floor(progress) + '%';
+    if (progress >= 100) {
+      clearInterval(interval);
+      if (st) { st.textContent = '✓ Master key derived from biometric'; st.style.color = 'var(--grn)'; }
+      document.getElementById('bio-ok').style.display = 'block';
+      S.biometricBound = true;
+      toast('Biometric master key bound. Stays on device.', 'ok');
+    }
+  }, 60);
+}
+
+function startIssuing() {
+  const el = document.getElementById('issue-steps');
+  if (!el) return;
+  const steps = [
+    'Encrypting identity fields with biometric key...',
+    'Generating ZK commitment for identity proof...',
+    'Deriving initial AllCard PAN from master key...',
+    'Publishing identity commitment to chain (no data)...',
+    'Configuring recovery guardian shards...',
+    'Issuing credential NFT attestation...',
+    'AllCard ready.',
+  ];
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      el.innerHTML += `<div class="step-row step-${i<steps.length-1?'active':'done'}" style="animation:popIn .3s ease;"><div class="step-num">${i<steps.length-1?i+1:'✓'}</div><div><div class="step-title">${s.replace('...','')}</div></div></div>`;
+      if (i === steps.length-1) setTimeout(() => document.getElementById('issue-cta').style.display = 'block', 300);
+    }, i * 700 + 200);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD INIT
+// ═══════════════════════════════════════════════
+function initDash() {
+  setEl('sb-name', S.name);
+  setEl('card-name', S.name.toUpperCase());
+  setEl('card-exp', deriveExpiry());
+  setCardMode('identity', document.querySelector('.mini-card'));
+
+  renderCredentials();
+  renderGuardians();
+  renderVirtualCards();
+  renderSpendList();
+  renderBalances();
+  renderCryptoBalances();
+  renderGovCreds();
+  renderAuditLog();
+
+  // Shift demo ticker
+  setInterval(() => {
+    const el = document.getElementById('shift-demo');
+    if (el && document.getElementById('v-card')?.classList.contains('on')) {
+      el.style.opacity = '0';
+      setTimeout(() => {
+        el.textContent = deriveCardNumber(S.cardMode, Date.now()).replace(/ \d{4}$/, ' ••••');
+        el.style.opacity = '1';
+      }, 200);
+    }
+  }, 5000);
+}
+
+// ═══════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════
+function renderCredentials() {
+  const el = document.getElementById('cred-grid'); if (!el) return;
+  const creds = [
+    {ico:'🪪',nm:'Govt ID',type:'AllCard',active:true},
+    {ico:'🔑',nm:'SSN',type:'Encrypted',active:true},
+    {ico:'🏦',nm:'Banking',type:'Plaid linked',active:true},
+    {ico:'💳',nm:'Debit',type:'Virtual shifting',active:true},
+    {ico:'📊',nm:'401(k)',type:'Fidelity',active:true},
+    {ico:'₿',nm:'Crypto',type:'Stealth wallet',active:true},
+    {ico:'🏥',nm:'Health Ins',type:'BCBS PPO',active:true},
+    {ico:'🚗',nm:'Vehicle',type:'Tesla M3',active:true},
+    {ico:'🪪',nm:"Driver's Lic",type:'CA valid',active:true},
+    {ico:'🔏',nm:'Clearance',type:'Active',active:true},
+    {ico:'🎖',nm:'SSA Benefits',type:'On record',active:true},
+    {ico:'⚖️',nm:'Trust/POA',type:'Configured',active:true},
+  ];
+  el.innerHTML = creds.map(c => `
+    <div class="cred-card ${c.active?'active':''}" onclick="toast('${c.nm} credential active — ZK proof ready','ok')">
+      <div class="cred-ico">${c.ico}</div>
+      <div class="cred-name">${c.nm}</div>
+      <div class="cred-type">${c.type}</div>
+      ${c.active?'<div style="margin-top:6px;"><span class="badge b-gr" style="font-size:.58rem;">Active</span></div>':''}
+    </div>`).join('');
+}
+
+function renderGuardians() {
+  const el = document.getElementById('guardians-list'); if (!el) return;
+  const guardians = [
+    {name:'Robert Johnson',role:'Father · Family',color:'#d4a853',initials:'RJ'},
+    {name:'Sarah Johnson',role:'Sister · Family',color:'#34d399',initials:'SJ'},
+    {name:'Michael Chen, Esq.',role:'Attorney · Legal',color:'#60a5fa',initials:'MC'},
+  ];
+  el.innerHTML = guardians.map(g => `
+    <div class="trust-member">
+      <div class="tm-av" style="background:${g.color};">${g.initials}</div>
+      <div style="flex:1;"><div class="tm-name">${g.name}</div><div class="tm-role">${g.role}</div></div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;"><span class="badge b-gr" style="font-size:.6rem;">Shard held</span><button class="btn btn-ghost btn-sm" style="font-size:.67rem;padding:4px 9px;" onclick="toast('Revoking guardian access...','info')">Revoke</button></div>
+    </div>`).join('') +
+    `<div style="font-size:.75rem;color:var(--muted);padding:8px;text-align:center;font-family:'Space Mono',monospace;">2 more guardians needed · 3-of-5 requires 5 total</div>`;
+}
+
+function renderVirtualCards() {
+  const el = document.getElementById('virtual-cards'); if (!el) return;
+  const cards = [
+    {name:'AllCard Debit (Visa)',num:`4532 ···· ···· ${Math.floor(1000+Math.random()*9000)}`,rail:'Fiat · Chase',active:true},
+    {name:'AllCard Crypto (USDC)',num:`5412 ···· ···· ${Math.floor(1000+Math.random()*9000)}`,rail:'USDC stablecoin',active:true},
+    {name:'AllCard LTN',num:`4111 ···· ···· ${Math.floor(1000+Math.random()*9000)}`,rail:'Living Token · native',active:true},
+  ];
+  el.innerHTML = cards.map(c => `
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surf);border:1px solid var(--line);border-radius:8px;">
+      <div style="flex:1;"><div style="font-size:.84rem;font-weight:600;">${c.name}</div><div style="font-family:'Space Mono',monospace;font-size:.76rem;color:var(--gold);margin-top:2px;">${c.num}</div><div style="font-size:.67rem;color:var(--muted);margin-top:1px;">${c.rail}</div></div>
+      <button class="btn btn-ghost btn-sm" style="font-size:.7rem;" onclick="shiftCardNumber()">⟳ Shift</button>
+    </div>`).join('');
+}
+
+function renderSpendList() {
+  const el = document.getElementById('spend-list'); if (!el) return;
+  const txs = [
+    {ico:'🛒',t:'Whole Foods Market',a:'-$142.18',rail:'Fiat',d:'Today'},
+    {ico:'⛽',t:'Shell Gas',a:'-$67.40',rail:'USDC',d:'Yesterday'},
+    {ico:'🏥',t:'UCSF Pharmacy',a:'-$12.00',rail:'Health card',d:'Mar 14'},
+    {ico:'☕',t:'Blue Bottle Coffee',a:'-$7.25',rail:'LTN',d:'Mar 13'},
+  ];
+  el.innerHTML = txs.map(t => `
+    <div style="display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);">
+      <div style="width:34px;height:34px;border-radius:9px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:.9rem;">${t.ico}</div>
+      <div style="flex:1;"><div style="font-size:.84rem;">${t.t}</div><div style="font-size:.7rem;color:var(--muted);margin-top:1px;">${t.rail} · ${t.d}</div></div>
+      <div style="font-size:.84rem;color:var(--red);font-family:'Space Mono',monospace;">${t.a}</div>
+    </div>`).join('');
+}
+
+function renderBalances() {
+  const el = document.getElementById('balances-list'); if (!el) return;
+  const bals = [
+    {ico:'🏦',nm:'Checking',v:'$12,440',c:'wh'},
+    {ico:'🔵',nm:'USDC',v:'$2,000',c:'teal'},
+    {ico:'🟡',nm:'LTN',v:'$840',c:'gold'},
+    {ico:'₿',nm:'BTC',v:'$4,389',c:'orng','--orng':'#fb923c'},
+  ];
+  el.innerHTML = bals.map(b => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--surf);border-radius:6px;">
+      <div class="row" style="gap:8px;"><span>${b.ico}</span><span style="font-size:.82rem;">${b.nm}</span></div>
+      <span style="font-family:'Space Mono',monospace;font-size:.82rem;color:var(--${b.c==='orng'?'wh':b.c});">${b.v}</span>
+    </div>`).join('');
+}
+
+function renderCryptoBalances() {
+  const el = document.getElementById('crypto-balances'); if (!el) return;
+  const coins = [
+    {ico:'₿',nm:'Bitcoin',sym:'BTC',val:'$4,389.00',chg:'+0.58%',c:'#fb923c'},
+    {ico:'Ξ',nm:'Ethereum',sym:'ETH',val:'$2,366.11',chg:'-1.37%',c:'var(--blue)'},
+    {ico:'⬡',nm:'Living Token',sym:'LTN',val:'$840.00',chg:'native',c:'var(--gold)'},
+  ];
+  el.innerHTML = coins.map(c => `
+    <div class="card" style="text-align:center;">
+      <div style="font-size:1.8rem;margin-bottom:6px;color:${c.c};">${c.ico}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;">${c.sym}</div>
+      <div style="font-size:.72rem;color:var(--muted);">${c.nm}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:.88rem;margin:7px 0;">${c.val}</div>
+      <span class="badge b-${c.chg.startsWith('+')?'gr':c.chg==='native'?'gd':'rd'}" style="font-size:.6rem;">${c.chg}</span>
+    </div>`).join('');
+}
+
+function renderGovCreds() {
+  const el = document.getElementById('gov-creds'); if (!el) return;
+  const items = [
+    {ico:'🪪',nm:'State ID',ds:'CA REAL ID · ZK digital'},
+    {ico:'🗳️',nm:'Voter Reg',ds:'CA · Active · District 6'},
+    {ico:'🎖',nm:'Soc. Security',ds:'Benefit credential on AllCard'},
+    {ico:'🌐',nm:'Passport',ds:'US · #A12345 · exp 2026'},
+    {ico:'🏥',nm:'Medicare',ds:'Eligible at 65 · 2055'},
+    {ico:'📋',nm:'Birth Cert',ds:'Certified copy · SF, CA'},
+  ];
+  el.innerHTML = items.map(i => `
+    <div class="cred-card" onclick="toast('${i.nm} — ZK proof generated','ok')">
+      <div class="cred-ico">${i.ico}</div>
+      <div class="cred-name" style="font-size:.68rem;">${i.nm}</div>
+      <div class="cred-type">${i.ds}</div>
+      <div style="margin-top:5px;"><span class="badge b-gr" style="font-size:.58rem;">Active</span></div>
+    </div>`).join('');
+}
+
+function renderAuditLog() {
+  const el = document.getElementById('audit-log'); if (!el) return;
+  const logs = [
+    {action:'Vault unlocked',by:'Biometric · Face ID',when:'Today 9:14 AM'},
+    {action:'SSN accessed',by:'Biometric · confirmed',when:'Today 9:15 AM'},
+    {action:'Card number shifted',by:'User action',when:'Today 8:42 AM'},
+    {action:'Health card tap',by:'UCSF BCBS terminal',when:'Mar 14 2:00 PM'},
+    {action:'Badge tap',by:'Building access reader',when:'Mar 13 8:30 AM'},
+  ];
+  el.innerHTML = logs.map(l => `
+    <div style="padding:8px 11px;background:var(--surf);border-radius:6px;font-size:.76rem;">
+      <div style="font-weight:600;">${l.action}</div>
+      <div style="color:var(--muted);margin-top:1px;font-family:'Space Mono',monospace;font-size:.65rem;">${l.by} · ${l.when}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// VAULT / REVEAL
+// ═══════════════════════════════════════════════
+function revealField(id, btn) {
+  const el = document.getElementById(id); if (!el) return;
+  if (el.classList.contains('redacted')) {
+    el.classList.remove('redacted');
+    el.classList.add('revealed');
+    if (btn) { btn.textContent = '🔒 Hide'; }
+    // Auto-hide after 30s
+    setTimeout(() => {
+      el.classList.add('redacted');
+      el.classList.remove('revealed');
+      if (btn) { btn.textContent = '🔓 Reveal'; }
+    }, 30000);
+    toast('Field revealed — auto-hides in 30 seconds','info');
+  } else {
+    el.classList.add('redacted');
+    el.classList.remove('revealed');
+    if (btn) { btn.textContent = '🔓 Reveal'; }
+  }
+}
+
+function confirmReveal(id, btn, label) {
+  // In production: trigger biometric re-auth before revealing
+  showModal(`🔐 Confirm identity to reveal ${label}`, `
+    <div style="text-align:center;padding:14px 0;">
+      <div style="font-size:2rem;margin-bottom:12px;">🔐</div>
+      <div style="font-size:.88rem;font-weight:600;margin-bottom:8px;">Biometric confirmation required</div>
+      <div style="font-size:.8rem;color:var(--soft);line-height:1.7;margin-bottom:20px;">${label} is encrypted in your local vault. Confirm your identity to reveal for 30 seconds. This access is logged.</div>
+      <button class="btn btn-gold btn-full" onclick="closeModal();revealField('${id}',${btn?`document.querySelector('[onclick*=${id}]')`:'null'});toast('${label} revealed — auto-hides in 30s','info')">Confirm with biometric →</button>
+    </div>`);
+}
+
+let vaultUnlocking = false;
+function unlockVault() {
+  if (vaultUnlocking) return;
+  vaultUnlocking = true;
+  const ring = document.getElementById('vault-ring');
+  const pct = document.getElementById('vault-pct');
+  let p = 0;
+  const interval = setInterval(() => {
+    p = Math.min(p + Math.random() * 6, 100);
+    if (ring) ring.style.strokeDashoffset = 340 - (340 * p / 100);
+    if (pct) pct.textContent = Math.floor(p) + '%';
+    if (p >= 100) {
+      clearInterval(interval);
+      vaultUnlocking = false;
+      S.unlocked = true;
+      toast('Vault unlocked — closes in 60 seconds', 'ok');
+      setTimeout(() => { S.unlocked = false; toast('Vault auto-locked', 'info'); }, 60000);
+    }
+  }, 50);
+}
+
+function selectRail(el) {
+  document.querySelectorAll('#v-debit [onclick="selectRail(this)"]').forEach(e => {
+    e.style.borderColor = 'var(--line)'; e.style.background = 'var(--surf)';
+  });
+  el.style.borderColor = 'var(--gold)';
+  el.style.background = 'rgba(212,168,83,.06)';
+}
+
+let sendAmtStr = '';
+function numKey(k) {
+  if (k === '⌫') sendAmtStr = sendAmtStr.slice(0, -1) || '';
+  else if (k === '✓') {
+    if (!sendAmtStr || sendAmtStr === '0') { toast('Enter an amount', 'err'); return; }
+    closeModal();
+    openModal('send-money');
+    return;
+  } else sendAmtStr = sendAmtStr + k;
+  setEl('send-amt', sendAmtStr || '0');
+}
+
+// ═══════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════
+function openModal(key) {
+  const modals = {
+    'scan-card': {t:'📱 Scan to Pay', b:`
+      <div style="text-align:center;">
+        <div style="width:180px;height:180px;background:var(--wh);border-radius:12px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
+          <div style="font-size:.7rem;color:#000;font-family:'Space Mono',monospace;text-align:center;padding:12px;">QR code contains<br>one-time ZK proof.<br>Expires in 60s.</div>
+        </div>
+        <div style="font-size:.8rem;color:var(--soft);line-height:1.7;">This QR contains a time-limited ZK proof derived from your master key. Scanning it confirms your identity and triggers payment on the selected rail. It contains no personal data — only a cryptographic proof.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:10px;">Expires: 60 seconds · Single use · Biometric-bound</div>
+      </div>`},
+    'freeze-card': {t:'🔒 Freeze AllCard', b:`
+      <div style="text-align:center;padding:12px 0;">
+        <div style="font-size:2rem;margin-bottom:12px;">🔒</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:8px;">Freeze AllCard instantly</div>
+        <div style="font-size:.82rem;color:var(--soft);line-height:1.7;margin-bottom:20px;">Freezing prevents any new transactions on all rails. Existing scheduled payments are paused. Your encrypted data is unaffected. Unfreeze with biometric at any time.</div>
+        <div style="display:flex;gap:10px;"><button class="btn btn-ghost" style="flex:1;" onclick="closeModal()">Cancel</button><button class="btn btn-red" style="flex:1;" onclick="closeModal();toast('AllCard frozen — all rails suspended','ok')">Freeze now</button></div>
+      </div>`},
+    'send-money': {t:'💸 Send', b:`
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label class="fl">Recipient</label><input class="fi" placeholder="Name, wallet, or AllCard ID"></div>
+        <div><label class="fl">Amount</label><input class="fi" type="number" placeholder="$0.00" value="${sendAmtStr||''}"></div>
+        <div><label class="fl">Rail</label><select class="fi"><option>Fiat (instant via Plaid)</option><option>USDC stablecoin</option><option>LTN token</option><option>Auto-best rate</option></select></div>
+        <div style="background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.78rem;color:var(--soft);">Sender identity verified via ZK proof. Recipient sees transaction hash only — not your account number.</div>
+        <button class="btn btn-gold btn-full" onclick="closeModal();toast('Payment sent via ZK-verified transaction','ok')">Send →</button>
+      </div>`},
+    'file-claim': {t:'🛡️ File Insurance Claim', b:`
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><label class="fl">Policy</label><select class="fi"><option>Health — BCBS PPO Gold</option><option>Auto — State Farm SF-8821</option></select></div>
+        <div><label class="fl">Date of service</label><input class="fi" type="date"></div>
+        <div><label class="fl">Provider</label><input class="fi" placeholder="Provider name"></div>
+        <div><label class="fl">Amount</label><input class="fi" type="number" placeholder="$0.00"></div>
+        <div style="background:var(--g2);border:1px solid rgba(52,211,153,.15);border-radius:8px;padding:11px;font-size:.78rem;color:var(--grn);">✓ Identity pre-verified via AllCard ZK proof · Member ID confirmed</div>
+        <button class="btn btn-gold btn-full" onclick="closeModal();toast('Claim submitted — Claim #CLM-2025-'+Math.floor(10000+Math.random()*90000),'ok')">Submit claim →</button>
+      </div>`},
+    'request-clearance': {t:'🔏 Request Clearance Upgrade', b:`
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:var(--b2);border:1px solid rgba(96,165,250,.2);border-radius:8px;padding:12px;font-size:.82rem;color:var(--blue);">Clearance upgrades require verification by your sponsoring agency. Your AllCard identity commitment is used as the identity anchor — no additional documents needed.</div>
+        <div><label class="fl">Requesting agency / organization</label><input class="fi" placeholder="Agency name"></div>
+        <div><label class="fl">Clearance level requested</label><select class="fi"><option>Confidential</option><option>Secret</option><option>Top Secret</option><option>TS/SCI</option></select></div>
+        <button class="btn btn-gold btn-full" onclick="closeModal();toast('Clearance request submitted — agency will contact you','info')">Submit request →</button>
+      </div>`},
+    'settings': {t:'⚙ Account Settings', b:`
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${[['Biometric re-enrollment','Update face ID or hardware key'],['Recovery guardians','Manage 3-of-5 recovery members'],['Trust configuration','Edit POA and beneficiary access'],['Card number shift rate','Auto-shift every: 1 transaction'],['Data export','Download encrypted vault backup'],['Revoke & reset','Factory reset AllCard identity']].map(([t,d])=>`<div style="display:flex;align-items:flex-start;justify-content:space-between;background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;gap:10px;"><div><div style="font-size:.85rem;font-weight:600;">${t}</div><div style="font-size:.73rem;color:var(--muted);margin-top:1px;">${d}</div></div><button class="btn btn-ghost btn-sm" style="flex-shrink:0;font-size:.72rem;" onclick="toast('Opening ${t}...','info')">Manage</button></div>`).join('')}
+      </div>`},
+  };
+  const mc = modals[key];
+  if (mc) { showModal(mc.t, mc.b); }
+  else toast('Opening ' + key + '...', 'info');
+}
+
+function showModal(t, b) {
+  document.getElementById('mt').innerHTML = t;
+  document.getElementById('mb').innerHTML = b;
+  document.getElementById('ov').classList.add('open');
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('ov')) document.getElementById('ov').classList.remove('open');
+}
+
+function toast(msg, type = 'info') {
+  const el = document.getElementById('tst');
+  const me = document.getElementById('tmsg');
+  const ic = document.getElementById('tico');
+  if (!el || !me) return;
+  me.textContent = msg;
+  if (ic) ic.textContent = type==='ok'?'✓ ':type==='err'?'✕ ':'';
+  el.className = 'toast show ' + type;
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => el.classList.remove('show','ok','err','info'), 3500);
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded', () => {
+  go('land');
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+});
+</script>
+</body>
+</html>

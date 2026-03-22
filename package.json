@@ -1,0 +1,28 @@
+{
+  "name": "rawagon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RAWagon Network — blockchain-native payment and identity infrastructure",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "contracts"
+  ],
+  "scripts": {
+    "dev": "pnpm --parallel --filter './apps/*' dev",
+    "build": "pnpm --recursive build",
+    "test": "pnpm --recursive test",
+    "lint": "pnpm --recursive lint",
+    "deploy:contracts": "pnpm --filter contracts deploy:base",
+    "deploy:apps": "pnpm --parallel --filter './apps/*' deploy"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "prettier": "^3.2.0",
+    "eslint": "^9.0.0"
+  }
+}

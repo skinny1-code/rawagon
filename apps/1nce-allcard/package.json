@@ -1,0 +1,15 @@
+{
+  "name": "@rawagon/1nce-allcard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "serve . -p 3000",
+    "build": "echo 'Build 1nce-allcard'",
+    "test": "echo 'Tests for 1nce-allcard'"
+  },
+  "dependencies": {
+    "@rawagon/zk-identity": "workspace:*",
+    "@rawagon/allcard-sdk": "workspace:*",
+    "@rawagon/fee-distributor": "workspace:*"
+  }
+}

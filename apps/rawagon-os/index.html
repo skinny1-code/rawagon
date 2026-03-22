@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAWagon OS — Everything. Integrated.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#03030a;--deep:#06060f;--surf:#0b0b18;--panel:#0f0f1e;--card:#141425;
+  --line:rgba(255,255,255,.06);--muted:#33334d;--dim:#666688;--soft:#9999bb;--wh:#e8e8ff;
+  --gold:#d4a853;--gld2:rgba(212,168,83,.15);--gld3:rgba(212,168,83,.07);
+  --teal:#00d4aa;--tl2:rgba(0,212,170,.12);
+  --grn:#22c55e;--gn2:rgba(34,197,94,.1);
+  --red:#ef4444;--rd2:rgba(239,68,68,.1);
+  --blue:#3b82f6;--bl2:rgba(59,130,246,.1);
+  --purp:#8b5cf6;--pr2:rgba(139,92,246,.1);
+  --orng:#f59e0b;--or2:rgba(245,158,11,.1);
+  --silver:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:15px;}
+body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.serif{font-family:'Playfair Display',serif;}
+
+/* GLOBAL NAV */
+.gnav{height:48px;background:var(--deep);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:0;flex-shrink:0;position:relative;z-index:200;}
+.gnav-logo{font-size:.95rem;font-weight:700;color:var(--gold);letter-spacing:-.02em;padding-right:20px;border-right:1px solid var(--line);margin-right:4px;white-space:nowrap;}
+.gnav-logo span{color:rgba(255,255,255,.25);font-weight:400;}
+.gnav-app{padding:0 14px;height:100%;display:flex;align-items:center;font-size:.78rem;font-weight:500;color:var(--dim);cursor:pointer;border-right:1px solid var(--line);transition:all .15s;white-space:nowrap;position:relative;}
+.gnav-app:hover,.gnav-app.on{color:var(--wh);background:rgba(255,255,255,.03);}
+.gnav-app.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);}
+.gnav-app .app-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0;}
+.gnav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.identity-chip{display:flex;align-items:center;gap:7px;background:var(--gld3);border:1px solid rgba(212,168,83,.2);border-radius:100px;padding:4px 12px;font-size:.72rem;cursor:pointer;}
+.identity-chip-av{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--teal));display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:#000;}
+.identity-chip-name{color:var(--gold);font-weight:600;}
+.identity-chip-zk{font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--teal);}
+.live-bar{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--grn);}
+.live-bar::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--grn);animation:ld 2s infinite;}
+@keyframes ld{0%,100%{opacity:1}50%{opacity:.25}}
+.btn-icon{width:32px;height:32px;border-radius:6px;background:var(--panel);border:1px solid var(--line);color:var(--dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s;}
+.btn-icon:hover{color:var(--wh);border-color:var(--gold);}
+
+/* STATUS BAR */
+.statusbar{height:30px;background:var(--deep);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:0;flex-shrink:0;overflow:hidden;}
+.sb-item{padding:0 14px;font-family:'IBM Plex Mono',monospace;font-size:.63rem;color:var(--dim);border-right:1px solid var(--line);white-space:nowrap;cursor:pointer;transition:color .15s;}
+.sb-item:first-child{padding-left:0;}
+.sb-item:hover{color:var(--wh);}
+.sb-item .sv{color:var(--wh);font-weight:500;}
+.sb-item .su{color:var(--grn);}
+.sb-item .sd{color:var(--red);}
+.sb-ticker{flex:1;overflow:hidden;position:relative;}
+.sb-ticker::before,.sb-ticker::after{content:'';position:absolute;top:0;bottom:0;width:40px;z-index:1;}
+.sb-ticker::before{left:0;background:linear-gradient(90deg,var(--deep),transparent);}
+.sb-ticker::after{right:0;background:linear-gradient(-90deg,var(--deep),transparent);}
+.sb-ticker-inner{display:flex;animation:sbTick 60s linear infinite;white-space:nowrap;}
+@keyframes sbTick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.sb-t{padding:0 16px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--dim);}
+.sb-t .stv{color:var(--wh);}
+
+/* MAIN LAYOUT */
+.workspace{flex:1;display:grid;grid-template-columns:220px 1fr;overflow:hidden;}
+.sidebar{background:var(--deep);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;padding:10px 0;}
+.sb-section{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:12px 14px 5px;}
+.sb-link{display:flex;align-items:center;gap:9px;padding:8px 14px;cursor:pointer;font-size:.8rem;font-weight:500;color:var(--dim);transition:all .15s;position:relative;border-left:2px solid transparent;}
+.sb-link:hover,.sb-link.on{color:var(--wh);background:rgba(255,255,255,.03);border-left-color:var(--gold);}
+.sb-link .sb-ico{font-size:.9rem;width:18px;text-align:center;}
+.sb-link .sb-badge{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.58rem;padding:1px 6px;border-radius:100px;}
+.sb-divider{height:1px;background:var(--line);margin:6px 14px;}
+
+/* MAIN CONTENT */
+.main{overflow:hidden;display:flex;flex-direction:column;}
+.view{display:none;flex:1;overflow-y:auto;padding:20px 24px;}
+.view.on{display:block;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
+.card-sm{padding:12px;}
+.card-label{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.card:hover{border-color:rgba(255,255,255,.1);}
+
+/* GRID SYSTEM */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.g12{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;}
+.gc3{grid-column:span 3;}.gc4{grid-column:span 4;}.gc5{grid-column:span 5;}.gc6{grid-column:span 6;}.gc7{grid-column:span 7;}.gc8{grid-column:span 8;}.gc12{grid-column:span 12;}
+
+/* METRIC */
+.metric{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--wh);line-height:1;margin:4px 0;}
+.metric.lg{font-size:1.9rem;}
+.metric.gd{color:var(--gold);}
+.metric.gr{color:var(--grn);}
+.metric.rd{color:var(--red);}
+.metric.tl{color:var(--teal);}
+.metric-sub{font-size:.72rem;color:var(--dim);margin-top:3px;}
+
+/* WORKFLOW NODES */
+.flow{display:flex;align-items:flex-start;gap:0;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
+.flow-node{display:flex;flex-direction:column;align-items:center;min-width:90px;flex-shrink:0;}
+.flow-node-box{width:70px;height:50px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:1.1rem;position:relative;cursor:pointer;transition:all .2s;}
+.flow-node-box:hover{transform:translateY(-2px);}
+.flow-node-box.done{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.06);}
+.flow-node-box.active{border-color:var(--gold);background:rgba(212,168,83,.07);box-shadow:0 0 16px rgba(212,168,83,.12);}
+.flow-node-box.pend{opacity:.5;}
+.flow-node-lbl{font-size:.6rem;color:var(--dim);margin-top:5px;text-align:center;line-height:1.3;}
+.flow-node-api{font-family:'IBM Plex Mono',monospace;font-size:.52rem;color:var(--muted);margin-top:2px;text-align:center;}
+.flow-arrow{width:30px;height:50px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;flex-shrink:0;}
+.flow-arrow.live{color:var(--grn);}
+
+/* ACTIVITY STREAM */
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+.activity-item:last-child{border-bottom:none;}
+.ai-ico{width:30px;height:30px;border-radius:7px;background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.ai-title{font-size:.8rem;font-weight:500;}
+.ai-sub{font-size:.7rem;color:var(--dim);margin-top:2px;line-height:1.5;}
+.ai-amt{font-size:.8rem;font-weight:600;font-family:'IBM Plex Mono',monospace;flex-shrink:0;}
+.ai-time{font-size:.63rem;color:var(--muted);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+
+/* PROGRESS */
+.prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:6px;}
+.prog-f{height:100%;border-radius:2px;transition:width .6s ease;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:.62rem;font-weight:600;}
+.b-gd{background:var(--gld2);color:var(--gold);border:1px solid rgba(212,168,83,.25);}
+.b-gr{background:var(--gn2);color:var(--grn);border:1px solid rgba(34,197,94,.25);}
+.b-tl{background:var(--tl2);color:var(--teal);border:1px solid rgba(0,212,170,.25);}
+.b-bl{background:var(--bl2);color:var(--blue);border:1px solid rgba(59,130,246,.25);}
+.b-rd{background:var(--rd2);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.b-mu{background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--line);}
+.b-or{background:var(--or2);color:var(--orng);border:1px solid rgba(245,158,11,.25);}
+.b-pr{background:var(--pr2);color:var(--purp);border:1px solid rgba(139,92,246,.25);}
+
+/* SPARKLINE */
+.spark{height:28px;display:flex;align-items:flex-end;gap:2px;}
+.spark-bar{border-radius:1px 1px 0 0;transition:background .2s;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{background:#e8ba60;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-teal{background:var(--tl2);border:1px solid rgba(0,212,170,.25);color:var(--teal);}
+.btn-sm{padding:5px 12px;font-size:.72rem;}
+.btn-full{width:100%;padding:12px;}
+
+/* FORM */
+.fl{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;}
+.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--wh);font-family:'Inter',sans-serif;font-size:.84rem;outline:none;transition:border-color .18s;}
+.fi:focus{border-color:var(--gold);}
+.fi::placeholder{color:var(--muted);}
+select.fi option{background:var(--deep);}
+.fg{margin-top:12px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+
+/* ALLCARD MINI */
+.allcard-mini{width:200px;height:126px;border-radius:10px;background:linear-gradient(135deg,#08081a,#101025);border:1px solid rgba(212,168,83,.25);position:relative;overflow:hidden;flex-shrink:0;}
+.acm-mesh{position:absolute;inset:0;background-image:linear-gradient(rgba(212,168,83,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(212,168,83,.03) 1px,transparent 1px);background-size:12px 12px;}
+.acm-logo{position:absolute;top:10px;left:12px;font-size:.72rem;font-weight:700;color:var(--gold);}
+.acm-chip{position:absolute;top:28px;left:12px;width:24px;height:18px;border-radius:3px;background:linear-gradient(135deg,#d4a853,#a07830);}
+.acm-num{position:absolute;bottom:28px;left:12px;right:12px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:rgba(255,255,255,.7);letter-spacing:.1em;}
+.acm-name{position:absolute;bottom:10px;left:12px;font-size:.58rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.07em;}
+.acm-mode{position:absolute;top:10px;right:10px;font-size:.48rem;font-family:'IBM Plex Mono',monospace;color:var(--teal);letter-spacing:.06em;}
+
+/* PAWNSNAP SPECIFIC */
+.pawn-ticket{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:13px;margin-bottom:8px;}
+.ticket-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.ticket-id{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--gold);}
+.ticket-item{font-size:.85rem;font-weight:500;}
+.ticket-details{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+.td-label{font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;}
+.td-val{font-size:.8rem;font-weight:600;margin-top:2px;}
+.gold-calc{background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(212,168,83,.02));border:1px solid rgba(212,168,83,.2);border-radius:8px;padding:14px;}
+
+/* DROPPA SPECIFIC */
+.break-card{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:12px;position:relative;overflow:hidden;}
+.break-live-badge{position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:4px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:100px;padding:2px 8px;font-size:.6rem;font-weight:700;color:var(--red);}
+.break-live-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--red);animation:ld 1.2s infinite;}
+.slot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:10px;}
+.slot{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:6px;text-align:center;font-size:.6rem;cursor:pointer;transition:all .15s;}
+.slot:hover{border-color:var(--gold);}
+.slot.taken{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2);color:var(--grn);}
+.slot.open{color:var(--dim);}
+
+/* AUTOIQ SPECIFIC */
+.vin-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.vr-cell{background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px;}
+.vr-label{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;}
+.vr-value{font-size:.82rem;font-weight:500;margin-top:2px;}
+
+/* TOKEN NETWORK */
+.token-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:15px;cursor:pointer;transition:all .2s;}
+.token-card:hover{border-color:rgba(212,168,83,.3);transform:translateY(-2px);}
+.tc-sym{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:700;}
+.tc-name{font-size:.72rem;color:var(--dim);margin-top:1px;}
+.tc-price{font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;margin:10px 0 2px;}
+.tc-change{font-size:.72rem;font-weight:600;}
+
+/* NETWORK GRAPH */
+.net-node{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translate(-50%,-50%);transition:all .3s;}
+.net-node-circle{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;border:2px solid;position:relative;transition:all .2s;}
+.net-node-circle::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid currentColor;opacity:.2;animation:ringPulse 3s ease-in-out infinite;}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.1);opacity:.05}}
+.net-node:hover .net-node-circle{transform:scale(1.12);}
+.net-node-label{font-size:.62rem;font-weight:600;margin-top:5px;white-space:nowrap;color:var(--soft);}
+.net-line{position:absolute;transform-origin:left center;pointer-events:none;}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(3,3,10,.9);backdrop-filter:blur(12px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.ov.open{display:flex;}
+.modal{background:var(--card);border:1px solid rgba(212,168,83,.2);border-radius:14px;width:100%;max-width:560px;max-height:88vh;display:flex;flex-direction:column;animation:mIn .2s ease;overflow:hidden;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+@keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.modal.wide{max-width:700px;}
+.mhdr{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.mt{font-size:1rem;font-weight:700;}
+.mx{width:26px;height:26px;background:var(--surf);border:none;border-radius:5px;color:var(--dim);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
+.mx:hover{color:var(--wh);}
+.mbody{padding:18px 20px;overflow-y:auto;flex:1;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:.78rem;z-index:9999;display:none;align-items:center;gap:7px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.toast.show{display:flex;animation:mIn .18s ease;}
+.toast.ok{border-color:rgba(34,197,94,.4);}
+.toast.err{border-color:rgba(239,68,68,.4);}
+.toast.info{border-color:rgba(212,168,83,.4);}
+
+/* SHIM */
+.shim{background:linear-gradient(90deg,var(--surf) 25%,var(--panel) 50%,var(--surf) 75%);background-size:200% 100%;animation:shim 1.4s infinite;border-radius:4px;}
+@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ GLOBAL NAV ══════════════════════ -->
+<nav class="gnav">
+  <div class="gnav-logo">RAWagon <span>OS</span></div>
+  <div class="gnav-app on" onclick="switchApp('os')"><span class="app-dot" style="background:var(--gold);"></span>OS Hub</div>
+  <div class="gnav-app" onclick="switchApp('identity')"><span class="app-dot" style="background:var(--teal);"></span>1.nce · AllCard</div>
+  <div class="gnav-app" onclick="switchApp('pawnsnap')"><span class="app-dot" style="background:var(--grn);"></span>PawnSnap</div>
+  <div class="gnav-app" onclick="switchApp('droppa')"><span class="app-dot" style="background:var(--red);"></span>Droppa</div>
+  <div class="gnav-app" onclick="switchApp('autoiq')"><span class="app-dot" style="background:var(--blue);"></span>AutoIQ</div>
+  <div class="gnav-app" onclick="switchApp('goldsnap')"><span class="app-dot" style="background:var(--gold);"></span>GoldSnap</div>
+  <div class="gnav-app" onclick="switchApp('tokens')"><span class="app-dot" style="background:var(--purp);"></span>Token Network</div>
+  <div class="gnav-app" onclick="switchApp('profitpilot')"><span class="app-dot" style="background:var(--orng);"></span>ProfitPilot</div>
+  <div class="gnav-right">
+    <div class="live-bar">LIVE</div>
+    <div class="identity-chip" onclick="openModal('identity-modal')">
+      <div class="identity-chip-av">AJ</div>
+      <span class="identity-chip-name">Alexandra J.</span>
+      <span class="identity-chip-zk">⬡ ZK</span>
+    </div>
+    <div class="btn-icon" onclick="openModal('notifications')" title="Notifications">🔔</div>
+  </div>
+</nav>
+
+<!-- ══════════════════════ STATUS BAR ══════════════════════ -->
+<div class="statusbar">
+  <div class="sb-item">Gold: <span class="sv" id="sb-gold">—</span></div>
+  <div class="sb-item">Silver: <span class="sv" id="sb-silver">—</span></div>
+  <div class="sb-item">BTC: <span class="sv" id="sb-btc">—</span></div>
+  <div class="sb-item">ETH: <span class="sv" id="sb-eth">—</span></div>
+  <div class="sb-item">LTN: <span class="sv" style="color:var(--gold);">$0.084</span></div>
+  <div class="sb-item">SPY: <span class="sv" id="sb-spy">—</span></div>
+  <div class="sb-item">Mortgage: <span class="sv" id="sb-mort">—</span></div>
+  <div class="sb-item">Base gas: <span class="sv" id="sb-gas">—</span></div>
+  <div class="sb-ticker">
+    <div class="sb-ticker-inner" id="sb-ticker">
+      <span class="sb-t">Loading live market data...</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ WORKSPACE ══════════════════════ -->
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Changes per app -->
+  </aside>
+
+  <!-- MAIN VIEWS -->
+  <main class="main">
+
+    <!-- ─── OS HUB ─── -->
+    <div id="app-os" class="view on">
+      <div class="g12" style="margin-bottom:16px;">
+        <!-- Identity block -->
+        <div class="card gc3" style="background:linear-gradient(135deg,rgba(212,168,83,.08),rgba(0,212,170,.04));border-color:rgba(212,168,83,.2)!important;">
+          <div class="card-label">Identity · AuraMe + 1.nce</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#000;">AJ</div>
+            <div>
+              <div style="font-size:.88rem;font-weight:600;">Alexandra Johnson</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--gold);margin-top:1px;">1NCE-7742-A · ZK verified</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;">
+            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--grn);">98</div><div style="font-size:.6rem;color:var(--dim);">AuraMe score</div></div>
+            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--gold);">847</div><div style="font-size:.6rem;color:var(--dim);">Credit score</div></div>
+          </div>
+          <!-- Biometric signals mini -->
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Keystroke</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:91%;background:var(--teal);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--teal);">91%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Voice print</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:78%;background:var(--blue);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--blue);">78%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Gait</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:85%;background:var(--grn);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--grn);">85%</span></div>
+          </div>
+        </div>
+
+        <!-- AllCard -->
+        <div class="card gc3" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+          <div class="allcard-mini" id="os-allcard">
+            <div class="acm-mesh"></div>
+            <div class="acm-logo">1<span style="opacity:.3;">.</span>nce</div>
+            <div class="acm-mode" id="os-card-mode">ALLCARD</div>
+            <div class="acm-chip"></div>
+            <div class="acm-num" id="os-card-num">•••• •••• •••• ••••</div>
+            <div class="acm-name" id="os-card-name">Alexandra Johnson</div>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" onclick="shiftOSCard()">⟳ Shift</button>
+            <button class="btn btn-teal btn-sm" onclick="switchApp('identity')">Manage →</button>
+          </div>
+        </div>
+
+        <!-- Net worth -->
+        <div class="card gc3">
+          <div class="card-label">Total net worth</div>
+          <div class="metric lg gd" id="os-networth">$284,391</div>
+          <div class="metric-sub" style="color:var(--grn);">▲ +$3,241 this month</div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Chase checking</span><span style="font-family:'IBM Plex Mono',monospace;">$12,440</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Ally savings</span><span style="font-family:'IBM Plex Mono',monospace;">$42,650</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Fidelity IRA</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--gold);">$184,200</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Crypto holdings</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--purp);">$7,821</span></div>
+          </div>
+        </div>
+
+        <!-- Tokens -->
+        <div class="card gc3">
+          <div class="card-label">Token network · live</div>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;" id="os-tokens">
+            <div class="shim" style="height:18px;"></div>
+            <div class="shim" style="height:18px;"></div>
+            <div class="shim" style="height:18px;"></div>
+            <div class="shim" style="height:18px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE WORKFLOWS -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-label" style="margin-bottom:12px;">Cross-app automation — live workflows</div>
+        <div id="os-workflows"></div>
+      </div>
+
+      <!-- METRICS GRID -->
+      <div class="g4" style="margin-bottom:14px;">
+        <div class="card"><div class="card-label">PawnSnap today</div><div class="metric" id="ps-today">—</div><div class="metric-sub" id="ps-today-sub">tickets · loading...</div></div>
+        <div class="card"><div class="card-label">Droppa active breaks</div><div class="metric tl" id="droppa-breaks">4</div><div class="metric-sub">2 live · 2 queued</div></div>
+        <div class="card"><div class="card-label">AutoIQ titles today</div><div class="metric bl" style="color:var(--blue);" id="iq-titles">8</div><div class="metric-sub">$IQCAR NFTs minted</div></div>
+        <div class="card"><div class="card-label">LTN staking yield</div><div class="metric" style="color:var(--purp);">$12.40</div><div class="metric-sub">today · from business revenue</div></div>
+      </div>
+
+      <!-- REAL-TIME ACTIVITY STREAM -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:8px;">Unified activity stream</div>
+          <div class="activity-item" id="activity-stream"></div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:8px;">Live market data</div>
+          <div id="os-market"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── IDENTITY ─── -->
+    <div id="app-identity" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">1.nce · AllCard · AuraMe</div>
+      <div class="g12" style="margin-bottom:14px;">
+        <div class="card gc5" style="background:linear-gradient(135deg,rgba(212,168,83,.07),rgba(0,212,170,.03));border-color:rgba(212,168,83,.18)!important;">
+          <div class="card-label">AllCard — current mode</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
+            <div class="allcard-mini" style="width:160px;height:100px;" id="id-allcard">
+              <div class="acm-mesh"></div>
+              <div class="acm-logo" style="font-size:.58rem;">1<span style="opacity:.3">.</span>nce</div>
+              <div class="acm-mode" style="font-size:.4rem;" id="id-card-mode">MULTI-RAIL</div>
+              <div class="acm-chip" style="width:18px;height:14px;top:20px;"></div>
+              <div class="acm-num" style="font-size:.52rem;bottom:20px;" id="id-card-num">•••• •••• •••• ••••</div>
+              <div class="acm-name" style="font-size:.48rem;bottom:8px;" id="id-card-name">A. JOHNSON</div>
+            </div>
+            <div style="flex:1;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                ${['Identity','Debit','Crypto','Health','Vehicle','Gov','Badge','Benefits'].map(m=>`<button class="btn btn-ghost btn-sm" style="font-size:.68rem;justify-content:flex-start;" onclick="setIDCardMode('${m.toLowerCase()}',this)">${m}</button>`).join('')}
+              </div>
+              <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" onclick="shiftIDCard()">⟳ Shift number</button>
+                <button class="btn btn-gold btn-sm" onclick="openModal('allcard-modal')">Full AllCard view</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card gc4">
+          <div class="card-label">AuraMe behavioral score</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:8px;">
+            <div style="text-align:center;">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:700;color:var(--grn);">98</div>
+              <div style="font-size:.62rem;color:var(--dim);">Identity confidence</div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+              ${[['Keystroke','91%','var(--teal)'],['Voice','78%','var(--blue)'],['Gait','85%','var(--grn)'],['Transaction','82%','var(--gold)']].map(([l,v,c])=>`<div style="display:flex;align-items:center;gap:7px;font-size:.68rem;"><span style="color:var(--dim);width:70px;">${l}</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:${v};background:${c};height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:${c};">${v}</span></div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="card gc3">
+          <div class="card-label">ZK vault status</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+            ${[['SSN','AES-256-GCM','grn'],['Bank accounts','AES-256-GCM','grn'],['Card PANs','Derived only','tl'],['Biometrics','Secure Enclave','grn'],['Private keys','HD derivation','grn'],['Health IDs','AES-256-GCM','grn']].map(([l,m,c])=>`<div style="display:flex;justify-content:space-between;padding:5px 9px;background:var(--surf);border-radius:5px;font-size:.68rem;"><span style="color:var(--dim);">${l}</span><span class="badge b-${c}" style="font-size:.56rem;">${m}</span></div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <!-- CREDENTIAL WORKFLOWS -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-label" style="margin-bottom:12px;">Credential integration flows</div>
+        <div id="id-workflows"></div>
+      </div>
+
+      <!-- LINKED SERVICES -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Service integrations — what uses your AllCard</div>
+          <div style="display:flex;flex-direction:column;gap:7px;" id="id-services"></div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Cross-app authentication log</div>
+          <div style="display:flex;flex-direction:column;gap:6px;" id="id-authlog"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PAWNSNAP ─── -->
+    <div id="app-pawnsnap" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">PawnSnap</div>
+
+      <!-- Live gold/silver pricing -->
+      <div class="gold-calc" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div><div class="card-label" style="margin:0 0 4px;">Live precious metals pricing — GoldSnap integration</div><div style="font-size:.72rem;color:var(--dim);">GLD/SLV ETF → spot conversion · Yahoo Finance API · Real-time</div></div>
+          <span class="badge b-gd" id="ps-price-time">Loading...</span>
+        </div>
+        <div class="g4" style="margin-bottom:14px;">
+          <div style="text-align:center;padding:12px;background:rgba(0,0,0,.2);border-radius:8px;">
+            <div style="font-size:.62rem;color:var(--dim);margin-bottom:4px;">Gold spot / troy oz</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--gold);" id="ps-gold-spot">—</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:rgba(0,0,0,.2);border-radius:8px;">
+            <div style="font-size:.62rem;color:var(--dim);margin-bottom:4px;">Silver spot / troy oz</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--silver);" id="ps-silver-spot">—</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:rgba(0,0,0,.2);border-radius:8px;">
+            <div style="font-size:.62rem;color:var(--dim);margin-bottom:4px;">GDX (gold miners)</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--orng);" id="ps-gdx">—</div>
+          </div>
+          <div style="text-align:center;padding:12px;background:rgba(0,0,0,.2);border-radius:8px;">
+            <div style="font-size:.62rem;color:var(--dim);margin-bottom:4px;">Base tx cost</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--teal);" id="ps-base-gas">—</div>
+          </div>
+        </div>
+        <!-- GOLD CALCULATOR -->
+        <div class="g2" style="align-items:start;">
+          <div>
+            <div style="font-size:.72rem;font-weight:600;margin-bottom:10px;">Gold/Silver Pawn Calculator</div>
+            <div class="frow" style="margin-top:0;">
+              <div><label class="fl">Metal</label><select class="fi" id="ps-metal" onchange="calcPawn()" style="font-size:.82rem;padding:8px 10px;"><option value="gold">Gold</option><option value="silver">Silver</option><option value="platinum">Platinum</option></select></div>
+              <div><label class="fl">Karat / Purity</label><select class="fi" id="ps-karat" onchange="calcPawn()" style="font-size:.82rem;padding:8px 10px;"><option value="24">24K (99.9%)</option><option value="22">22K (91.7%)</option><option value="18" selected>18K (75%)</option><option value="14">14K (58.3%)</option><option value="10">10K (41.7%)</option><option value="925">Sterling .925</option></select></div>
+            </div>
+            <div class="fg"><label class="fl">Weight (grams)</label><input class="fi" id="ps-weight" type="number" value="5.2" step="0.1" oninput="calcPawn()" style="font-size:.82rem;padding:8px 10px;"></div>
+          </div>
+          <div id="ps-calc-result" style="background:rgba(0,0,0,.25);border-radius:8px;padding:14px;height:100%;">
+            <div style="font-size:.72rem;color:var(--dim);margin-bottom:8px;">Calculating...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE TICKETS -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Active pawn tickets</div>
+          <div id="ps-tickets"></div>
+          <button class="btn btn-gold btn-sm" style="width:100%;margin-top:10px;" onclick="openModal('new-pawn')">+ New pawn ticket</button>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Today's dashboard</div>
+          <div style="display:flex;flex-direction:column;gap:7px;" id="ps-stats"></div>
+          <div style="margin-top:14px;padding:12px;background:rgba(212,168,83,.06);border:1px solid rgba(212,168,83,.15);border-radius:8px;">
+            <div style="font-size:.72rem;color:var(--gold);margin-bottom:6px;font-weight:600;">AllCard integration</div>
+            <div style="font-size:.7rem;color:var(--dim);line-height:1.65;">Customer identity verified via 1.nce ZK proof. Payment disbursed to customer's AllCard instantly. No cash handling for qualified customers.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── DROPPA ─── -->
+    <div id="app-droppa" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">Droppa</div>
+      <div class="g12" style="margin-bottom:14px;">
+        <div class="card gc8">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div class="card-label" style="margin:0;">Active breaks</div>
+            <button class="btn btn-gold btn-sm" onclick="openModal('new-break')">+ New break</button>
+          </div>
+          <div id="droppa-breaks-list"></div>
+        </div>
+        <div class="card gc4">
+          <div class="card-label" style="margin-bottom:10px;">Revenue today</div>
+          <div class="metric" style="color:var(--orng);" id="droppa-rev">$0</div>
+          <div class="metric-sub">Across all breaks</div>
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px;" id="droppa-stats"></div>
+          <div style="margin-top:12px;padding:10px;background:var(--tl2);border:1px solid rgba(0,212,170,.2);border-radius:8px;font-size:.7rem;color:var(--teal);">💡 LTN rewards distributed to top sellers automatically. Payment to AllCard on break close.</div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Marketplace sync status</div>
+          <div id="droppa-sync"></div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Seller analytics · ProfitPilot integration</div>
+          <div id="droppa-analytics"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── AUTOIQ ─── -->
+    <div id="app-autoiq" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">AutoIQ · IQTitle</div>
+
+      <!-- VIN Decode -->
+      <div class="card" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <div><div class="card-label" style="margin:0;">VIN Decode · Title Status · IQCAR NFT</div><div style="font-size:.68rem;color:var(--dim);margin-top:2px;">NHTSA vPIC API · Real decode · NFT mint on title transfer</div></div>
+          <span class="badge b-bl">NHTSA · Live</span>
+        </div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end;">
+          <div style="flex:1;min-width:200px;"><label class="fl">VIN (17 characters)</label><input class="fi" id="iq-vin" placeholder="Enter VIN..." style="font-size:.84rem;" onkeydown="if(event.key==='Enter')decodeIQVIN()"></div>
+          <button class="btn btn-gold" onclick="decodeIQVIN()">Decode + Mint →</button>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="setVIN('5YJSA1DG9DFP14947')">Tesla Model S</button>
+          <button class="btn btn-ghost btn-sm" onclick="setVIN('1HGBH41JXMN109186')">Honda Civic</button>
+          <button class="btn btn-ghost btn-sm" onclick="setVIN('1FTFW1ET5EFA65479')">Ford F-150</button>
+          <button class="btn btn-ghost btn-sm" onclick="setVIN('WBAJB0C51BC461755')">BMW 5 Series</button>
+        </div>
+        <div id="iq-decode-result" style="margin-top:14px;"></div>
+      </div>
+
+      <!-- Recent NFTs + stats -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Recent $IQCAR NFT mints · Base L2</div>
+          <div id="iq-nfts"></div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Title transfer workflow</div>
+          <div id="iq-workflow"></div>
+          <div style="margin-top:12px;padding:10px;background:var(--bl2);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:.7rem;color:var(--blue);line-height:1.65;">IQCAR NFT token ID = keccak256(VIN). Transfer of NFT = transfer of title. DMV notified via API. AllCard vehicle credential updated automatically.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── GOLDSNAP ─── -->
+    <div id="app-goldsnap" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">GoldSnap · SilverSnap · GTX · STX</div>
+
+      <!-- Live prices large -->
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="card" style="background:linear-gradient(135deg,rgba(212,168,83,.09),rgba(212,168,83,.02));border-color:rgba(212,168,83,.25)!important;">
+          <div class="card-label" style="margin-bottom:8px;">Gold · XAU/USD · Live</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:2.4rem;font-weight:700;color:var(--gold);" id="gs-gold-big">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:4px;" id="gs-gold-sub">Per troy ounce · GLD ETF × 10</div>
+          <div class="prog" style="margin-top:10px;"><div class="prog-f" style="width:72%;background:var(--gold);height:3px;"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--dim);margin-top:3px;"><span>52w low: $1,820</span><span>52w high: $2,720</span></div>
+          <div style="margin-top:12px;"><span class="badge b-gd">GTX token pegged</span></div>
+          <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,.2);border-radius:6px;">
+            <div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">GTX mint price (1 GTX = 1/100 troy oz)</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1rem;color:var(--gold);" id="gs-gtx-price">—</div>
+          </div>
+        </div>
+        <div class="card" style="background:linear-gradient(135deg,rgba(148,163,184,.08),rgba(148,163,184,.02));border-color:rgba(148,163,184,.2)!important;">
+          <div class="card-label" style="margin-bottom:8px;">Silver · XAG/USD · Live</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:2.4rem;font-weight:700;color:var(--silver);" id="gs-silver-big">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:4px;" id="gs-silver-sub">Per troy ounce · SLV ETF ÷ 0.94</div>
+          <div class="prog" style="margin-top:10px;"><div class="prog-f" style="width:45%;background:var(--silver);height:3px;"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--dim);margin-top:3px;"><span>52w low: $20.40</span><span>52w high: $32.80</span></div>
+          <div style="margin-top:12px;"><span class="badge b-mu">STX token pegged</span></div>
+          <div style="margin-top:10px;padding:10px;background:rgba(0,0,0,.2);border-radius:6px;">
+            <div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">STX mint price (1 STX = 1 troy oz)</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:1rem;color:var(--silver);" id="gs-stx-price">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gold-seeking robot / inventory scan -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Pawnshop integration — snap & price</div>
+          <div style="display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap;">
+            <div style="width:80px;height:80px;background:var(--surf);border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:2rem;cursor:pointer;" onclick="toast('Camera: scan gold item to price...','info')">📷</div>
+            <div style="flex:1;">
+              <div style="font-size:.78rem;font-weight:600;margin-bottom:4px;">GoldSnap AI Valuation</div>
+              <div style="font-size:.72rem;color:var(--dim);line-height:1.6;">Photograph any gold/silver item. AI identifies karat, weight estimate, and condition. Pulls live spot price to generate instant pawn/buy offer. Feeds directly into PawnSnap ticket.</div>
+              <button class="btn btn-gold btn-sm" style="margin-top:8px;" onclick="toast('Opening GoldSnap camera...','info')">Snap & price →</button>
+            </div>
+          </div>
+          <div style="padding:10px;background:var(--gld3);border:1px solid rgba(212,168,83,.15);border-radius:7px;font-size:.7rem;color:var(--gold);">
+            Live spot feeds into PawnSnap calculator automatically. GTX/STX payment option available to customers with AllCard.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Token supply & market</div>
+          <div id="gs-token-stats" style="display:flex;flex-direction:column;gap:7px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── TOKEN NETWORK ─── -->
+    <div id="app-tokens" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">Token Network · LTN · GTX · STX · IQCAR · Telo</div>
+
+      <!-- Network visual -->
+      <div class="card" style="margin-bottom:14px;padding:0;overflow:hidden;">
+        <div style="position:relative;height:280px;background:radial-gradient(ellipse at center,rgba(139,92,246,.05),transparent 60%);" id="token-network-canvas">
+          <canvas id="net-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+          <!-- nodes will be positioned absolutely -->
+          <div id="net-nodes"></div>
+          <div style="position:absolute;bottom:12px;right:14px;font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted);">Base L2 · 0.006 Gwei · all contracts live</div>
+        </div>
+      </div>
+
+      <div class="g4" style="margin-bottom:14px;" id="token-cards"></div>
+
+      <!-- Staking + Revenue flows -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">LTN revenue flow — business → stakers</div>
+          <div id="ltn-flows" style="display:flex;flex-direction:column;gap:7px;"></div>
+          <div style="margin-top:12px;padding:10px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;font-size:.7rem;color:var(--purp);">FeeDistributor.sol receives revenue from each product and auto-routes to LTN stakers proportional to stake weight. Burns 0.1% per transaction on Base.</div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">On-chain activity · Base L2</div>
+          <div id="chain-activity" style="display:flex;flex-direction:column;gap:6px;"></div>
+          <div style="margin-top:10px;padding:9px;background:var(--gn2);border:1px solid rgba(34,197,94,.2);border-radius:6px;font-size:.68rem;color:var(--grn);">Base block <span id="base-block" style="font-family:'IBM Plex Mono',monospace;">—</span> · gas <span id="base-gas-small" style="font-family:'IBM Plex Mono',monospace;">—</span> Gwei · ETH block <span id="eth-block" style="font-family:'IBM Plex Mono',monospace;">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PROFITPILOT ─── -->
+    <div id="app-profitpilot" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">ProfitPilot</div>
+      <div class="g4" style="margin-bottom:14px;" id="pp-kpis"></div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">Revenue by product · 30 days</div>
+          <div id="pp-revenue"></div>
+        </div>
+        <div class="card">
+          <div class="card-label" style="margin-bottom:10px;">AI recommendations</div>
+          <div id="pp-ai-recs"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="ov" onclick="closeModal(event)">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div class="mhdr"><div class="mt" id="mt"></div><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mbody" id="mb"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="tst"><span id="tico"></span><span id="tmsg"></span><span style="margin-left:auto;cursor:pointer;color:var(--muted);" onclick="this.parentElement.classList.remove('show','ok','err','info')">✕</span></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// REAL API ENDPOINTS
+// ═══════════════════════════════════════════════
+const API = {
+  YAHOO:    sym => `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`,
+  GECKO:    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,usd-coin&vs_currencies=usd&include_24hr_change=true',
+  FRED_MORT:'https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US',
+  FRED_FED: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS',
+  NHTSA_VIN:v => `https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${v}?format=json`,
+  NHTSA_REC:(mk,mo,yr) => `https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(mk)}&model=${encodeURIComponent(mo)}&modelYear=${yr}`,
+  BASE_RPC: 'https://mainnet.base.org',
+  ETH_RPC:  'https://eth.llamarpc.com',
+};
+
+// ═══════════════════════════════════════════════
+// LIVE DATA STATE
+// ═══════════════════════════════════════════════
+const L = {
+  gold:0, silver:0, gld:0, slv:0, spy:0, qqq:0, gdx:0,
+  btc:0, eth:0, sol:0, btcChg:0, ethChg:0,
+  mortgage:0, fedFunds:0,
+  baseBlock:0, ethBlock:0, baseGas:0,
+  cardNum:'', cardShifts:247,
+};
+
+const cache = {};
+async function jget(url) {
+  if (cache[url]) return cache[url];
+  const r = await fetch(url, {headers:{'User-Agent':'Mozilla/5.0'}});
+  const d = await r.json();
+  cache[url] = d;
+  return d;
+}
+async function csvLast(url) {
+  if (cache[url]) return cache[url];
+  const r = await fetch(url);
+  const t = await r.text();
+  const lines = t.trim().split('\n').slice(1).filter(l=>l.trim());
+  const last = lines[lines.length-1]?.split(',');
+  const result = {date:last?.[0], value:parseFloat(last?.[1])};
+  cache[url] = result;
+  return result;
+}
+async function rpcCall(url, method, params=[]) {
+  const r = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method,params,id:1})});
+  const d = await r.json();
+  return d.result;
+}
+
+// Gold/silver spot from ETF prices
+function goldSpotFromGLD(gldPrice) { return gldPrice * 10; }
+function silverSpotFromSLV(slvPrice) { return slvPrice / 0.9395; }
+
+function goldMeltValue(grams, karat) {
+  const purity = karat === 925 ? 0.925 : karat/24;
+  const troyGrams = 31.1035;
+  return (grams / troyGrams) * L.gold * purity;
+}
+function silverMeltValue(grams) {
+  const troyGrams = 31.1035;
+  return (grams / troyGrams) * L.silver;
+}
+
+// Card number derivation (simulated HD path)
+function deriveCard(mode, nonce) {
+  const prefix = {identity:'4532',debit:'5412',crypto:'4111',health:'3714',vehicle:'6011',gov:'3782',badge:'5105',benefits:'4000'}[mode]||'4532';
+  const r = () => Math.floor(Math.random()*10);
+  return `${prefix} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()}`;
+}
+
+function setEl(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
+function setHTML(id, v) { const e = document.getElementById(id); if(e) e.innerHTML = v; }
+
+// ═══════════════════════════════════════════════
+// LOAD ALL LIVE DATA
+// ═══════════════════════════════════════════════
+async function loadAll() {
+  await Promise.allSettled([
+    loadMarket(), loadRates(), loadChain()
+  ]);
+  buildStatusBar();
+  buildOSTokens();
+  buildOSMarket();
+  renderAll();
+  shiftOSCard();
+  // Refresh every 60s
+  setInterval(() => { Object.keys(cache).forEach(k=>delete cache[k]); loadMarket().then(()=>{buildStatusBar();buildOSTokens();buildOSMarket();renderAll();}); }, 60000);
+}
+
+async function loadMarket() {
+  await Promise.allSettled([
+    jget(API.YAHOO('GLD')).then(d=>{const p=d.chart?.result?.[0]?.meta?.regularMarketPrice||0;L.gld=p;L.gold=goldSpotFromGLD(p);}).catch(()=>{}),
+    jget(API.YAHOO('SLV')).then(d=>{const p=d.chart?.result?.[0]?.meta?.regularMarketPrice||0;L.slv=p;L.silver=silverSpotFromSLV(p);}).catch(()=>{}),
+    jget(API.YAHOO('SPY')).then(d=>{L.spy=d.chart?.result?.[0]?.meta?.regularMarketPrice||0;}).catch(()=>{}),
+    jget(API.YAHOO('QQQ')).then(d=>{L.qqq=d.chart?.result?.[0]?.meta?.regularMarketPrice||0;}).catch(()=>{}),
+    jget(API.YAHOO('GDX')).then(d=>{L.gdx=d.chart?.result?.[0]?.meta?.regularMarketPrice||0;}).catch(()=>{}),
+    jget(API.GECKO).then(d=>{L.btc=d.bitcoin?.usd||0;L.btcChg=d.bitcoin?.usd_24h_change||0;L.eth=d.ethereum?.usd||0;L.ethChg=d.ethereum?.usd_24h_change||0;L.sol=d.solana?.usd||0;}).catch(()=>{}),
+  ]);
+}
+async function loadRates() {
+  await Promise.allSettled([
+    csvLast(API.FRED_MORT).then(d=>{L.mortgage=d.value;}).catch(()=>{}),
+    csvLast(API.FRED_FED).then(d=>{L.fedFunds=d.value;}).catch(()=>{}),
+  ]);
+}
+async function loadChain() {
+  await Promise.allSettled([
+    rpcCall(API.BASE_RPC,'eth_blockNumber').then(r=>{L.baseBlock=parseInt(r,16);setEl('base-block',L.baseBlock.toLocaleString());}).catch(()=>{}),
+    rpcCall(API.ETH_RPC,'eth_blockNumber').then(r=>{L.ethBlock=parseInt(r,16);setEl('eth-block',L.ethBlock.toLocaleString());}).catch(()=>{}),
+    rpcCall(API.BASE_RPC,'eth_gasPrice').then(r=>{L.baseGas=parseInt(r,16)/1e9;setEl('base-gas-small',L.baseGas.toFixed(4));setEl('sb-gas',L.baseGas.toFixed(4)+'Gw');}).catch(()=>{}),
+  ]);
+}
+
+// ═══════════════════════════════════════════════
+// STATUS BAR
+// ═══════════════════════════════════════════════
+function buildStatusBar() {
+  if(L.gold) setEl('sb-gold','$'+L.gold.toFixed(0));
+  if(L.silver) setEl('sb-silver','$'+L.silver.toFixed(2));
+  if(L.btc) setEl('sb-btc','$'+L.btc.toLocaleString());
+  if(L.eth) setEl('sb-eth','$'+L.eth.toLocaleString());
+  if(L.spy) setEl('sb-spy','$'+L.spy.toFixed(2));
+  if(L.mortgage) setEl('sb-mort',L.mortgage.toFixed(2)+'%');
+  // Ticker
+  const items = [
+    `Gold: <span class="stv">$${L.gold?.toFixed(2)||'—'}/oz</span>`,
+    `Silver: <span class="stv">$${L.silver?.toFixed(2)||'—'}/oz</span>`,
+    `BTC: <span class="stv">$${L.btc?.toLocaleString()||'—'}</span> <span style="color:${L.btcChg>=0?'var(--grn)':'var(--red)'}">${L.btcChg>=0?'+':''}${L.btcChg?.toFixed(2)||'—'}%</span>`,
+    `ETH: <span class="stv">$${L.eth?.toLocaleString()||'—'}</span> <span style="color:${L.ethChg>=0?'var(--grn)':'var(--red)'}">${L.ethChg>=0?'+':''}${L.ethChg?.toFixed(2)||'—'}%</span>`,
+    `SOL: <span class="stv">$${L.sol?.toFixed(2)||'—'}</span>`,
+    `SPY: <span class="stv">$${L.spy?.toFixed(2)||'—'}</span>`,
+    `QQQ: <span class="stv">$${L.qqq?.toFixed(2)||'—'}</span>`,
+    `GDX: <span class="stv">$${L.gdx?.toFixed(2)||'—'}</span>`,
+    `GTX: <span class="stv">$${(L.gold/100)?.toFixed(2)||'—'}</span> (1/100 troy oz gold)`,
+    `STX: <span class="stv">$${L.silver?.toFixed(2)||'—'}</span> (1 troy oz silver)`,
+    `30yr Mortgage: <span class="stv">${L.mortgage?.toFixed(2)||'—'}%</span>`,
+    `Fed Funds: <span class="stv">${L.fedFunds?.toFixed(2)||'—'}%</span>`,
+    `Base L2 gas: <span class="stv">${L.baseGas?.toFixed(4)||'—'} Gwei</span>`,
+    `LTN: <span class="stv">$0.084</span>`,
+    `APIs: FRED · NHTSA · Yahoo Finance · CoinGecko · Base L2 · Ethereum · openFDA · NPI`,
+  ];
+  const inner = document.getElementById('sb-ticker');
+  if(inner){const html=items.map(i=>`<span class="sb-t">${i}</span>`).join('');inner.innerHTML=html+html;}
+}
+
+// ═══════════════════════════════════════════════
+// OS HUB RENDERERS
+// ═══════════════════════════════════════════════
+function buildOSTokens() {
+  const el = document.getElementById('os-tokens'); if(!el) return;
+  const tokens = [
+    {sym:'LTN',name:'Living Token',price:'$0.084',chg:'+12.4%',c:'var(--purp)'},
+    {sym:'GTX',name:'GoldSnap',price:L.gold?'$'+(L.gold/100).toFixed(2):'—',chg:'vs gold',c:'var(--gold)'},
+    {sym:'STX',name:'SilverSnap',price:L.silver?'$'+L.silver.toFixed(2):'—',chg:'vs silver',c:'var(--silver)'},
+    {sym:'IQCAR',name:'IQTitle NFT',price:'ERC-721',chg:'Base L2',c:'var(--blue)'},
+  ];
+  el.innerHTML = tokens.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surf);border-radius:6px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:700;color:${t.c};">${t.sym}</span><span style="font-size:.68rem;color:var(--dim);">${t.name}</span></div><div style="text-align:right;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;">${t.price}</div><div style="font-size:.63rem;color:${t.c};">${t.chg}</div></div></div>`).join('');
+}
+
+function buildOSMarket() {
+  const el = document.getElementById('os-market'); if(!el) return;
+  const items = [
+    {n:'Gold/oz',v:L.gold?'$'+L.gold.toFixed(2):'—',c:'var(--gold)'},
+    {n:'Silver/oz',v:L.silver?'$'+L.silver.toFixed(2):'—',c:'var(--silver)'},
+    {n:'Bitcoin',v:L.btc?'$'+L.btc.toLocaleString():'—',c:'var(--orng)',chg:L.btcChg},
+    {n:'Ethereum',v:L.eth?'$'+L.eth.toLocaleString():'—',c:'var(--blue)',chg:L.ethChg},
+    {n:'SPY ETF',v:L.spy?'$'+L.spy.toFixed(2):'—',c:'var(--wh)'},
+    {n:'Mortgage rate',v:L.mortgage?L.mortgage.toFixed(2)+'%':'—',c:'var(--teal)'},
+    {n:'Fed Funds',v:L.fedFunds?L.fedFunds.toFixed(2)+'%':'—',c:'var(--wh)'},
+    {n:'Base gas',v:L.baseGas?L.baseGas.toFixed(4)+' Gw':'—',c:'var(--grn)'},
+  ];
+  el.innerHTML = items.map(i=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);"><span style="font-size:.76rem;color:var(--dim);">${i.n}</span><div style="text-align:right;"><span style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:${i.c};">${i.v}</span>${i.chg!==undefined?`<div style="font-size:.63rem;color:${i.chg>=0?'var(--grn)':'var(--red)'};">${i.chg>=0?'+':''}${i.chg.toFixed(2)}%</div>`:''}</div></div>`).join('');
+}
+
+function renderAll() {
+  renderOSWorkflows();
+  renderOSActivity();
+  renderIDServices();
+  renderIDAuthLog();
+  renderIDWorkflows();
+  renderPawnStats();
+  renderPawnTickets();
+  calcPawn();
+  renderDroppa();
+  renderDroppaSync();
+  renderDroppaAnalytics();
+  renderIQNFTs();
+  renderIQWorkflow();
+  renderGSTokenStats();
+  renderTokenCards();
+  renderTokenNetwork();
+  renderLTNFlows();
+  renderChainActivity();
+  renderPPKPIs();
+  renderPPRevenue();
+  renderPPAIRecs();
+  // PawnSnap live prices
+  if(L.gold) {
+    setEl('ps-gold-spot','$'+L.gold.toFixed(2));
+    setEl('ps-silver-spot','$'+L.silver.toFixed(2));
+    setEl('ps-gdx',L.gdx?'$'+L.gdx.toFixed(2):'—');
+    setEl('ps-price-time','GLD·SLV live');
+    setEl('ps-base-gas',L.baseGas?'$'+(L.baseGas*80000*1e-9*L.eth).toFixed(4):'—');
+  }
+  if(L.gold) {
+    setEl('gs-gold-big','$'+L.gold.toFixed(2));
+    setEl('gs-gold-sub','Per troy oz · GLD $'+L.gld?.toFixed(2)+' × 10');
+    setEl('gs-silver-big','$'+L.silver.toFixed(2));
+    setEl('gs-silver-sub','Per troy oz · SLV $'+L.slv?.toFixed(2)+' ÷ 0.94');
+    setEl('gs-gtx-price','$'+(L.gold/100).toFixed(4)+' / GTX');
+    setEl('gs-stx-price','$'+L.silver.toFixed(4)+' / STX');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// WORKFLOW RENDERERS
+// ═══════════════════════════════════════════════
+const WORKFLOWS = [
+  {
+    id:'pawn-flow',
+    title:'Pawn intake → gold price → AllCard payment',
+    steps:[
+      {ico:'🪪',lbl:'Customer AllCard',api:'1.nce ZK',done:true},
+      {ico:'🔐',lbl:'Identity verified',api:'AuraMe biometric',done:true},
+      {ico:'⚖️',lbl:'Item weighed',api:'PawnSnap scale',done:true},
+      {ico:'🥇',lbl:'Live spot price',api:'GoldSnap·Yahoo',active:true},
+      {ico:'💵',lbl:'Offer generated',api:'GoldSnap calc'},
+      {ico:'✅',lbl:'Customer accepts',api:'AllCard tap'},
+      {ico:'💸',lbl:'Disbursed',api:'SwiftCa$h·AllCard'},
+    ]
+  },
+  {
+    id:'vehicle-flow',
+    title:'Vehicle purchase → IQTitle NFT → AllCard credential',
+    steps:[
+      {ico:'🔍',lbl:'VIN decoded',api:'NHTSA vPIC',done:true},
+      {ico:'🛡️',lbl:'Recalls checked',api:'NHTSA API',done:true},
+      {ico:'📝',lbl:'Title signed',api:'IQTitle ZK',active:true},
+      {ico:'🔷',lbl:'IQCAR NFT minted',api:'Base L2'},
+      {ico:'📋',lbl:'DMV notified',api:'CA DMV API'},
+      {ico:'🃏',lbl:'AllCard updated',api:'1.nce vehicle'},
+      {ico:'🛡️',lbl:'Insurance linked',api:'State Farm API'},
+    ]
+  },
+  {
+    id:'droppa-flow',
+    title:'Droppa break → LTN rewards → AllCard payout',
+    steps:[
+      {ico:'🎴',lbl:'Break opens',api:'Droppa engine',done:true},
+      {ico:'👥',lbl:'Slots filled',api:'Droppa booking',done:true},
+      {ico:'📦',lbl:'Cards pulled',api:'Break mgmt',active:true},
+      {ico:'📸',lbl:'Clips generated',api:'WaV5·SnapMod'},
+      {ico:'📊',lbl:'Analytics',api:'ProfitPilot AI'},
+      {ico:'🪙',lbl:'LTN rewards',api:'FeeDistributor.sol'},
+      {ico:'💳',lbl:'Seller paid',api:'AllCard·SwiftCa$h'},
+    ]
+  },
+];
+
+function renderWorkflowFlow(w, container) {
+  if(!container) return;
+  container.innerHTML += `<div style="margin-bottom:16px;"><div style="font-size:.72rem;font-weight:600;color:var(--soft);margin-bottom:8px;">${w.title}</div><div class="flow">` +
+    w.steps.map((s,i)=>`<div class="flow-node"><div class="flow-node-box ${s.done?'done':s.active?'active':'pend'}">${s.ico}${s.done?'<div style="position:absolute;top:-5px;right:-5px;width:14px;height:14px;border-radius:50%;background:var(--grn);display:flex;align-items:center;justify-content:center;font-size:.48rem;">✓</div>':''}</div><div class="flow-node-lbl">${s.lbl}</div><div class="flow-node-api">${s.api}</div></div>${i<w.steps.length-1?`<div class="flow-arrow ${s.done?'live':''}">→</div>`:''}`).join('') +
+    `</div></div>`;
+}
+
+function renderOSWorkflows() {
+  const el = document.getElementById('os-workflows'); if(!el) return;
+  el.innerHTML = '';
+  WORKFLOWS.forEach(w => renderWorkflowFlow(w, el));
+}
+function renderIDWorkflows() {
+  const el = document.getElementById('id-workflows'); if(!el) return;
+  el.innerHTML = '';
+  const idFlow = {
+    id:'id-flow',title:'Identity auth → behavioral score → ZK proof → any service',
+    steps:[
+      {ico:'🫆',lbl:'Biometric',api:'AuraMe on-device',done:true},
+      {ico:'📊',lbl:'Behavioral score',api:'AuraMe engine',done:true},
+      {ico:'⬡',lbl:'ZK proof gen',api:'1.nce · local',done:true},
+      {ico:'🔑',lbl:'Proof submitted',api:'ZK verifier',active:true},
+      {ico:'✅',lbl:'Service grants',api:'Any 1.nce app'},
+      {ico:'🃏',lbl:'Card shifts',api:'AllCard derive'},
+    ]
+  };
+  renderWorkflowFlow(idFlow, el);
+}
+
+// ═══════════════════════════════════════════════
+// ACTIVITY STREAM
+// ═══════════════════════════════════════════════
+const ACTIVITY = [
+  {ico:'🥇',app:'PawnSnap·GoldSnap',t:'Gold ring pawn completed — 14K 5.2g',s:`Spot $${(4133).toLocaleString()}/oz · Offer $241 → AllCard`,a:'+$241.00',c:'var(--gold)',time:'Now'},
+  {ico:'🚗',app:'AutoIQ·Base L2',t:'IQCAR NFT minted — 2023 Tesla Model 3',s:'VIN decoded NHTSA · Title transferred · DMV notified',a:'NFT #0248',c:'var(--blue)',time:'2m ago'},
+  {ico:'🎴',app:'Droppa',t:'Break closed — 2024 Prizm Basketball Hobby',s:'20 slots · $1,440 gross · ProfitPilot: +18% margin',a:'+$1,440',c:'var(--orng)',time:'5m ago'},
+  {ico:'🪙',app:'LTN·FeeDistributor',t:'Staking rewards distributed',s:'$48.20 from PawnSnap + Droppa fees → LTN stakers',a:'+$48.20',c:'var(--purp)',time:'8m ago'},
+  {ico:'🔐',app:'1.nce·AuraMe',t:'Identity verified — new PawnSnap customer',s:'ZK proof used · Behavioral score 94/100 · AllCard linked',a:'✓ Verified',c:'var(--teal)',time:'12m ago'},
+  {ico:'💳',app:'AllCard',t:'Card number shifted — USDC payment rail',s:'PAN derived from HD path m/44/60/0/0/248 · Previous burned',a:'⟳ Shifted',c:'var(--wh)',time:'15m ago'},
+];
+function renderOSActivity() {
+  const el = document.getElementById('activity-stream'); if(!el) return;
+  el.outerHTML = `<div id="activity-stream">${ACTIVITY.map(a=>`<div class="activity-item"><div class="ai-ico">${a.ico}</div><div style="flex:1;"><div class="ai-title">${a.t}</div><div class="ai-sub">${a.app} · ${a.s}</div><div class="ai-time">${a.time}</div></div><div style="text-align:right;"><div class="ai-amt" style="color:${a.c};">${a.a}</div></div></div>`).join('')}</div>`;
+}
+
+// ═══════════════════════════════════════════════
+// IDENTITY
+// ═══════════════════════════════════════════════
+const SERVICES = [
+  {ico:'🏦',nm:'PawnSnap',use:'Customer identity + payment disbursement',last:'2m ago',c:'b-gr'},
+  {ico:'🎴',nm:'Droppa',use:'Seller auth + break payment + LTN rewards',last:'5m ago',c:'b-or'},
+  {ico:'🚗',nm:'AutoIQ/IQTitle',use:'Vehicle credential + title NFT auth',last:'12m ago',c:'b-bl'},
+  {ico:'🏛️',nm:'CA DMV',use:'Registration + license + ZK proof',last:'1hr ago',c:'b-gd'},
+  {ico:'🏥',nm:'BCBS Health',use:'Insurance card + claims auth',last:'Yesterday',c:'b-tl'},
+  {ico:'💱',nm:'SwiftCa$h',use:'Payment rail + AllCard disbursement',last:'Now',c:'b-gr'},
+];
+function renderIDServices() {
+  const el = document.getElementById('id-services'); if(!el) return;
+  el.innerHTML = SERVICES.map(s=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--surf);border-radius:7px;"><span style="font-size:1rem;">${s.ico}</span><div style="flex:1;"><div style="font-size:.8rem;font-weight:500;">${s.nm}</div><div style="font-size:.68rem;color:var(--dim);margin-top:1px;">${s.use}</div></div><div style="text-align:right;"><span class="badge ${s.c}" style="font-size:.6rem;">Active</span><div style="font-size:.63rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;">${s.last}</div></div></div>`).join('');
+}
+function renderIDAuthLog() {
+  const el = document.getElementById('id-authlog'); if(!el) return;
+  const logs = [
+    {app:'PawnSnap',action:'Customer ID verify',score:94,when:'2m ago'},
+    {app:'AutoIQ',action:'Title transfer auth',score:98,when:'12m ago'},
+    {app:'CA DMV',action:'Registration renewal',score:98,when:'1hr ago'},
+    {app:'Droppa',action:'Seller dashboard login',score:97,when:'3hr ago'},
+    {app:'SwiftCa$h',action:'Payment authorization',score:99,when:'5hr ago'},
+  ];
+  el.innerHTML = logs.map(l=>`<div style="padding:8px 10px;background:var(--surf);border-radius:6px;"><div style="display:flex;justify-content:space-between;font-size:.76rem;"><span style="font-weight:500;">${l.app} — ${l.action}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--dim);">${l.when}</span></div><div style="display:flex;align-items:center;gap:7px;margin-top:4px;"><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:${l.score}%;background:var(--grn);height:2px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:.63rem;color:var(--grn);">${l.score}%</span></div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// PAWNSNAP
+// ═══════════════════════════════════════════════
+function calcPawn() {
+  const metalEl = document.getElementById('ps-metal');
+  const karatEl = document.getElementById('ps-karat');
+  const weightEl = document.getElementById('ps-weight');
+  const resEl = document.getElementById('ps-calc-result');
+  if (!resEl || !metalEl) return;
+  const metal = metalEl?.value || 'gold';
+  const karat = parseFloat(karatEl?.value || '14');
+  const weight = parseFloat(weightEl?.value || '5.2');
+  if (!weight || !(metal==='gold'?L.gold:L.silver)) {
+    resEl.innerHTML = `<div style="font-size:.72rem;color:var(--dim);">Enter weight · loading live ${metal} price...</div>`;
+    return;
+  }
+  const melt = metal==='gold' ? goldMeltValue(weight, karat) : silverMeltValue(weight);
+  const pawn = melt * 0.60, buy = melt * 0.85;
+  const spotLabel = metal==='gold' ? `Gold $${L.gold.toFixed(2)}/oz` : `Silver $${L.silver.toFixed(2)}/oz`;
+  const purity = karat===925?92.5:(karat/24*100).toFixed(1);
+  resEl.innerHTML = `
+    <div style="font-size:.7rem;color:var(--gold);font-weight:600;margin-bottom:8px;">Live calculation — ${spotLabel}</div>
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Weight in troy oz</span><span style="font-family:'IBM Plex Mono',monospace;">${(weight/31.1035).toFixed(4)} ozt</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Purity ${karat===925?'Sterling':karat+'K'}</span><span style="font-family:'IBM Plex Mono',monospace;">${purity}%</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;border-top:1px solid var(--line);padding-top:5px;"><span style="color:var(--soft);font-weight:600;">Melt value</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--gold);">$${melt.toFixed(2)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;"><span style="color:var(--dim);">Pawn offer (60% LTV)</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--grn);">$${pawn.toFixed(2)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;"><span style="color:var(--dim);">Buy outright (85%)</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--teal);">$${buy.toFixed(2)}</span></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px;"><button class="btn btn-gold btn-sm" style="flex:1;font-size:.68rem;" onclick="openModal('new-pawn')">Create ticket $${pawn.toFixed(2)}</button><button class="btn btn-ghost btn-sm" style="font-size:.68rem;" onclick="openModal('gtx-payment')">GTX pay</button></div>
+  `;
+}
+
+function renderPawnStats() {
+  const el = document.getElementById('ps-stats'); if(!el) return;
+  const stats = [
+    ['Tickets today','12',`$${L.gold?Math.round(L.gold*0.06).toLocaleString():'—'} gold value`,'gd'],
+    ['Forfeitures due','3','Review required','or'],
+    ['Active loans','87','avg $182 LTV','mu'],
+    ['Police report','✓ Filed','9:00 AM today','gr'],
+    ['AllCard payments','8','vs 4 cash','tl'],
+    ['GTX accepted','2','$'+((L.gold/100)*3).toFixed(0)+' GTX','gd'],
+  ];
+  el.innerHTML = stats.map(([l,v,s,c])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surf);border-radius:6px;"><div><div style="font-size:.76rem;font-weight:500;">${l}</div><div style="font-size:.65rem;color:var(--dim);margin-top:1px;">${s}</div></div><span class="badge b-${c}" style="font-size:.65rem;">${v}</span></div>`).join('');
+  setEl('ps-today','12');
+  setEl('ps-today-sub',`tickets · $${L.gold?Math.round(L.gold*0.06*12).toLocaleString():'—'} gold`);
+}
+
+function renderPawnTickets() {
+  const el = document.getElementById('ps-tickets'); if(!el) return;
+  const tickets = [
+    {id:'PWN-2025-0441',item:'14K gold chain necklace',weight:8.4,karat:14,due:'Apr 14',status:'active'},
+    {id:'PWN-2025-0440',item:'Sterling silver flatware set',weight:142,karat:925,due:'Apr 10',status:'due-soon'},
+    {id:'PWN-2025-0439',item:'18K gold bracelet w/ diamonds',weight:6.1,karat:18,due:'May 2',status:'active'},
+  ];
+  el.innerHTML = tickets.map(t=>{
+    const melt = t.karat===925 ? silverMeltValue(t.weight) : goldMeltValue(t.weight, t.karat);
+    const loan = melt*0.60;
+    return `<div class="pawn-ticket"><div class="ticket-header"><span class="ticket-id">${t.id}</span><span class="badge ${t.status==='due-soon'?'b-or':'b-gr'}" style="font-size:.62rem;">${t.status==='due-soon'?'Due soon':'Active'}</span></div><div class="ticket-item">${t.item}</div><div class="ticket-details"><div><div class="td-label">Melt value</div><div class="td-val" style="color:var(--gold);">${L.gold||L.silver?'$'+melt.toFixed(2):'—'}</div></div><div><div class="td-label">Loan amt</div><div class="td-val">$${loan.toFixed(2)}</div></div><div><div class="td-label">Due</div><div class="td-val">${t.due}</div></div><div><div class="td-label">Weight</div><div class="td-val">${t.weight}g · ${t.karat===925?'Sterling':t.karat+'K'}</div></div></div></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// DROPPA
+// ═══════════════════════════════════════════════
+function renderDroppa() {
+  const el = document.getElementById('droppa-breaks-list'); if(!el) return;
+  const breaks = [
+    {id:'BRK-0441',name:'2024 Prizm Basketball Hobby Box',slots:20,filled:20,price:72,status:'live',revenue:1440},
+    {id:'BRK-0440',name:'2024 Panini Select NFL',slots:30,filled:24,price:48,status:'filling',revenue:1152},
+    {id:'BRK-0439',name:'2024 Topps Chrome Baseball',slots:24,filled:24,status:'shipped',revenue:960},
+    {id:'BRK-0438',name:'2023 Prizm NBA',slots:20,filled:18,price:85,status:'queued',revenue:0},
+  ];
+  let totalRev = breaks.reduce((s,b)=>s+b.revenue,0);
+  setEl('droppa-rev','$'+totalRev.toLocaleString());
+  el.innerHTML = breaks.map(b=>`<div class="break-card" style="margin-bottom:8px;">
+    ${b.status==='live'?'<div class="break-live-badge">LIVE</div>':''}
+    <div style="font-size:.82rem;font-weight:600;margin-bottom:5px;">${b.name}</div>
+    <div style="display:flex;gap:10px;font-size:.7rem;color:var(--dim);margin-bottom:8px;flex-wrap:wrap;">
+      <span>${b.slots} slots · ${b.filled} filled</span>
+      ${b.price?`<span>$${b.price}/slot</span>`:''}
+      <span class="badge ${b.status==='live'?'b-rd':b.status==='filling'?'b-or':b.status==='shipped'?'b-gr':'b-mu'}" style="font-size:.6rem;">${b.status}</span>
+      ${b.revenue?`<span style="color:var(--grn);font-weight:600;">$${b.revenue.toLocaleString()}</span>`:''}
+    </div>
+    <div class="slot-grid">${Array.from({length:Math.min(b.slots,20)},(_,i)=>`<div class="slot ${i<b.filled?'taken':'open'}">${i<b.filled?'✓':'•'}</div>`).join('')}</div>
+    <div style="display:flex;gap:6px;margin-top:9px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" style="font-size:.68rem;" onclick="toast('Opening break ${b.id}...','info')">Manage</button>
+      ${b.status==='live'?'<button class="btn btn-teal btn-sm" style="font-size:.68rem;" onclick="toast(\'Randomizing slots...\'\'ok\')">Randomize</button>':''}
+      ${b.status==='shipped'||b.status==='live'?'<button class="btn btn-ghost btn-sm" style="font-size:.68rem;" onclick="toast(\'Generating social clip...\'\'ok\')">📸 Clip</button>':''}
+    </div>
+  </div>`).join('');
+}
+
+function renderDroppaSync() {
+  const el = document.getElementById('droppa-sync'); if(!el) return;
+  const platforms = [
+    {ico:'🛒',nm:'eBay',status:'Synced',items:247,c:'b-gr'},
+    {ico:'🎴',nm:'COMC',status:'Synced',items:89,c:'b-gr'},
+    {ico:'💬',nm:'Discord',status:'Live webhook',items:'—',c:'b-tl'},
+    {ico:'📱',nm:'TikTok',status:'Streaming',items:'—',c:'b-rd'},
+    {ico:'📦',nm:'PWCC',status:'Pending',items:12,c:'b-or'},
+  ];
+  el.innerHTML = platforms.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--surf);border-radius:6px;margin-bottom:7px;"><span style="font-size:1rem;">${p.ico}</span><div style="flex:1;"><div style="font-size:.8rem;font-weight:500;">${p.nm}</div><div style="font-size:.68rem;color:var(--dim);">${p.items!=='—'?p.items+' listings':'Live sync'}</div></div><span class="badge ${p.c}" style="font-size:.6rem;">${p.status}</span></div>`).join('');
+}
+
+function renderDroppaAnalytics() {
+  const el = document.getElementById('droppa-analytics'); if(!el) return;
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:7px;">
+    ${[['Gross revenue 30d','$42,840','var(--orng)'],['Avg margin','18.4%','var(--grn)'],['Break fill rate','94%','var(--teal)'],['LTN rewards earned','1,240 LTN','var(--purp)'],['AllCard payments','73%','var(--gold)'],['Top category','2024 Prizm Basketball','var(--wh)']].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--surf);border-radius:6px;"><span style="font-size:.74rem;color:var(--dim);">${l}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:${c};">${v}</span></div>`).join('')}
+  </div>`;
+  setEl('droppa-stats','');
+}
+
+// ═══════════════════════════════════════════════
+// AUTOIQ
+// ═══════════════════════════════════════════════
+async function decodeIQVIN() {
+  const vin = document.getElementById('iq-vin')?.value?.trim().toUpperCase();
+  const el = document.getElementById('iq-decode-result');
+  if (!vin || vin.length < 10 || !el) { toast('Enter a valid VIN','err'); return; }
+  el.innerHTML = '<div class="shim" style="height:120px;"></div>';
+  try {
+    const d = await jget(API.NHTSA_VIN(vin));
+    delete cache[API.NHTSA_VIN(vin)];
+    const r = d.Results?.[0];
+    if (!r?.Make) { el.innerHTML='<div style="color:var(--dim);padding:12px;">VIN not found in NHTSA database.</div>'; return; }
+    const fields = [
+      ['Make',r.Make],['Model',r.Model],['Year',r.ModelYear],
+      ['Body',r.BodyClass],['Fuel',r.FuelTypePrimary],
+      ['Engine',r.DisplacementL?r.DisplacementL+'L':r.EngineCylinders?r.EngineCylinders+' cyl':'—'],
+      ['Drive',r.DriveType],['Trans',r.TransmissionStyle],
+      ['Country',r.PlantCountry],['Manufacturer',r.Manufacturer],
+    ].filter(([,v])=>v&&v!=='0'&&v!=='Not Applicable');
+    el.innerHTML = `
+      <div style="background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div><div style="font-size:.88rem;font-weight:600;">${r.ModelYear} ${r.Make} ${r.Model}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--dim);margin-top:1px;">${vin}</div></div>
+        <div style="display:flex;gap:7px;"><span class="badge b-gr">NHTSA verified</span><span class="badge b-bl">IQCAR ready</span></div>
+      </div>
+      <div class="vin-result-grid">${fields.map(([l,v])=>`<div class="vr-cell"><div class="vr-label">${l}</div><div class="vr-value">${v}</div></div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn btn-gold" onclick="mintIQCAR('${vin}','${r.Make}','${r.Model}','${r.ModelYear}')">Mint IQCAR NFT on Base →</button>
+        <button class="btn btn-ghost btn-sm" onclick="checkIQRecalls('${r.Make}','${r.Model}','${r.ModelYear}')">Check recalls</button>
+      </div>`;
+    // Auto-check recalls
+    setTimeout(()=>checkIQRecalls(r.Make, r.Model, r.ModelYear), 500);
+  } catch(e) {
+    el.innerHTML=`<div style="color:var(--dim);padding:12px;">Error: ${e.message}</div>`;
+  }
+}
+
+async function checkIQRecalls(make, model, year) {
+  try {
+    const r = await fetch(API.NHTSA_REC(make,model,year));
+    const d = await r.json();
+    const recalls = d.results||[];
+    const elBottom = document.getElementById('iq-decode-result');
+    if (!elBottom) return;
+    const recDiv = document.createElement('div');
+    recDiv.style.cssText='margin-top:10px;';
+    recDiv.innerHTML = recalls.length
+      ? `<div style="background:var(--rd2);border:1px solid rgba(239,68,68,.15);border-radius:7px;padding:10px 13px;"><div style="font-size:.76rem;font-weight:600;color:var(--red);margin-bottom:6px;">⚠ ${recalls.length} NHTSA recall(s)</div>${recalls.slice(0,2).map(rc=>`<div style="font-size:.7rem;color:var(--dim);margin-bottom:4px;line-height:1.5;">${rc.Component}: ${(rc.Summary||'').slice(0,80)}...</div>`).join('')}</div>`
+      : `<div style="background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;padding:9px 13px;font-size:.76rem;color:var(--grn);">✓ No NHTSA recalls found · IQCAR NFT clear to mint</div>`;
+    elBottom.appendChild(recDiv);
+  } catch(e){}
+}
+
+function mintIQCAR(vin, make, model, year) {
+  toast(`Minting IQCAR NFT — ${year} ${make} ${model}`, 'info');
+  setTimeout(()=>toast(`IQCAR #${Math.floor(1000+Math.random()*9000)} minted on Base L2 · $0.001 gas`,'ok'),2000);
+}
+
+function setVIN(v) { const el=document.getElementById('iq-vin'); if(el){el.value=v;decodeIQVIN();} }
+
+function renderIQNFTs() {
+  const el = document.getElementById('iq-nfts'); if(!el) return;
+  const nfts = [
+    {id:'#0248',vin:'5YJ3E1EA4RF...456',vehicle:'2022 Tesla Model 3',tx:'0x7f3a...9c2b',c:'b-tl'},
+    {id:'#0247',vin:'1HGBH41JXM...186',vehicle:'2019 Honda Civic',tx:'0x4e2c...7a1f',c:'b-gr'},
+    {id:'#0246',vin:'1FTFW1ET5E...479',vehicle:'2022 Ford F-150',tx:'0x9d1b...3e8c',c:'b-gr'},
+    {id:'#0245',vin:'WBAJB0C51B...755',vehicle:'2021 BMW 5 Series',tx:'0x2c7f...5d9a',c:'b-gd'},
+  ];
+  el.innerHTML = nfts.map(n=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--surf);border-radius:6px;margin-bottom:7px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.72rem;font-weight:700;color:var(--blue);min-width:42px;">IQCAR${n.id}</div><div style="flex:1;"><div style="font-size:.78rem;font-weight:500;">${n.vehicle}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--dim);margin-top:1px;">VIN: ${n.vin} · TX: ${n.tx}</div></div><span class="badge ${n.c}" style="font-size:.6rem;">Minted</span></div>`).join('');
+}
+
+function renderIQWorkflow() {
+  const el = document.getElementById('iq-workflow'); if(!el) return;
+  const steps = [
+    {lbl:'VIN decode',api:'NHTSA vPIC',done:true},
+    {lbl:'Recall check',api:'NHTSA recalls',done:true},
+    {lbl:'ZK title proof',api:'1.nce identity',active:true},
+    {lbl:'NFT mint',api:'Base L2 ERC-721'},
+    {lbl:'DMV notify',api:'CA DMV API'},
+    {lbl:'AllCard update',api:'1.nce vehicle'},
+  ];
+  el.innerHTML = steps.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${s.done?'rgba(34,197,94,.05)':s.active?'rgba(212,168,83,.05)':'var(--surf)'};border:1px solid ${s.done?'rgba(34,197,94,.15)':s.active?'rgba(212,168,83,.2)':'var(--line)'};border-radius:6px;margin-bottom:6px;"><div style="width:20px;height:20px;border-radius:50%;background:${s.done?'var(--gn2)':s.active?'var(--gld2)':'var(--panel)'};display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:${s.done?'var(--grn)':s.active?'var(--gold)':'var(--muted)'};">${s.done?'✓':s.active?i+1:i+1}</div><div style="flex:1;"><div style="font-size:.76rem;font-weight:500;">${s.lbl}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;color:var(--dim);">${s.api}</div></div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// GOLDSNAP
+// ═══════════════════════════════════════════════
+function renderGSTokenStats() {
+  const el = document.getElementById('gs-token-stats'); if(!el) return;
+  const items = [
+    ['GTX price',L.gold?'$'+(L.gold/100).toFixed(4):'—','var(--gold)'],
+    ['GTX supply','10,000,000','var(--wh)'],
+    ['GTX backed by','100,000 troy oz gold','var(--gold)'],
+    ['STX price',L.silver?'$'+L.silver.toFixed(4):'—','var(--silver)'],
+    ['STX supply','50,000,000','var(--wh)'],
+    ['Oracle','Chainlink XAU/USD · XAG/USD','var(--blue)'],
+    ['GoldMint.sol','Base L2 · verified','var(--grn)'],
+  ];
+  el.innerHTML = items.map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--surf);border-radius:6px;margin-bottom:6px;font-size:.74rem;"><span style="color:var(--dim);">${l}</span><span style="font-family:'IBM Plex Mono',monospace;color:${c};">${v}</span></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// TOKEN NETWORK
+// ═══════════════════════════════════════════════
+function renderTokenCards() {
+  const el = document.getElementById('token-cards'); if(!el) return;
+  const tokens = [
+    {sym:'LTN',name:'Living Token',price:'$0.084',chg:'+12.4%',chgN:12.4,market:'$8.4M',c:'var(--purp)',desc:'AI-governed · staking · burns from revenue'},
+    {sym:'GTX',name:'GoldSnap Gold',price:L.gold?'$'+(L.gold/100).toFixed(4):'—',chg:L.gold?'gold-pegged':'—',chgN:0,market:'$412M',c:'var(--gold)',desc:'1 GTX = 1/100 troy oz gold · Chainlink oracle'},
+    {sym:'STX',name:'SilverSnap',price:L.silver?'$'+L.silver.toFixed(4):'—',chg:L.silver?'silver-pegged':'—',chgN:0,market:'$164M',c:'var(--silver)',desc:'1 STX = 1 troy oz silver · Chainlink oracle'},
+    {sym:'IQCAR',name:'IQTitle NFT',price:'ERC-721',chg:'unique/VIN',chgN:0,market:'Varied',c:'var(--blue)',desc:'Vehicle title on-chain · Base L2 · AllCard linked'},
+  ];
+  el.innerHTML = tokens.map(t=>`<div class="token-card" onclick="toast('Opening ${t.sym} details...','info')"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><div><div class="tc-sym" style="color:${t.c};">${t.sym}</div><div class="tc-name">${t.name}</div></div><span class="badge ${t.chgN>0?'b-gr':'b-mu'}" style="font-size:.6rem;">${t.chg}</span></div><div class="tc-price" style="color:${t.c};">${t.price}</div><div style="font-size:.67rem;color:var(--muted);margin-bottom:8px;">Market: ${t.market}</div><div style="font-size:.67rem;color:var(--dim);line-height:1.5;">${t.desc}</div></div>`).join('');
+}
+
+function renderTokenNetwork() {
+  // Visual network drawn with CSS positioning
+  const el = document.getElementById('net-nodes'); if(!el) return;
+  const nodes = [
+    {id:'ltn',ico:'🟣',lbl:'LTN',x:50,y:50,c:'var(--purp)',size:52},
+    {id:'allcard',ico:'🃏',lbl:'AllCard',x:20,y:30,c:'var(--gold)',size:44},
+    {id:'identity',ico:'⬡',lbl:'1.nce',x:20,y:70,c:'var(--teal)',size:44},
+    {id:'pawnsnap',ico:'🥇',lbl:'PawnSnap',x:80,y:25,c:'var(--grn)',size:40},
+    {id:'droppa',ico:'🎴',lbl:'Droppa',x:80,y:55,c:'var(--orng)',size:40},
+    {id:'autoiq',ico:'🚗',lbl:'AutoIQ',x:75,y:80,c:'var(--blue)',size:38},
+    {id:'gtx',ico:'🥇',lbl:'GTX',x:50,y:15,c:'var(--gold)',size:36},
+    {id:'stx',ico:'🥈',lbl:'STX',x:50,y:85,c:'var(--silver)',size:36},
+  ];
+  el.innerHTML = nodes.map(n=>`<div class="net-node" style="left:${n.x}%;top:${n.y}%;" onclick="toast('${n.lbl} — connected to ${n.id==='ltn'?7:3} nodes','info')"><div class="net-node-circle" style="width:${n.size}px;height:${n.size}px;background:rgba(${n.id==='ltn'?'139,92,246':n.id==='allcard'?'212,168,83':'20,20,40'},.15);border-color:${n.c};font-size:${n.size>44?1.2:.95}rem;color:${n.c};">${n.ico}</div><div class="net-node-label" style="color:${n.c};">${n.lbl}</div></div>`).join('');
+}
+
+function renderLTNFlows() {
+  const el = document.getElementById('ltn-flows'); if(!el) return;
+  const flows = [
+    {from:'PawnSnap',fee:'0.5%',amount:'$214',to:'LTN stakers',c:'var(--grn)'},
+    {from:'Droppa',fee:'1.0%',amount:'$428',to:'LTN stakers + burn',c:'var(--orng)'},
+    {from:'AutoIQ/IQTitle',fee:'0.3%',amount:'$89',to:'LTN stakers',c:'var(--blue)'},
+    {from:'AllCard swaps',fee:'0.1%',amount:'$48',to:'LP + burn',c:'var(--gold)'},
+  ];
+  el.innerHTML = flows.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surf);border-radius:6px;"><div style="flex:1;"><div style="font-size:.76rem;font-weight:500;">${f.from}</div><div style="font-size:.65rem;color:var(--dim);">${f.fee} fee → ${f.to}</div></div><span style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:${f.c};">${f.amount}</span></div>`).join('');
+}
+
+function renderChainActivity() {
+  const el = document.getElementById('chain-activity'); if(!el) return;
+  const acts = [
+    {type:'LTN burn',hash:'0x7f3...c2b',gas:'$0.001',when:'now'},
+    {type:'IQCAR mint',hash:'0x4e2...7af',gas:'$0.001',when:'2m'},
+    {type:'GTX mint',hash:'0x9d1...3e8',gas:'$0.001',when:'5m'},
+    {type:'LTN stake',hash:'0x2c7...5d9',gas:'$0.001',when:'8m'},
+    {type:'STX redeem',hash:'0x8b5...1f2',gas:'$0.001',when:'12m'},
+  ];
+  el.innerHTML = acts.map(a=>`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:5px;"><div style="flex:1;"><div style="font-size:.74rem;font-weight:500;">${a.type}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--dim);">${a.hash} · ${a.gas}</div></div><div style="font-size:.63rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${a.when}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// PROFITPILOT
+// ═══════════════════════════════════════════════
+function renderPPKPIs() {
+  const el = document.getElementById('pp-kpis'); if(!el) return;
+  const kpis = [
+    {l:'30d Revenue',v:'$84,240',c:'var(--orng)',sub:'All products'},
+    {l:'Net Margin',v:'22.4%',c:'var(--grn)',sub:'+3.2% vs last month'},
+    {l:'LTN Earned',v:'2,840 LTN',c:'var(--purp)',sub:'From business fees'},
+    {l:'AllCard Txns',v:'847',c:'var(--gold)',sub:'vs 312 cash'},
+  ];
+  el.innerHTML = kpis.map(k=>`<div class="card"><div class="card-label">${k.l}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:${k.c};margin:4px 0;">${k.v}</div><div style="font-size:.68rem;color:var(--dim);">${k.sub}</div></div>`).join('');
+}
+
+function renderPPRevenue() {
+  const el = document.getElementById('pp-revenue'); if(!el) return;
+  const products = [
+    {n:'PawnSnap',v:42840,c:'var(--grn)'},
+    {n:'Droppa',v:28440,c:'var(--orng)'},
+    {n:'AutoIQ',v:8960,c:'var(--blue)'},
+    {n:'AllCard fees',v:4000,c:'var(--gold)'},
+  ];
+  const max = Math.max(...products.map(p=>p.v));
+  el.innerHTML = products.map(p=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:5px;"><span>${p.n}</span><span style="font-family:'IBM Plex Mono',monospace;color:${p.c};">$${p.v.toLocaleString()}</span></div><div class="prog"><div class="prog-f" style="width:${p.v/max*100}%;background:${p.c};height:5px;"></div></div></div>`).join('');
+}
+
+function renderPPAIRecs() {
+  const el = document.getElementById('pp-ai-recs'); if(!el) return;
+  const recs = [
+    {ico:'📈',t:'PawnSnap gold margins up',d:'Live gold spot $'+L.gold?.toFixed(0)+'/oz. Current 60% LTV offers room to increase to 65% — estimated +$2,400/month revenue.',action:'Adjust LTV'},
+    {ico:'🎴',t:'Droppa: add 5pm EST breaks',d:'Break fill rate 94%. Analytics show 5pm slots fill 40% faster. Add 2 breaks/week in that window.',action:'Schedule breaks'},
+    {ico:'🪙',t:'LTN staking promotion',d:'LTN staking yield 12.4% APY. Feature this in PawnSnap customer UX to drive AllCard adoption.',action:'Draft campaign'},
+    {ico:'🔷',t:'GTX/STX liquidity needed',d:'Uniswap v3 pool has $180K TVL. Adding $50K USDC to GTX/USDC pool would reduce slippage 60%.',action:'Add liquidity'},
+  ];
+  el.innerHTML = recs.map(r=>`<div style="padding:11px 13px;background:var(--surf);border-radius:7px;margin-bottom:8px;"><div style="display:flex;align-items:flex-start;gap:9px;"><span style="font-size:1rem;flex-shrink:0;">${r.ico}</span><div style="flex:1;"><div style="font-size:.78rem;font-weight:600;margin-bottom:3px;">${r.t}</div><div style="font-size:.71rem;color:var(--dim);line-height:1.6;">${r.d}</div></div></div><div style="margin-top:8px;"><button class="btn btn-ghost btn-sm" style="font-size:.68rem;" onclick="toast('${r.action}...','info')">${r.action} →</button></div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const SIDEBARS = {
+  os: [
+    {s:'Overview'},
+    {ico:'⊞',lbl:'Dashboard',view:'v-os-dash',on:true},
+    {ico:'🔄',lbl:'Live workflows'},
+    {ico:'📊',lbl:'Activity stream'},
+    {s:'Quick actions'},
+    {ico:'🥇',lbl:'Pawn gold item',onclick:"switchApp('pawnsnap')"},
+    {ico:'🚗',lbl:'Decode VIN',onclick:"switchApp('autoiq')"},
+    {ico:'🎴',lbl:'Start break',onclick:"switchApp('droppa')"},
+    {ico:'🪙',lbl:'Stake LTN',onclick:"openModal('stake-ltn')"},
+  ],
+  identity:[
+    {s:'Identity'},
+    {ico:'🃏',lbl:'AllCard'},
+    {ico:'⬡',lbl:'1.nce Vault'},
+    {ico:'📊',lbl:'AuraMe Signals'},
+    {s:'Credentials'},
+    {ico:'🏦',lbl:'Banking'},
+    {ico:'💳',lbl:'Debit rails'},
+    {ico:'🏥',lbl:'Health'},
+    {ico:'🚗',lbl:'Vehicle'},
+    {ico:'🏛',lbl:'Government'},
+    {s:'Recovery'},
+    {ico:'⚖️',lbl:'Trust & POA'},
+    {ico:'🔐',lbl:'Secure vault'},
+  ],
+  pawnsnap:[
+    {s:'PawnSnap'},
+    {ico:'🥇',lbl:'New pawn',onclick:"openModal('new-pawn')"},
+    {ico:'📋',lbl:'Active tickets'},
+    {ico:'📤',lbl:'Police export'},
+    {ico:'📊',lbl:'Reports'},
+    {s:'Pricing'},
+    {ico:'💰',lbl:'Gold calculator'},
+    {ico:'🥈',lbl:'Silver calculator'},
+    {ico:'📱',lbl:'Electronics (PhoneMine)'},
+    {s:'Integrations'},
+    {ico:'💳',lbl:'AllCard payments'},
+    {ico:'🪙',lbl:'GTX/STX accept'},
+    {ico:'🔐',lbl:'Customer ID (1.nce)'},
+  ],
+  droppa:[
+    {s:'Droppa'},
+    {ico:'🎴',lbl:'Active breaks'},
+    {ico:'➕',lbl:'New break',onclick:"openModal('new-break')"},
+    {ico:'📦',lbl:'Inventory'},
+    {ico:'🤖',lbl:'AI pricing'},
+    {s:'Analytics'},
+    {ico:'📊',lbl:'ProfitPilot'},
+    {ico:'📈',lbl:'Revenue'},
+    {ico:'🏆',lbl:'Top sellers'},
+    {s:'Integrations'},
+    {ico:'💳',lbl:'AllCard payout'},
+    {ico:'🪙',lbl:'LTN rewards'},
+    {ico:'📸',lbl:'WaV5 clips'},
+  ],
+  autoiq:[
+    {s:'AutoIQ'},
+    {ico:'🔍',lbl:'VIN decode'},
+    {ico:'📋',lbl:'Title queue'},
+    {ico:'🔷',lbl:'IQCAR NFTs'},
+    {ico:'⚠️',lbl:'Recalls'},
+    {s:'Title transfer'},
+    {ico:'📜',lbl:'New transfer'},
+    {ico:'✅',lbl:'Completed'},
+    {s:'Integrations'},
+    {ico:'🃏',lbl:'AllCard vehicle'},
+    {ico:'🏛',lbl:'DMV API'},
+    {ico:'🛡️',lbl:'Insurance link'},
+  ],
+  goldsnap:[
+    {s:'GoldSnap'},
+    {ico:'🥇',lbl:'Gold prices'},
+    {ico:'🥈',lbl:'Silver prices'},
+    {ico:'📷',lbl:'Snap & price'},
+    {s:'Tokens'},
+    {ico:'🪙',lbl:'GTX (gold token)'},
+    {ico:'🥈',lbl:'STX (silver token)'},
+    {ico:'💧',lbl:'Liquidity pools'},
+    {s:'PawnSnap link'},
+    {ico:'⚖️',lbl:'Pawn pricing'},
+    {ico:'💳',lbl:'GTX payments'},
+  ],
+  tokens:[
+    {s:'Token Network'},
+    {ico:'🟣',lbl:'LTN overview'},
+    {ico:'💰',lbl:'Stake LTN',onclick:"openModal('stake-ltn')"},
+    {ico:'📈',lbl:'Revenue flows'},
+    {ico:'🔥',lbl:'Burn tracker'},
+    {s:'Markets'},
+    {ico:'💧',lbl:'Uniswap pools'},
+    {ico:'🌉',lbl:'Base L2 bridge'},
+    {s:'Chain'},
+    {ico:'⛓',lbl:'Live blocks'},
+    {ico:'⛽',lbl:'Gas tracker'},
+    {ico:'🗳️',lbl:'Governance'},
+  ],
+  profitpilot:[
+    {s:'ProfitPilot'},
+    {ico:'📊',lbl:'KPIs'},
+    {ico:'💰',lbl:'Revenue by product'},
+    {ico:'📈',lbl:'Margin analysis'},
+    {ico:'🤖',lbl:'AI recommendations'},
+    {s:'Reports'},
+    {ico:'📅',lbl:'Daily'},
+    {ico:'📅',lbl:'Weekly'},
+    {ico:'📅',lbl:'Monthly'},
+    {s:'Integrations'},
+    {ico:'🥇',lbl:'PawnSnap data'},
+    {ico:'🎴',lbl:'Droppa data'},
+    {ico:'🚗',lbl:'AutoIQ data'},
+  ],
+};
+
+function switchApp(app) {
+  document.querySelectorAll('.gnav-app').forEach(a=>a.classList.remove('on'));
+  const navApps = ['os','identity','pawnsnap','droppa','autoiq','goldsnap','tokens','profitpilot'];
+  const idx = navApps.indexOf(app);
+  document.querySelectorAll('.gnav-app')[idx]?.classList.add('on');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  const viewEl = document.getElementById(`app-${app}`); if(viewEl) viewEl.classList.add('on');
+  buildSidebar(app);
+}
+
+function buildSidebar(app) {
+  const el = document.getElementById('sidebar'); if(!el) return;
+  const items = SIDEBARS[app]||[];
+  el.innerHTML = items.map(i=>{
+    if(i.s) return `<div class="sb-section">${i.s}</div>`;
+    return `<div class="sb-link" onclick="${i.onclick||''}" style="${i.on?'color:var(--wh);background:rgba(255,255,255,.04);border-left-color:var(--gold);':''}">${i.ico?`<span class="sb-ico">${i.ico}</span>`:''}<span>${i.lbl}</span></div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// CARD SHIFTING
+// ═══════════════════════════════════════════════
+let _cardNonce = 247;
+function shiftOSCard() {
+  _cardNonce++;
+  const modes = ['identity','debit','crypto','health','vehicle','gov'];
+  const mode = modes[_cardNonce % modes.length];
+  const num = deriveCard(mode, _cardNonce);
+  setEl('os-card-num', num);
+  setEl('os-card-mode', mode.toUpperCase());
+  setEl('id-card-num', num);
+  setEl('id-card-mode', mode.toUpperCase().slice(0,8));
+}
+function shiftIDCard() { shiftOSCard(); toast('Card number shifted — previous burned','ok'); }
+function setIDCardMode(mode, btn) {
+  const num = deriveCard(mode, _cardNonce);
+  setEl('id-card-num', num);
+  setEl('id-card-mode', mode.toUpperCase().slice(0,8));
+  document.querySelectorAll('#app-identity .btn-ghost').forEach(b=>b.style.borderColor='');
+  if(btn) { btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)'; }
+}
+
+// ═══════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════
+function openModal(key) {
+  const modals = {
+    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Name','Alexandra Johnson'],['Handle','@alex.once'],['ZK ID','1NCE-7742-A'],['AllCard','Active · 247 shifts'],['AuraMe','98/100 behavioral'],['Credit','847 · Equifax']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
+    'notifications': {t:'🔔 Notifications',b:`<div style="display:flex;flex-direction:column;gap:0;">${[{dot:'var(--gold)',t:'LTN staking reward distributed',b:'$48.20 from PawnSnap + Droppa fees. Auto-compounding.',ts:'8m ago'},{dot:'var(--grn)',t:'IQCAR NFT minted — Tesla Model 3',b:'#0248 on Base L2. Title transferred. AllCard updated.',ts:'12m ago'},{dot:'var(--orng)',t:'Droppa break #0441 closed',b:'20/20 slots filled. $1,440 gross. Payout to AllCard.',ts:'5m ago'},{dot:'var(--blue)',t:'Gold spot update',b:L.gold?`Gold now $${L.gold.toFixed(2)}/oz. PawnSnap offers auto-recalculated.`:'Gold price updated.',ts:'Live'}].map(n=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;"><div style="width:7px;height:7px;border-radius:50%;background:${n.dot};margin-top:5px;flex-shrink:0;"></div><div><div style="font-size:.8rem;font-weight:500;margin-bottom:2px;">${n.t}</div><div style="font-size:.72rem;color:var(--dim);line-height:1.55;">${n.b}</div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;">${n.ts}</div></div></div>`).join('')}</div>`},
+    'new-pawn': {t:'🥇 New Pawn Ticket',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:10px 12px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;font-size:.76rem;color:var(--grn);">✓ Customer identity via 1.nce AllCard tap · Gold spot: $${L.gold?.toFixed(2)||'—'}/oz</div><div><label class="fl">Item description</label><input class="fi" placeholder="e.g. 14K gold ring, approx 5g"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Metal</label><select class="fi"><option>Gold</option><option>Silver</option><option>Platinum</option></select></div><div><label class="fl">Karat</label><select class="fi"><option>24K</option><option>18K</option><option value="14" selected>14K</option><option>10K</option><option>925 Sterling</option></select></div></div><div><label class="fl">Weight (grams)</label><input class="fi" type="number" placeholder="0.0" step="0.1"></div><div style="padding:12px;background:var(--surf);border-radius:8px;"><div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">Live offer preview</div><div style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:1rem;">Enter weight above →</div></div><div><label class="fl">Payment method</label><select class="fi"><option>Cash</option><option>AllCard (instant)</option><option>GTX token</option><option>ACH transfer</option></select></div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Pawn ticket created — photo capture required next','ok')">Create ticket →</button></div>`},
+    'new-break': {t:'🎴 New Droppa Break',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div><label class="fl">Break name</label><input class="fi" placeholder="e.g. 2024 Prizm Basketball Hobby"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Total slots</label><input class="fi" type="number" value="20"></div><div><label class="fl">Price per slot ($)</label><input class="fi" type="number" value="72"></div></div><div><label class="fl">Break type</label><select class="fi"><option>Random teams</option><option>Pick your team</option><option>Random hits</option><option>Case break</option></select></div><div><label class="fl">Stream platform</label><select class="fi"><option>TikTok Live</option><option>YouTube Live</option><option>Discord + WhatsApp</option><option>All platforms</option></select></div><div style="padding:10px 12px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;font-size:.73rem;color:var(--purp);">🪙 LTN rewards auto-distributed to top buyers. Seller payment to AllCard on close. ProfitPilot tracking enabled.</div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Break created — configure slots next','ok')">Create break →</button></div>`},
+    'stake-ltn': {t:'🪙 Stake LTN',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:12px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:8px;"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div style="text-align:center;"><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--purp);">12.4%</div><div style="font-size:.62rem;color:var(--dim);">Current APY</div></div><div style="text-align:center;"><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--gold);">$0.084</div><div style="font-size:.62rem;color:var(--dim);">LTN price</div></div></div></div><div><label class="fl">Amount to stake (LTN)</label><input class="fi" type="number" placeholder="0 LTN" id="stake-amt"></div><div><label class="fl">Lock period</label><select class="fi"><option>Flexible (lower yield)</option><option>30 days (+2%)</option><option>90 days (+5%)</option><option>365 days (+10%)</option></select></div><div style="padding:10px;background:var(--surf);border-radius:7px;font-size:.72rem;color:var(--dim);line-height:1.65;">Yield from PawnSnap + Droppa + AutoIQ fees via FeeDistributor.sol. Deployed on Base L2 ($0.001 gas). Revenue share paid daily in LTN.</div><button class="btn btn-gold btn-full" onclick="closeModal();toast('LTN staked on Base L2 — $0.001 gas fee','ok')">Stake LTN →</button></div>`},
+    'gtx-payment': {t:'🥇 Accept GTX Payment',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:12px;background:var(--gld2);border:1px solid rgba(212,168,83,.25);border-radius:8px;"><div style="font-size:.72rem;color:var(--gold);margin-bottom:5px;font-weight:600;">Current GTX rate</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;">1 GTX = $${L.gold?(L.gold/100).toFixed(4):'—'}</div><div style="font-size:.68rem;color:var(--dim);">1/100 troy oz gold · Chainlink oracle</div></div><div><label class="fl">USD amount to receive</label><input class="fi" type="number" placeholder="0.00" id="gtx-usd" oninput="document.getElementById('gtx-equiv').textContent=L.gold&&this.value?(parseFloat(this.value)/(L.gold/100)).toFixed(4)+' GTX':'—'"></div><div style="padding:10px;background:var(--surf);border-radius:7px;display:flex;justify-content:space-between;font-size:.78rem;"><span style="color:var(--dim);">GTX equivalent</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--gold);" id="gtx-equiv">—</span></div><button class="btn btn-gold btn-full" onclick="closeModal();toast('GTX payment QR generated — customer taps AllCard','ok')">Generate QR →</button></div>`},
+  };
+  const mc = modals[key];
+  if(mc){const m=document.getElementById('modal');if(mc.wide)m.classList.add('wide');else m.classList.remove('wide');showModal(mc.t,mc.b);}
+  else toast('Opening '+key+'...','info');
+}
+
+function showModal(t,b){document.getElementById('mt').innerHTML=t;document.getElementById('mb').innerHTML=b;document.getElementById('ov').classList.add('open');}
+function closeModal(e){if(!e||e.target===document.getElementById('ov'))document.getElementById('ov').classList.remove('open');}
+
+function toast(msg,type='info'){
+  const el=document.getElementById('tst');const me=document.getElementById('tmsg');const ic=document.getElementById('tico');
+  if(!el||!me)return;
+  me.textContent=msg;if(ic)ic.textContent=type==='ok'?'✓ ':type==='err'?'✕ ':'';
+  el.className='toast show '+type;
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>el.classList.remove('show','ok','err','info'),3500);
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  buildSidebar('os');
+  loadAll();
+  // Auto-shift card every 8 seconds
+  setInterval(shiftOSCard, 8000);
+  // Escape key
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  // Live chain polling every 30s
+  setInterval(()=>loadChain().then(()=>renderChainActivity()), 30000);
+});
+</script>
+</body>
+</html>
