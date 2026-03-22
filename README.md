@@ -147,3 +147,25 @@ MIT. Patent-pending technologies are the exclusive property of RAWagon Systems, 
 - **Web:** rawagon.io
 - **Email:** hello@rawagon.io
 - **Investment:** invest@rawagon.io
+
+## Founder
+
+**Ryan Williams** — Founder & CEO, RAWagon Systems LLC
+
+- Allocation: **15% of all entity revenue**
+- Distribution wallet: `6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78` (Solana)
+- Bridge: Wormhole Token Bridge (RAWNet → Solana) · auto-triggers at $1,000 USDC queue
+- Contract: `contracts/Allocation/EntityAllocation.sol`
+- Config: `config/allocation.json`
+
+## Allocation Structure (All 7 Entities)
+
+| Bucket | % | Annual (Year 2) |
+|--------|---|-----------------|
+| Product Development | 30% | $8.74M |
+| BD + Marketing | 20% | $5.83M |
+| LTN Treasury | 20% | $5.83M |
+| Reserve Fund | 15% | $4.37M |
+| **Ryan Williams (Founder)** | **15%** | **$4.37M** |
+
+Patent Pending: RAW-2026-PROV-001

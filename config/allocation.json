@@ -1,0 +1,387 @@
+{
+  "_comment": "RAWagon Systems \u2014 Revenue Allocation Configuration",
+  "_version": "1.0.0",
+  "_updated": "2026-03-22",
+  "founder": {
+    "name": "Ryan Williams",
+    "title": "Founder & CEO, RAWagon Systems LLC",
+    "allocation_pct": 15,
+    "wallets": {
+      "solana": {
+        "address": "6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78",
+        "chain": "Solana Mainnet",
+        "chain_id": 101,
+        "wormhole_chain_id": 1,
+        "purpose": "Primary founder distribution wallet",
+        "currency": "USDC (bridged via Wormhole from RAWNet)"
+      },
+      "evm_bridge_relay": {
+        "address": "DEPLOY_PENDING",
+        "chain": "RAWNet / Base L2",
+        "purpose": "Bridge relay wallet \u2014 receives 15% USDC, auto-bridges to Solana",
+        "bridge": "Wormhole Token Bridge",
+        "bridge_threshold_usdc": 1000
+      }
+    },
+    "distribution_schedule": "Monthly \u2014 auto-triggered when bridge wallet \u2265 $1,000 USDC",
+    "tax_note": "Distributions are income. Consult CPA for quarterly estimated payments.",
+    "year2_annual_usd": 4368940
+  },
+  "allocation_structure": {
+    "product_dev": {
+      "pct": 30,
+      "label": "Product Development",
+      "purpose": "Engineering, audits, infra"
+    },
+    "bd_marketing": {
+      "pct": 20,
+      "label": "BD + Marketing",
+      "purpose": "Growth, partnerships, sales"
+    },
+    "ltn_treasury": {
+      "pct": 20,
+      "label": "LTN Treasury",
+      "purpose": "Buy + stake LTN; yield back to stakers"
+    },
+    "reserve_fund": {
+      "pct": 15,
+      "label": "Reserve Fund",
+      "purpose": "Legal, compliance, 12-month runway"
+    },
+    "founder_dist": {
+      "pct": 15,
+      "label": "Founder Distribution",
+      "purpose": "Ryan Williams \u2192 Solana 6obJ9...eN78"
+    }
+  },
+  "entities": {
+    "QWKS": {
+      "name": "QWKS Protocol",
+      "fee_model": "10% of savings",
+      "year2_annual_revenue": 7500000,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 2250000,
+          "monthly_usd": 187500,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 1500000,
+          "monthly_usd": 125000,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 1500000,
+          "monthly_usd": 125000,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 1125000,
+          "monthly_usd": 93750,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 1125000,
+          "monthly_usd": 93750,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "BitPawn": {
+      "name": "BitPawn",
+      "fee_model": "$99/mo + 0.5% vol",
+      "year2_annual_revenue": 961056,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 288316,
+          "monthly_usd": 24026,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 192211,
+          "monthly_usd": 16017,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 192211,
+          "monthly_usd": 16017,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 144158,
+          "monthly_usd": 12013,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 144158,
+          "monthly_usd": 12013,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "Droppa": {
+      "name": "Droppa",
+      "fee_model": "1% of break GMV",
+      "year2_annual_revenue": 3744000,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 1123200,
+          "monthly_usd": 93600,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 748800,
+          "monthly_usd": 62400,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 748800,
+          "monthly_usd": 62400,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 561600,
+          "monthly_usd": 46800,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 561600,
+          "monthly_usd": 46800,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "AutoIQ": {
+      "name": "AutoIQ / IQTitle",
+      "fee_model": "0.3% vehicle value",
+      "year2_annual_revenue": 12960000,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 3888000,
+          "monthly_usd": 324000,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 2592000,
+          "monthly_usd": 216000,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 2592000,
+          "monthly_usd": 216000,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 1944000,
+          "monthly_usd": 162000,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 1944000,
+          "monthly_usd": 162000,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "AllCard": {
+      "name": "1.nce AllCard",
+      "fee_model": "$4.99/mo + gas markup",
+      "year2_annual_revenue": 898200,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 269460,
+          "monthly_usd": 22455,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 179640,
+          "monthly_usd": 14970,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 179640,
+          "monthly_usd": 14970,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 134730,
+          "monthly_usd": 11227,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 134730,
+          "monthly_usd": 11227,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "GoldSnap": {
+      "name": "GoldSnap GTX/STX",
+      "fee_model": "0.25% mint + 2% yield",
+      "year2_annual_revenue": 93011,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 27903,
+          "monthly_usd": 2325,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 18602,
+          "monthly_usd": 1550,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 18602,
+          "monthly_usd": 1550,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 13951,
+          "monthly_usd": 1162,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 13951,
+          "monthly_usd": 1162,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    },
+    "ProfitPilot": {
+      "name": "ProfitPilot",
+      "fee_model": "$99/mo SaaS",
+      "year2_annual_revenue": 2970000,
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 891000,
+          "monthly_usd": 74250,
+          "recipient": "Product Development wallet (EVM)"
+        },
+        "bd_marketing": {
+          "pct": 20,
+          "label": "BD + Marketing",
+          "annual_usd": 594000,
+          "monthly_usd": 49500,
+          "recipient": "BD + Marketing wallet (EVM)"
+        },
+        "ltn_treasury": {
+          "pct": 20,
+          "label": "LTN Treasury",
+          "annual_usd": 594000,
+          "monthly_usd": 49500,
+          "recipient": "LTN Treasury wallet (EVM)"
+        },
+        "reserve_fund": {
+          "pct": 15,
+          "label": "Reserve Fund",
+          "annual_usd": 445500,
+          "monthly_usd": 37125,
+          "recipient": "Reserve Fund wallet (EVM)"
+        },
+        "founder_dist": {
+          "pct": 15,
+          "label": "Founder Distribution",
+          "annual_usd": 445500,
+          "monthly_usd": 37125,
+          "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
+        }
+      }
+    }
+  },
+  "network": {
+    "evm": {
+      "name": "RAWNet Testnet",
+      "chain_id": 720701,
+      "rpc": "https://testnet-rpc.rawnet.io"
+    },
+    "solana": {
+      "name": "Solana Mainnet",
+      "cluster": "mainnet-beta",
+      "rpc": "https://api.mainnet-beta.solana.com"
+    },
+    "bridge": {
+      "protocol": "Wormhole",
+      "version": "v2",
+      "token": "USDC (Circle native)"
+    }
+  },
+  "contract": {
+    "name": "EntityAllocation",
+    "file": "contracts/Allocation/EntityAllocation.sol",
+    "status": "deploy-pending",
+    "audited": false
+  },
+  "totals": {
+    "year2_gross_revenue": 29126267,
+    "year2_founder_total": 4368940,
+    "year2_per_bucket": {
+      "product_dev": 8737880,
+      "bd_marketing": 5825253,
+      "ltn_treasury": 5825253,
+      "reserve_fund": 4368940,
+      "founder_dist": 4368940
+    }
+  }
+}
