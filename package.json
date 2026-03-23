@@ -1,1 +1,38 @@
-{"name":"rawagon","version":"0.1.0","private":true,"description":"RAWagon Network — blockchain-native payment and identity infrastructure on Base L2","scripts":{"dev":"echo dev","build":"echo build","test":"echo ok"},"engines":{"node":">=18.0.0"}}
+{
+  "name": "rawagon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RAWagon Network — blockchain-native payment and identity infrastructure on Base L2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext .ts,.tsx,.js",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js --fix",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "compile": "hardhat compile",
+    "clean": "rimraf dist packages/*/dist apps/*/dist artifacts cache"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.0.0",
+    "hardhat": "^3.2.0",
+    "prettier": "^3.2.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.0"
+  }
+}

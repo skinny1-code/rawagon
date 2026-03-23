@@ -1,1 +1,11 @@
-{"name":"@rawagon/zk-identity","version":"0.1.0","main":"index.js"}
+{
+  "name": "@rawagon/zk-identity",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "test": "vitest run"
+  }
+}

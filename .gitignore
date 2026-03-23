@@ -4,3 +4,6 @@ dist/
 !.env.example
 artifacts/
 cache/
+typechain-types/
+coverage/
+*.tsbuildinfo
