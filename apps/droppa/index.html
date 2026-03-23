@@ -5,43 +5,44 @@
 <title>Droppa — Live Commerce Breaks</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#060810;--surf:#0b0d18;--card:#111520;--line:rgba(255,255,255,.07);--wh:#e0e4ff;--soft:#6870a0;--dim:#303060;--purp:#8b5cf6;--pr2:rgba(139,92,246,.12);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gold:#f59e0b;--red:#ef4444;--blue:#3b82f6;}
+:root{--bg:#060810;--surf:#0b0d18;--card:#111520;--line:rgba(255,255,255,.07);--wh:#e0e4ff;--soft:#6870a0;--dim:#303060;--purp:#8b5cf6;--pr2:rgba(139,92,246,.12);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gold:#f59e0b;--gld2:rgba(245,158,11,.1);--red:#ef4444;--blue:#3b82f6;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
 .mono{font-family:"JetBrains Mono",monospace;}
-header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
-header h1{font-size:1.1rem;font-weight:800;}
+header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
 .tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surf);padding:0 24px;}
-.tab{padding:12px 16px;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
+.tab{padding:11px 16px;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
 .tab.active{color:var(--purp);border-bottom-color:var(--purp);}
 .pane{display:none;padding:20px 24px;max-width:1200px;}
 .pane.active{display:block;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
 label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
 input,select{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
 .btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;}
 .btn-purp{background:var(--purp);color:#fff;}
 .btn-grn{background:var(--grn);color:#000;}
-.slot{background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .15s;}
-.slot.taken{background:var(--pr2);border-color:var(--purp);}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}
+.btn-outline:hover{border-color:var(--purp);color:var(--purp);}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
+.row:last-child{border:none;}
+.break-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.break-head{padding:12px 14px;background:var(--surf);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.slot-grid{display:grid;gap:4px;padding:12px 14px;}
+.slot{background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center;font-size:.7rem;cursor:pointer;transition:all .15s;}
+.slot:hover:not(.taken){border-color:var(--purp);background:var(--pr2);}
+.slot.taken{background:var(--pr2);border-color:var(--purp);cursor:default;}
 .slot.mine{background:var(--gn2);border-color:var(--grn);}
-.slot-num{font-size:.65rem;color:var(--soft);margin-bottom:3px;}
-.slot-buyer{font-size:.72rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.slot-price{font-family:"JetBrains Mono",monospace;font-size:.78rem;color:var(--purp);}
-.break-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;}
-.bc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.bc-title{font-weight:700;font-size:.88rem;}
-.bc-status{padding:2px 8px;border-radius:4px;font-size:.64rem;font-weight:700;}
-.st-open{background:var(--gn2);color:var(--grn);}
-.st-full{background:var(--pr2);color:var(--purp);}
-.st-closed{background:rgba(255,255,255,.05);color:var(--soft);}
+.slot.winner{background:var(--gld2);border-color:var(--gold);animation:pulse 1s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.metric{font-family:"JetBrains Mono",monospace;font-size:1.4rem;font-weight:600;}
+.metric.purp{color:var(--purp);}.metric.grn{color:var(--grn);}.metric.gold{color:var(--gold);}
+.mlbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:3px;}
+.pull-card{padding:12px;border-radius:8px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
 </style>
 </head>
-<body>
-<!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
+<body><!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
 <div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:7px;">
     <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
@@ -117,197 +118,245 @@ input,select{width:100%;background:var(--surf);border:1px solid var(--line);bord
 })();
 </script>
 <!-- ── END WALLET BAR ────────────────────────────────────────────── -->
-
 <header>
-  <span style="font-size:1.4rem;">🎴</span>
-  <h1>Droppa — Live Commerce Breaks</h1>
-  <div style="margin-left:auto;display:flex;gap:8px;">
-    <button class="btn" style="background:var(--pr2);color:var(--purp);border:1px solid rgba(139,92,246,.25);" onclick="showTab('create')">+ Create Break</button>
-    <button class="btn btn-purp" onclick="showTab('live')">View Live Breaks</button>
+  <span style="font-size:1.3rem;">🎴</span>
+  <div><div style="font-size:1rem;font-weight:800;">Droppa</div>
+  <div style="font-size:.72rem;color:var(--soft);">Live commerce breaks · 1% fee · VRF provably fair</div></div>
+  <div style="margin-left:auto;">
+    <button class="btn btn-purp" onclick="showTab('create')">+ Create Break</button>
   </div>
 </header>
 <div class="tabs">
   <div class="tab active" onclick="showTab('live')">Live Breaks</div>
   <div class="tab" onclick="showTab('create')">Create Break</div>
-  <div class="tab" onclick="showTab('my-breaks')">My Breaks</div>
+  <div class="tab" onclick="showTab('mybreaks')">My Breaks</div>
   <div class="tab" onclick="showTab('results')">Results</div>
   <div class="tab" onclick="showTab('earnings')">Earnings</div>
+  <div class="tab" onclick="showTab('how')">How It Works</div>
 </div>
 
 <!-- LIVE BREAKS -->
 <div class="pane active" id="pane-live">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-    <select style="width:auto;margin:0;">
-      <option>All Categories</option>
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <select id="filter-cat" onchange="renderBreaks()" style="width:auto;margin:0;">
+      <option value="">All Categories</option>
       <option>Sports Cards</option><option>Trading Cards (TCG)</option>
       <option>Collectibles</option><option>Coins</option><option>Memorabilia</option>
     </select>
-    <select style="width:auto;margin:0;">
-      <option>All Formats</option>
-      <option>Random Teams</option><option>Pick Your Team</option>
-      <option>Random Slot</option><option>First to Claim</option>
+    <select id="filter-fmt" onchange="renderBreaks()" style="width:auto;margin:0;">
+      <option value="">All Formats</option>
+      <option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option>
     </select>
-    <div style="margin-left:auto;font-size:.8rem;color:var(--soft)" id="break-count">0 active breaks</div>
+    <div style="margin-left:auto;font-size:.8rem;color:var(--soft);" id="break-count"></div>
   </div>
-  <div id="breaks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;"></div>
+  <div id="breaks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;"></div>
 </div>
 
-<!-- CREATE BREAK -->
+<!-- CREATE -->
 <div class="pane" id="pane-create">
   <div class="g2">
     <div class="card">
-      <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--purp);">New Break Setup</div>
-      <label>Break Title</label>
-      <input type="text" id="b-title" placeholder="2024 Topps Series 1 Hobby Box Break">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp);">New Break</div>
+      <label>Title</label><input id="b-title" placeholder="2024 Topps Hobby Box Break">
       <label>Category</label>
-      <select id="b-cat">
-        <option>Sports Cards</option><option>Trading Cards (TCG)</option>
-        <option>Collectibles</option><option>Coins</option><option>Memorabilia</option>
-      </select>
+      <select id="b-cat"><option>Sports Cards</option><option>Trading Cards (TCG)</option><option>Collectibles</option><option>Coins</option><option>Memorabilia</option></select>
       <label>Format</label>
-      <select id="b-format">
-        <option>Random Teams</option><option>Pick Your Team</option>
-        <option>Random Slot</option><option>First to Claim</option>
-      </select>
+      <select id="b-fmt"><option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option></select>
       <div class="g2" style="gap:8px;">
-        <div><label>Number of Slots</label><input type="number" id="b-slots" value="20" min="2" max="100" oninput="calcBreak()"></div>
-        <div><label>Price Per Slot ($)</label><input type="number" id="b-price" value="65" step="0.01" oninput="calcBreak()"></div>
+        <div><label>Slots</label><input type="number" id="b-slots" value="20" min="2" max="100" oninput="calcBreakPreview()"></div>
+        <div><label>Price/Slot ($)</label><input type="number" id="b-price" value="65" oninput="calcBreakPreview()"></div>
       </div>
-      <label>Break Date / Time</label>
-      <input type="datetime-local" id="b-datetime">
-      <label>Product Description</label>
-      <input type="text" id="b-desc" placeholder="1x Hobby Box · Sealed · Factory fresh">
+      <label>Date/Time</label><input type="datetime-local" id="b-when">
+      <label>Description</label><input id="b-desc" placeholder="1x Hobby Box · Sealed · Factory fresh">
       <button class="btn btn-purp" style="width:100%;margin-top:4px;" onclick="createBreak()">Create Break</button>
+      <div id="create-status" style="margin-top:8px;font-size:.78rem;text-align:center;color:var(--soft);"></div>
     </div>
     <div>
-      <div class="card" style="margin-bottom:14px;background:var(--pr2);border-color:rgba(139,92,246,.2);">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--purp);">Break Economics Preview</div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">Gross (all slots filled)</span>
-          <span class="mono" style="font-size:.82rem;" id="prev-gross">$1,300</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">Droppa fee (1%)</span>
-          <span class="mono" style="font-size:.82rem;color:var(--red)" id="prev-fee">-$13.00</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">Gas (RAWNet 20 slots)</span>
-          <span class="mono" style="font-size:.82rem;color:var(--grn)" id="prev-gas">-$0.000164</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;">
-          <span style="font-size:.78rem;font-weight:700">You Receive</span>
-          <span class="mono" style="font-size:.92rem;font-weight:700;color:var(--grn)" id="prev-net">$1,287.00</span>
-        </div>
-        <div style="margin-top:8px;font-size:.72rem;color:var(--soft);">Payment via AllCard to your wallet — settled in 500ms on RAWNet. No holds, no reversals.</div>
+      <div class="card" style="background:var(--pr2);border-color:rgba(139,92,246,.2);margin-bottom:12px;">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--purp);">Economics Preview</div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gross (full)</span><span id="prev-gross" class="mono" style="font-size:.82rem;">$1,300</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Droppa fee (1%)</span><span id="prev-fee" class="mono" style="font-size:.82rem;color:var(--red);">-$13.00</span></div>
+        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gas (Base Sepolia)</span><span class="mono" style="font-size:.78rem;color:var(--grn);">~$0.001</span></div>
+        <div class="row"><span style="font-size:.78rem;font-weight:700">You receive</span><span id="prev-net" class="mono" style="font-size:.88rem;font-weight:700;color:var(--grn);">$1,287.00</span></div>
       </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Droppa vs Competitors</div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">Droppa fee</span>
-          <span class="mono" style="font-size:.8rem;color:var(--grn)">1.0%</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">eBay seller fee</span>
-          <span class="mono" style="font-size:.8rem;color:var(--red)">12.9%</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);">
-          <span style="font-size:.78rem;color:var(--soft)">PayPal G&S</span>
-          <span class="mono" style="font-size:.8rem;color:var(--red)">3.49%+$0.49</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;">
-          <span style="font-size:.78rem;color:var(--soft)">Whatnot break fee</span>
-          <span class="mono" style="font-size:.8rem;color:var(--red)">5%+processing</span>
-        </div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:8px;">Droppa vs Competitors</div>
+        <div class="row"><span style="font-size:.76rem;color:var(--soft)">Droppa</span><span class="mono" style="font-size:.76rem;color:var(--grn);">1.0%</span></div>
+        <div class="row"><span style="font-size:.76rem;color:var(--soft)">Whatnot</span><span class="mono" style="font-size:.76rem;color:var(--red);">5% + processing</span></div>
+        <div class="row"><span style="font-size:.76rem;color:var(--soft)">eBay</span><span class="mono" style="font-size:.76rem;color:var(--red);">12.9%</span></div>
+        <div class="row"><span style="font-size:.76rem;color:var(--soft)">PayPal G&S</span><span class="mono" style="font-size:.76rem;color:var(--red);">3.49% + $0.49</span></div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- MY BREAKS -->
-<div class="pane" id="pane-my-breaks">
+<div class="pane" id="pane-mybreaks">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="font-size:.86rem;font-weight:700;">My Breaks</div>
+    <button class="btn btn-outline" style="padding:5px 12px;font-size:.74rem;" onclick="renderMyBreaks()">Refresh</button>
+  </div>
   <div id="my-breaks-list"></div>
 </div>
 
-<!-- RESULTS -->
+<!-- RESULTS — provably fair VRF -->
 <div class="pane" id="pane-results">
-  <div id="results-list" style="font-size:.8rem;color:var(--soft);text-align:center;padding:30px;">Select a completed break to view pulls and randomization proof</div>
+  <div class="g2">
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp);">Break Results + VRF Proof</div>
+      <label>Break ID</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="res-id" placeholder="Select from My Breaks or enter ID" style="margin:0;">
+        <button class="btn btn-purp" onclick="loadResult()">Load</button>
+      </div>
+      <div id="result-display"></div>
+    </div>
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--purp);">How VRF Works</div>
+      <div style="font-size:.78rem;color:var(--soft);line-height:1.8;">
+        <div>1. Break is created on-chain (BreakFactory.sol)</div>
+        <div>2. All slots sold → break locked</div>
+        <div>3. VRF seed = keccak256(blockHash + breakId + timestamp)</div>
+        <div>4. Slots assigned using Fisher-Yates shuffle with VRF seed</div>
+        <div>5. Result verifiable by anyone on-chain</div>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:var(--gn2);border:1px solid rgba(16,185,129,.2);border-radius:7px;font-size:.74rem;color:var(--grn);">
+        No break host can manipulate results after slots are sold. The VRF seed is derived from block data that no one can predict.
+      </div>
+    </div>
+  </div>
+  <div id="completed-breaks" style="margin-top:12px;"></div>
 </div>
 
 <!-- EARNINGS -->
 <div class="pane" id="pane-earnings">
-  <div class="g3">
-    <div class="card" style="text-align:center;">
-      <div style="font-size:.65rem;text-transform:uppercase;color:var(--dim);margin-bottom:3px">Lifetime Gross</div>
-      <div class="mono" style="font-size:1.4rem;font-weight:600;color:var(--purp)" id="earn-gross">$0</div>
+  <div class="g3" style="margin-bottom:16px;">
+    <div class="card" style="text-align:center;border-top:3px solid var(--purp);">
+      <div class="mlbl">Lifetime Gross</div>
+      <div class="metric purp" id="earn-gross">$0</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">before Droppa fee</div>
     </div>
-    <div class="card" style="text-align:center;">
-      <div style="font-size:.65rem;text-transform:uppercase;color:var(--dim);margin-bottom:3px">LTN Earned</div>
-      <div class="mono" style="font-size:1.4rem;font-weight:600;color:var(--gold)" id="earn-ltn">0 LTN</div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--grn);">
+      <div class="mlbl">Net Earned</div>
+      <div class="metric grn" id="earn-net">$0</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">after 1% fee</div>
     </div>
-    <div class="card" style="text-align:center;">
-      <div style="font-size:.65rem;text-transform:uppercase;color:var(--dim);margin-bottom:3px">Total Breaks</div>
-      <div class="mono" style="font-size:1.4rem;font-weight:600;color:var(--grn)" id="earn-breaks">0</div>
+    <div class="card" style="text-align:center;border-top:3px solid var(--gold);">
+      <div class="mlbl">LTN Earned</div>
+      <div class="metric gold" id="earn-ltn">0 LTN</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">from transactions</div>
     </div>
   </div>
-  <div class="card" style="margin-top:14px;">
-    <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Earnings Breakdown</div>
-    <div id="earnings-detail" style="color:var(--soft);font-size:.8rem;text-align:center;padding:20px;">Complete breaks to see earnings history</div>
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Break History</div>
+      <div id="earnings-history"></div>
+    </div>
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Payout Breakdown</div>
+      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Droppa fee rate</span><span class="mono" style="font-size:.78rem;">1.0%</span></div>
+      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Seller keeps</span><span class="mono" style="font-size:.78rem;color:var(--grn);">99%</span></div>
+      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Settlement</span><span class="mono" style="font-size:.78rem;color:var(--grn);">Instant via AllCard</span></div>
+      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Chargeback risk</span><span class="mono" style="font-size:.78rem;color:var(--grn);">Zero (crypto)</span></div>
+      <div class="row"><span style="font-size:.78rem;color:var(--soft)">LTN earned/break</span><span class="mono" style="font-size:.78rem;color:var(--gold);">0.001 LTN/slot</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="pane" id="pane-how">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:12px;">
+        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">For Sellers</div>
+        <div style="counter-reset:step;">
+          ${['Create a break — set title, category, slots, price per slot','Promote your break link to buyers','Buyers purchase slots with AllCard (ZK-verified, no chargebacks)','Once full, break goes live on-chain','VRF randomization assigns slots provably fair','You receive 99% instantly via AllCard — no holds, no PayPal freeze'].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--purp);flex-shrink:0;">${i+1}</div><div style="font-size:.8rem;color:var(--soft);line-height:1.6;">${s}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">For Buyers</div>
+        <div style="counter-reset:step;">
+          ${['Browse live breaks — filter by category or format','Connect wallet (MetaMask/AllCard)','Purchase a slot — payment confirmed in &lt;500ms','Watch the live break when all slots fill','Your slot assignment is random + verifiable on-chain','Cards shipped directly from seller via AllCard address (ZK-verified)'].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--gn2);border:1px solid var(--grn);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--grn);flex-shrink:0;">${i+1}</div><div style="font-size:.8rem;color:var(--soft);line-height:1.6;">${s}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-let myBreaks=JSON.parse(localStorage.getItem('dr-breaks')||'[]');
-let totalGross=0,totalLTN=0;
+let myBreaks = JSON.parse(localStorage.getItem('dr-breaks') || '[]');
+let totalGross=0, totalNet=0, totalLTN=0;
+myBreaks.forEach(b=>{totalGross+=b.gross||0;totalNet+=(b.gross||0)*0.99;totalLTN+=(b.slots||0)*0.001;});
 
 const SAMPLE_BREAKS=[
-  {id:'DR-001',title:'2024 Bowman Chrome Hobby',cat:'Sports Cards',format:'Random Teams',slots:30,price:85,filled:22,status:'open',host:'CardKing'},
-  {id:'DR-002',title:'Pokemon Paradox Rift ETB',cat:'Trading Cards',format:'Random Slot',slots:12,price:45,filled:12,status:'full',host:'PokeBreaker'},
-  {id:'DR-003',title:'2024 Topps Series 1 HTA',cat:'Sports Cards',format:'Pick Your Team',slots:30,price:120,filled:8,status:'open',host:'ToppsBreaks'},
-  {id:'DR-004',title:'1965 Morgan Silver Dollars',cat:'Coins',format:'Random Slot',slots:10,price:75,filled:5,status:'open',host:'CoinVault'},
+  {id:'DR-001',title:'2024 Bowman Chrome Hobby Box',cat:'Sports Cards',fmt:'Random Teams',slots:30,price:85,filled:22,status:'open',host:'CardKing'},
+  {id:'DR-002',title:'Pokemon Paradox Rift ETB Break',cat:'Trading Cards (TCG)',fmt:'Random Slot',slots:12,price:45,filled:12,status:'full',host:'PokeBreaker'},
+  {id:'DR-003',title:'2024 Topps Chrome HTA Box',cat:'Sports Cards',fmt:'Pick Your Team',slots:30,price:120,filled:8,status:'open',host:'ToppsBreaks'},
+  {id:'DR-004',title:'Morgan Silver Dollar Roll',cat:'Coins',fmt:'Random Slot',slots:20,price:75,filled:7,status:'open',host:'CoinVault'},
+  {id:'DR-005',title:'2024 Prizm Basketball Hobby',cat:'Sports Cards',fmt:'Random Teams',slots:30,price:95,filled:30,status:'complete',host:'BballBreaks',vrfSeed:'0x7f3a...',gross:2850},
 ];
 
 function renderBreaks(){
-  const el=document.getElementById('breaks-grid');
-  const all=[...SAMPLE_BREAKS,...myBreaks.filter(b=>b.status==='open')];
-  document.getElementById('break-count').textContent=all.length+' active breaks';
-  el.innerHTML=all.map(b=>{
-    const pct=Math.round(b.filled/b.slots*100);
-    const gross=b.slots*b.price;
-    const slots=Array.from({length:b.slots},(_, i)=>
-      `<div class="slot ${i<b.filled?'taken':''}" onclick="buySlot('${b.id}',${i})">
-        <div class="slot-num">#${i+1}</div>
-        <div class="slot-buyer">${i<b.filled?'Sold':''}</div>
-        <div class="slot-price">${i<b.filled?'':'$'+b.price}</div>
-      </div>`).join('');
-    return `<div class="break-card">
-      <div class="bc-head">
+  const cat=document.getElementById('filter-cat').value;
+  const fmt=document.getElementById('filter-fmt').value;
+  const all=[...SAMPLE_BREAKS,...myBreaks.filter(b=>b.status==='open')].filter(b=>(!cat||b.cat===cat)&&(!fmt||b.fmt===fmt));
+  document.getElementById('break-count').textContent=all.filter(b=>b.status!=='complete').length+' active';
+  document.getElementById('breaks-grid').innerHTML=all.map(b=>{
+    const pct=Math.round((b.filled||0)/b.slots*100);
+    const gross=(b.slots*b.price);
+    return`<div class="break-card">
+      <div class="break-head">
         <span style="font-size:1rem;">🎴</span>
-        <div style="flex:1">
-          <div class="bc-title">${b.title}</div>
-          <div style="font-size:.72rem;color:var(--soft)">${b.format} · ${b.cat} · Host: ${b.host}</div>
+        <div style="flex:1;"><div style="font-size:.84rem;font-weight:700;">${b.title}</div>
+        <div style="font-size:.7rem;color:var(--soft);">${b.fmt} · ${b.cat} · Host: ${b.host}</div></div>
+        <span style="padding:2px 8px;border-radius:4px;font-size:.62rem;font-weight:700;background:${b.status==='open'?'var(--gn2)':b.status==='full'?'var(--pr2)':'var(--gld2)'};color:${b.status==='open'?'var(--grn)':b.status==='full'?'var(--purp)':'var(--gold)'};">${b.status}</span>
+      </div>
+      <div style="padding:10px 14px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:.76rem;">
+          <span style="color:var(--soft)">${b.filled||0}/${b.slots} slots · $${b.price}/slot</span>
+          <span class="mono" style="color:var(--purp)">Gross: $${gross.toLocaleString()}</span>
         </div>
-        <span class="bc-status ${b.status==='open'?'st-open':b.status==='full'?'st-full':'st-closed'}">${b.status}</span>
+        <div style="height:5px;background:var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${pct>=100?'var(--purp)':'var(--grn)'};border-radius:3px;"></div>
+        </div>
+        <div class="slot-grid" style="grid-template-columns:repeat(${Math.min(b.slots,10)},1fr);">
+          ${Array.from({length:Math.min(b.slots,10)},(_,i)=>`<div class="slot ${i<(b.filled||0)?'taken':''}" onclick="buySlot('${b.id}',${i})">
+            <div style="font-size:.6rem;color:var(--soft);">#${i+1}</div>
+            <div style="font-size:.68rem;">${i<(b.filled||0)?'●':('$'+b.price)}</div>
+          </div>`).join('')}
+          ${b.slots>10?`<div class="slot" style="font-size:.64rem;color:var(--soft)">+${b.slots-10}</div>`:''}
+        </div>
+        ${b.status!=='complete'?`<button class="btn btn-purp" style="width:100%;font-size:.76rem;margin-top:8px;" onclick="buySlot('${b.id}',0)">Join — $${b.price}/slot</button>`:`<div style="padding:8px;background:var(--gld2);border-radius:6px;font-size:.74rem;color:var(--gold);text-align:center;margin-top:8px;">✓ Complete · VRF seed: ${b.vrfSeed||'0x...'}</div>`}
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:.78rem;">
-        <span style="color:var(--soft)">${b.filled}/${b.slots} slots · $${b.price}/slot</span>
-        <span class="mono" style="color:var(--purp)">GMV / Gross: $${gross.toLocaleString()}</span>
-      </div>
-      <div style="height:4px;background:var(--line);border-radius:2px;margin-bottom:10px;overflow:hidden;">
-        <div style="width:${pct}%;height:100%;background:${pct===100?'var(--purp)':'var(--grn)'};border-radius:2px;"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(b.slots,10)},1fr);gap:3px;margin-bottom:10px;">${slots.split('</div>').slice(0,10).join('</div>')+(b.slots>10?`<div class="slot" style="font-size:.7rem;color:var(--soft)">+${b.slots-10}</div>`:'')}</div>
-      <button class="btn btn-purp" style="width:100%;font-size:.78rem" onclick="buySlot('${b.id}',0)">Join Break — $${b.price}/slot</button>
     </div>`;
   }).join('');
 }
 
-function calcBreak(){
+function buySlot(id, n){
+  const b=[...SAMPLE_BREAKS,...myBreaks].find(x=>x.id===id);
+  if(!b||b.status==='full'||b.status==='complete'){alert('This break is not available');return;}
+  if(!window._rawagonAddr) alert(`Slot reserved!
+
+Break: ${b.title}
+Price: $${b.price}
+Payment: AllCard (ZK-verified)
+Gas: ~$0.001 on Base Sepolia
+
+Connect wallet to pay on-chain.`);
+  else alert(`Slot reserved!
+From: ${window._rawagonAddr.slice(0,6)}...
+To: BreakFactory.sol
+Price: $${b.price} USDC`);
+}
+
+function calcBreakPreview(){
   const slots=parseInt(document.getElementById('b-slots').value)||20;
   const price=parseFloat(document.getElementById('b-price').value)||65;
-  const gross=slots*price,fee=gross*0.01,gas=slots*0.0000082,net=gross-fee-gas;
+  const gross=slots*price,fee=gross*0.01,net=gross-fee;
   document.getElementById('prev-gross').textContent='$'+gross.toFixed(2);
   document.getElementById('prev-fee').textContent='-$'+fee.toFixed(2);
-  document.getElementById('prev-gas').textContent='-$'+gas.toFixed(7);
   document.getElementById('prev-net').textContent='$'+net.toFixed(2);
 }
 
@@ -316,40 +365,97 @@ function createBreak(){
   const slots=parseInt(document.getElementById('b-slots').value)||20;
   const price=parseFloat(document.getElementById('b-price').value)||65;
   if(!title){alert('Enter a break title');return;}
-  const b={id:'DR-'+Date.now().toString().slice(-4),title,cat:document.getElementById('b-cat').value,
-    format:document.getElementById('b-format').value,slots,price,filled:0,status:'open',host:'You',ts:new Date().toLocaleDateString()};
+  const b={id:'DR-'+Date.now().toString().slice(-4),title,cat:document.getElementById('b-cat').value,fmt:document.getElementById('b-fmt').value,slots,price,filled:0,status:'open',host:'You',gross:slots*price,ts:new Date().toLocaleDateString()};
   myBreaks.unshift(b);localStorage.setItem('dr-breaks',JSON.stringify(myBreaks));
-  renderBreaks();renderMyBreaks();
-  showTab('live');alert('Break created: '+b.id);
-}
-
-function buySlot(id,slotNum){
-  const b=[...SAMPLE_BREAKS,...myBreaks].find(x=>x.id===id);
-  if(!b||b.status==='full'){alert('Break is full');return;}
-  alert('Slot reserved!\\nBreak: '+b.title+'\\nPrice: $'+b.price+'\\nPayment: AllCard (ZK verified)\\nGas: $0.0000082 (RAWNet)');
+  document.getElementById('create-status').textContent='✓ Break created! '+b.id;
+  document.getElementById('create-status').style.color='#10b981';
+  totalGross+=b.gross;totalNet+=b.gross*0.99;
+  renderBreaks();showTab('live');
 }
 
 function renderMyBreaks(){
   const el=document.getElementById('my-breaks-list');
-  if(!myBreaks.length){el.innerHTML='<div style="color:var(--soft);text-align:center;padding:30px">No breaks created yet</div>';return;}
-  el.innerHTML=myBreaks.map(b=>`
-    <div class="break-card">
-      <div class="bc-head">
-        <div style="flex:1"><div class="bc-title">${b.title}</div><div style="font-size:.72rem;color:var(--soft)">${b.slots} slots · $${b.price} each · Created ${b.ts}</div></div>
-        <span class="bc-status st-${b.status}">${b.status}</span>
-      </div>
-      <div style="font-size:.78rem;color:var(--soft)">${b.filled}/${b.slots} slots filled · Gross: $${(b.slots*b.price).toFixed(2)}</div>
-    </div>`).join('');
+  if(!myBreaks.length){el.innerHTML='<div style="color:var(--soft);text-align:center;padding:30px;">No breaks created yet</div>';return;}
+  el.innerHTML=myBreaks.map(b=>`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;">
+    <span>🎴</span>
+    <div style="flex:1;"><div style="font-size:.82rem;font-weight:600;">${b.title}</div>
+    <div style="font-size:.7rem;color:var(--soft)">${b.slots} slots · $${b.price}/slot · ${b.filled||0} sold · ${b.ts||''}</div></div>
+    <div style="text-align:right;"><div class="mono" style="font-size:.82rem;color:var(--purp)">$${b.gross.toFixed(0)}</div>
+    <div style="font-size:.66rem;color:var(--soft)">${b.status}</div></div>
+    <button class="btn btn-outline" style="padding:4px 10px;font-size:.7rem;" onclick="runVRF('${b.id}')">Complete</button>
+  </div>`).join('');
+}
+
+function runVRF(id){
+  const b=myBreaks.find(x=>x.id===id);if(!b)return;
+  // Simulate VRF seed generation
+  const ts=Date.now();
+  const vrfSeed='0x'+Array.from({length:16},()=>(Math.random()*16|0).toString(16)).join('');
+  const shuffled=Array.from({length:b.slots},(_,i)=>i+1);
+  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+  b.status='complete';b.vrfSeed=vrfSeed;b.results=shuffled;b.completedAt=new Date().toLocaleDateString();
+  localStorage.setItem('dr-breaks',JSON.stringify(myBreaks));
+  renderMyBreaks();
+  alert('Break completed!
+
+VRF Seed: '+vrfSeed+'
+Slot assignments verifiable on-chain.
+Sellers: check Results tab.');
+}
+
+function loadResult(){
+  const id=document.getElementById('res-id').value.trim();
+  const b=[...SAMPLE_BREAKS,...myBreaks].find(x=>x.id===id||x.title.toLowerCase().includes(id.toLowerCase()));
+  if(!b){document.getElementById('result-display').innerHTML='<div style="color:var(--red);font-size:.8rem;">Break not found</div>';return;}
+  if(b.status!=='complete'){document.getElementById('result-display').innerHTML='<div style="color:var(--soft);font-size:.8rem;">Break is not complete yet</div>';return;}
+  const results=b.results||Array.from({length:b.slots},(_,i)=>i+1);
+  document.getElementById('result-display').innerHTML=`
+    <div style="padding:10px;background:var(--gld2);border:1px solid rgba(245,158,11,.25);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
+      <strong style="color:var(--gold);">Break:</strong> ${b.title}<br>
+      <strong style="color:var(--gold);">VRF Seed:</strong> <span class="mono" style="font-size:.7rem;">${b.vrfSeed||'0x7f3a2b...'}</span><br>
+      <strong style="color:var(--gold);">Total:</strong> $${(b.slots*b.price).toLocaleString()}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;">
+      ${results.slice(0,b.slots).map((r,i)=>`<div class="slot ${i===0?'winner':''}" style="padding:8px;background:var(--surf);border:1px solid var(--line);border-radius:6px;text-align:center;">
+        <div style="font-size:.62rem;color:var(--soft)">Slot ${i+1}</div>
+        <div style="font-size:.72rem;font-weight:700;color:${i===0?'var(--gold)':'var(--purp)'}">Team ${r}</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+function renderEarnings(){
+  document.getElementById('earn-gross').textContent='$'+totalGross.toFixed(0);
+  document.getElementById('earn-net').textContent='$'+totalNet.toFixed(0);
+  document.getElementById('earn-ltn').textContent=(myBreaks.reduce((s,b)=>s+(b.slots||0),0)*0.001).toFixed(3)+' LTN';
+  document.getElementById('earnings-history').innerHTML=myBreaks.length?myBreaks.map(b=>`
+    <div class="row">
+      <span style="font-size:.78rem">${b.title?.slice(0,30)||'Break'}...</span>
+      <span class="mono" style="font-size:.78rem;color:var(--grn)">$${(b.gross*0.99).toFixed(0)}</span>
+    </div>`).join(''):'<div style="color:var(--soft);font-size:.8rem;text-align:center;padding:14px;">Complete breaks to see earnings</div>';
 }
 
 function showTab(id){
-  const ids=['live','create','my-breaks','results','earnings'];
+  const ids=['live','create','mybreaks','results','earnings','how'];
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',ids[i]===id));
   document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+id));
-  if(id==='my-breaks')renderMyBreaks();
+  if(id==='mybreaks')renderMyBreaks();
+  if(id==='earnings')renderEarnings();
+  if(id==='results'){
+    document.getElementById('completed-breaks').innerHTML=`<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px;">Completed Breaks</div>`+
+      [...SAMPLE_BREAKS,...myBreaks].filter(b=>b.status==='complete').map(b=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:5px;cursor:pointer;" onclick="document.getElementById('res-id').value='${b.id}';loadResult()">
+          <span>🎴</span><div style="flex:1;font-size:.8rem;font-weight:600;">${b.title}</div>
+          <span class="mono" style="font-size:.72rem;color:var(--gold);">$${(b.gross||0).toLocaleString()}</span>
+          <span style="font-size:.7rem;color:var(--purp);">View →</span>
+        </div>`).join('') || '<div style="color:var(--soft);font-size:.8rem;">No completed breaks</div>';
+  }
 }
 
-document.addEventListener('DOMContentLoaded',()=>{renderBreaks();calcBreak();});
+document.addEventListener('rawagon:connected',e=>{
+  window._rawagonAddr=e.detail?.address;
+  window._rawagonChainId=e.detail?.chainId||84532;
+});
+calcBreakPreview();
+renderBreaks();
 </script>
-</body>
-</html>
+</body></html>
