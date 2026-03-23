@@ -1,113 +1,167 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-
 /**
  * @title FeeDistributor
- * @notice Receives revenue from QWKS, BitPawn, Droppa, AutoIQ, AllCard.
- *         Routes 0.1% of all network transaction volume to LTN stakers.
- *         Burns 0.001 LTN per transaction.
- * @dev Patent pending: RAW-2026-PROV-001 (Performance-Linked Fee Distribution)
+ * @notice Routes 0.1% of all RAWagon network transaction volume to LTN stakers.
+ *         Burns 0.001 LTN per transaction for deflation.
+ *         Calculates QWKS savings vs Visa baseline on-chain.
+ *
+ * Performance fee model (Patent Claims 11-13):
+ *   savings = annualVolume × (baselineRate - qwksRate)
+ *   fee     = savings × 10%
+ *   Math enforced on-chain — business always net-positive
+ *
+ * @dev Patent pending: RAW-2026-PROV-001
  */
-contract FeeDistributor is Ownable, ReentrancyGuard {
-    IERC20 public immutable ltn;
+contract FeeDistributor {
+    // ── Constants ─────────────────────────────────────────────
+    uint256 public constant FEE_BPS       = 10;        // 0.1% of volume → stakers
+    uint256 public constant BURN_PER_TX   = 1e15;      // 0.001 LTN per tx
+    uint256 public constant QWKS_FEE_BPS  = 1000;      // 10% of savings → QWKS fee
+    uint256 public constant BPS_DENOM     = 10_000;
 
-    uint256 public constant FEE_BPS         = 10;      // 0.1% of volume
-    uint256 public constant STAKING_APY_BPS = 1200;    // 12% APY target
+    // ── State ──────────────────────────────────────────────────
+    address public owner;
+    address public ltnToken;
+    address public usdcToken;
 
-    struct StakePosition {
-        uint256 amount;
-        uint256 stakedAt;
-        uint256 rewardDebt;
-    }
-
-    mapping(address => StakePosition) public stakes;
-    mapping(address => uint256) public pendingRewards;
-
+    // Staking
+    mapping(address => uint256) public staked;
+    mapping(address => uint256) public rewardDebt;
     uint256 public totalStaked;
-    uint256 public totalFeesCollected;
-    uint256 public rewardPerTokenStored;
-    uint256 public lastUpdateTime;
+    uint256 public accRewardPerShare; // × 1e18
+    uint256 public totalInflow;
+    uint256 public totalBurned;
 
-    // Product registry — approved sources that can call inflow()
+    // Business registry — tracks baseline rates for savings oracle
+    struct BusinessConfig {
+        uint256 baselineRateBps;  // e.g. 250 for 2.5% Visa
+        uint256 monthlyVolume;    // USD
+        uint256 totalSaved;
+        bool    active;
+    }
+    mapping(address => BusinessConfig) public businesses;
+
+    // Products authorized to call inflow()
     mapping(address => bool) public approvedProducts;
-    mapping(address => string) public productNames;
 
-    event FeeReceived(address indexed product, uint256 amount, uint256 timestamp);
-    event Staked(address indexed user, uint256 amount);
+    // ── Events ────────────────────────────────────────────────
+    event Inflow(address indexed product, uint256 volume, uint256 feeToStakers, uint256 burned);
+    event Staked(address indexed user, uint256 amount, uint256 totalStaked);
     event Unstaked(address indexed user, uint256 amount);
     event RewardClaimed(address indexed user, uint256 amount);
-    event ProductRegistered(address indexed product, string name);
+    event BusinessRegistered(address indexed biz, uint256 baselineRateBps);
+    event SavingsRecorded(address indexed biz, uint256 annualSaved, uint256 qwksFee);
 
-    constructor(address _ltn, address _owner) Ownable(_owner) {
-        ltn = IERC20(_ltn);
-        lastUpdateTime = block.timestamp;
+    modifier onlyOwner()   { require(msg.sender == owner, "FD: not owner"); _; }
+    modifier onlyProduct() { require(approvedProducts[msg.sender] || msg.sender == owner, "FD: not product"); _; }
+
+    constructor(address _ltn, address _usdc, address _owner) {
+        ltnToken  = _ltn;
+        usdcToken = _usdc;
+        owner     = _owner;
     }
+
+    // ── Core: Inflow from network transactions ─────────────────
 
     /**
-     * @notice Called by any approved product when a transaction occurs.
-     *         Routes fee to staking rewards pool.
-     * @param volume Transaction volume in USDC (6 decimals)
+     * @notice Called by each product contract when processing a transaction.
+     *         Routes 0.1% of volume to LTN stakers.
+     *         Burns 0.001 LTN from initiator.
+     * @param volume     Transaction amount in USDC (6 decimals)
+     * @param initiator  Business or user who initiated the tx
      */
-    function inflow(uint256 volume) external {
-        require(approvedProducts[msg.sender], "FeeDistributor: caller not registered");
-        uint256 fee = (volume * FEE_BPS) / 10000;
-        totalFeesCollected += fee;
-        _updateRewardPerToken(fee);
-        emit FeeReceived(msg.sender, fee, block.timestamp);
+    function inflow(uint256 volume, address initiator) external onlyProduct {
+        if (volume == 0) return;
+        uint256 feeAmount = (volume * FEE_BPS) / BPS_DENOM; // 0.1%
+
+        // Pull USDC fee from caller
+        IERC20(usdcToken).transferFrom(msg.sender, address(this), feeAmount);
+        totalInflow += feeAmount;
+
+        // Distribute to stakers
+        if (totalStaked > 0) {
+            accRewardPerShare += (feeAmount * 1e18) / totalStaked;
+        }
+
+        // Burn LTN
+        try ILTN(ltnToken).burnOnTransaction(initiator) {
+            totalBurned += BURN_PER_TX;
+        } catch {}
+
+        emit Inflow(msg.sender, volume, feeAmount, BURN_PER_TX);
     }
 
-    function stake(uint256 amount) external nonReentrant {
-        require(amount > 0, "FeeDistributor: zero stake");
-        _updateUserReward(msg.sender);
-        ltn.transferFrom(msg.sender, address(this), amount);
-        stakes[msg.sender].amount += amount;
-        totalStaked += amount;
-        emit Staked(msg.sender, amount);
+    // ── Staking ───────────────────────────────────────────────
+
+    function stake(uint256 amount) external {
+        _settle(msg.sender);
+        IERC20(ltnToken).transferFrom(msg.sender, address(this), amount);
+        staked[msg.sender] += amount;
+        totalStaked        += amount;
+        emit Staked(msg.sender, amount, totalStaked);
     }
 
-    function unstake(uint256 amount) external nonReentrant {
-        require(stakes[msg.sender].amount >= amount, "FeeDistributor: insufficient stake");
-        _updateUserReward(msg.sender);
-        stakes[msg.sender].amount -= amount;
-        totalStaked -= amount;
-        ltn.transfer(msg.sender, amount);
+    function unstake(uint256 amount) external {
+        require(staked[msg.sender] >= amount, "FD: insufficient");
+        _settle(msg.sender);
+        staked[msg.sender] -= amount;
+        totalStaked        -= amount;
+        IERC20(ltnToken).transfer(msg.sender, amount);
         emit Unstaked(msg.sender, amount);
     }
 
-    function claimRewards() external nonReentrant {
-        _updateUserReward(msg.sender);
-        uint256 reward = pendingRewards[msg.sender];
-        require(reward > 0, "FeeDistributor: no rewards");
-        pendingRewards[msg.sender] = 0;
-        ltn.transfer(msg.sender, reward);
-        emit RewardClaimed(msg.sender, reward);
-    }
-
-    function registerProduct(address product, string calldata name) external onlyOwner {
-        approvedProducts[product] = true;
-        productNames[product] = name;
-        emit ProductRegistered(product, name);
-    }
-
-    function _updateRewardPerToken(uint256 fee) internal {
-        if (totalStaked > 0) {
-            rewardPerTokenStored += (fee * 1e18) / totalStaked;
+    function claim() external returns (uint256 reward) {
+        _settle(msg.sender);
+        reward = rewardDebt[msg.sender];
+        if (reward > 0) {
+            rewardDebt[msg.sender] = 0;
+            IERC20(usdcToken).transfer(msg.sender, reward);
+            emit RewardClaimed(msg.sender, reward);
         }
-        lastUpdateTime = block.timestamp;
     }
 
-    function _updateUserReward(address user) internal {
-        pendingRewards[user] +=
-            (stakes[user].amount * (rewardPerTokenStored - stakes[user].rewardDebt)) / 1e18;
-        stakes[user].rewardDebt = rewardPerTokenStored;
+    function pending(address user) external view returns (uint256) {
+        return rewardDebt[user] + (staked[user] * accRewardPerShare) / 1e18;
     }
 
-    function earned(address user) external view returns (uint256) {
-        return pendingRewards[user] +
-            (stakes[user].amount * (rewardPerTokenStored - stakes[user].rewardDebt)) / 1e18;
+    // ── QWKS savings oracle ────────────────────────────────────
+
+    /**
+     * @notice Record verified savings for a QWKS business.
+     *         Called by MigrationReceiver after oracle verification.
+     * @param biz         Business address
+     * @param annualVol   Annual transaction volume (USD)
+     * @param baselineBps Verified processor rate in basis points
+     */
+    function recordSavings(address biz, uint256 annualVol, uint256 baselineBps) external onlyOwner {
+        uint256 qwksRateBps   = 1; // ~0.01% effective on RAWNet
+        uint256 savings       = (annualVol * (baselineBps - qwksRateBps)) / BPS_DENOM;
+        uint256 qwksFee       = (savings * QWKS_FEE_BPS) / BPS_DENOM;
+        businesses[biz].totalSaved += savings;
+        emit SavingsRecorded(biz, savings, qwksFee);
     }
+
+    // ── Admin ──────────────────────────────────────────────────
+
+    function registerBusiness(address biz, uint256 baselineRateBps, uint256 monthlyVol) external onlyOwner {
+        businesses[biz] = BusinessConfig(baselineRateBps, monthlyVol, 0, true);
+        emit BusinessRegistered(biz, baselineRateBps);
+    }
+
+    function approveProduct(address product) external onlyOwner { approvedProducts[product] = true; }
+    function removeProduct(address product)  external onlyOwner { approvedProducts[product] = false; }
+
+    function _settle(address user) internal {
+        rewardDebt[user] = this.pending(user);
+    }
+}
+
+interface IERC20 {
+    function transferFrom(address,address,uint256) external returns(bool);
+    function transfer(address,uint256) external returns(bool);
+}
+interface ILTN {
+    function burnOnTransaction(address) external;
 }

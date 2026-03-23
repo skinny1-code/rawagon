@@ -1,0 +1,17 @@
+'use strict';
+const assert = require('assert');
+const {stakingYield,transitionPoint,simulateBurn,earnRate,lifecycleProjection,LTN_PRICE_USD,BURN_PER_TX} = require('../../packages/ltn-token');
+let p=0,f=0;
+const t=(n,fn)=>{try{fn();console.log('  ✓',n);p++;}catch(e){console.log('  ✗',n,':',e.message);f++;}};
+console.log('\n── ltn-token ──');
+t('LTN_PRICE_USD = $0.084', ()=>assert.strictEqual(LTN_PRICE_USD,0.084));
+t('BURN_PER_TX = 0.001', ()=>assert.strictEqual(BURN_PER_TX,0.001));
+t('stakingYield: returns all fields', ()=>{const r=stakingYield(10000);assert(r.annualYield&&r.yieldPerLTN&&r.positionUSD);});
+t('stakingYield: 50K LTN ~ $4300/yr', ()=>{const r=stakingYield(50000);assert(r.annualYield>3000&&r.annualYield<6000);});
+t('transitionPoint: P* = fee/(price*apy)', ()=>{const r=transitionPoint(1499);const exp=Math.round(1499/(0.084*0.12));assert(Math.abs(r.ltnNeeded-exp)<=1);});
+t('simulateBurn: 56400 txns = 56.4 LTN', ()=>{const r=simulateBurn(56400);assert(Math.abs(r.burned-56.4)<0.001);});
+t('simulateBurn: supply decreases', ()=>{const r=simulateBurn(1000);assert(r.remainingSupply<1_000_000_000);});
+t('earnRate: returns monthly+yearly', ()=>{const r=earnRate(500);assert(r.ltnPerMonth===0.5&&r.ltnPerYear===6);});
+t('lifecycleProjection: 5 phases', ()=>{const r=lifecycleProjection(50000,500);assert.strictEqual(r.length,5);});
+t('lifecycle: phase 5 net positive', ()=>{const r=lifecycleProjection(50000,500);assert(r[4].ltnAccumulated>0);});
+console.log(`\n  ${p}/${p+f} passed`); process.exit(f?1:0);
