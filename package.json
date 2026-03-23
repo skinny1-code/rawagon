@@ -1,1 +1,21 @@
-{"name":"rawagon","version":"0.1.0","private":true,"description":"RAWagon Network — blockchain-native payment and identity infrastructure on Base L2","scripts":{"dev":"echo dev","build":"echo build","test":"echo ok"},"engines":{"node":">=18.0.0"}}
+{
+  "name": "rawagon",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RAWagon Network — blockchain-native payment and identity infrastructure on Base L2",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "echo dev",
+    "build": "echo build",
+    "test": "echo ok"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.3.1"
+  }
+}
