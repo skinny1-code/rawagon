@@ -18,7 +18,6 @@ out/
 # Secrets (NEVER commit these)
 *.pem
 *.key
-wallet.json
 keystore/
 
 # Cache
