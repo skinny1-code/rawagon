@@ -53,6 +53,83 @@ input:focus,select:focus{border-color:var(--gold);}
 </style>
 </head>
 <body>
+<!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
+<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:7px;">
+    <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
+    <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>
+  </div>
+  <div id="rwc-btn-wrap"></div>
+  <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
+  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+    <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
+    <a href="https://sepolia.basescan.org" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">Base Sepolia ↗</a>
+    <span style="font-size:11px;color:#333360;">chainId 84532</span>
+  </div>
+</div>
+<style>
+@keyframes wbld{0%,100%{opacity:1}50%{opacity:.3}}
+#rawagon-wallet-bar button{padding:6px 14px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.1);color:#00d4ff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+#rawagon-wallet-bar button:hover{background:rgba(0,212,255,.2);}
+#rawagon-wallet-bar button.connected{border-color:rgba(16,185,129,.4);color:#10b981;background:rgba(16,185,129,.08);}
+</style>
+<script>
+(function(){
+  const CHAIN = {
+    chainId:"0x14A34",chainName:"Base Sepolia",
+    nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
+    rpcUrls:["https://sepolia.base.org"],
+    blockExplorerUrls:["https://sepolia.basescan.org"]
+  };
+  const wrap = document.getElementById("rwc-btn-wrap");
+  const btn  = document.createElement("button");
+  btn.textContent = "🦊 Connect";
+  wrap.appendChild(btn);
+  const chainEl = document.getElementById("rwc-chain");
+  const balEl   = document.getElementById("rwc-bal");
+  let addr = null;
+
+  async function update(accounts){
+    addr = accounts && accounts[0] ? accounts[0] : null;
+    if(addr){
+      btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
+      btn.className = "connected";
+      chainEl.textContent = "Base Sepolia";
+      try{
+        const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
+        const eth = (parseInt(hex,16)/1e18).toFixed(4);
+        balEl.textContent = eth+" ETH";
+      }catch(e){}
+      document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
+    } else {
+      btn.textContent = "🦊 Connect";
+      btn.className = "";
+      chainEl.textContent = "";
+      balEl.textContent = "";
+    }
+  }
+
+  btn.onclick = async function(){
+    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
+    btn.textContent = "Connecting..."; btn.disabled = true;
+    try{
+      await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
+      await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
+      const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
+      await update(accounts);
+    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
+    btn.disabled = false;
+  };
+
+  if(window.ethereum){
+    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
+    window.ethereum.on("accountsChanged",update);
+    window.ethereum.on("chainChanged",()=>location.reload());
+  }
+})();
+</script>
+<!-- ── END WALLET BAR ────────────────────────────────────────────── -->
+
 <header>
   <span style="font-size:1.4rem;">🏦</span>
   <h1>BitPawn OS</h1>
