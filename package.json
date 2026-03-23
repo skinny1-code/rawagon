@@ -1,28 +1,41 @@
 {
   "name": "rawagon",
   "version": "0.1.0",
+  "description": "RAWagon ecosystem monorepo — QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap, ProfitPilot",
   "private": true,
-  "description": "RAWagon Network — blockchain-native payment and identity infrastructure",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "contracts"
-  ],
   "scripts": {
-    "dev": "pnpm --parallel --filter './apps/*' dev",
-    "build": "pnpm --recursive build",
-    "test": "pnpm --recursive test",
-    "lint": "pnpm --recursive lint",
-    "deploy:contracts": "pnpm --filter contracts deploy:base",
-    "deploy:apps": "pnpm --parallel --filter './apps/*' deploy"
+    "test":          "node scripts/run-all-tests.js",
+    "test:unit":     "node tests/unit/zk.test.js && node tests/unit/fee-distributor.test.js && node tests/unit/ltn.test.js && node tests/unit/allcard.test.js",
+    "test:int":      "node tests/integration/workflows.test.js",
+    "test:e2e":      "node tests/e2e/network.test.js",
+    "build":         "tsc --noEmit",
+    "typecheck":     "tsc --noEmit",
+    "deploy:testnet":"node scripts/deploy.js --network rawnet_testnet",
+    "deploy:base":   "node scripts/deploy.js --network base_sepolia",
+    "wallet:check":  "node scripts/wallet-check.js",
+    "lint":          "eslint packages/ tests/ --ext .js,.ts"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "typescript":           "^5.4.0",
+    "@types/node":          "^20.0.0",
+    "eslint":               "^8.57.0",
+    "@typescript-eslint/parser":          "^7.0.0",
+    "@typescript-eslint/eslint-plugin":   "^7.0.0"
+  },
+  "dependencies": {
+    "ethers":  "^6.16.0",
+    "dotenv":  "^16.0.0"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"
   },
-  "devDependencies": {
-    "typescript": "^5.4.0",
-    "prettier": "^3.2.0",
-    "eslint": "^9.0.0"
-  }
+  "repository": {
+    "type": "git",
+    "url":  "https://github.com/skinny1-code/rawagon.git"
+  },
+  "license": "MIT"
 }

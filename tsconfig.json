@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@rawagon/zk-identity":   ["packages/zk-identity/index.ts"],
+      "@rawagon/allcard-sdk":   ["packages/allcard-sdk/index.ts"],
+      "@rawagon/fee-distributor":["packages/fee-distributor/index.ts"],
+      "@rawagon/ltn-token":     ["packages/ltn-token/index.ts"],
+      "@rawagon/rawnet-sdk":    ["packages/rawnet-sdk/index.ts"],
+      "@rawagon/migration-sdk": ["packages/migration-sdk/index.ts"]
+    }
+  },
+  "include": ["packages/**/*", "scripts/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist", "contracts"]
+}
