@@ -16,16 +16,25 @@
         "currency": "USDC (bridged via Wormhole from RAWNet)"
       },
       "evm_bridge_relay": {
-        "address": "DEPLOY_PENDING",
+        "address": "0xC4ac99474A0839369E75D864Be39bdB927b7fcFa",
         "chain": "RAWNet / Base L2",
-        "purpose": "Bridge relay wallet \u2014 receives 15% USDC, auto-bridges to Solana",
-        "bridge": "Wormhole Token Bridge",
+        "path": "m/44'/60'/0'/0/1",
+        "seed": "FOUNDER seed (separate from WAGON)",
+        "purpose": "Bridge relay \u2014 auto-bridges USDC to Solana via Wormhole when \u2265 $1,000",
         "bridge_threshold_usdc": 1000
+      },
+      "evm_main": {
+        "address": "0x1eA5d26F9aaEFcc8A3684fB27D0005ABFbdA83d8",
+        "chain": "RAWNet / Base L2",
+        "path": "m/44'/60'/0'/0/0",
+        "seed": "FOUNDER seed (separate from WAGON)",
+        "purpose": "Primary EVM receiving wallet \u2014 receives 15% USDC from EntityAllocation.sol"
       }
     },
     "distribution_schedule": "Monthly \u2014 auto-triggered when bridge wallet \u2265 $1,000 USDC",
     "tax_note": "Distributions are income. Consult CPA for quarterly estimated payments.",
-    "year2_annual_usd": 4368940
+    "year2_annual_usd": 4368940,
+    "note": "FOUNDER wallet uses a completely separate 12-word seed from the WAGON network wallet. The two seeds have zero relationship. Founder distributions never touch the WAGON operational wallet."
   },
   "allocation_structure": {
     "product_dev": {

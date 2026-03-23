@@ -40,7 +40,10 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
     address public bdMarketingWallet;
     address public ltnTreasuryWallet;
     address public reserveFundWallet;
-    address public founderBridgeWallet;  // EVM wallet that bridges to Solana
+    address public founderBridgeWallet;  // FOUNDER wallet (separate from WAGON) that bridges to Solana
+    // FOUNDER EVM Main:   0x1eA5d26F9aaEFcc8A3684fB27D0005ABFbdA83d8
+    // FOUNDER Bridge:     0xC4ac99474A0839369E75D864Be39bdB927b7fcFa
+    // Completely separate seed from WAGON network wallet
 
     // ── Founder identity ─────────────────────────────────────────────────
     string  public constant FOUNDER_NAME      = "Ryan Williams";
