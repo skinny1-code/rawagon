@@ -1,14 +1,27 @@
 name: CI
 on:
-  push: {branches:[main,develop]}
-  pull_request: {branches:[main]}
+  push: {branches: [main, develop]}
+  pull_request: {branches: [main]}
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version:'20'}
-      - run: node packages/fee-distributor/index.js || true
-      - run: node packages/zk-identity/index.js || true
-      - run: node packages/gold-oracle/index.js || true
+        with: {node-version: '20'}
+      - name: Install root workspace deps
+        run: npm install
+      - name: Install contract deps
+        run: npm install
+        working-directory: contracts
+      - name: Test zk-identity
+        run: node packages/zk-identity/index.js
+      - name: Test fee-distributor
+        run: node packages/fee-distributor/index.js
+      - name: Test gold-oracle
+        run: node packages/gold-oracle/index.js || true  # external HTTP — non-blocking
+      - name: Test allcard-sdk
+        run: node packages/allcard-sdk/index.js
+      - name: Compile contracts
+        run: npm run compile
+        working-directory: contracts
