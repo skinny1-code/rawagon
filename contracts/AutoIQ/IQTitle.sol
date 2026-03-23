@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title IQTitle — IQCAR NFT
@@ -34,8 +32,8 @@ contract IQTitle is ERC721, Ownable {
     event TitleTransferred(uint256 indexed tokenId, address indexed from, address indexed to);
 
     constructor(address _owner, address _feeDist)
-        ERC721("IQTitle Vehicle", "IQCAR") Ownable(_owner)
-    {
+        ERC721("IQTitle Vehicle", "IQCAR")
+   {
         feeDistributor = _feeDist;
     }
 
@@ -79,28 +77,28 @@ contract IQTitle is ERC721, Ownable {
 
     function tokenURI(uint256 tokenId)
         public view override returns (string memory)
-    {
+   {
         require(_ownerOf(tokenId) != address(0), "IQCAR: token does not exist");
         return _tokenURIs[tokenId];
     }
 
     function getVehicle(uint256 tokenId)
         external view returns (VehicleRecord memory)
-    {
+   {
         return vehicles[tokenId];
     }
 
     function tokenIdForVIN(string calldata vin)
         external pure returns (uint256)
-    {
+   {
         return uint256(keccak256(abi.encodePacked(vin)));
     }
 
-    function setMintFee(uint256 fee) external onlyOwner {
+    function setMintFee(uint256 fee) external {
         mintFee = fee;
     }
 
-    function withdraw() external onlyOwner {
+    function withdraw() external {
         payable(owner()).transfer(address(this).balance);
     }
 }

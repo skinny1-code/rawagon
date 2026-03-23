@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title EntityAllocation
@@ -25,7 +23,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @author RAWagon Systems LLC
  * @notice Patent pending: RAW-2026-PROV-001
  */
-contract EntityAllocation is Ownable, ReentrancyGuard {
+contract EntityAllocation {
 
     // ── Allocation percentages (basis points, 10000 = 100%) ──────────────
     uint256 public constant BPS_TOTAL      = 10_000;
@@ -106,7 +104,7 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
         address _ltnToken,
         address _wormholeRelayer,
         address _owner
-    ) Ownable(_owner) {
+    ) {
         productDevWallet    = _productDev;
         bdMarketingWallet   = _bdMarketing;
         ltnTreasuryWallet   = _ltnTreasury;
@@ -133,7 +131,7 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
      * @param entityId  keccak256 of entity name (e.g. keccak256("QWKS"))
      * @param amount    USDC amount (6 decimals)
      */
-    function receiveRevenue(bytes32 entityId, uint256 amount) external nonReentrant {
+    function receiveRevenue(bytes32 entityId, uint256 amount) external {
         if (amount == 0) revert ZeroAmount();
         EntityConfig storage entity = entities[entityId];
         if (!entity.active) revert EntityNotFound();
@@ -177,7 +175,7 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
      *         Uses Wormhole Token Bridge under the hood.
      *         Can be called manually if auto-bridge hasn't triggered.
      */
-    function bridgeFounderPayment() external nonReentrant {
+    function bridgeFounderPayment() external {
         uint256 amount = pendingWithdrawal[founderBridgeWallet];
         if (amount == 0) revert ZeroAmount();
         pendingWithdrawal[founderBridgeWallet] = 0;
@@ -248,7 +246,7 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
         string calldata feeModel,
         uint256 year2Rev,
         address entityWallet
-    ) external onlyOwner {
+    ) external {
         bytes32 id = keccak256(abi.encodePacked(name));
         if (entities[id].active) revert EntityAlreadyExists();
         entities[id] = EntityConfig({
@@ -260,16 +258,16 @@ contract EntityAllocation is Ownable, ReentrancyGuard {
         emit EntityRegistered(id, name);
     }
 
-    function updateWallet(string calldata role, address newAddr) external onlyOwner {
+    function updateWallet(string calldata role, address newAddr) external {
         bytes32 r = keccak256(abi.encodePacked(role));
-        if (r == keccak256("productDev"))    { emit WalletUpdated(role, productDevWallet, newAddr);    productDevWallet = newAddr; }
-        if (r == keccak256("bdMarketing"))   { emit WalletUpdated(role, bdMarketingWallet, newAddr);   bdMarketingWallet = newAddr; }
-        if (r == keccak256("ltnTreasury"))   { emit WalletUpdated(role, ltnTreasuryWallet, newAddr);   ltnTreasuryWallet = newAddr; }
-        if (r == keccak256("reserveFund"))   { emit WalletUpdated(role, reserveFundWallet, newAddr);   reserveFundWallet = newAddr; }
+        if (r == keccak256("productDev"))   { emit WalletUpdated(role, productDevWallet, newAddr);    productDevWallet = newAddr; }
+        if (r == keccak256("bdMarketing"))  { emit WalletUpdated(role, bdMarketingWallet, newAddr);   bdMarketingWallet = newAddr; }
+        if (r == keccak256("ltnTreasury"))  { emit WalletUpdated(role, ltnTreasuryWallet, newAddr);   ltnTreasuryWallet = newAddr; }
+        if (r == keccak256("reserveFund"))  { emit WalletUpdated(role, reserveFundWallet, newAddr);   reserveFundWallet = newAddr; }
         if (r == keccak256("founderBridge")) { emit WalletUpdated(role, founderBridgeWallet, newAddr); founderBridgeWallet = newAddr; }
     }
 
-    function setBridgeThreshold(uint256 usdcAmount) external onlyOwner {
+    function setBridgeThreshold(uint256 usdcAmount) external {
         bridgeThresholdUSDC = usdcAmount;
     }
 

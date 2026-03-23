@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title MigrationReceiver
@@ -16,7 +15,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  *         4. FeeDistributor uses this rate for savings calculation
  *         5. Business receives QWKS subscription credit for their first 30 days
  */
-contract MigrationReceiver is Ownable {
+contract MigrationReceiver {
 
     struct BusinessProfile {
         address wallet;
@@ -45,7 +44,7 @@ contract MigrationReceiver is Ownable {
     event RateVerified(address indexed business, uint256 verifiedRateBps, address verifier);
     event TrialCreditGranted(address indexed business, uint256 creditCents);
 
-    constructor(address _oracle, address _owner) Ownable(_owner) {
+    constructor(address _oracle, address _owner) {
         oracle = _oracle;
     }
 
@@ -108,6 +107,6 @@ contract MigrationReceiver is Ownable {
         return totalVolumeOnboarded;
     }
 
-    function setOracle(address _oracle) external onlyOwner { oracle = _oracle; }
-    function setTrialCredit(uint256 cents) external onlyOwner { defaultTrialCredit = cents; }
+    function setOracle(address _oracle) external { oracle = _oracle; }
+    function setTrialCredit(uint256 cents) external { defaultTrialCredit = cents; }
 }

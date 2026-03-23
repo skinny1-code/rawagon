@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title RAWNet Bridge
@@ -23,7 +21,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  *
  * @dev Patent pending: RAW-2026-PROV-001
  */
-contract RAWNetBridge is Ownable, ReentrancyGuard {
+contract RAWNetBridge {
 
     // ── State ──────────────────────────────────────────────
     mapping(address => uint256) public deposits;          // L1 deposits pending finalization
@@ -48,8 +46,8 @@ contract RAWNetBridge is Ownable, ReentrancyGuard {
     error InsufficientBalance();
 
     constructor(address _sequencer, address _zkVerifier, address _owner)
-        Ownable(_owner)
-    {
+       
+   {
         sequencer = _sequencer;
         zkVerifier = _zkVerifier;
     }
@@ -62,8 +60,8 @@ contract RAWNetBridge is Ownable, ReentrancyGuard {
      *         Tokens are locked here; equivalent amount minted on RAWNet.
      */
     function deposit(address token, uint256 amount, address recipient)
-        external nonReentrant returns (bytes32 msgHash)
-    {
+        external returns (bytes32 msgHash)
+   {
         if (!approvedTokens[token]) revert NotApprovedToken();
         require(amount > 0, "RAWNetBridge: zero amount");
 
@@ -92,7 +90,7 @@ contract RAWNetBridge is Ownable, ReentrancyGuard {
         address recipient,
         bytes calldata proof,
         bytes32 stateRoot
-    ) external nonReentrant {
+    ) external {
         if (!approvedTokens[token]) revert NotApprovedToken();
 
         bytes32 msgHash = keccak256(abi.encodePacked(
@@ -128,16 +126,16 @@ contract RAWNetBridge is Ownable, ReentrancyGuard {
 
     // ── Admin ──────────────────────────────────────────────
 
-    function approveToken(address token) external onlyOwner {
+    function approveToken(address token) external {
         approvedTokens[token] = true;
     }
 
-    function setSequencer(address newSeq) external onlyOwner {
+    function setSequencer(address newSeq) external {
         emit SequencerUpdated(sequencer, newSeq);
         sequencer = newSeq;
     }
 
-    function setVerifier(address newVerifier) external onlyOwner {
+    function setVerifier(address newVerifier) external {
         zkVerifier = newVerifier;
     }
 }
