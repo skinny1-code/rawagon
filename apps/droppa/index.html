@@ -3,459 +3,294 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Droppa — Live Commerce Breaks</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root{--bg:#060810;--surf:#0b0d18;--card:#111520;--line:rgba(255,255,255,.07);--wh:#e0e4ff;--soft:#6870a0;--dim:#303060;--purp:#8b5cf6;--pr2:rgba(139,92,246,.12);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gold:#f59e0b;--gld2:rgba(245,158,11,.1);--red:#ef4444;--blue:#3b82f6;}
+:root{--bg:#06060e;--surf:#0c0c1a;--card:#111122;--line:rgba(255,255,255,.07);--wh:#e8e8ff;--soft:#7880a0;--dim:#303060;--purp:#8b5cf6;--pr2:rgba(139,92,246,.12);--grn:#10b981;--gold:#f59e0b;--red:#ef4444;--wagon:#00d4ff;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
-.mono{font-family:"JetBrains Mono",monospace;}
-header{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
-.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surf);padding:0 24px;}
-.tab{padding:11px 16px;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
+.bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:var(--surf);border-bottom:1px solid var(--line);}
+#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid rgba(139,92,246,.3);background:rgba(139,92,246,.1);color:var(--purp);font-size:.78rem;font-weight:700;cursor:pointer;margin-left:auto;}
+#connect-btn.connected{border-color:rgba(16,185,129,.3);color:var(--grn);background:rgba(16,185,129,.08);}
+.tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--line);padding:0 20px;}
+.tab{padding:10px 14px;font-size:.8rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
 .tab.active{color:var(--purp);border-bottom-color:var(--purp);}
-.pane{display:none;padding:20px 24px;max-width:1200px;}
+.pane{display:none;padding:18px 20px;max-width:900px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
 label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
 input,select{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
-.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;}
+.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
 .btn-purp{background:var(--purp);color:#fff;}
 .btn-grn{background:var(--grn);color:#000;}
-.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}
-.btn-outline:hover{border-color:var(--purp);color:var(--purp);}
-.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:.82rem;}
 .row:last-child{border:none;}
-.break-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:10px;}
-.break-head{padding:12px 14px;background:var(--surf);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;}
-.slot-grid{display:grid;gap:4px;padding:12px 14px;}
-.slot{background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px;text-align:center;font-size:.7rem;cursor:pointer;transition:all .15s;}
-.slot:hover:not(.taken){border-color:var(--purp);background:var(--pr2);}
-.slot.taken{background:var(--pr2);border-color:var(--purp);cursor:default;}
-.slot.mine{background:var(--gn2);border-color:var(--grn);}
-.slot.winner{background:var(--gld2);border-color:var(--gold);animation:pulse 1s ease infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-.metric{font-family:"JetBrains Mono",monospace;font-size:1.4rem;font-weight:600;}
-.metric.purp{color:var(--purp);}.metric.grn{color:var(--grn);}.metric.gold{color:var(--gold);}
-.mlbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:3px;}
-.pull-card{padding:12px;border-radius:8px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.val{font-family:monospace;color:var(--purp);}
+.break-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;}
+.slot{display:inline-block;width:32px;height:32px;border-radius:5px;border:1px solid var(--line);margin:2px;font-size:.65rem;text-align:center;line-height:32px;cursor:pointer;}
+.slot.filled{background:var(--pr2);border-color:var(--purp);}
+.slot:hover:not(.filled){border-color:var(--purp);}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;background:var(--card);border:1px solid var(--grn);border-radius:8px;font-size:.8rem;color:var(--grn);z-index:999;display:none;}
 </style>
 </head>
-<body><!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
-<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
-  <div style="display:flex;align-items:center;gap:7px;">
-    <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
-    <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>
-  </div>
-  <div id="rwc-btn-wrap"></div>
-  <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-    <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="https://sepolia.basescan.org" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">Base Sepolia ↗</a>
-    <span style="font-size:11px;color:#333360;">chainId 84532</span>
-  </div>
+<body>
+<div class="bar">
+  <span style="font-size:1.1rem">🎴</span>
+  <span style="font-weight:800;color:var(--purp)">Droppa</span>
+  <span style="font-size:.72rem;color:var(--dim)">BreakFactory.sol · RAWNet 720701</span>
+  <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
 </div>
-<style>
-@keyframes wbld{0%,100%{opacity:1}50%{opacity:.3}}
-#rawagon-wallet-bar button{padding:6px 14px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.1);color:#00d4ff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-#rawagon-wallet-bar button:hover{background:rgba(0,212,255,.2);}
-#rawagon-wallet-bar button.connected{border-color:rgba(16,185,129,.4);color:#10b981;background:rgba(16,185,129,.08);}
-</style>
-<script>
-(function(){
-  const CHAIN = {
-    chainId:"0x14A34",chainName:"Base Sepolia",
-    nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
-    rpcUrls:["https://sepolia.base.org"],
-    blockExplorerUrls:["https://sepolia.basescan.org"]
-  };
-  const wrap = document.getElementById("rwc-btn-wrap");
-  const btn  = document.createElement("button");
-  btn.textContent = "🦊 Connect";
-  wrap.appendChild(btn);
-  const chainEl = document.getElementById("rwc-chain");
-  const balEl   = document.getElementById("rwc-bal");
-  let addr = null;
-
-  async function update(accounts){
-    addr = accounts && accounts[0] ? accounts[0] : null;
-    if(addr){
-      btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-      btn.className = "connected";
-      chainEl.textContent = "Base Sepolia";
-      try{
-        const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
-        const eth = (parseInt(hex,16)/1e18).toFixed(4);
-        balEl.textContent = eth+" ETH";
-      }catch(e){}
-      document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
-    } else {
-      btn.textContent = "🦊 Connect";
-      btn.className = "";
-      chainEl.textContent = "";
-      balEl.textContent = "";
-    }
-  }
-
-  btn.onclick = async function(){
-    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
-    btn.textContent = "Connecting..."; btn.disabled = true;
-    try{
-      await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
-      await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
-      const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
-      await update(accounts);
-    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
-    btn.disabled = false;
-  };
-
-  if(window.ethereum){
-    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
-    window.ethereum.on("accountsChanged",update);
-    window.ethereum.on("chainChanged",()=>location.reload());
-  }
-})();
-</script>
-<!-- ── END WALLET BAR ────────────────────────────────────────────── -->
-<header>
-  <span style="font-size:1.3rem;">🎴</span>
-  <div><div style="font-size:1rem;font-weight:800;">Droppa</div>
-  <div style="font-size:.72rem;color:var(--soft);">Live commerce breaks · 1% fee · VRF provably fair</div></div>
-  <div style="margin-left:auto;">
-    <button class="btn btn-purp" onclick="showTab('create')">+ Create Break</button>
-  </div>
-</header>
 <div class="tabs">
   <div class="tab active" onclick="showTab('live')">Live Breaks</div>
   <div class="tab" onclick="showTab('create')">Create Break</div>
   <div class="tab" onclick="showTab('mybreaks')">My Breaks</div>
-  <div class="tab" onclick="showTab('results')">Results</div>
   <div class="tab" onclick="showTab('earnings')">Earnings</div>
-  <div class="tab" onclick="showTab('how')">How It Works</div>
 </div>
 
-<!-- LIVE BREAKS -->
 <div class="pane active" id="pane-live">
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-    <select id="filter-cat" onchange="renderBreaks()" style="width:auto;margin:0;">
-      <option value="">All Categories</option>
-      <option>Sports Cards</option><option>Trading Cards (TCG)</option>
-      <option>Collectibles</option><option>Coins</option><option>Memorabilia</option>
-    </select>
-    <select id="filter-fmt" onchange="renderBreaks()" style="width:auto;margin:0;">
-      <option value="">All Formats</option>
-      <option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option>
-    </select>
-    <div style="margin-left:auto;font-size:.8rem;color:var(--soft);" id="break-count"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="font-size:.86rem;font-weight:700;">Live Breaks</div>
+    <button onclick="loadBreaks()" style="padding:5px 12px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--soft);font-size:.74rem;cursor:pointer;">Refresh</button>
+    <div style="margin-left:auto;font-size:.78rem;color:var(--soft);" id="break-count"></div>
   </div>
-  <div id="breaks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;"></div>
+  <div id="breaks-list"><div style="color:var(--soft);text-align:center;padding:30px;">Connect wallet to load breaks</div></div>
 </div>
 
-<!-- CREATE -->
 <div class="pane" id="pane-create">
   <div class="g2">
     <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp);">New Break</div>
-      <label>Title</label><input id="b-title" placeholder="2024 Topps Hobby Box Break">
-      <label>Category</label>
-      <select id="b-cat"><option>Sports Cards</option><option>Trading Cards (TCG)</option><option>Collectibles</option><option>Coins</option><option>Memorabilia</option></select>
-      <label>Format</label>
-      <select id="b-fmt"><option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option></select>
-      <div class="g2" style="gap:8px;">
-        <div><label>Slots</label><input type="number" id="b-slots" value="20" min="2" max="100" oninput="calcBreakPreview()"></div>
-        <div><label>Price/Slot ($)</label><input type="number" id="b-price" value="65" oninput="calcBreakPreview()"></div>
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--purp)">Create New Break</div>
+      <label>Break Title</label>
+      <input id="break-title" placeholder="2024 Topps Chrome Hobby Box Break">
+      <label>Number of Slots</label>
+      <input type="number" id="break-slots" value="20" min="2" max="100" oninput="calcBreak()">
+      <label>Price per Slot (USDC)</label>
+      <input type="number" id="break-price" value="65" oninput="calcBreak()">
+      <div id="break-preview" style="padding:10px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
+        <div class="row"><span style="color:var(--soft)">Gross (full)</span><span class="val" id="bp-gross">$1,300</span></div>
+        <div class="row"><span style="color:var(--soft)">Droppa fee (1%)</span><span class="val" id="bp-fee">-$13.00</span></div>
+        <div class="row"><span style="font-weight:700">You receive</span><span class="val" style="color:var(--grn)" id="bp-net">$1,287.00</span></div>
       </div>
-      <label>Date/Time</label><input type="datetime-local" id="b-when">
-      <label>Description</label><input id="b-desc" placeholder="1x Hobby Box · Sealed · Factory fresh">
-      <button class="btn btn-purp" style="width:100%;margin-top:4px;" onclick="createBreak()">Create Break</button>
-      <div id="create-status" style="margin-top:8px;font-size:.78rem;text-align:center;color:var(--soft);"></div>
-    </div>
-    <div>
-      <div class="card" style="background:var(--pr2);border-color:rgba(139,92,246,.2);margin-bottom:12px;">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--purp);">Economics Preview</div>
-        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gross (full)</span><span id="prev-gross" class="mono" style="font-size:.82rem;">$1,300</span></div>
-        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Droppa fee (1%)</span><span id="prev-fee" class="mono" style="font-size:.82rem;color:var(--red);">-$13.00</span></div>
-        <div class="row"><span style="font-size:.78rem;color:var(--soft)">Gas (Base Sepolia)</span><span class="mono" style="font-size:.78rem;color:var(--grn);">~$0.001</span></div>
-        <div class="row"><span style="font-size:.78rem;font-weight:700">You receive</span><span id="prev-net" class="mono" style="font-size:.88rem;font-weight:700;color:var(--grn);">$1,287.00</span></div>
-      </div>
-      <div class="card">
-        <div style="font-size:.78rem;font-weight:700;margin-bottom:8px;">Droppa vs Competitors</div>
-        <div class="row"><span style="font-size:.76rem;color:var(--soft)">Droppa</span><span class="mono" style="font-size:.76rem;color:var(--grn);">1.0%</span></div>
-        <div class="row"><span style="font-size:.76rem;color:var(--soft)">Whatnot</span><span class="mono" style="font-size:.76rem;color:var(--red);">5% + processing</span></div>
-        <div class="row"><span style="font-size:.76rem;color:var(--soft)">eBay</span><span class="mono" style="font-size:.76rem;color:var(--red);">12.9%</span></div>
-        <div class="row"><span style="font-size:.76rem;color:var(--soft)">PayPal G&S</span><span class="mono" style="font-size:.76rem;color:var(--red);">3.49% + $0.49</span></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MY BREAKS -->
-<div class="pane" id="pane-mybreaks">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-    <div style="font-size:.86rem;font-weight:700;">My Breaks</div>
-    <button class="btn btn-outline" style="padding:5px 12px;font-size:.74rem;" onclick="renderMyBreaks()">Refresh</button>
-  </div>
-  <div id="my-breaks-list"></div>
-</div>
-
-<!-- RESULTS — provably fair VRF -->
-<div class="pane" id="pane-results">
-  <div class="g2">
-    <div class="card" style="margin-bottom:12px;">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp);">Break Results + VRF Proof</div>
-      <label>Break ID</label>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input id="res-id" placeholder="Select from My Breaks or enter ID" style="margin:0;">
-        <button class="btn btn-purp" onclick="loadResult()">Load</button>
-      </div>
-      <div id="result-display"></div>
+      <button class="btn btn-purp" onclick="createBreak()">Create Break On-Chain</button>
+      <div id="create-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);"></div>
     </div>
     <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--purp);">How VRF Works</div>
-      <div style="font-size:.78rem;color:var(--soft);line-height:1.8;">
-        <div>1. Break is created on-chain (BreakFactory.sol)</div>
-        <div>2. All slots sold → break locked</div>
-        <div>3. VRF seed = keccak256(blockHash + breakId + timestamp)</div>
-        <div>4. Slots assigned using Fisher-Yates shuffle with VRF seed</div>
-        <div>5. Result verifiable by anyone on-chain</div>
-      </div>
-      <div style="margin-top:12px;padding:10px;background:var(--gn2);border:1px solid rgba(16,185,129,.2);border-radius:7px;font-size:.74rem;color:var(--grn);">
-        No break host can manipulate results after slots are sold. The VRF seed is derived from block data that no one can predict.
-      </div>
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Droppa vs Competitors</div>
+      <div class="row"><span style="color:var(--soft)">Droppa</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">1.0%</span></div>
+      <div class="row"><span style="color:var(--soft)">Whatnot</span><span style="font-family:monospace;font-size:.76rem;color:var(--red)">5% + processing</span></div>
+      <div class="row"><span style="color:var(--soft)">eBay</span><span style="font-family:monospace;font-size:.76rem;color:var(--red)">12.9%</span></div>
+      <div class="row"><span style="color:var(--soft)">PayPal G&S</span><span style="font-family:monospace;font-size:.76rem;color:var(--red)">3.49% + $0.49</span></div>
+      <div class="row"><span style="color:var(--soft)">Chargeback risk</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">Zero (crypto)</span></div>
+      <div class="row"><span style="color:var(--soft)">Settlement</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">Instant via AllCard</span></div>
     </div>
   </div>
-  <div id="completed-breaks" style="margin-top:12px;"></div>
 </div>
 
-<!-- EARNINGS -->
+<div class="pane" id="pane-mybreaks">
+  <div id="mybreaks-list"><div style="color:var(--soft);text-align:center;padding:30px;">Connect wallet to view your breaks</div></div>
+</div>
+
 <div class="pane" id="pane-earnings">
-  <div class="g3" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;">
     <div class="card" style="text-align:center;border-top:3px solid var(--purp);">
-      <div class="mlbl">Lifetime Gross</div>
-      <div class="metric purp" id="earn-gross">$0</div>
-      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">before Droppa fee</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:monospace;color:var(--purp)" id="earn-gross">$0</div>
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">Lifetime Gross</div>
     </div>
     <div class="card" style="text-align:center;border-top:3px solid var(--grn);">
-      <div class="mlbl">Net Earned</div>
-      <div class="metric grn" id="earn-net">$0</div>
-      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">after 1% fee</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:monospace;color:var(--grn)" id="earn-net">$0</div>
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">Net Earned</div>
     </div>
     <div class="card" style="text-align:center;border-top:3px solid var(--gold);">
-      <div class="mlbl">LTN Earned</div>
-      <div class="metric gold" id="earn-ltn">0 LTN</div>
-      <div style="font-size:.68rem;color:var(--soft);margin-top:3px;">from transactions</div>
+      <div style="font-size:1.4rem;font-weight:700;font-family:monospace;color:var(--gold)" id="earn-ltn">0 LTN</div>
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">LTN Earned</div>
     </div>
   </div>
-  <div class="g2">
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Break History</div>
-      <div id="earnings-history"></div>
-    </div>
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Payout Breakdown</div>
-      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Droppa fee rate</span><span class="mono" style="font-size:.78rem;">1.0%</span></div>
-      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Seller keeps</span><span class="mono" style="font-size:.78rem;color:var(--grn);">99%</span></div>
-      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Settlement</span><span class="mono" style="font-size:.78rem;color:var(--grn);">Instant via AllCard</span></div>
-      <div class="row"><span style="font-size:.78rem;color:var(--soft)">Chargeback risk</span><span class="mono" style="font-size:.78rem;color:var(--grn);">Zero (crypto)</span></div>
-      <div class="row"><span style="font-size:.78rem;color:var(--soft)">LTN earned/break</span><span class="mono" style="font-size:.78rem;color:var(--gold);">0.001 LTN/slot</span></div>
-    </div>
+  <div class="card">
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">On-Chain Stats</div>
+    <div class="row"><span style="color:var(--soft)">Total GMV (all sellers)</span><span class="val" id="total-gmv">Loading...</span></div>
+    <div class="row"><span style="color:var(--soft)">BreakFactory contract</span><span style="font-family:monospace;font-size:.72rem;color:var(--purp)">0xaf5C4C6C...7Cf68</span></div>
+    <div class="row"><span style="color:var(--soft)">Fee rate</span><span class="val">1% of gross</span></div>
+    <div class="row"><span style="color:var(--soft)">LTN per slot</span><span class="val">0.001 LTN</span></div>
   </div>
 </div>
 
-<!-- HOW IT WORKS -->
-<div class="pane" id="pane-how">
-  <div class="g2">
-    <div>
-      <div class="card" style="margin-bottom:12px;">
-        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">For Sellers</div>
-        <div style="counter-reset:step;">
-          ${['Create a break — set title, category, slots, price per slot','Promote your break link to buyers','Buyers purchase slots with AllCard (ZK-verified, no chargebacks)','Once full, break goes live on-chain','VRF randomization assigns slots provably fair','You receive 99% instantly via AllCard — no holds, no PayPal freeze'].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--purp);flex-shrink:0;">${i+1}</div><div style="font-size:.8rem;color:var(--soft);line-height:1.6;">${s}</div></div>`).join('')}
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="card">
-        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">For Buyers</div>
-        <div style="counter-reset:step;">
-          ${['Browse live breaks — filter by category or format','Connect wallet (MetaMask/AllCard)','Purchase a slot — payment confirmed in &lt;500ms','Watch the live break when all slots fill','Your slot assignment is random + verifiable on-chain','Cards shipped directly from seller via AllCard address (ZK-verified)'].map((s,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--gn2);border:1px solid var(--grn);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--grn);flex-shrink:0;">${i+1}</div><div style="font-size:.8rem;color:var(--soft);line-height:1.6;">${s}</div></div>`).join('')}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-let myBreaks = JSON.parse(localStorage.getItem('dr-breaks') || '[]');
-let totalGross=0, totalNet=0, totalLTN=0;
-myBreaks.forEach(b=>{totalGross+=b.gross||0;totalNet+=(b.gross||0)*0.99;totalLTN+=(b.slots||0)*0.001;});
-
-const SAMPLE_BREAKS=[
-  {id:'DR-001',title:'2024 Bowman Chrome Hobby Box',cat:'Sports Cards',fmt:'Random Teams',slots:30,price:85,filled:22,status:'open',host:'CardKing'},
-  {id:'DR-002',title:'Pokemon Paradox Rift ETB Break',cat:'Trading Cards (TCG)',fmt:'Random Slot',slots:12,price:45,filled:12,status:'full',host:'PokeBreaker'},
-  {id:'DR-003',title:'2024 Topps Chrome HTA Box',cat:'Sports Cards',fmt:'Pick Your Team',slots:30,price:120,filled:8,status:'open',host:'ToppsBreaks'},
-  {id:'DR-004',title:'Morgan Silver Dollar Roll',cat:'Coins',fmt:'Random Slot',slots:20,price:75,filled:7,status:'open',host:'CoinVault'},
-  {id:'DR-005',title:'2024 Prizm Basketball Hobby',cat:'Sports Cards',fmt:'Random Teams',slots:30,price:95,filled:30,status:'complete',host:'BballBreaks',vrfSeed:'0x7f3a...',gross:2850},
+const ADDRS = { BreakFactory: "0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68" };
+const BF_ABI = [
+  "function createBreak(string calldata title, uint256 slotCount, uint256 slotPrice) returns (bytes32)",
+  "function purchaseSlot(bytes32 breakId, bytes32 buyerCommit) returns (uint256)",
+  "function completeBreak(bytes32 breakId, bytes32 vrfSeed)",
+  "function getSellerBreaks(address seller) view returns (bytes32[])",
+  "function breaks(bytes32) view returns (address,uint256,uint256,uint256,uint8,uint256,uint256,bytes32)",
+  "function totalGMV() view returns (uint256)",
+  "event BreakCreated(bytes32 indexed id, address indexed seller, uint256 slotCount, uint256 price)",
 ];
 
-function renderBreaks(){
-  const cat=document.getElementById('filter-cat').value;
-  const fmt=document.getElementById('filter-fmt').value;
-  const all=[...SAMPLE_BREAKS,...myBreaks.filter(b=>b.status==='open')].filter(b=>(!cat||b.cat===cat)&&(!fmt||b.fmt===fmt));
-  document.getElementById('break-count').textContent=all.filter(b=>b.status!=='complete').length+' active';
-  document.getElementById('breaks-grid').innerHTML=all.map(b=>{
-    const pct=Math.round((b.filled||0)/b.slots*100);
-    const gross=(b.slots*b.price);
-    return`<div class="break-card">
-      <div class="break-head">
-        <span style="font-size:1rem;">🎴</span>
-        <div style="flex:1;"><div style="font-size:.84rem;font-weight:700;">${b.title}</div>
-        <div style="font-size:.7rem;color:var(--soft);">${b.fmt} · ${b.cat} · Host: ${b.host}</div></div>
-        <span style="padding:2px 8px;border-radius:4px;font-size:.62rem;font-weight:700;background:${b.status==='open'?'var(--gn2)':b.status==='full'?'var(--pr2)':'var(--gld2)'};color:${b.status==='open'?'var(--grn)':b.status==='full'?'var(--purp)':'var(--gold)'};">${b.status}</span>
-      </div>
-      <div style="padding:10px 14px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:.76rem;">
-          <span style="color:var(--soft)">${b.filled||0}/${b.slots} slots · $${b.price}/slot</span>
-          <span class="mono" style="color:var(--purp)">Gross: $${gross.toLocaleString()}</span>
-        </div>
-        <div style="height:5px;background:var(--line);border-radius:3px;margin-bottom:10px;overflow:hidden;">
-          <div style="width:${pct}%;height:100%;background:${pct>=100?'var(--purp)':'var(--grn)'};border-radius:3px;"></div>
-        </div>
-        <div class="slot-grid" style="grid-template-columns:repeat(${Math.min(b.slots,10)},1fr);">
-          ${Array.from({length:Math.min(b.slots,10)},(_,i)=>`<div class="slot ${i<(b.filled||0)?'taken':''}" onclick="buySlot('${b.id}',${i})">
-            <div style="font-size:.6rem;color:var(--soft);">#${i+1}</div>
-            <div style="font-size:.68rem;">${i<(b.filled||0)?'●':('$'+b.price)}</div>
-          </div>`).join('')}
-          ${b.slots>10?`<div class="slot" style="font-size:.64rem;color:var(--soft)">+${b.slots-10}</div>`:''}
-        </div>
-        ${b.status!=='complete'?`<button class="btn btn-purp" style="width:100%;font-size:.76rem;margin-top:8px;" onclick="buySlot('${b.id}',0)">Join — $${b.price}/slot</button>`:`<div style="padding:8px;background:var(--gld2);border-radius:6px;font-size:.74rem;color:var(--gold);text-align:center;margin-top:8px;">✓ Complete · VRF seed: ${b.vrfSeed||'0x...'}</div>`}
-      </div>
-    </div>`;
-  }).join('');
+let provider, signer, addr, bfContract;
+let myBreakIds = [];
+
+async function connectWallet() {
+  if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{
+    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+    nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
+    rpcUrls:["http://10.117.122.142:8545"]
+  }]}).catch(()=>{});
+  const accounts = await ethereum.request({method:"eth_requestAccounts"});
+  addr = accounts[0];
+  provider = new ethers.BrowserProvider(window.ethereum);
+  signer = await provider.getSigner();
+  bfContract = new ethers.Contract(ADDRS.BreakFactory, BF_ABI, signer);
+  document.getElementById("connect-btn").textContent = addr.slice(0,6)+"..."+addr.slice(-4);
+  document.getElementById("connect-btn").className = "connected";
+  loadBreaks(); loadMyBreaks(); loadEarnings();
+  showToast("Wallet connected ✓");
 }
 
-function buySlot(id, n){
-  const b=[...SAMPLE_BREAKS,...myBreaks].find(x=>x.id===id);
-  if(!b||b.status==='full'||b.status==='complete'){alert('This break is not available');return;}
-  if(!window._rawagonAddr) alert(`Slot reserved!
-
-Break: ${b.title}
-Price: $${b.price}
-Payment: AllCard (ZK-verified)
-Gas: ~$0.001 on Base Sepolia
-
-Connect wallet to pay on-chain.`);
-  else alert(`Slot reserved!
-From: ${window._rawagonAddr.slice(0,6)}...
-To: BreakFactory.sol
-Price: $${b.price} USDC`);
+function calcBreak() {
+  const slots = parseInt(document.getElementById("break-slots").value)||20;
+  const price = parseFloat(document.getElementById("break-price").value)||65;
+  const gross = slots*price, fee=gross*0.01, net=gross-fee;
+  document.getElementById("bp-gross").textContent = "$"+gross.toFixed(2);
+  document.getElementById("bp-fee").textContent = "-$"+fee.toFixed(2);
+  document.getElementById("bp-net").textContent = "$"+net.toFixed(2);
 }
 
-function calcBreakPreview(){
-  const slots=parseInt(document.getElementById('b-slots').value)||20;
-  const price=parseFloat(document.getElementById('b-price').value)||65;
-  const gross=slots*price,fee=gross*0.01,net=gross-fee;
-  document.getElementById('prev-gross').textContent='$'+gross.toFixed(2);
-  document.getElementById('prev-fee').textContent='-$'+fee.toFixed(2);
-  document.getElementById('prev-net').textContent='$'+net.toFixed(2);
-}
-
-function createBreak(){
-  const title=document.getElementById('b-title').value;
-  const slots=parseInt(document.getElementById('b-slots').value)||20;
-  const price=parseFloat(document.getElementById('b-price').value)||65;
-  if(!title){alert('Enter a break title');return;}
-  const b={id:'DR-'+Date.now().toString().slice(-4),title,cat:document.getElementById('b-cat').value,fmt:document.getElementById('b-fmt').value,slots,price,filled:0,status:'open',host:'You',gross:slots*price,ts:new Date().toLocaleDateString()};
-  myBreaks.unshift(b);localStorage.setItem('dr-breaks',JSON.stringify(myBreaks));
-  document.getElementById('create-status').textContent='✓ Break created! '+b.id;
-  document.getElementById('create-status').style.color='#10b981';
-  totalGross+=b.gross;totalNet+=b.gross*0.99;
-  renderBreaks();showTab('live');
-}
-
-function renderMyBreaks(){
-  const el=document.getElementById('my-breaks-list');
-  if(!myBreaks.length){el.innerHTML='<div style="color:var(--soft);text-align:center;padding:30px;">No breaks created yet</div>';return;}
-  el.innerHTML=myBreaks.map(b=>`<div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;">
-    <span>🎴</span>
-    <div style="flex:1;"><div style="font-size:.82rem;font-weight:600;">${b.title}</div>
-    <div style="font-size:.7rem;color:var(--soft)">${b.slots} slots · $${b.price}/slot · ${b.filled||0} sold · ${b.ts||''}</div></div>
-    <div style="text-align:right;"><div class="mono" style="font-size:.82rem;color:var(--purp)">$${b.gross.toFixed(0)}</div>
-    <div style="font-size:.66rem;color:var(--soft)">${b.status}</div></div>
-    <button class="btn btn-outline" style="padding:4px 10px;font-size:.7rem;" onclick="runVRF('${b.id}')">Complete</button>
-  </div>`).join('');
-}
-
-function runVRF(id){
-  const b=myBreaks.find(x=>x.id===id);if(!b)return;
-  // Simulate VRF seed generation
-  const ts=Date.now();
-  const vrfSeed='0x'+Array.from({length:16},()=>(Math.random()*16|0).toString(16)).join('');
-  const shuffled=Array.from({length:b.slots},(_,i)=>i+1);
-  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
-  b.status='complete';b.vrfSeed=vrfSeed;b.results=shuffled;b.completedAt=new Date().toLocaleDateString();
-  localStorage.setItem('dr-breaks',JSON.stringify(myBreaks));
-  renderMyBreaks();
-  alert('Break completed!
-
-VRF Seed: '+vrfSeed+'
-Slot assignments verifiable on-chain.
-Sellers: check Results tab.');
-}
-
-function loadResult(){
-  const id=document.getElementById('res-id').value.trim();
-  const b=[...SAMPLE_BREAKS,...myBreaks].find(x=>x.id===id||x.title.toLowerCase().includes(id.toLowerCase()));
-  if(!b){document.getElementById('result-display').innerHTML='<div style="color:var(--red);font-size:.8rem;">Break not found</div>';return;}
-  if(b.status!=='complete'){document.getElementById('result-display').innerHTML='<div style="color:var(--soft);font-size:.8rem;">Break is not complete yet</div>';return;}
-  const results=b.results||Array.from({length:b.slots},(_,i)=>i+1);
-  document.getElementById('result-display').innerHTML=`
-    <div style="padding:10px;background:var(--gld2);border:1px solid rgba(245,158,11,.25);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
-      <strong style="color:var(--gold);">Break:</strong> ${b.title}<br>
-      <strong style="color:var(--gold);">VRF Seed:</strong> <span class="mono" style="font-size:.7rem;">${b.vrfSeed||'0x7f3a2b...'}</span><br>
-      <strong style="color:var(--gold);">Total:</strong> $${(b.slots*b.price).toLocaleString()}
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;">
-      ${results.slice(0,b.slots).map((r,i)=>`<div class="slot ${i===0?'winner':''}" style="padding:8px;background:var(--surf);border:1px solid var(--line);border-radius:6px;text-align:center;">
-        <div style="font-size:.62rem;color:var(--soft)">Slot ${i+1}</div>
-        <div style="font-size:.72rem;font-weight:700;color:${i===0?'var(--gold)':'var(--purp)'}">Team ${r}</div>
-      </div>`).join('')}
-    </div>`;
-}
-
-function renderEarnings(){
-  document.getElementById('earn-gross').textContent='$'+totalGross.toFixed(0);
-  document.getElementById('earn-net').textContent='$'+totalNet.toFixed(0);
-  document.getElementById('earn-ltn').textContent=(myBreaks.reduce((s,b)=>s+(b.slots||0),0)*0.001).toFixed(3)+' LTN';
-  document.getElementById('earnings-history').innerHTML=myBreaks.length?myBreaks.map(b=>`
-    <div class="row">
-      <span style="font-size:.78rem">${b.title?.slice(0,30)||'Break'}...</span>
-      <span class="mono" style="font-size:.78rem;color:var(--grn)">$${(b.gross*0.99).toFixed(0)}</span>
-    </div>`).join(''):'<div style="color:var(--soft);font-size:.8rem;text-align:center;padding:14px;">Complete breaks to see earnings</div>';
-}
-
-function showTab(id){
-  const ids=['live','create','mybreaks','results','earnings','how'];
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',ids[i]===id));
-  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+id));
-  if(id==='mybreaks')renderMyBreaks();
-  if(id==='earnings')renderEarnings();
-  if(id==='results'){
-    document.getElementById('completed-breaks').innerHTML=`<div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px;">Completed Breaks</div>`+
-      [...SAMPLE_BREAKS,...myBreaks].filter(b=>b.status==='complete').map(b=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:5px;cursor:pointer;" onclick="document.getElementById('res-id').value='${b.id}';loadResult()">
-          <span>🎴</span><div style="flex:1;font-size:.8rem;font-weight:600;">${b.title}</div>
-          <span class="mono" style="font-size:.72rem;color:var(--gold);">$${(b.gross||0).toLocaleString()}</span>
-          <span style="font-size:.7rem;color:var(--purp);">View →</span>
-        </div>`).join('') || '<div style="color:var(--soft);font-size:.8rem;">No completed breaks</div>';
+async function createBreak() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const title = document.getElementById("break-title").value;
+  const slots = parseInt(document.getElementById("break-slots").value)||20;
+  const price = parseInt(document.getElementById("break-price").value)||65;
+  if (!title) { showToast("Enter a title",true); return; }
+  document.getElementById("create-status").textContent = "Creating on-chain...";
+  try {
+    const priceWei = ethers.parseUnits(price.toString(), 6);
+    const tx = await bfContract.createBreak(title, slots, priceWei);
+    const receipt = await tx.wait();
+    document.getElementById("create-status").textContent = "✓ Break created on-chain!";
+    document.getElementById("create-status").style.color = "#10b981";
+    showToast("Break created ✓");
+    loadMyBreaks(); showTab("mybreaks");
+  } catch(e) {
+    document.getElementById("create-status").textContent = "Error: "+e.message.split("(")[0];
+    showToast(e.message, true);
   }
 }
 
-document.addEventListener('rawagon:connected',e=>{
-  window._rawagonAddr=e.detail?.address;
-  window._rawagonChainId=e.detail?.chainId||84532;
+async function loadBreaks() {
+  if (!bfContract) return;
+  const el = document.getElementById("breaks-list");
+  try {
+    const gmv = await bfContract.totalGMV();
+    document.getElementById("break-count").textContent = "GMV: $"+parseFloat(ethers.formatUnits(gmv,6)).toFixed(0);
+    if (myBreakIds.length === 0) {
+      el.innerHTML = "<div style='color:var(--soft);text-align:center;padding:30px;font-size:.84rem'>No breaks yet. Create one!</div>";
+      return;
+    }
+    renderBreaks(el, myBreakIds);
+  } catch(e) { el.innerHTML = "<div style='color:var(--red);font-size:.8rem'>"+e.message+"</div>"; }
+}
+
+async function loadMyBreaks() {
+  if (!bfContract || !addr) return;
+  try {
+    myBreakIds = await bfContract.getSellerBreaks(addr);
+    const el = document.getElementById("mybreaks-list");
+    if (myBreakIds.length === 0) {
+      el.innerHTML = "<div style='color:var(--soft);text-align:center;padding:30px;'>No breaks created yet</div>";
+      return;
+    }
+    renderBreaks(el, myBreakIds, true);
+  } catch(e) {}
+}
+
+async function renderBreaks(el, ids, showComplete=false) {
+  const cards = await Promise.all(ids.map(async id => {
+    try {
+      const b = await bfContract.breaks(id);
+      const slots = Number(b[1]), price = parseFloat(ethers.formatUnits(b[2],6));
+      const filled = Number(b[3]), status = ["Open","Full","Complete","Cancelled"][Number(b[4])];
+      const gross = slots*price;
+      const pct = Math.round(filled/slots*100);
+      return `<div class="break-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-weight:700;font-size:.84rem;flex:1">Break ${id.slice(0,10)}...</span>
+          <span style="padding:2px 8px;border-radius:4px;font-size:.65rem;font-weight:700;background:${status==="Open"?"rgba(16,185,129,.15)":"rgba(139,92,246,.15)"};color:${status==="Open"?"#10b981":"#8b5cf6"}">${status}</span>
+        </div>
+        <div class="row"><span style="color:var(--soft);font-size:.78rem">Slots</span><span style="font-family:monospace;font-size:.78rem">${filled}/${slots}</span></div>
+        <div class="row"><span style="color:var(--soft);font-size:.78rem">Price/slot</span><span style="font-family:monospace;font-size:.78rem;color:var(--purp)">$${price.toFixed(2)} USDC</span></div>
+        <div class="row"><span style="color:var(--soft);font-size:.78rem">Gross</span><span style="font-family:monospace;font-size:.78rem;color:var(--gold)">$${gross.toFixed(0)}</span></div>
+        <div style="height:4px;background:var(--line);border-radius:2px;margin:8px 0;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${pct>=100?"var(--purp)":"var(--grn)"};border-radius:2px;"></div>
+        </div>
+        ${status==="Open"?`<button onclick="buySlot('${id}',${price})" style="padding:6px 14px;border-radius:6px;border:1px solid rgba(139,92,246,.3);background:rgba(139,92,246,.1);color:var(--purp);font-size:.76rem;cursor:pointer;">Join $${price.toFixed(0)}/slot</button>`:""}
+        ${showComplete && status==="Open"?`<button onclick="completeBreak('${id}')" style="margin-left:8px;padding:6px 14px;border-radius:6px;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);color:var(--gold);font-size:.76rem;cursor:pointer;">Complete Break</button>`:""}
+      </div>`;
+    } catch(e) { return ""; }
+  }));
+  el.innerHTML = cards.join("") || "<div style='color:var(--soft);text-align:center;padding:20px;'>No breaks</div>";
+}
+
+async function buySlot(breakId, price) {
+  if (!signer) { alert("Connect wallet"); return; }
+  const commit = ethers.keccak256(ethers.randomBytes(32));
+  try {
+    const tx = await bfContract.purchaseSlot(breakId, commit);
+    await tx.wait();
+    showToast("Slot purchased ✓");
+    loadBreaks();
+  } catch(e) { showToast(e.message, true); }
+}
+
+async function completeBreak(breakId) {
+  if (!signer) return;
+  const vrfSeed = ethers.keccak256(ethers.randomBytes(32));
+  try {
+    const tx = await bfContract.completeBreak(breakId, vrfSeed);
+    await tx.wait();
+    showToast("Break completed ✓ VRF: "+vrfSeed.slice(0,18)+"...");
+    loadMyBreaks();
+  } catch(e) { showToast(e.message, true); }
+}
+
+async function loadEarnings() {
+  if (!bfContract || !addr) return;
+  try {
+    const gmv = await bfContract.totalGMV();
+    const gmvUSD = parseFloat(ethers.formatUnits(gmv,6));
+    document.getElementById("total-gmv").textContent = "$"+gmvUSD.toFixed(0)+" USDC";
+    const ids = await bfContract.getSellerBreaks(addr);
+    let gross = 0;
+    for (const id of ids) {
+      const b = await bfContract.breaks(id);
+      gross += parseFloat(ethers.formatUnits(b[6],6));
+    }
+    document.getElementById("earn-gross").textContent = "$"+gross.toFixed(0);
+    document.getElementById("earn-net").textContent = "$"+(gross*0.99).toFixed(0);
+    document.getElementById("earn-ltn").textContent = (ids.length*20*0.001).toFixed(3)+" LTN";
+  } catch(e) {}
+}
+
+function showTab(id) {
+  const ids=["live","create","mybreaks","earnings"];
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
+  if(id==="mybreaks") loadMyBreaks();
+  if(id==="earnings") loadEarnings();
+  if(id==="live") loadBreaks();
+}
+
+function showToast(msg,err=false){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.style.borderColor=err?"#ef4444":"#10b981";t.style.color=err?"#ef4444":"#10b981";
+  t.style.display="block";setTimeout(()=>t.style.display="none",3000);
+}
+
+window.addEventListener("load",()=>{
+  if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
 });
-calcBreakPreview();
-renderBreaks();
+calcBreak();
 </script>
 </body></html>
