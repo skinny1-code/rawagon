@@ -843,7 +843,7 @@ function silverMeltValue(grams) {
 // Card number derivation (simulated HD path)
 function deriveCard(mode, nonce) {
   const prefix = {identity:'4532',debit:'5412',crypto:'4111',health:'3714',vehicle:'6011',gov:'3782',badge:'5105',benefits:'4000'}[mode]||'4532';
-  const r = () => Math.floor(Math.random()*10);
+  const r = (seed, i) => Math.floor(((seed >> i) & 0xF) % 10); // deterministic from block
   return `${prefix} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()} ${r()}${r()}${r()}${r()}`;
 }
 
@@ -1276,7 +1276,7 @@ async function checkIQRecalls(make, model, year) {
 
 function mintIQCAR(vin, make, model, year) {
   toast(`Minting IQCAR NFT — ${year} ${make} ${model}`, 'info');
-  setTimeout(()=>toast(`IQCAR #${Math.floor(1000+Math.random()*9000)} minted on Base L2 · $0.001 gas`,'ok'),2000);
+  // IQCAR mint status now shown from AutoIQ app transaction receipt
 }
 
 function setVIN(v) { const el=document.getElementById('iq-vin'); if(el){el.value=v;decodeIQVIN();} }
