@@ -2,356 +2,595 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ProfitPilot — Analytics</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>ProfitPilot — Business Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root{--bg:#060a0a;--surf:#0a1010;--card:#101818;--line:rgba(255,255,255,.07);--wh:#e0f0ef;--soft:#508888;--dim:#204040;--teal:#06b6d4;--tl2:rgba(6,182,212,.1);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gold:#f59e0b;--red:#ef4444;--purp:#8b5cf6;}
+:root{
+  --bg:#040d0c;--s1:#071512;--s2:#091a17;--card:#0d201d;
+  --line:rgba(6,182,212,.12);--line2:rgba(6,182,212,.06);
+  --teal:#06b6d4;--tl2:rgba(6,182,212,.15);--tl3:rgba(6,182,212,.07);
+  --grn:#10b981;--gn2:rgba(16,185,129,.12);
+  --gold:#f59e0b;--gd2:rgba(245,158,11,.12);
+  --red:#ef4444;--rd2:rgba(239,68,68,.1);
+  --soft:#2d6e68;--dim:#1a3d3a;--wh:#d4f0ed;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
-.mono{font-family:"JetBrains Mono",monospace;}
-header{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--surf);}
-header h1{font-size:1.1rem;font-weight:800;}
-.page{padding:20px 24px;max-width:1400px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
-.metric{font-family:"JetBrains Mono",monospace;font-size:1.5rem;font-weight:600;line-height:1;}
-.metric.teal{color:var(--teal);}.metric.grn{color:var(--grn);}.metric.gold{color:var(--gold);}
-.mlbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:4px;}
-.msub{font-size:.68rem;color:var(--soft);margin-top:3px;}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);}
-.row:last-child{border:none;}
-.bar-wrap{flex:1;background:var(--line);border-radius:3px;overflow:hidden;height:6px;margin:0 10px;}
-.bar-fill{height:100%;border-radius:3px;transition:width .6s;}
-input,select{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
-label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
-.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;}
-.btn-teal{background:var(--teal);color:#000;}
+body{background:var(--bg);color:var(--wh);font-family:"JetBrains Mono",monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
+/* scanline overlay */
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:1000;}
+
+/* header */
+.hdr{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--line);background:var(--s1);}
+.hdr-logo{padding:12px 20px;border-right:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.hdr-logo span{font-family:"Syne",sans-serif;font-weight:800;font-size:1rem;color:var(--teal);letter-spacing:.05em;}
+.hdr-tabs{display:flex;flex:1;}
+.htab{padding:12px 16px;font-size:.72rem;font-weight:600;cursor:pointer;color:var(--soft);border-right:1px solid var(--line2);letter-spacing:.08em;text-transform:uppercase;transition:.1s;}
+.htab:hover{color:var(--teal);background:var(--tl3);}
+.htab.active{color:var(--teal);background:var(--tl3);border-bottom:2px solid var(--teal);}
+.hdr-right{padding:0 16px;display:flex;align-items:center;gap:12px;margin-left:auto;border-left:1px solid var(--line2);}
+#connect-btn{padding:5px 12px;border-radius:3px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-size:.7rem;font-family:"JetBrains Mono",monospace;font-weight:600;cursor:pointer;letter-spacing:.06em;}
+#connect-btn.on{border-color:var(--grn);color:var(--grn);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* panes */
+.pane{display:none;padding:16px 20px;}
+.pane.active{display:block;}
+
+/* KPI grid */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);border:1px solid var(--line2);margin-bottom:16px;}
+.kpi{background:var(--card);padding:14px 16px;}
+.kpi-val{font-size:1.4rem;font-weight:700;line-height:1;margin-bottom:4px;}
+.kpi-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);}
+.kpi-sub{font-size:.68rem;color:var(--dim);margin-top:3px;}
+.kpi-delta{font-size:.68rem;margin-top:3px;}
+.up{color:var(--grn);} .dn{color:var(--red);} .teal{color:var(--teal);} .gold{color:var(--gold);}
+
+/* panels */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);}
+.panel{background:var(--card);padding:16px;}
+.panel-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--soft);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.panel-title::before{content:"";width:3px;height:12px;background:var(--teal);display:block;}
+
+/* table */
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:5px 8px;font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);border-bottom:1px solid var(--line2);}
+td{padding:6px 8px;font-size:.76rem;border-bottom:1px solid var(--line2);}
+tr:hover td{background:var(--tl3);}
+
+/* chart bars */
+.bar-row{display:flex;align-items:center;gap:8px;padding:5px 0;}
+.bar-label{font-size:.72rem;color:var(--soft);width:80px;flex-shrink:0;}
+.bar-track{flex:1;height:6px;background:var(--line2);border-radius:1px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:1px;transition:width 1s;}
+.bar-val{font-size:.72rem;width:60px;text-align:right;}
+
+/* inputs */
+label{display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin-bottom:3px;}
+input,select{background:var(--s2);border:1px solid var(--line);border-radius:2px;padding:7px 10px;color:var(--wh);font-size:.8rem;font-family:"JetBrains Mono",monospace;outline:none;width:100%;margin-bottom:10px;}
+input:focus,select:focus{border-color:var(--teal);}
+.btn{padding:8px 16px;border-radius:2px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-family:"JetBrains Mono",monospace;font-size:.76rem;font-weight:600;cursor:pointer;letter-spacing:.06em;}
+.btn:hover{background:var(--tl2);}
+.btn-gold{border-color:var(--gold);color:var(--gold);}
+.btn-gold:hover{background:var(--gd2);}
+
+/* LTN lifecycle */
+.phase{padding:10px 12px;border-left:3px solid;margin-bottom:6px;background:var(--s2);}
+.phase-1{border-color:#ef4444;}
+.phase-2{border-color:#f59e0b;}
+.phase-3{border-color:#06b6d4;}
+.phase-4{border-color:#10b981;}
+.phase-5{border-color:#8b5cf6;}
+.phase-name{font-size:.78rem;font-weight:700;margin-bottom:2px;}
+.phase-desc{font-size:.68rem;color:var(--soft);}
+
+/* responsive */
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.panels{grid-template-columns:1fr}}
+
+/* ticker */
+.ticker{font-size:.7rem;color:var(--soft);padding:5px 20px;background:var(--s1);border-bottom:1px solid var(--line2);display:flex;gap:20px;overflow:hidden;}
+.tick-item{white-space:nowrap;flex-shrink:0;}
+
+/* terminal output */
+.terminal{background:var(--bg);border:1px solid var(--line);padding:12px;font-size:.72rem;color:var(--grn);max-height:200px;overflow-y:auto;margin-top:10px;}
+.terminal .line{margin-bottom:2px;}
+.terminal .dim{color:var(--dim);}
+.terminal .warn{color:var(--gold);}
+.terminal .err{color:var(--red);}
 </style>
 </head>
 <body>
-<!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
-<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
-  <div style="display:flex;align-items:center;gap:7px;">
-    <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
-    <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>
+
+<div class="hdr">
+  <div class="hdr-logo">
+    <div class="live-dot"></div>
+    <span>PROFITPILOT</span>
   </div>
-  <div id="rwc-btn-wrap"></div>
-  <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-    <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="https://sepolia.basescan.org" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">Base Sepolia ↗</a>
-    <span style="font-size:11px;color:#333360;">chainId 84532</span>
+  <div class="hdr-tabs">
+    <div class="htab active" onclick="showTab('dashboard')">Dashboard</div>
+    <div class="htab" onclick="showTab('calculator')">ROI Calc</div>
+    <div class="htab" onclick="showTab('ltn')">LTN Lifecycle</div>
+    <div class="htab" onclick="showTab('network')">Network</div>
+    <div class="htab" onclick="showTab('entities')">Entities</div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-dot"></div>
+    <span id="block-num" style="font-size:.7rem;color:var(--soft)">block —</span>
+    <button id="connect-btn" onclick="connectWallet()">CONNECT</button>
   </div>
 </div>
-<style>
-@keyframes wbld{0%,100%{opacity:1}50%{opacity:.3}}
-#rawagon-wallet-bar button{padding:6px 14px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.1);color:#00d4ff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-#rawagon-wallet-bar button:hover{background:rgba(0,212,255,.2);}
-#rawagon-wallet-bar button.connected{border-color:rgba(16,185,129,.4);color:#10b981;background:rgba(16,185,129,.08);}
-</style>
-<script>
-(function(){
-  const CHAIN = {
-    chainId:"0x14A34",chainName:"Base Sepolia",
-    nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
-    rpcUrls:["https://sepolia.base.org"],
-    blockExplorerUrls:["https://sepolia.basescan.org"]
-  };
-  const wrap = document.getElementById("rwc-btn-wrap");
-  const btn  = document.createElement("button");
-  btn.textContent = "🦊 Connect";
-  wrap.appendChild(btn);
-  const chainEl = document.getElementById("rwc-chain");
-  const balEl   = document.getElementById("rwc-bal");
-  let addr = null;
 
-  async function update(accounts){
-    addr = accounts && accounts[0] ? accounts[0] : null;
-    if(addr){
-      btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-      btn.className = "connected";
-      chainEl.textContent = "Base Sepolia";
-      try{
-        const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
-        const eth = (parseInt(hex,16)/1e18).toFixed(4);
-        balEl.textContent = eth+" ETH";
-      }catch(e){}
-      document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
-    } else {
-      btn.textContent = "🦊 Connect";
-      btn.className = "";
-      chainEl.textContent = "";
-      balEl.textContent = "";
+<!-- Ticker -->
+<div class="ticker" id="ticker">
+  <span class="tick-item">LTN <span class="teal">$0.084</span></span>
+  <span class="tick-item">GTX <span class="gold">$41.338</span></span>
+  <span class="tick-item">QWKS savings vs Visa <span class="grn">99.6%</span></span>
+  <span class="tick-item">RAWNet gas <span class="grn">$0.0000082/tx</span></span>
+  <span class="tick-item">Year 2 EBITDA <span class="grn">84.9%</span></span>
+  <span class="tick-item">Founder share <span class="gold">15% → Solana</span></span>
+  <span class="tick-item">Total LTN burned <span id="tick-burned">0</span></span>
+</div>
+
+<!-- DASHBOARD -->
+<div class="pane active" id="pane-dashboard">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$29.1M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">7 entities</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="kpi-ebitda">84.9%</div><div class="kpi-lbl">EBITDA Margin</div><div class="kpi-sub">$24.7M net</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.37M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#8b5cf6" id="kpi-ltn-stk">$3.44M</div><div class="kpi-lbl">Staker Yield/yr</div><div class="kpi-sub">0.1% of $3.44B vol</div></div>
+    <div class="kpi"><div class="kpi-val teal" id="kpi-gas">$0.0000082</div><div class="kpi-lbl">Gas per tx</div><div class="kpi-delta up">304,878x cheaper than Visa</div></div>
+    <div class="kpi"><div class="kpi-val gold">$0.084</div><div class="kpi-lbl">LTN Price</div><div class="kpi-sub">1B supply · 0.001 burn/tx</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="kpi-block">—</div><div class="kpi-lbl">RAWNet Block</div><div class="kpi-sub" id="kpi-gas-price">—</div></div>
+    <div class="kpi"><div class="kpi-val" style="color:#ef4444">0</div><div class="kpi-lbl">Vulnerabilities</div><div class="kpi-sub">75/75 tests passing</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-title">Entity Revenue Breakdown (Year 2)</div>
+      <div id="entity-bars"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Allocation Split</div>
+      <div id="alloc-bars"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">On-Chain Contract Status</div>
+      <table>
+        <thead><tr><th>Contract</th><th>Address</th><th>Status</th></tr></thead>
+        <tbody id="contract-table"></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-title">LTN Token Stats</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody id="ltn-stats-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ROI CALCULATOR -->
+<div class="pane" id="pane-calculator">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);">
+    <div class="panel">
+      <div class="panel-title">QWKS Savings Calculator</div>
+      <label>Monthly Transaction Volume ($)</label>
+      <input type="number" id="calc-vol" value="50000" oninput="calcROI()">
+      <label>Monthly Transactions</label>
+      <input type="number" id="calc-txns" value="500" oninput="calcROI()">
+      <label>Current Processor Rate (%)</label>
+      <input type="number" id="calc-rate" value="2.5" step="0.1" oninput="calcROI()">
+      <label>QWKS Monthly Fee ($)</label>
+      <input type="number" id="calc-fee" value="99" oninput="calcROI()">
+    </div>
+    <div class="panel">
+      <div class="panel-title">Results</div>
+      <table>
+        <tbody id="roi-results"></tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px;background:var(--s2);border-left:3px solid var(--grn);">
+        <div style="font-size:.68rem;color:var(--soft);margin-bottom:4px;">NET ANNUAL SAVINGS</div>
+        <div id="roi-headline" style="font-size:1.6rem;font-weight:700;color:var(--grn);">$0</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">LTN Staking Calculator</div>
+      <label>LTN to Stake</label>
+      <input type="number" id="ltn-stake" value="10000" oninput="calcLTN()">
+      <label>Annual Network Volume (B)</label>
+      <input type="number" id="ltn-vol" value="3.44" step="0.1" oninput="calcLTN()">
+    </div>
+    <div class="panel">
+      <div class="panel-title">LTN Staking Results</div>
+      <table><tbody id="ltn-results"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- LTN LIFECYCLE -->
+<div class="pane" id="pane-ltn">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);">
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-title">LivingToken 5-Phase Lifecycle</div>
+      <div style="font-size:.74rem;color:var(--soft);margin-bottom:14px;">P* = fee / (LTN price × APY) — the transition point where staking yield = subscription fee</div>
+      <div id="lifecycle-phases"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Burn Simulation</div>
+      <label>Transaction Count</label>
+      <input type="number" id="burn-txns" value="56400" oninput="calcBurn()">
+      <table><tbody id="burn-results"></tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Transition Point P*</div>
+      <label>Annual Subscription Fee ($)</label>
+      <input type="number" id="pstar-fee" value="1499" oninput="calcPstar()">
+      <table><tbody id="pstar-results"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- NETWORK -->
+<div class="pane" id="pane-network">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line2);">
+    <div class="panel">
+      <div class="panel-title">RAWNet vs Competitors</div>
+      <div id="network-compare"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Live Network Stats</div>
+      <table><tbody id="network-stats"></tbody></table>
+      <button class="btn" style="margin-top:10px" onclick="refreshNetwork()">REFRESH</button>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-title">Terminal Log</div>
+      <div class="terminal" id="terminal">
+        <div class="line dim">// RAWNet testnet · chainId 720701</div>
+        <div class="line dim">// 10 contracts deployed</div>
+        <div class="line">Connecting to http://10.117.122.142:8545...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENTITIES -->
+<div class="pane" id="pane-entities">
+  <div id="entities-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line2);"></div>
+</div>
+
+<script>
+// ── Contract addresses ──────────────────────────────────────────
+const CONTRACTS = {
+  LivingToken:    { addr:"0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D", label:"LTN Token" },
+  FeeDistributor: { addr:"0x7C728214be9A0049e6a86f2137ec61030D0AA964", label:"Fee Distributor" },
+  MockUSDC:       { addr:"0xFC628dd79137395F3C9744e33b1c5DE554D94882", label:"MockUSDC" },
+  PawnRegistry:   { addr:"0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A", label:"BitPawn" },
+  BreakFactory:   { addr:"0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68", label:"Droppa" },
+  IQTitle:        { addr:"0xA586074FA4Fe3E546A132a16238abe37951D41fE", label:"AutoIQ" },
+  GoldMint:       { addr:"0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA", label:"GoldSnap" },
+  EmployeeVault:  { addr:"0x86072CbFF48dA3C1F01824a6761A03F105BCC697", label:"AllCard" },
+};
+
+const LTN_ABI = [
+  "function totalSupply() view returns (uint256)",
+  "function totalBurned() view returns (uint256)",
+  "function totalStaked() view returns (uint256)",
+  "function totalTransactions() view returns (uint256)",
+  "function balanceOf(address) view returns (uint256)",
+];
+const FD_ABI = [
+  "function totalInflow() view returns (uint256)",
+  "function totalStaked() view returns (uint256)",
+  "function pending(address) view returns (uint256)",
+];
+
+let provider, signer, addr;
+
+// ── Static data ─────────────────────────────────────────────────
+const ENTITIES = [
+  { name:"QWKS Protocol", revenue:9344267, icon:"⛓", desc:"Payment processing 0.01% fee" },
+  { name:"BitPawn",       revenue:5280000, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
+  { name:"Droppa",        revenue:4200000, icon:"🎴", desc:"1% of break GMV" },
+  { name:"AutoIQ",        revenue:3780000, icon:"🚗", desc:"0.3% of vehicle sale value" },
+  { name:"1.nce AllCard", revenue:3240000, icon:"🪪", desc:"$49/mo identity subscription" },
+  { name:"GoldSnap GTX",  revenue:2162000, icon:"🥇", desc:"0.25% mint + custody" },
+  { name:"ProfitPilot",   revenue:1120000, icon:"📊", desc:"$29/mo analytics SaaS" },
+];
+
+const ALLOC = [
+  { label:"Product Dev",   pct:30, color:"#3b82f6" },
+  { label:"BD + Marketing",pct:20, color:"#06b6d4" },
+  { label:"LTN Treasury",  pct:20, color:"#8b5cf6" },
+  { label:"Reserve Fund",  pct:15, color:"#10b981" },
+  { label:"Ryan Williams", pct:15, color:"#f59e0b" },
+];
+
+// ── Wallet ───────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.ethereum) { termLog("No MetaMask found","err"); return; }
+  try {
+    await ethereum.request({method:"wallet_addEthereumChain",params:[{
+      chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+      nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
+      rpcUrls:["http://10.117.122.142:8545"]
+    }]}).catch(()=>{});
+    const accounts = await ethereum.request({method:"eth_requestAccounts"});
+    addr = accounts[0];
+    provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    const btn = document.getElementById("connect-btn");
+    btn.textContent = addr.slice(0,6)+".."+addr.slice(-4);
+    btn.className = "on";
+    termLog("Wallet: "+addr);
+    loadChainData();
+  } catch(e) { termLog(e.message,"err"); }
+}
+
+// ── Chain data ───────────────────────────────────────────────────
+async function loadChainData() {
+  if (!provider) {
+    try { provider = new ethers.JsonRpcProvider("http://10.117.122.142:8545"); } catch(e){ return; }
+  }
+  try {
+    const [blockNum, feeData] = await Promise.all([
+      provider.getBlockNumber(),
+      provider.getFeeData(),
+    ]);
+    document.getElementById("kpi-block").textContent = blockNum.toLocaleString();
+    document.getElementById("block-num").textContent = "block "+blockNum;
+    if (feeData.gasPrice) {
+      const gwei = parseFloat(ethers.formatUnits(feeData.gasPrice,"gwei")).toFixed(4);
+      document.getElementById("kpi-gas-price").textContent = gwei+" Gwei";
     }
-  }
+    termLog("Block: "+blockNum+" · Contracts live");
 
-  btn.onclick = async function(){
-    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
-    btn.textContent = "Connecting..."; btn.disabled = true;
-    try{
-      await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
-      await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
-      const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
-      await update(accounts);
-    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
-    btn.disabled = false;
-  };
+    // Load LTN stats
+    const ltn = new ethers.Contract(CONTRACTS.LivingToken.addr, LTN_ABI, provider);
+    const [supply, burned, staked] = await Promise.all([
+      ltn.totalSupply().catch(()=>0n),
+      ltn.totalBurned().catch(()=>0n),
+      ltn.totalStaked().catch(()=>0n),
+    ]);
+    const supplyFmt = parseFloat(ethers.formatEther(supply)).toLocaleString();
+    const burnedFmt = parseFloat(ethers.formatEther(burned)).toFixed(4);
+    const stakedFmt = parseFloat(ethers.formatEther(staked)).toLocaleString();
 
-  if(window.ethereum){
-    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
-    window.ethereum.on("accountsChanged",update);
-    window.ethereum.on("chainChanged",()=>location.reload());
-  }
-})();
-</script>
-<!-- ── END WALLET BAR ────────────────────────────────────────────── -->
+    document.getElementById("ltn-stats-table").innerHTML = [
+      ["Max Supply","1,000,000,000 LTN"],
+      ["Circulating",supplyFmt+" LTN"],
+      ["Total Burned",burnedFmt+" LTN"],
+      ["Total Staked",stakedFmt+" LTN"],
+      ["Burn per tx","0.001 LTN"],
+      ["Price","$0.084"],
+      ["Market Cap","$"+((parseFloat(ethers.formatEther(supply))*0.084)/1e6).toFixed(1)+"M"],
+    ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="teal">${v}</td></tr>`).join("");
 
-<header>
-  <span style="font-size:1.4rem;">📊</span>
-  <h1>ProfitPilot — Cross-Product Analytics</h1>
-  <div style="margin-left:auto;display:flex;gap:10px;align-items:center;">
-    <select style="width:auto;margin:0;font-size:.78rem;">
-      <option>Last 30 days</option><option>Last 90 days</option><option>This year</option><option>All time</option>
-    </select>
-    <span style="padding:3px 10px;border-radius:4px;font-size:.68rem;font-weight:700;background:var(--tl2);color:var(--teal);">RAWNet Live</span>
-  </div>
-</header>
-<div class="page">
+    document.getElementById("tick-burned").textContent = burnedFmt+" LTN";
+    termLog("LTN supply: "+supplyFmt+" · burned: "+burnedFmt);
 
-  <!-- KPI row -->
-  <div class="g4" style="margin-bottom:16px;">
-    <div class="card" style="border-top:3px solid var(--teal);">
-      <div class="mlbl">Network Revenue</div>
-      <div class="metric teal" id="kpi-rev">$24.7M</div>
-      <div class="msub">↑ 34% vs last period</div>
-    </div>
-    <div class="card" style="border-top:3px solid var(--grn);">
-      <div class="mlbl">Total Transactions</div>
-      <div class="metric grn" id="kpi-txns">4.7M</div>
-      <div class="msub">↑ 18% this month</div>
-    </div>
-    <div class="card" style="border-top:3px solid var(--gold);">
-      <div class="mlbl">Avg Transaction Cost</div>
-      <div class="metric gold" id="kpi-cost">$0.0000082</div>
-      <div class="msub">RAWNet · 100x vs Base</div>
-    </div>
-    <div class="card" style="border-top:3px solid var(--purp);">
-      <div class="mlbl">LTN Burned</div>
-      <div class="metric" style="color:var(--purp)" id="kpi-burn">56,400</div>
-      <div class="msub">0.001 LTN per tx</div>
-    </div>
-  </div>
+    updateNetworkStats(blockNum, feeData);
+  } catch(e) { termLog("Chain: "+e.message.split("(")[0],"warn"); }
+}
 
-  <div class="g2" style="margin-bottom:14px;">
-    <!-- Revenue by product -->
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">Revenue by Product</div>
-      <div id="rev-chart">
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">AutoIQ / IQTitle</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:var(--teal);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$13.0M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">QWKS Protocol</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:57%;background:var(--gold);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$7.5M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">ProfitPilot</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:23%;background:var(--teal);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$3.0M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">Droppa</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:29%;background:var(--purp);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--purp)">$3.7M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">BitPawn</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:7%;background:var(--gold);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$1.0M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">AllCard</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:7%;background:var(--teal);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--teal)">$0.9M</span>
-        </div>
-        <div class="row">
-          <span style="font-size:.78rem;min-width:120px">GoldSnap</span>
-          <div class="bar-wrap"><div class="bar-fill" style="width:1%;background:var(--gold);"></div></div>
-          <span class="mono" style="font-size:.78rem;min-width:60px;text-align:right;color:var(--gold)">$0.1M</span>
-        </div>
-      </div>
-    </div>
+function updateNetworkStats(block, fee) {
+  const gwei = fee.gasPrice ? parseFloat(ethers.formatUnits(fee.gasPrice,"gwei")).toFixed(6) : "—";
+  const txCostETH = fee.gasPrice ? parseFloat(ethers.formatUnits(fee.gasPrice * 65000n,"ether")).toFixed(9) : "—";
+  document.getElementById("network-stats").innerHTML = [
+    ["RAWNet ChainId","720701"],
+    ["Block",""+block],
+    ["Gas Price",gwei+" Gwei"],
+    ["Tx Cost (65K gas)",txCostETH+" rETH"],
+    ["Visa fee (avg $50 sale)","$1.25 (2.5%)"],
+    ["RAWNet fee (avg $50 sale)","$0.0000041"],
+    ["Savings ratio","304,878x"],
+    ["Contracts deployed","10"],
+  ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="teal">${v}</td></tr>`).join("");
+}
 
-    <!-- Cost analysis -->
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">Cost Structure</div>
-      <div class="row">
-        <span style="font-size:.78rem">RAWNet gas (total)</span>
-        <span class="mono" style="font-size:.78rem;color:var(--grn)">$38.55</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem">Engineering team</span>
-        <span class="mono" style="font-size:.78rem">$1.8M</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem">Operations + support</span>
-        <span class="mono" style="font-size:.78rem">$1.2M</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem">Cloud infrastructure</span>
-        <span class="mono" style="font-size:.78rem">$180K</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem">Legal + compliance</span>
-        <span class="mono" style="font-size:.78rem">$200K</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem;font-weight:700">Total costs</span>
-        <span class="mono" style="font-size:.78rem;color:var(--red)">$4.4M</span>
-      </div>
-      <div class="row">
-        <span style="font-size:.78rem;font-weight:700">EBITDA</span>
-        <span class="mono" style="font-size:.82rem;font-weight:700;color:var(--grn)">$24.7M (84.9%)</span>
-      </div>
-    </div>
-  </div>
+// ── ROI Calc ─────────────────────────────────────────────────────
+function calcROI() {
+  const vol = parseFloat(document.getElementById("calc-vol").value)||0;
+  const txns = parseFloat(document.getElementById("calc-txns").value)||0;
+  const rate = parseFloat(document.getElementById("calc-rate").value)||0;
+  const fee = parseFloat(document.getElementById("calc-fee").value)||0;
 
-  <div class="g3" style="margin-bottom:14px;">
-    <!-- LTN staking -->
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--purp);">LTN Token Metrics</div>
-      <div class="row"><span style="font-size:.78rem">Price</span><span class="mono" style="font-size:.78rem;color:var(--purp)">$0.084</span></div>
-      <div class="row"><span style="font-size:.78rem">Total supply</span><span class="mono" style="font-size:.78rem">1,000,000,000</span></div>
-      <div class="row"><span style="font-size:.78rem">Burned (YTD)</span><span class="mono" style="font-size:.78rem;color:var(--red)">56,400 LTN</span></div>
-      <div class="row"><span style="font-size:.78rem">Total staked</span><span class="mono" style="font-size:.78rem;color:var(--purp)">40,000,000 LTN</span></div>
-      <div class="row"><span style="font-size:.78rem">FeeDistributor inflow</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$3.44M/yr</span></div>
-      <div class="row"><span style="font-size:.78rem">Staking APY (actual)</span><span class="mono" style="font-size:.78rem;color:var(--grn)">10.3%</span></div>
-      <div class="row"><span style="font-size:.78rem">Treasury value</span><span class="mono" style="font-size:.78rem;color:var(--gold)">$16.8M</span></div>
-    </div>
+  const visaAnnual = vol*12*(rate/100);
+  const qwksTxCost = txns*12*0.0000082;
+  const qwksFee = fee*12;
+  const qwksTotal = qwksTxCost+qwksFee;
+  const savings = visaAnnual - qwksTotal;
+  const roi = ((savings - qwksFee) / qwksFee * 100);
+  const pstarLTN = Math.round(qwksFee/(0.084*0.12));
 
-    <!-- Network health -->
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--teal);">RAWNet Health</div>
-      <div class="row"><span style="font-size:.78rem">Chain ID</span><span class="mono" style="font-size:.78rem;color:var(--teal)">720701 (testnet)</span></div>
-      <div class="row"><span style="font-size:.78rem">Block time</span><span class="mono" style="font-size:.78rem;color:var(--grn)">500ms</span></div>
-      <div class="row"><span style="font-size:.78rem">Gas price</span><span class="mono" style="font-size:.78rem;color:var(--grn)">0.00006 Gwei</span></div>
-      <div class="row"><span style="font-size:.78rem">Per-tx cost</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$0.0000082</span></div>
-      <div class="row"><span style="font-size:.78rem">Batch size</span><span class="mono" style="font-size:.78rem">10,000 txns</span></div>
-      <div class="row"><span style="font-size:.78rem">ZK proof system</span><span class="mono" style="font-size:.78rem">Groth16 / SP1</span></div>
-      <div class="row"><span style="font-size:.78rem">DA layer</span><span class="mono" style="font-size:.78rem">EigenDA</span></div>
-      <div class="row"><span style="font-size:.78rem">Settlement</span><span class="mono" style="font-size:.78rem">Base L2</span></div>
-    </div>
+  document.getElementById("roi-results").innerHTML = [
+    ["Old processor cost/yr","$"+visaAnnual.toLocaleString(),"dn"],
+    ["QWKS gas cost/yr","$"+qwksTxCost.toFixed(4),"teal"],
+    ["QWKS SaaS fee/yr","$"+qwksFee.toLocaleString(),"teal"],
+    ["Total QWKS cost","$"+qwksTotal.toFixed(2),"teal"],
+    ["Annual savings","$"+savings.toFixed(2),"up"],
+    ["ROI",""+roi.toFixed(0)+"%","up"],
+    ["P* (LTN to stake)",pstarLTN.toLocaleString()+" LTN","gold"],
+    ["Customer gets (9:1)","$"+(savings*0.9).toFixed(2),"up"],
+  ].map(([k,v,c])=>`<tr><td style="color:var(--soft)">${k}</td><td class="${c||""}">${v}</td></tr>`).join("");
 
-    <!-- Migration stats -->
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;color:var(--gold);">Migration Pipeline</div>
-      <div class="row"><span style="font-size:.78rem">Businesses onboarded</span><span class="mono" style="font-size:.78rem;color:var(--gold)">5,000</span></div>
-      <div class="row"><span style="font-size:.78rem">Avg baseline rate</span><span class="mono" style="font-size:.78rem;color:var(--red)">2.5% (Visa)</span></div>
-      <div class="row"><span style="font-size:.78rem">Avg monthly volume</span><span class="mono" style="font-size:.78rem">$45,000</span></div>
-      <div class="row"><span style="font-size:.78rem">Annual savings delivered</span><span class="mono" style="font-size:.78rem;color:var(--grn)">$67.5M</span></div>
-      <div class="row"><span style="font-size:.78rem">QWKS fee on savings</span><span class="mono" style="font-size:.78rem;color:var(--gold)">$6.75M</span></div>
-      <div class="row"><span style="font-size:.78rem">Avg onboarding time</span><span class="mono" style="font-size:.78rem;color:var(--grn)">47 minutes</span></div>
-      <div class="row"><span style="font-size:.78rem">Trial conversion rate</span><span class="mono" style="font-size:.78rem;color:var(--grn)">78%</span></div>
-    </div>
-  </div>
+  document.getElementById("roi-headline").textContent = "$"+Math.max(0,savings).toFixed(0);
+}
 
-  <!-- ROI Calculator -->
-  <div class="card">
-    <div style="font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--teal);">Business ROI Calculator</div>
-    <div class="g3" style="gap:12px;align-items:end;">
-      <div>
-        <label>Monthly Card Volume ($)</label>
-        <input type="number" id="roi-vol" value="50000" oninput="calcROI()">
-      </div>
-      <div>
-        <label>Transactions / Month</label>
-        <input type="number" id="roi-txns" value="500" oninput="calcROI()">
-      </div>
-      <div>
-        <label>Current Processor Rate (%)</label>
-        <input type="number" id="roi-rate" value="2.5" step="0.1" oninput="calcROI()">
-      </div>
-    </div>
-    <div id="roi-result" class="g4" style="gap:10px;margin-top:14px;"></div>
-  </div>
+function calcLTN() {
+  const ltnStake = parseFloat(document.getElementById("ltn-stake").value)||0;
+  const vol = (parseFloat(document.getElementById("ltn-vol").value)||3.44) * 1e9;
+  const totalStaked = 40_000_000;
+  const feeInflow = vol * 0.001;
+  const yieldPerLTN = feeInflow / totalStaked;
+  const annualYield = ltnStake * yieldPerLTN;
+  const posUSD = ltnStake * 0.084;
+  const apy = posUSD > 0 ? (annualYield/posUSD*100).toFixed(1) : "0";
 
-</div>
+  document.getElementById("ltn-results").innerHTML = [
+    ["LTN value","$"+posUSD.toFixed(2)],
+    ["Annual yield (USDC)","$"+annualYield.toFixed(2)],
+    ["Monthly yield","$"+(annualYield/12).toFixed(2)],
+    ["Yield per LTN","$"+yieldPerLTN.toFixed(4)],
+    ["Effective APY",apy+"%"],
+    ["Fee inflow/yr","$"+(feeInflow/1e6).toFixed(2)+"M"],
+  ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="gold">${v}</td></tr>`).join("");
+}
 
-<script>
-function calcROI(){
-  const vol=parseFloat(document.getElementById('roi-vol').value)||50000;
-  const txns=parseFloat(document.getElementById('roi-txns').value)||500;
-  const rate=parseFloat(document.getElementById('roi-rate').value)||2.5;
-  const visa=vol*12*(rate/100);
-  const rawnet=txns*12*0.0000082;
-  const base=txns*12*0.000825;
-  const savings=visa-rawnet;
-  const qwksFee=savings*0.10;
-  document.getElementById('roi-result').innerHTML=
-    `<div class="card" style="text-align:center;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);">
-      <div class="mlbl">Current Annual Cost</div>
-      <div class="metric" style="color:var(--red)">$${visa.toLocaleString('en',{maximumFractionDigits:0})}</div>
-      <div class="msub">${rate}% on $${(vol*12).toLocaleString()}/yr</div>
-    </div>
-    <div class="card" style="text-align:center;background:var(--tl2);border-color:rgba(6,182,212,.2);">
-      <div class="mlbl">RAWNet Annual Cost</div>
-      <div class="metric teal">$${rawnet.toFixed(4)}</div>
-      <div class="msub">$0.0000082/tx · ${txns*12} txns</div>
-    </div>
-    <div class="card" style="text-align:center;background:var(--gn2);border-color:rgba(16,185,129,.2);">
-      <div class="mlbl">Annual Savings</div>
-      <div class="metric grn">$${savings.toLocaleString('en',{maximumFractionDigits:0})}</div>
-      <div class="msub">QWKS fee: $${qwksFee.toFixed(0)}</div>
-    </div>
-    <div class="card" style="text-align:center;background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);">
-      <div class="mlbl">You Keep (90%)</div>
-      <div class="metric gold">$${(savings*0.90).toLocaleString('en',{maximumFractionDigits:0})}</div>
-      <div class="msub">ROI: ${Math.round((savings*0.90/qwksFee)*100)}% on fee</div>
+// ── Burn calc ────────────────────────────────────────────────────
+function calcBurn() {
+  const txns = parseFloat(document.getElementById("burn-txns").value)||0;
+  const burned = txns * 0.001;
+  const remaining = 1_000_000_000 - burned;
+  document.getElementById("burn-results").innerHTML = [
+    ["Transactions",txns.toLocaleString()],
+    ["LTN burned",burned.toFixed(3)],
+    ["Burn value","$"+(burned*0.084).toFixed(4)],
+    ["Remaining supply",remaining.toLocaleString()],
+    ["Deflation",((burned/1e9)*100).toFixed(6)+"%"],
+  ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="teal">${v}</td></tr>`).join("");
+}
+
+function calcPstar() {
+  const fee = parseFloat(document.getElementById("pstar-fee").value)||0;
+  const ltn = Math.round(fee/(0.084*0.12));
+  const usd = ltn * 0.084;
+  document.getElementById("pstar-results").innerHTML = [
+    ["P* (LTN needed)",ltn.toLocaleString()+" LTN"],
+    ["P* (USD needed)","$"+usd.toFixed(2)],
+    ["Annual yield at P*","$"+fee.toFixed(2)],
+    ["Net cost at P*","$0.00 (fee offset)"],
+    ["Phase 3 (yield>fee)","~5-7 years"],
+  ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="gold">${v}</td></tr>`).join("");
+}
+
+// ── Network compare ───────────────────────────────────────────────
+function renderNetworkCompare() {
+  const nets = [
+    {name:"RAWNet",   cost:0.0000082, color:"var(--grn)"},
+    {name:"Base L2",  cost:0.000825,  color:"var(--teal)"},
+    {name:"Ethereum", cost:2.50,      color:"var(--soft)"},
+    {name:"Visa",     cost:1.25,      color:"var(--red)"},
+  ];
+  const max = Math.log10(nets[nets.length-1].cost);
+  const min = Math.log10(nets[0].cost);
+  document.getElementById("network-compare").innerHTML = nets.map(n=>{
+    const pct = ((Math.log10(n.cost)-min)/(max-min)*80+5);
+    return `<div class="bar-row">
+      <div class="bar-label">${n.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${n.color}"></div></div>
+      <div class="bar-val" style="color:${n.color}">$${n.cost}</div>
     </div>`;
+  }).join("");
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
+// ── Entity bars ───────────────────────────────────────────────────
+function renderEntityBars() {
+  const maxRev = ENTITIES[0].revenue;
+  document.getElementById("entity-bars").innerHTML = ENTITIES.map(e=>{
+    const pct = (e.revenue/maxRev*100).toFixed(1);
+    return `<div class="bar-row">
+      <div class="bar-label" style="font-size:.68rem">${e.icon} ${e.name.split(" ")[0]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--teal)"></div></div>
+      <div class="bar-val teal">$${(e.revenue/1e6).toFixed(1)}M</div>
+    </div>`;
+  }).join("");
+}
+
+function renderAllocBars() {
+  document.getElementById("alloc-bars").innerHTML = ALLOC.map(a=>`
+    <div class="bar-row">
+      <div class="bar-label" style="font-size:.68rem">${a.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${a.pct*3}%;background:${a.color}"></div></div>
+      <div class="bar-val" style="color:${a.color}">${a.pct}%</div>
+    </div>`).join("");
+}
+
+function renderContractTable() {
+  document.getElementById("contract-table").innerHTML = Object.entries(CONTRACTS).map(([k,v])=>`
+    <tr><td style="color:var(--soft);font-size:.72rem">${v.label}</td>
+    <td style="font-size:.68rem;font-family:monospace;color:var(--dim)">${v.addr.slice(0,10)}...${v.addr.slice(-4)}</td>
+    <td><span style="color:var(--grn);font-size:.68rem">● LIVE</span></td></tr>`).join("");
+}
+
+function renderLifecycle() {
+  const phases = [
+    {n:1,name:"Subscriber",yr:"0–3yr",desc:"Pays QWKS fee, earns LTN per transaction. ROI positive from day 1 vs Visa.",color:"#ef4444"},
+    {n:2,name:"Participant",yr:"3–5yr",desc:"Staking yield approaches subscription fee. P* within reach. Net cost falling.",color:"#f59e0b"},
+    {n:3,name:"Stakeholder",yr:"5–7yr",desc:"Yield exceeds fee. Network effectively pays the business. Net earner.",color:"#06b6d4"},
+    {n:4,name:"Owner",yr:"7–10yr",desc:"Revenue share kicks in. LTN accumulated delivers compounding return.",color:"#10b981"},
+    {n:5,name:"Partner",yr:"10yr+",desc:"Network pays the business. Customer becomes partner. Maximum LTN value.",color:"#8b5cf6"},
+  ];
+  document.getElementById("lifecycle-phases").innerHTML = phases.map(p=>`
+    <div class="phase phase-${p.n}">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="phase-name" style="color:${p.color}">Phase ${p.n}: ${p.name}</div>
+        <div style="font-size:.65rem;color:var(--dim);margin-left:auto">${p.yr}</div>
+      </div>
+      <div class="phase-desc">${p.desc}</div>
+    </div>`).join("");
+}
+
+function renderEntities() {
+  const totalRev = ENTITIES.reduce((s,e)=>s+e.revenue,0);
+  document.getElementById("entities-grid").innerHTML = ENTITIES.map(e=>`
+    <div class="panel">
+      <div style="font-size:1.4rem;margin-bottom:6px">${e.icon}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px">${e.name}</div>
+      <div style="font-size:.7rem;color:var(--soft);margin-bottom:10px">${e.desc}</div>
+      <div class="bar-row" style="margin:0">
+        <div class="bar-label" style="font-size:.65rem;color:var(--dim)">Revenue</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${(e.revenue/ENTITIES[0].revenue*100).toFixed(0)}%;background:var(--teal)"></div></div>
+        <div class="bar-val teal">$${(e.revenue/1e6).toFixed(1)}M</div>
+      </div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:6px">
+        ${(e.revenue/totalRev*100).toFixed(1)}% of portfolio · Founder: $${(e.revenue*0.15/1e3).toFixed(0)}K/yr
+      </div>
+    </div>`).join("");
+}
+
+// ── Terminal ─────────────────────────────────────────────────────
+function termLog(msg, type="info") {
+  const el = document.getElementById("terminal");
+  const line = document.createElement("div");
+  line.className = "line"+(type==="err"?" err":type==="warn"?" warn":type==="dim"?" dim":"");
+  const ts = new Date().toISOString().slice(11,19);
+  line.textContent = `[${ts}] ${msg}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+
+async function refreshNetwork() {
+  termLog("Refreshing network stats...");
+  await loadChainData();
+  termLog("Done");
+}
+
+function showTab(id) {
+  document.querySelectorAll(".htab").forEach((t,i)=>t.classList.toggle("active",["dashboard","calculator","ltn","network","entities"][i]===id));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+window.addEventListener("load",()=>{
+  renderEntityBars();
+  renderAllocBars();
+  renderContractTable();
+  renderLifecycle();
+  renderEntities();
+  renderNetworkCompare();
   calcROI();
-  loadLiveStats();
-  setInterval(loadLiveStats, 30000);
-});
+  calcLTN();
+  calcBurn();
+  calcPstar();
+  loadChainData();
+  setInterval(loadChainData, 30000);
 
-async function loadLiveStats(){
-  // Live Base L2 data
-  try {
-    const r = await fetch('https://mainnet.base.org',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'eth_blockNumber',params:[],id:1})});
-    const d = await r.json();
-    const block = parseInt(d.result,16);
-    const el = document.getElementById('net-block');
-    if(el) el.textContent = block.toLocaleString();
-  } catch(e){}
-  try {
-    const r = await fetch('https://mainnet.base.org',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'eth_gasPrice',params:[],id:1})});
-    const d = await r.json();
-    const gwei = (parseInt(d.result,16)/1e9).toFixed(4);
-    const el = document.getElementById('net-gas');
-    if(el) el.textContent = gwei+' Gwei';
-    // Update tx cost in KPI
-    const ethR = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/ETH-USD?interval=1d&range=1d');
-    const ethD = await ethR.json();
-    const eth = ethD.chart.result[0].meta.regularMarketPrice;
-    const txCost = parseFloat(gwei)*65000*1e-9*eth;
-    const el2 = document.getElementById('kpi-cost');
-    if(el2) el2.textContent = '$'+txCost.toFixed(7);
-    // Update net block
-    const el3 = document.getElementById('net-eth');
-    if(el3) el3.textContent = '$'+Math.round(eth).toLocaleString();
-    const el4 = document.getElementById('net-base-cost');
-    if(el4) el4.textContent = '$'+txCost.toFixed(6);
-    const el5 = document.getElementById('net-ratio');
-    if(el5) el5.textContent = Math.round(txCost/0.0000082)+'x more than RAWNet';
-  } catch(e){}
-}
+  if (window.ethereum) {
+    ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+    ethereum.on("accountsChanged",()=>location.reload());
+  }
+});
 </script>
-</body>
-</html>
+</body></html>

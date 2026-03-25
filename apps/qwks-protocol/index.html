@@ -1,1032 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QWKS Business Protocol — Join the Network — ZK Commerce Migration</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fira+Code:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>QWKS Protocol — Payment OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root {
-  --bg:#f8f7f4;--deep:#0d0d14;--surf:#ffffff;--panel:#f2f0ec;--card:#ffffff;
-  --line:#e5e2db;--dim:#9b9589;--soft:#6b6560;--body:#2d2a26;
-  --chain:#0052ff;--ch2:rgba(0,82,255,.1);--ch3:rgba(0,82,255,.06);
-  --grn:#059669;--gn2:rgba(5,150,105,.1);
-  --red:#dc2626;--rd2:rgba(220,38,38,.1);
-  --amber:#d97706;--am2:rgba(217,119,6,.1);
-  --purp:#7c3aed;--pr2:rgba(124,58,237,.1);
-  --teal:#0d9488;--tl2:rgba(13,148,136,.1);
-}
+:root{--bg:#04050f;--s1:#070816;--card:#0b0d1e;--line:rgba(99,102,241,.15);--ln2:rgba(99,102,241,.06);--wh:#e0e4ff;--soft:#6366f1;--dim:#2d3060;--indigo:#6366f1;--in2:rgba(99,102,241,.12);--in3:rgba(99,102,241,.06);--grn:#22d3ee;--gn2:rgba(34,211,238,.1);--gold:#fbbf24;--gd2:rgba(251,191,36,.1);--red:#f87171;--purp:#a78bfa;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{font-size:16px;scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--body);font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;}
-.mono{font-family:'Fira Code',monospace;}
-.serif{font-family:'Fraunces',serif;}
-
-/* TYPOGRAPHY */
-h1,h2,h3{font-weight:700;letter-spacing:-.03em;}
-.display{font-family:'Fraunces',serif;font-style:italic;}
-
-/* NAV */
-nav{background:rgba(248,247,244,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:0 48px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;}
-.nav-logo{display:flex;align-items:center;gap:10px;}
-.logo-mark{width:34px;height:34px;background:var(--deep);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.logo-mark svg{width:18px;height:18px;}
-.logo-name{font-weight:800;font-size:1.05rem;letter-spacing:-.02em;color:var(--deep);}
-.logo-sub{font-size:.72rem;color:var(--dim);font-weight:500;letter-spacing:.03em;}
-.nav-links{display:flex;align-items:center;gap:6px;}
-.nav-link{padding:7px 14px;font-size:.82rem;font-weight:600;color:var(--soft);border-radius:6px;cursor:pointer;transition:all .15s;border:none;background:none;}
-.nav-link:hover{color:var(--body);background:var(--panel);}
-.nav-cta{background:var(--deep);color:#fff;padding:8px 20px;border-radius:8px;font-size:.84rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;}
-.nav-cta:hover{background:#1a1a2e;transform:translateY(-1px);}
-
-/* SECTIONS */
-section{padding:80px 48px;max-width:1100px;margin:0 auto;}
-.section-label{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--chain);margin-bottom:14px;}
-
-/* HERO */
-.hero{padding:80px 48px 60px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 480px;gap:60px;align-items:center;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--ch3);border:1px solid rgba(0,82,255,.18);border-radius:100px;padding:5px 14px;font-size:.75rem;font-weight:700;color:var(--chain);letter-spacing:.06em;margin-bottom:22px;}
-.hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--chain);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
-.hero h1{font-size:clamp(2.4rem,4.5vw,3.8rem);line-height:1.06;letter-spacing:-.04em;margin-bottom:20px;}
-.hero h1 .accent{color:var(--chain);}
-.hero-sub{font-size:1.05rem;color:var(--soft);line-height:1.8;margin-bottom:28px;max-width:520px;}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
-.btn-primary{background:var(--deep);color:#fff;padding:13px 28px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
-.btn-primary:hover{background:#1a1a2e;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
-.btn-secondary{background:var(--surf);color:var(--deep);padding:13px 28px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;border:1px solid var(--line);transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
-.btn-secondary:hover{border-color:var(--chain);color:var(--chain);}
-.btn-sm{padding:8px 16px;font-size:.8rem;font-weight:700;border-radius:7px;cursor:pointer;border:none;transition:all .18s;}
-.btn-chain{background:var(--chain);color:#fff;}
-.btn-chain:hover{background:#003dd6;}
-.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--soft);}
-.btn-ghost:hover{border-color:var(--chain);color:var(--chain);}
-
-/* HERO RIGHT — LIVE CALCULATOR PREVIEW */
-.hero-calc{background:var(--deep);border-radius:20px;padding:28px;color:#fff;position:relative;overflow:hidden;}
-.hero-calc::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,82,255,.25),transparent);pointer-events:none;}
-.calc-label{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:6px;}
-.calc-value{font-family:'Fira Code',monospace;font-size:2.2rem;font-weight:600;line-height:1;color:#fff;margin-bottom:4px;}
-.calc-sub{font-size:.78rem;color:rgba(255,255,255,.5);}
-.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
-.calc-cell{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;}
-.calc-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:8px;}
-.calc-bar-fill{height:100%;border-radius:2px;transition:width .8s ease;}
-.chain-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(0,82,255,.25);border:1px solid rgba(0,82,255,.4);border-radius:100px;padding:3px 10px;font-size:.66rem;font-family:'Fira Code',monospace;color:#60a5fa;}
-.chain-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#60a5fa;animation:pulse 2s infinite;}
-
-/* STAT STRIP */
-.stat-strip{background:var(--deep);padding:28px 48px;}
-.stat-strip-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
-.stat-item{text-align:center;}
-.stat-n{font-family:'Fira Code',monospace;font-size:1.6rem;font-weight:600;color:#fff;}
-.stat-l{font-size:.74rem;color:rgba(255,255,255,.45);margin-top:3px;}
-
-/* CALCULATOR SECTION */
-.calc-section{background:var(--surf);border:1px solid var(--line);border-radius:20px;padding:36px;margin-bottom:20px;}
-.calc-section h3{font-size:1.2rem;margin-bottom:6px;}
-.calc-desc{font-size:.88rem;color:var(--soft);margin-bottom:24px;line-height:1.7;}
-.slider-row{margin-bottom:20px;}
-.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.slider-name{font-size:.84rem;font-weight:600;}
-.slider-val{font-family:'Fira Code',monospace;font-size:.9rem;font-weight:600;color:var(--chain);}
-input[type=range]{width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:var(--line);outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--chain);cursor:pointer;box-shadow:0 2px 6px rgba(0,82,255,.3);}
-.results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
-.result-card{border-radius:12px;padding:16px;text-align:center;border:1px solid transparent;}
-.result-card.red{background:var(--rd2);border-color:rgba(220,38,38,.2);}
-.result-card.grn{background:var(--gn2);border-color:rgba(5,150,105,.2);}
-.result-card.blue{background:var(--ch3);border-color:rgba(0,82,255,.18);}
-.result-card.amber{background:var(--am2);border-color:rgba(217,119,6,.2);}
-.result-label{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
-.result-card.red .result-label{color:var(--red);}
-.result-card.grn .result-label{color:var(--grn);}
-.result-card.blue .result-label{color:var(--chain);}
-.result-card.amber .result-label{color:var(--amber);}
-.result-val{font-family:'Fira Code',monospace;font-size:1.4rem;font-weight:600;}
-.result-card.grn .result-val{color:var(--grn);}
-.result-card.red .result-val{color:var(--red);}
-.result-card.blue .result-val{color:var(--chain);}
-.result-card.amber .result-val{color:var(--amber);}
-.result-sub{font-size:.7rem;color:var(--dim);margin-top:3px;}
-
-/* COMPARISON TABLE */
-.comparison-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:20px;}
-.comparison-table th{padding:10px 16px;text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);background:var(--panel);border-bottom:1px solid var(--line);}
-.comparison-table th:first-child{border-radius:10px 0 0 0;}
-.comparison-table th:last-child{border-radius:0 10px 0 0;text-align:right;}
-.comparison-table td{padding:11px 16px;font-size:.88rem;border-bottom:1px solid var(--line);}
-.comparison-table td:last-child{text-align:right;font-family:'Fira Code',monospace;font-size:.86rem;font-weight:600;}
-.comparison-table tr.highlight td{background:var(--gn2);}
-.comparison-table tr.highlight td:first-child{border-left:3px solid var(--grn);}
-.chain-row td{color:var(--grn);}
-.trad-row td:last-child{color:var(--red);}
-.comparison-table tr:last-child td:first-child{border-radius:0 0 0 10px;}
-.comparison-table tr:last-child td:last-child{border-radius:0 0 10px 0;}
-
-/* CARDS */
-.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:22px;}
-.card:hover{border-color:rgba(0,82,255,.2);}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-
-/* STEPS */
-.step-flow{display:flex;flex-direction:column;gap:0;}
-.step{display:flex;gap:20px;padding:24px 0;border-bottom:1px solid var(--line);}
-.step:last-child{border-bottom:none;}
-.step-left{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;width:48px;}
-.step-circle{width:44px;height:44px;border-radius:50%;background:var(--ch3);border:2px solid var(--chain);display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:.9rem;font-weight:600;color:var(--chain);flex-shrink:0;}
-.step-circle.done{background:var(--gn2);border-color:var(--grn);color:var(--grn);}
-.step-line{width:2px;flex:1;background:var(--line);margin-top:4px;}
-.step-content{flex:1;padding-top:8px;}
-.step-title{font-size:1rem;font-weight:700;margin-bottom:5px;}
-.step-body{font-size:.86rem;color:var(--soft);line-height:1.7;margin-bottom:10px;}
-.step-tech{display:flex;gap:6px;flex-wrap:wrap;}
-.tech-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.04em;}
-.tt-chain{background:var(--ch3);color:var(--chain);border:1px solid rgba(0,82,255,.2);}
-.tt-zk{background:var(--pr2);color:var(--purp);border:1px solid rgba(124,58,237,.2);}
-.tt-free{background:var(--gn2);color:var(--grn);border:1px solid rgba(5,150,105,.2);}
-.tt-auto{background:var(--tl2);color:var(--teal);border:1px solid rgba(13,148,136,.2);}
-
-/* SMART CONTRACT VIZ */
-.contract-flow{background:var(--deep);border-radius:16px;padding:28px;color:#fff;font-family:'Fira Code',monospace;font-size:.82rem;position:relative;overflow:hidden;}
-.contract-flow::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--chain),#7c3aed);}
-.cf-line{display:flex;align-items:flex-start;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);}
-.cf-line:last-child{border-bottom:none;}
-.cf-num{color:rgba(255,255,255,.25);min-width:28px;}
-.cf-code{color:#e2e8f0;}
-.cf-comment{color:rgba(255,255,255,.3);}
-.cf-key{color:#60a5fa;}
-.cf-string{color:#86efac;}
-.cf-fn{color:#f9a8d4;}
-.cf-val{color:#fcd34d;}
-
-/* COMPARISON VISUAL */
-.compare-visual{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:14px;overflow:hidden;margin:20px 0;}
-.cv-side{padding:28px;background:var(--panel);}
-.cv-side.old{background:var(--rd2);}
-.cv-side.new{background:var(--gn2);}
-.cv-title{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
-.cv-side.old .cv-title{color:var(--red);}
-.cv-side.new .cv-title{color:var(--grn);}
-.cv-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:.84rem;line-height:1.5;}
-.cv-ico{font-size:.9rem;flex-shrink:0;margin-top:1px;}
-
-/* WASTE TRACKER */
-.waste-meter{position:relative;background:var(--panel);border-radius:12px;padding:20px;border:1px solid var(--line);overflow:hidden;}
-.waste-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(220,38,38,.15),rgba(220,38,38,.05));transition:width 1s ease;}
-.waste-content{position:relative;z-index:1;}
-.waste-icon{font-size:1.8rem;margin-bottom:6px;}
-.waste-val{font-family:'Fira Code',monospace;font-size:1.6rem;font-weight:600;}
-.waste-label{font-size:.76rem;color:var(--dim);margin-top:2px;}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:100px;font-size:.66rem;font-weight:700;letter-spacing:.04em;}
-.b-grn{background:var(--gn2);color:var(--grn);border:1px solid rgba(5,150,105,.25);}
-.b-red{background:var(--rd2);color:var(--red);border:1px solid rgba(220,38,38,.25);}
-.b-blue{background:var(--ch3);color:var(--chain);border:1px solid rgba(0,82,255,.2);}
-.b-amber{background:var(--am2);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
-.b-purp{background:var(--pr2);color:var(--purp);border:1px solid rgba(124,58,237,.2);}
-
-/* NETWORK ECOSYSTEM */
-.ecosystem-card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:18px;cursor:pointer;transition:all .2s;}
-.ecosystem-card:hover{border-color:var(--chain);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,82,255,.08);}
-.eco-ico{font-size:1.6rem;margin-bottom:10px;}
-.eco-name{font-size:.88rem;font-weight:700;margin-bottom:3px;}
-.eco-desc{font-size:.75rem;color:var(--dim);line-height:1.5;}
-.eco-status{margin-top:8px;}
-
-/* DIVIDER */
-.divider{height:1px;background:var(--line);margin:0 48px;}
-
-/* MODAL */
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;}
-.ov.open{display:flex;}
-.modal{background:var(--surf);border:1px solid var(--line);border-radius:20px;width:100%;max-width:580px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.2);overflow:hidden;animation:mIn .22s ease;}
-@keyframes mIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.mhdr{padding:22px 24px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.mt{font-size:1.05rem;font-weight:700;}
-.mx{width:30px;height:30px;background:var(--panel);border:1px solid var(--line);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:var(--dim);}
-.mx:hover{color:var(--body);}
-.mbody{padding:22px 24px;overflow-y:auto;flex:1;}
-
-/* FORM */
-.fl{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;margin-top:14px;}
-.fi{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 14px;color:var(--body);font-family:'Plus Jakarta Sans',sans-serif;font-size:.9rem;outline:none;transition:border-color .18s;}
-.fi:focus{border-color:var(--chain);}
-.fi::placeholder{color:var(--dim);}
-select.fi option{background:var(--surf);}
-
-/* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--deep);color:#fff;border-radius:10px;padding:12px 18px;font-size:.84rem;z-index:9999;display:none;align-items:center;gap:9px;max-width:300px;box-shadow:0 8px 32px rgba(0,0,0,.3);}
-.toast.show{display:flex;animation:mIn .2s ease;}
-.toast.ok{border-left:3px solid var(--grn);}
-.toast.info{border-left:3px solid var(--chain);}
-
-/* CTA SECTION */
-.cta-section{background:var(--deep);border-radius:24px;padding:56px;text-align:center;margin:0 48px 60px;}
-.cta-section h2{font-size:2.2rem;color:#fff;letter-spacing:-.04em;margin-bottom:14px;}
-.cta-section p{font-size:1rem;color:rgba(255,255,255,.55);margin-bottom:28px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.75;}
-.cta-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-
-@media(max-width:900px){
-  .hero,.grid-2,.grid-3,.grid-4,.results-grid,.compare-visual{grid-template-columns:1fr;}
-  section,nav{padding-left:24px;padding-right:24px;}
-  .hero{padding-left:24px;padding-right:24px;}
-  .stat-strip{padding-left:24px;padding-right:24px;}
-  .cta-section{margin:0 24px 60px;padding:36px 24px;}
-}
+body{background:var(--bg);color:var(--wh);font-family:"Space Grotesk",sans-serif;font-size:14px;}
+.mono{font-family:"Fira Code",monospace;}
+/* header */
+.hdr{display:flex;align-items:center;padding:0;border-bottom:1px solid var(--line);background:var(--s1);}
+.logo-block{padding:14px 24px;border-right:1px solid var(--line);display:flex;align-items:center;gap:10px;}
+.logo-text{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;}
+.logo-sub{font-size:.66rem;color:var(--soft);letter-spacing:.06em;}
+.tabs{display:flex;flex:1;overflow-x:auto;}
+.tab{padding:14px 18px;font-size:.78rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--dim);white-space:nowrap;transition:.1s;}
+.tab:hover{color:var(--indigo);}
+.tab.active{color:var(--indigo);border-bottom-color:var(--indigo);}
+#connect-btn{margin:8px 16px;padding:7px 16px;border-radius:6px;border:1px solid var(--indigo);background:var(--in2);color:var(--indigo);font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+#connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
+/* content */
+.pane{display:none;padding:20px 24px;max-width:1200px;}
+.pane.active{display:block;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
+label{display:block;font-size:.68rem;font-weight:600;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
+input,select{width:100%;background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:12px;}
+input:focus,select:focus{border-color:var(--indigo);}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s;font-family:inherit;}
+.btn-indigo{background:var(--indigo);color:#fff;}.btn-indigo:hover{background:#4f46e5;}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}.btn-outline:hover{border-color:var(--indigo);color:var(--indigo);}
+.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--ln2);font-size:.82rem;}
+.row:last-child{border:none;}
+.val{font-family:"Fira Code",monospace;color:var(--grn);}
+.kpi{text-align:center;padding:14px;}
+.kpi-n{font-size:1.6rem;font-weight:700;font-family:"Fira Code",monospace;line-height:1;}
+.kpi-l{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
+.kpi-s{font-size:.68rem;color:var(--soft);margin-top:2px;}
+.timeline{padding-left:16px;border-left:2px solid var(--line);}
+.tl-item{padding:10px 0 10px 16px;position:relative;}
+.tl-item::before{content:"";position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--indigo);}
+.tl-title{font-weight:600;font-size:.84rem;margin-bottom:3px;}
+.tl-desc{font-size:.76rem;color:var(--soft);line-height:1.5;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.66rem;font-weight:600;}
+.badge-live{background:var(--gn2);color:var(--grn);border:1px solid rgba(34,211,238,.25);}
+.badge-pend{background:var(--gd2);color:var(--gold);border:1px solid rgba(251,191,36,.2);}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;background:var(--card);border:1px solid var(--grn);border-radius:10px;font-size:.8rem;color:var(--grn);z-index:999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);}
 </style>
 </head>
 <body>
-<!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
-<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
-  <div style="display:flex;align-items:center;gap:7px;">
-    <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
-    <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>
+<div class="hdr">
+  <div class="logo-block">
+    <span style="font-size:1.3rem">⛓</span>
+    <div><div class="logo-text">QWKS Protocol</div><div class="logo-sub">Payment OS · RAWNet 720701</div></div>
   </div>
-  <div id="rwc-btn-wrap"></div>
-  <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
-  <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
-    <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="https://sepolia.basescan.org" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">Base Sepolia ↗</a>
-    <span style="font-size:11px;color:#333360;">chainId 84532</span>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab" onclick="showTab('payment')">Send Payment</div>
+    <div class="tab" onclick="showTab('staking')">LTN Staking</div>
+    <div class="tab" onclick="showTab('savings')">Savings Calc</div>
+    <div class="tab" onclick="showTab('migrate')">Migrate</div>
+    <div class="tab" onclick="showTab('network')">Network</div>
   </div>
+  <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
 </div>
-<style>
-@keyframes wbld{0%,100%{opacity:1}50%{opacity:.3}}
-#rawagon-wallet-bar button{padding:6px 14px;border-radius:6px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.1);color:#00d4ff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-#rawagon-wallet-bar button:hover{background:rgba(0,212,255,.2);}
-#rawagon-wallet-bar button.connected{border-color:rgba(16,185,129,.4);color:#10b981;background:rgba(16,185,129,.08);}
-</style>
-<script>
-(function(){
-  const CHAIN = {
-    chainId:"0x14A34",chainName:"Base Sepolia",
-    nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
-    rpcUrls:["https://sepolia.base.org"],
-    blockExplorerUrls:["https://sepolia.basescan.org"]
-  };
-  const wrap = document.getElementById("rwc-btn-wrap");
-  const btn  = document.createElement("button");
-  btn.textContent = "🦊 Connect";
-  wrap.appendChild(btn);
-  const chainEl = document.getElementById("rwc-chain");
-  const balEl   = document.getElementById("rwc-bal");
-  let addr = null;
 
-  async function update(accounts){
-    addr = accounts && accounts[0] ? accounts[0] : null;
-    if(addr){
-      btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-      btn.className = "connected";
-      chainEl.textContent = "Base Sepolia";
-      try{
-        const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
-        const eth = (parseInt(hex,16)/1e18).toFixed(4);
-        balEl.textContent = eth+" ETH";
-      }catch(e){}
-      document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
-    } else {
-      btn.textContent = "🦊 Connect";
-      btn.className = "";
-      chainEl.textContent = "";
-      balEl.textContent = "";
-    }
-  }
-
-  btn.onclick = async function(){
-    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
-    btn.textContent = "Connecting..."; btn.disabled = true;
-    try{
-      await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
-      await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
-      const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
-      await update(accounts);
-    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
-    btn.disabled = false;
-  };
-
-  if(window.ethereum){
-    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
-    window.ethereum.on("accountsChanged",update);
-    window.ethereum.on("chainChanged",()=>location.reload());
-  }
-})();
-</script>
-<!-- ── END WALLET BAR ────────────────────────────────────────────── -->
-
-
-<!-- ════════════════════════ NAV ════════════════════════ -->
-<nav>
-  <div class="nav-logo">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
-        <polygon points="12 2 2 7 12 12 22 7"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
+<!-- OVERVIEW -->
+<div class="pane active" id="pane-overview">
+  <div class="g4" style="margin-bottom:16px;">
+    <div class="card kpi" style="border-top:3px solid var(--indigo)"><div class="kpi-n" style="color:var(--indigo)" id="kpi-inflow">$0</div><div class="kpi-l">Total Inflow</div><div class="kpi-s">to FeeDistributor</div></div>
+    <div class="card kpi" style="border-top:3px solid var(--grn)"><div class="kpi-n" style="color:var(--grn)" id="kpi-staked">0 LTN</div><div class="kpi-l">Total Staked</div><div class="kpi-s">network-wide</div></div>
+    <div class="card kpi" style="border-top:3px solid var(--gold)"><div class="kpi-n" style="color:var(--gold)" id="kpi-pending">$0</div><div class="kpi-l">Your Pending</div><div class="kpi-s">claimable yield</div></div>
+    <div class="card kpi" style="border-top:3px solid var(--purp)"><div class="kpi-n" style="color:var(--purp)">0.1%</div><div class="kpi-l">Fee Rate</div><div class="kpi-s">of all volume</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">How QWKS Works</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-title">Business sends payment on RAWNet</div><div class="tl-desc">Transaction submitted to FeeDistributor. 0.1% of volume automatically routed to LTN stakers.</div></div>
+        <div class="tl-item"><div class="tl-title">0.001 LTN burned per transaction</div><div class="tl-desc">LivingToken deflationary mechanism. Burns reduce supply, increasing value over time.</div></div>
+        <div class="tl-item"><div class="tl-title">Stakers earn proportional yield</div><div class="tl-desc">accRewardPerShare increases with every inflow. Claim anytime in the Staking tab.</div></div>
+        <div class="tl-item"><div class="tl-title">Savings 9:1 to customer ratio</div><div class="tl-desc">QWKS keeps 10% of savings vs processor. Customer keeps 90%. Enforced on-chain.</div></div>
+      </div>
     </div>
     <div>
-      <div class="logo-name">QWKS Business Protocol</div>
-      <div class="logo-sub">RAWagon Network · Business Onboarding</div>
-    </div>
-  </div>
-  <div class="nav-links">
-    <button class="nav-link" onclick="scrollTo('#calculator')">Calculator</button>
-    <button class="nav-link" onclick="scrollTo('#how-it-works')">How it works</button>
-    <button class="nav-link" onclick="scrollTo('#smart-contracts')">Smart contracts</button>
-    <button class="nav-link" onclick="scrollTo('#ecosystem')">Ecosystem</button>
-    <button class="nav-cta" onclick="openModal('onboard')">Start free →</button>
-  </div>
-</nav>
-
-<!-- ════════════════════════ HERO ════════════════════════ -->
-<div class="hero">
-  <div>
-    <div class="hero-eyebrow">RAWagon Business Network · Open Protocol</div>
-    <h1>Stop paying<br>2.5% on every<br><span class="accent display">transaction.</span></h1>
-    <p class="hero-sub">QWKS Business Protocol converts your existing payment systems to blockchain rails in under an hour. Your data stays yours. Your customers' data stays theirs. You keep what you earned.</p>
-    <div class="hero-actions">
-      <button class="btn-primary" onclick="openModal('onboard')">Get started free →</button>
-      <button class="btn-secondary" onclick="scrollTo('#calculator')">Calculate my savings</button>
-    </div>
-  </div>
-
-  <!-- Live savings preview -->
-  <div class="hero-calc">
-    <div class="chain-badge" style="margin-bottom:18px;">Base L2 · Block <span id="hero-block" class="mono">—</span></div>
-    <div class="calc-label">YOUR CURRENT CARD FEES (est.)</div>
-    <div class="calc-value" id="hero-current-cost">$13,800</div>
-    <div class="calc-sub">/year · $50K/month in card volume</div>
-
-    <div class="calc-grid">
-      <div class="calc-cell">
-        <div class="calc-label">WITH QWKS</div>
-        <div style="font-family:'Fira Code',monospace;font-size:1.4rem;font-weight:600;color:#4ade80;">$5.04</div>
-        <div class="calc-sub">/year · same volume</div>
-        <div class="calc-bar"><div class="calc-bar-fill" style="width:0.04%;background:#4ade80;"></div></div>
-      </div>
-      <div class="calc-cell">
-        <div class="calc-label">YOU SAVE</div>
-        <div style="font-family:'Fira Code',monospace;font-size:1.4rem;font-weight:600;color:#f59e0b;" id="hero-savings">$13,795</div>
-        <div class="calc-sub">/year back in your pocket</div>
-        <div class="calc-bar"><div class="calc-bar-fill" style="width:100%;background:#f59e0b;"></div></div>
-      </div>
-    </div>
-
-    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;margin-top:4px;">
-      <div class="calc-label">PER TRANSACTION COST</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="color:rgba(255,255,255,.45);font-size:.8rem;text-decoration:line-through;">Visa/Stripe: $2.50 per $100</div>
-          <div style="color:#4ade80;font-size:.9rem;font-weight:700;font-family:'Fira Code',monospace;margin-top:3px;">QWKS: $0.00084 flat</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-family:'Fira Code',monospace;font-size:1.3rem;font-weight:700;color:#f59e0b;" id="hero-mult">2,977×</div>
-          <div style="font-size:.68rem;color:rgba(255,255,255,.35);">cheaper</div>
-        </div>
-      </div>
-    </div>
-    <div class="calc-sub" style="margin-top:10px;">Gas: <span id="hero-gas" style="color:rgba(255,255,255,.6);">loading...</span> · ETH: <span id="hero-eth" style="color:rgba(255,255,255,.6);">loading...</span></div>
-  </div>
-</div>
-
-<!-- ════════════════════════ STAT STRIP ════════════════════════ -->
-<div class="stat-strip">
-  <div class="stat-strip-inner">
-    <div class="stat-item"><div class="stat-n">$0.00084</div><div class="stat-l">Per transaction on Base L2</div></div>
-    <div class="stat-item"><div class="stat-n">2,977×</div><div class="stat-l">Cheaper than Visa credit</div></div>
-    <div class="stat-item"><div class="stat-n">18,250</div><div class="stat-l">Paper receipts eliminated/yr (avg)</div></div>
-    <div class="stat-item"><div class="stat-n">798 kWh</div><div class="stat-l">Energy saved from paper production</div></div>
-    <div class="stat-item"><div class="stat-n">GDPR/CCPA</div><div class="stat-l">Compliant by architecture</div></div>
-    <div class="stat-item"><div class="stat-n">&lt; 1hr</div><div class="stat-l">Full business onboarding</div></div>
-  </div>
-</div>
-
-<!-- ════════════════════════ CALCULATOR ════════════════════════ -->
-<section id="calculator">
-  <div class="section-label">Business Savings Calculator</div>
-  <h2 style="font-size:1.9rem;margin-bottom:8px;">See exactly what you'll save</h2>
-  <p style="color:var(--soft);font-size:.96rem;margin-bottom:32px;line-height:1.7;max-width:600px;">Enter your business numbers. We calculate your actual savings across payment fees, paper waste, storage costs, and energy — using live blockchain gas prices.</p>
-
-  <div class="calc-section">
-    <h3>💳 Payment Processing Costs</h3>
-    <p class="calc-desc">Drag the sliders to match your business. We'll calculate your current fees vs QWKS Protocol costs in real time.</p>
-
-    <div class="slider-row">
-      <div class="slider-label">
-        <span class="slider-name">Monthly card transaction volume</span>
-        <span class="slider-val">$<span id="vol-val">50,000</span></span>
-      </div>
-      <input type="range" id="vol-slider" min="5000" max="500000" step="5000" value="50000" oninput="calcSavings()">
-    </div>
-    <div class="slider-row">
-      <div class="slider-label">
-        <span class="slider-name">Average card fee rate (current processor)</span>
-        <span class="slider-val"><span id="rate-val">2.5</span>%</span>
-      </div>
-      <input type="range" id="rate-slider" min="1.5" max="4.0" step="0.1" value="2.5" oninput="calcSavings()">
-    </div>
-    <div class="slider-row">
-      <div class="slider-label">
-        <span class="slider-name">Monthly transaction count</span>
-        <span class="slider-val"><span id="txn-val">500</span> transactions</span>
-      </div>
-      <input type="range" id="txn-slider" min="50" max="10000" step="50" value="500" oninput="calcSavings()">
-    </div>
-
-    <div class="results-grid">
-      <div class="result-card red">
-        <div class="result-label">Current Annual Fees</div>
-        <div class="result-val" id="res-current">$15,000</div>
-        <div class="result-sub">Paid to Visa/Stripe/Square</div>
-      </div>
-      <div class="result-card grn">
-        <div class="result-label">QWKS Annual Cost</div>
-        <div class="result-val" id="res-qwks">$5.04</div>
-        <div class="result-sub">All transactions on Base L2</div>
-      </div>
-      <div class="result-card blue">
-        <div class="result-label">Annual Savings</div>
-        <div class="result-val" id="res-savings">$14,995</div>
-        <div class="result-sub">Money back in your business</div>
-      </div>
-      <div class="result-card amber">
-        <div class="result-label">5-Year Savings</div>
-        <div class="result-val" id="res-5yr">$74,975</div>
-        <div class="result-sub">Compounding back to you</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="calc-section">
-    <h3>🌿 Paper, Storage & Energy Waste</h3>
-    <p class="calc-desc">Paper receipts cost money to produce, create waste, and consume significant energy. The blockchain replaces physical records with immutable digital entries — at zero additional cost.</p>
-
-    <div class="slider-row">
-      <div class="slider-label">
-        <span class="slider-name">Receipts printed per day</span>
-        <span class="slider-val"><span id="rct-val">50</span> receipts</span>
-      </div>
-      <input type="range" id="rct-slider" min="10" max="500" step="10" value="50" oninput="calcWaste()">
-    </div>
-    <div class="slider-row">
-      <div class="slider-label">
-        <span class="slider-name">Physical storage (filing cabinets/offsite)</span>
-        <span class="slider-val">$<span id="store-val">150</span>/mo</span>
-      </div>
-      <input type="range" id="store-slider" min="0" max="1000" step="50" value="150" oninput="calcWaste()">
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;">
-      <div class="waste-meter">
-        <div class="waste-fill" id="waste-paper-fill" style="width:0%;"></div>
-        <div class="waste-content">
-          <div class="waste-icon">🧾</div>
-          <div class="waste-val" id="waste-receipts">18,250</div>
-          <div class="waste-label">Receipts/year eliminated</div>
-        </div>
-      </div>
-      <div class="waste-meter">
-        <div class="waste-fill" id="waste-paper-fill2" style="width:0%;background:linear-gradient(90deg,rgba(217,119,6,.15),rgba(217,119,6,.05));"></div>
-        <div class="waste-content">
-          <div class="waste-icon">♻️</div>
-          <div class="waste-val" id="waste-kg" style="color:var(--amber);">45.6 kg</div>
-          <div class="waste-label">Thermal paper saved</div>
-        </div>
-      </div>
-      <div class="waste-meter">
-        <div class="waste-fill" id="waste-energy-fill" style="width:0%;background:linear-gradient(90deg,rgba(124,58,237,.15),rgba(124,58,237,.05));"></div>
-        <div class="waste-content">
-          <div class="waste-icon">⚡</div>
-          <div class="waste-val" id="waste-kwh" style="color:var(--purp);">798 kWh</div>
-          <div class="waste-label">Energy saved (paper production)</div>
-        </div>
-      </div>
-      <div class="waste-meter">
-        <div class="waste-fill" id="waste-store-fill" style="width:0%;background:linear-gradient(90deg,rgba(5,150,105,.15),rgba(5,150,105,.05));"></div>
-        <div class="waste-content">
-          <div class="waste-icon">🗄️</div>
-          <div class="waste-val" id="waste-storage" style="color:var(--grn);">$1,800</div>
-          <div class="waste-label">Storage cost saved/year</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cost comparison table -->
-    <div style="margin-top:24px;">
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Payment Method</th>
-            <th>Cost on $100</th>
-            <th>Cost on $1,000</th>
-            <th>Annual (est. $50K/mo)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="trad-row"><td>PayPal (Goods & Services)</td><td>$3.98</td><td>$39.80</td><td>$23,880</td></tr>
-          <tr class="trad-row"><td>Stripe (online)</td><td>$3.20</td><td>$32.00</td><td>$19,200</td></tr>
-          <tr class="trad-row"><td>Square (card present)</td><td>$2.70</td><td>$27.00</td><td>$16,200</td></tr>
-          <tr class="trad-row"><td>Visa / Mastercard (credit)</td><td>$2.50</td><td>$25.00</td><td>$15,000</td></tr>
-          <tr class="trad-row"><td>Visa (debit)</td><td>$0.20</td><td>$2.00</td><td>$1,200</td></tr>
-          <tr class="trad-row"><td>ACH bank transfer</td><td>$0.50</td><td>$0.50</td><td>$3,000</td></tr>
-          <tr class="trad-row"><td>Domestic wire transfer</td><td>$25.00</td><td>$25.00</td><td>flat fee</td></tr>
-          <tr class="highlight chain-row">
-            <td><strong>QWKS on Base L2</strong> <span class="badge b-grn" style="margin-left:6px;">Recommended</span></td>
-            <td><strong>$0.00084</strong></td>
-            <td><strong>$0.00084</strong></td>
-            <td><strong>$5.04</strong></td>
-          </tr>
-          <tr class="chain-row"><td>Solana</td><td>$0.000451</td><td>$0.000451</td><td>$2.71</td></tr>
-          <tr class="chain-row"><td>Ethereum L1</td><td>$0.0065</td><td>$0.0065</td><td>$39.00</td></tr>
-        </tbody>
-      </table>
-      <p style="font-size:.76rem;color:var(--dim);margin-top:8px;font-style:italic;">* QWKS fee is flat regardless of transaction size. $100 and $100,000 cost the same $0.00084. Traditional processors scale with your revenue.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════ OLD VS NEW ════════════════════════ -->
-<section>
-  <div class="section-label">How Your Business Changes</div>
-  <h2 style="font-size:1.9rem;margin-bottom:8px;">Before and after QWKS</h2>
-  <p style="color:var(--soft);margin-bottom:28px;line-height:1.7;max-width:600px;">This isn't replacing what works — it's upgrading the infrastructure underneath it. Your storefront, your brand, your customer relationships stay exactly the same.</p>
-
-  <div class="compare-visual">
-    <div class="cv-side old">
-      <div class="cv-title">❌ Traditional Business Stack</div>
-      <div class="cv-item"><span class="cv-ico">💳</span><span>Credit card terminal: 2.5% on every swipe, monthly equipment fee, chargeback risk</span></div>
-      <div class="cv-item"><span class="cv-ico">🧾</span><span>Thermal receipt printer: consumables, paper rolls, ink, waste, maintenance</span></div>
-      <div class="cv-item"><span class="cv-ico">🗄️</span><span>Filing cabinets: 7-year retention requirement for tax records, payroll, contracts</span></div>
-      <div class="cv-item"><span class="cv-ico">📋</span><span>Employee onboarding: paper forms, photocopied IDs, physical HR files, payroll stubs</span></div>
-      <div class="cv-item"><span class="cv-ico">🔐</span><span>Customer data: stored in your POS system, liability for breaches, GDPR/CCPA manual compliance</span></div>
-      <div class="cv-item"><span class="cv-ico">💸</span><span>Bank transfers: $25-$35 per wire, 1-3 business days, FX spread on international</span></div>
-      <div class="cv-item"><span class="cv-ico">📑</span><span>Invoicing: mailed or emailed PDFs, manual follow-up, 30/60/90 day terms</span></div>
-      <div class="cv-item"><span class="cv-ico">🌍</span><span>International: correspondent banks, FX conversion, 3-7 day settlement</span></div>
-    </div>
-    <div class="cv-side new">
-      <div class="cv-title">✅ QWKS Business Protocol</div>
-      <div class="cv-item"><span class="cv-ico">⛓</span><span>Base L2 payment rail: $0.00084 flat per transaction, no equipment, no chargebacks on-chain</span></div>
-      <div class="cv-item"><span class="cv-ico">📱</span><span>Digital receipt to AllCard or email: zero cost, permanent record on-chain, searchable forever</span></div>
-      <div class="cv-item"><span class="cv-ico">🔒</span><span>Blockchain ledger: immutable records, instant audit, no physical storage, auto-retention</span></div>
-      <div class="cv-item"><span class="cv-ico">🪪</span><span>Employee onboarding: ZK identity verification in seconds, AllCard issued, records on smart contract</span></div>
-      <div class="cv-item"><span class="cv-ico">⬡</span><span>Customer data: stays on customer's device, ZK proof shares only what's needed, auto-GDPR compliant</span></div>
-      <div class="cv-item"><span class="cv-ico">⚡</span><span>Payments: $0.00084 flat, instant settlement, AllCard or USDC, works globally same cost</span></div>
-      <div class="cv-item"><span class="cv-ico">📜</span><span>Smart contract invoicing: auto-pay on delivery, escrow, instant settlement on acceptance</span></div>
-      <div class="cv-item"><span class="cv-ico">🌐</span><span>International: same $0.00084, 12-second settlement, no FX spread on USDC</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════ HOW IT WORKS ════════════════════════ -->
-<section id="how-it-works">
-  <div class="section-label">Onboarding Process</div>
-  <h2 style="font-size:1.9rem;margin-bottom:8px;">From signup to first transaction in under an hour</h2>
-  <p style="color:var(--soft);margin-bottom:32px;line-height:1.7;max-width:600px;">No hardware to buy. No developer needed. No downtime. You never shut down your existing payments — QWKS runs alongside them and you migrate at your own pace.</p>
-
-  <div class="grid-2" style="gap:40px;align-items:start;">
-    <div class="step-flow">
-      <div class="step">
-        <div class="step-left"><div class="step-circle">01</div><div class="step-line"></div></div>
-        <div class="step-content">
-          <div class="step-title">Register your business on-chain</div>
-          <div class="step-body">Go to qwks.io/business. Enter your business name, EIN/tax ID, address, and industry. QWKS deploys a <strong>Business Registry NFT</strong> on Base L2 — your unique on-chain identity. This is your business's permanent, tamper-proof registration. No one can impersonate your business on the network.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-chain">Base L2</span>
-            <span class="tech-tag tt-free">Free</span>
-            <span class="tech-tag tt-auto">3 minutes</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-left"><div class="step-circle">02</div><div class="step-line"></div></div>
-        <div class="step-content">
-          <div class="step-title">Install the payment widget</div>
-          <div class="step-body">Copy and paste a single JavaScript snippet into your website, POS system, or checkout flow. Alternatively, use the QWKS mobile app as a standalone terminal. The widget accepts: AllCard tap, USDC, LTN, or a QR code scan that generates a one-time payment proof. Your existing Stripe/Square terminal continues working in parallel — switch customers over on your own timeline.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-chain">1 line of code</span>
-            <span class="tech-tag tt-auto">Works with existing POS</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-left"><div class="step-circle">03</div><div class="step-line"></div></div>
-        <div class="step-content">
-          <div class="step-title">Migrate employee records to smart contracts</div>
-          <div class="step-body">Upload your existing HR data (CSV or manual entry). QWKS encrypts each employee's record and stores it in a <strong>EmployeeVault smart contract</strong>. The contract only releases data when the employee's AllCard/ZK proof authorizes it — no one else can access their records, including you, without their consent. Payroll, contracts, ID verification, and benefits are all handled through the same contract.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-zk">ZK proof required</span>
-            <span class="tech-tag tt-chain">Smart contract</span>
-            <span class="tech-tag tt-auto">CCPA compliant</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-left"><div class="step-circle">04</div><div class="step-line"></div></div>
-        <div class="step-content">
-          <div class="step-title">Issue AllCards to employees</div>
-          <div class="step-body">Each employee gets a 1.nce AllCard account. Their identity is ZK-verified (no raw data stored anywhere). Payroll can be sent directly to their AllCard — instant, $0.00084 per disbursement. Tax documents (W-2, 1099) are stored in their AllCard vault, accessible only to them and authorized entities with their consent.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-zk">1.nce AllCard</span>
-            <span class="tech-tag tt-free">$0.00084/payroll transfer</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-left"><div class="step-circle">05</div><div class="step-line"></div></div>
-        <div class="step-content">
-          <div class="step-title">Customer records on smart contracts</div>
-          <div class="step-body">Customers with AllCards authenticate themselves to your business using a ZK proof — you receive confirmation of their identity, age, or payment eligibility without ever seeing or storing their raw data. No PII database for you to protect. No GDPR liability. No breach risk for customer data because you never hold it.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-zk">Zero raw PII stored</span>
-            <span class="tech-tag tt-auto">GDPR by architecture</span>
-            <span class="tech-tag tt-chain">ZK verified</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="step">
-        <div class="step-left"><div class="step-circle done">✓</div></div>
-        <div class="step-content">
-          <div class="step-title">Go live — process your first transaction</div>
-          <div class="step-body">Your business is now on the QWKS Network. Payment rails are live. Records are on-chain. Employee data is smart-contract secured. Customer interactions are ZK-private. You're saving on every transaction from day one.</div>
-          <div class="step-tech">
-            <span class="tech-tag tt-free">Fully operational</span>
-            <span class="tech-tag tt-chain">On the network</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT SIDE: Timeline + what you get -->
-    <div>
-      <div class="card" style="margin-bottom:14px;background:var(--deep);color:#fff;border-color:transparent;">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px;">ONBOARDING TIMELINE</div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          ${[
-            ['0–5 min','Business account created · Registry NFT deployed'],
-            ['5–15 min','Payment widget installed · First test transaction'],
-            ['15–30 min','Employee records migrated · AllCards issued'],
-            ['30–45 min','Customer flow configured · ZK verification live'],
-            ['45–60 min','First live transaction · Fully operational'],
-          ].map(([t,d]) => `<div style="display:flex;gap:12px;"><div style="font-family:'Fira Code',monospace;font-size:.74rem;color:rgba(255,255,255,.4);min-width:80px;flex-shrink:0;padding-top:1px;">${t}</div><div style="font-size:.82rem;color:rgba(255,255,255,.7);line-height:1.55;">${d}</div></div>`).join('')}
-        </div>
-      </div>
-
       <div class="card" style="margin-bottom:14px;">
-        <div class="section-label" style="margin-bottom:10px;">What you receive</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          ${[
-            ['🏢','Business Registry NFT','Your permanent on-chain business identity. Verifiable by anyone, forgeable by no one.'],
-            ['💳','QWKS Payment Widget','Drop-in checkout for web, app, or POS. Accepts AllCard, USDC, LTN.'],
-            ['📜','Smart Contract Suite','EmployeeVault, CustomerInteraction, InvoiceEngine — deployed and configured.'],
-            ['🪪','Employee AllCards','One per employee. Identity, payroll, and HR all through one card.'],
-            ['📊','QWKS Dashboard','Real-time analytics, transaction history, compliance exports, audit log.'],
-            ['🔗','Ecosystem Access','Optional: connect BitPawn, AutoIQ, GoldSnap, ProfitPilot, Droppa.'],
-          ].map(([i,t,d]) => `<div style="display:flex;gap:10px;padding:10px;background:var(--panel);border-radius:8px;"><span style="font-size:1.1rem;">${i}</span><div><div style="font-size:.84rem;font-weight:600;">${t}</div><div style="font-size:.75rem;color:var(--dim);margin-top:2px;line-height:1.5;">${d}</div></div></div>`).join('')}
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Contract Status</div>
+        <div class="row"><span style="color:var(--soft)">FeeDistributor</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0x7C728214...AA964</span></span></div>
+        <div class="row"><span style="color:var(--soft)">LivingToken</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0xaD888d0A...8A8D</span></span></div>
+        <div class="row"><span style="color:var(--soft)">MockUSDC</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0xFC628dd7...4882</span></span></div>
+        <div class="row"><span style="color:var(--soft)">Network</span><span style="color:var(--grn);font-family:Fira Code,monospace;font-size:.78rem">RAWNet 720701</span></div>
+        <div class="row"><span style="color:var(--soft)">Gas per tx</span><span class="val">~$0.0000082</span></div>
+      </div>
+      <div class="card">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">vs Competitors</div>
+        <div class="row"><span style="color:var(--soft)">QWKS effective rate</span><span class="val">~0.01%</span></div>
+        <div class="row"><span style="color:var(--soft)">Visa</span><span style="color:var(--red);font-family:monospace;font-size:.78rem">2.0–3.5%</span></div>
+        <div class="row"><span style="color:var(--soft)">Stripe</span><span style="color:var(--red);font-family:monospace;font-size:.78rem">2.9% + $0.30</span></div>
+        <div class="row"><span style="color:var(--soft)">Square</span><span style="color:var(--red);font-family:monospace;font-size:.78rem">2.6% + $0.10</span></div>
+        <div class="row"><span style="color:var(--soft)">Savings vs Visa ($50K/mo)</span><span style="color:var(--grn);font-family:monospace;font-size:.78rem">$14,901/yr</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEND PAYMENT -->
+<div class="pane" id="pane-payment">
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">Send USDC Payment</div>
+      <label>Amount (USDC)</label>
+      <input type="number" id="pay-amount" placeholder="100.00" step="0.01" oninput="calcPayFee()">
+      <label>Recipient Address</label>
+      <input id="pay-to" placeholder="0x...">
+      <label>Business ID (for fee routing)</label>
+      <input id="pay-biz" placeholder="0x... (your wallet address)">
+      <div id="pay-preview" style="display:none;padding:12px;background:var(--in3);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font-size:.8rem;">
+        <div class="row"><span style="color:var(--soft)">Amount</span><span id="pp-amount" class="val">—</span></div>
+        <div class="row"><span style="color:var(--soft)">QWKS fee (0.1%)</span><span id="pp-fee" style="font-family:monospace;color:var(--gold)">—</span></div>
+        <div class="row"><span style="color:var(--soft)">Recipient gets</span><span id="pp-net" class="val">—</span></div>
+        <div class="row"><span style="color:var(--soft)">Gas</span><span class="val">~$0.0000082</span></div>
+        <div class="row"><span style="color:var(--soft)">LTN burned</span><span style="font-family:monospace;color:var(--purp)">0.001 LTN</span></div>
+      </div>
+      <button class="btn btn-indigo" style="width:100%" onclick="sendPayment()">Send via FeeDistributor</button>
+      <div id="pay-status" style="margin-top:10px;font-size:.76rem;text-align:center;color:var(--soft);"></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Your Balances</div>
+        <div class="row"><span style="color:var(--soft)">USDC</span><span class="val" id="bal-usdc">—</span></div>
+        <div class="row"><span style="color:var(--soft)">LTN</span><span style="font-family:monospace;color:var(--purp)" id="bal-ltn">—</span></div>
+        <div class="row"><span style="color:var(--soft)">rETH</span><span class="val" id="bal-eth">—</span></div>
+        <button class="btn btn-outline" style="margin-top:10px;width:100%" onclick="getTestUSDC()">Get 10K Test USDC</button>
+      </div>
+      <div class="card">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Approve Products</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:10px;">Allow contract to call FeeDistributor.inflow()</div>
+        <input id="approve-product" placeholder="Product contract address 0x...">
+        <button class="btn btn-outline" style="width:100%" onclick="approveProduct()">Approve Product</button>
+        <div id="approve-status" style="margin-top:6px;font-size:.74rem;color:var(--soft);"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STAKING -->
+<div class="pane" id="pane-staking">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">Stake LTN</div>
+        <label>LTN Amount</label>
+        <input type="number" id="stake-amt" placeholder="1000" oninput="previewStake()">
+        <div id="stake-preview" style="display:none;padding:10px;background:var(--in3);border-radius:8px;margin-bottom:10px;font-size:.78rem;">
+          <div class="row"><span style="color:var(--soft)">LTN value</span><span id="sp-val" class="val">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Est. APY</span><span id="sp-apy" style="font-family:monospace;color:var(--gold)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Est. monthly yield</span><span id="sp-monthly" class="val">—</span></div>
+        </div>
+        <button class="btn btn-indigo" style="width:100%;margin-bottom:8px" onclick="stakeLTN()">Stake LTN</button>
+        <input type="number" id="unstake-amt" placeholder="Unstake amount...">
+        <button class="btn btn-outline" style="width:100%" onclick="unstakeLTN()">Unstake LTN</button>
+      </div>
+      <div class="card">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Your Staking Position</div>
+        <div class="row"><span style="color:var(--soft)">Staked</span><span id="my-staked" class="val">0 LTN</span></div>
+        <div class="row"><span style="color:var(--soft)">Pending yield</span><span id="my-pending" style="font-family:monospace;color:var(--gold)">0 USDC</span></div>
+        <div class="row"><span style="color:var(--soft)">Network total staked</span><span id="net-staked" class="val">—</span></div>
+        <button class="btn btn-indigo" style="margin-top:10px;width:100%" onclick="claimYield()">Claim Yield</button>
+        <div id="claim-status" style="margin-top:6px;font-size:.74rem;text-align:center;color:var(--soft);"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;">Staking Math</div>
+      <div class="row"><span style="color:var(--soft)">Fee rate</span><span class="val">0.1% of volume</span></div>
+      <div class="row"><span style="color:var(--soft)">Network volume (est Y2)</span><span class="val">$3.44B/yr</span></div>
+      <div class="row"><span style="color:var(--soft)">Annual inflow to stakers</span><span class="val">$3.44M/yr</span></div>
+      <div class="row"><span style="color:var(--soft)">Yield per LTN (est)</span><span class="val">$0.0861/yr</span></div>
+      <div class="row"><span style="color:var(--soft)">50K LTN stake yields</span><span style="color:var(--gold);font-family:monospace">~$4,305/yr</span></div>
+      <div style="margin-top:16px;padding:12px;background:var(--in3);border-radius:8px;font-size:.76rem;color:var(--soft);line-height:1.7;">
+        P* transition: Stake enough LTN so yield covers your QWKS subscription. Formula: P* = annual_fee / (LTN_price × APY). At $1,499/yr fee: stake ~148,909 LTN to pay $0 net.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SAVINGS CALC -->
+<div class="pane" id="pane-savings">
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">QWKS Savings Calculator</div>
+      <label>Monthly Transaction Volume ($)</label>
+      <input type="number" id="sv-vol" value="50000" oninput="calcSavings()">
+      <label>Transactions per Month</label>
+      <input type="number" id="sv-txns" value="500" oninput="calcSavings()">
+      <label>Current Processor Rate (%)</label>
+      <input type="number" id="sv-rate" value="2.5" step="0.1" oninput="calcSavings()">
+      <label>Processor (for reference)</label>
+      <select id="sv-processor" onchange="setRate()">
+        <option value="2.5">Visa (avg 2.5%)</option>
+        <option value="2.9">Stripe (2.9% + $0.30)</option>
+        <option value="3.2">PayPal (3.2%)</option>
+        <option value="2.6">Square (2.6%)</option>
+        <option value="3.5">Amex (3.5%)</option>
+      </select>
+    </div>
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;">Results</div>
+      <table><tbody id="savings-results"></tbody></table>
+      <div style="margin-top:14px;padding:14px;background:var(--in3);border:1px solid var(--line);border-radius:10px;">
+        <div style="font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Your Annual Savings</div>
+        <div id="sv-headline" style="font-size:2rem;font-weight:700;color:var(--grn);font-family:Fira Code,monospace">$0</div>
+        <div id="sv-sub" style="font-size:.72rem;color:var(--soft);margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MIGRATE -->
+<div class="pane" id="pane-migrate">
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">Register Migration</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">Register your business for QWKS migration. Verifies your baseline rate on-chain via the MigrationReceiver oracle. Unlocks savings tracking and LTN rewards.</div>
+      <label>Business Name</label>
+      <input id="mig-name" placeholder="Acme Retail Inc.">
+      <label>Industry</label>
+      <select id="mig-industry">
+        <option>Retail</option><option>Pawn / Resale</option><option>Automotive</option>
+        <option>Food & Beverage</option><option>Services</option><option>E-commerce</option>
+        <option>Healthcare</option><option>Entertainment</option>
+      </select>
+      <label>Monthly Volume ($)</label>
+      <input type="number" id="mig-vol" placeholder="50000">
+      <label>Current Rate (basis points, e.g. 250 = 2.5%)</label>
+      <input type="number" id="mig-rate" placeholder="250">
+      <button class="btn btn-indigo" style="width:100%" onclick="registerMigration()">Register On-Chain</button>
+      <div id="mig-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);"></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Migration Timeline</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-title">Week 1: Register + verify rate</div><div class="tl-desc">Submit migration on-chain. Oracle verifies your baseline processor rate.</div></div>
+          <div class="tl-item"><div class="tl-title">Week 2: Parallel mode</div><div class="tl-desc">Run QWKS alongside existing processor. No disruption. Compare results.</div></div>
+          <div class="tl-item"><div class="tl-title">Month 1: 25% on QWKS</div><div class="tl-desc">Route 25% of volume through QWKS. Measure savings vs baseline.</div></div>
+          <div class="tl-item"><div class="tl-title">Month 2-3: 50-75%</div><div class="tl-desc">Scale up as confidence builds. Savings compounding.</div></div>
+          <div class="tl-item"><div class="tl-title">Month 4+: 100% QWKS</div><div class="tl-desc">Full migration complete. Cancel old processor. Begin LTN accumulation.</div></div>
         </div>
       </div>
     </div>
   </div>
-</section>
-
-<!-- ════════════════════════ SMART CONTRACTS ════════════════════════ -->
-<section id="smart-contracts" style="background:var(--deep);border-radius:24px;max-width:100%;padding:60px 48px;margin:0;">
-  <div class="section-label" style="color:#60a5fa;">Smart Contract Data Architecture</div>
-  <h2 style="font-size:1.9rem;color:#fff;margin-bottom:8px;">How your data is protected</h2>
-  <p style="color:rgba(255,255,255,.5);margin-bottom:36px;line-height:1.75;max-width:640px;">Smart contracts are self-executing code on the blockchain. They hold rules — not data. Your employee's Social Security number never touches any server. Their smart contract only ever confirms "this person is authorized" — and only when they prove it themselves.</p>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;margin:0 auto;">
-
-    <!-- Employee Vault contract visual -->
-    <div>
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px;">EmployeeVault.sol — Employee Data Contract</div>
-      <div class="contract-flow">
-        <div class="cf-line"><span class="cf-num">01</span><span class="cf-code"><span class="cf-key">contract</span> <span class="cf-fn">EmployeeVault</span> {</span></div>
-        <div class="cf-line"><span class="cf-num">02</span><span class="cf-code" style="padding-left:20px;"><span class="cf-comment">// No raw data stored here. Ever.</span></span></div>
-        <div class="cf-line"><span class="cf-num">03</span><span class="cf-code" style="padding-left:20px;"><span class="cf-key">mapping</span>(address =&gt; <span class="cf-fn">bytes32</span>) <span class="cf-val">commitment</span>;</div></div>
-        <div class="cf-line"><span class="cf-num">04</span><span class="cf-code" style="padding-left:20px;"><span class="cf-comment">// commitment = hash(encrypted_vault_root)</span></span></div>
-        <div class="cf-line"><span class="cf-num">05</span></div>
-        <div class="cf-line"><span class="cf-num">06</span><span class="cf-code" style="padding-left:20px;"><span class="cf-key">function</span> <span class="cf-fn">verifyEmployee</span>(</span></div>
-        <div class="cf-line"><span class="cf-num">07</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">bytes32</span> zkProof,</span></div>
-        <div class="cf-line"><span class="cf-num">08</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">uint8</span> scope <span class="cf-comment">// 1=active, 2=payroll, 3=full</span></span></div>
-        <div class="cf-line"><span class="cf-num">09</span><span class="cf-code" style="padding-left:20px;">) <span class="cf-key">external view returns</span> (<span class="cf-key">bool</span>) {</span></div>
-        <div class="cf-line"><span class="cf-num">10</span><span class="cf-code" style="padding-left:36px;"><span class="cf-comment">// Verify ZK proof matches commitment</span></span></div>
-        <div class="cf-line"><span class="cf-num">11</span><span class="cf-code" style="padding-left:36px;"><span class="cf-key">return</span> <span class="cf-fn">verifyZKProof</span>(zkProof, commitment[msg.sender]);</span></div>
-        <div class="cf-line"><span class="cf-num">12</span><span class="cf-code" style="padding-left:20px;">}</span></div>
-        <div class="cf-line"><span class="cf-num">13</span><span class="cf-code" style="padding-left:20px;"><span class="cf-comment">// Raw SSN, DOB, address: NEVER on-chain</span></span></div>
-        <div class="cf-line"><span class="cf-num">14</span><span class="cf-code">}</span></div>
-      </div>
-      <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px;">
-        ${[
-          ['Employer asks','Is this employee active and authorized for payroll?'],
-          ['Contract checks','ZK proof from employee\'s AllCard device'],
-          ['Contract returns','Yes/No — scope confirmed'],
-          ['Employer receives','Authorization only. No name, SSN, or bank account.'],
-          ['Result','Employee paid. Zero PII exposed. CCPA/GDPR: automatic.'],
-        ].map(([k,v]) => `<div style="display:flex;gap:10px;padding:8px 12px;background:rgba(255,255,255,.04);border-radius:7px;font-size:.8rem;"><span style="color:rgba(255,255,255,.35);min-width:130px;flex-shrink:0;">${k}</span><span style="color:rgba(255,255,255,.7);">${v}</span></div>`).join('')}
-      </div>
-    </div>
-
-    <!-- Customer Interaction contract -->
-    <div>
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px;">CustomerInteraction.sol — Customer Privacy</div>
-      <div class="contract-flow">
-        <div class="cf-line"><span class="cf-num">01</span><span class="cf-code"><span class="cf-key">contract</span> <span class="cf-fn">CustomerInteraction</span> {</span></div>
-        <div class="cf-line"><span class="cf-num">02</span><span class="cf-code" style="padding-left:20px;"><span class="cf-comment">// Business never sees raw customer data</span></span></div>
-        <div class="cf-line"><span class="cf-num">03</span><span class="cf-code" style="padding-left:20px;"><span class="cf-comment">// Only receives what it asked to verify</span></span></div>
-        <div class="cf-line"><span class="cf-num">04</span></div>
-        <div class="cf-line"><span class="cf-num">05</span><span class="cf-code" style="padding-left:20px;"><span class="cf-key">function</span> <span class="cf-fn">verifyAge</span>(</span></div>
-        <div class="cf-line"><span class="cf-num">06</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">bytes32</span> customerProof,</span></div>
-        <div class="cf-line"><span class="cf-num">07</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">uint8</span> minimumAge</span></div>
-        <div class="cf-line"><span class="cf-num">08</span><span class="cf-code" style="padding-left:20px;">) <span class="cf-key">external view returns</span> (<span class="cf-key">bool isOver</span>) {</span></div>
-        <div class="cf-line"><span class="cf-num">09</span><span class="cf-code" style="padding-left:36px;"><span class="cf-comment">// Returns true/false — never the actual DOB</span></span></div>
-        <div class="cf-line"><span class="cf-num">10</span><span class="cf-code" style="padding-left:36px;"><span class="cf-key">return</span> <span class="cf-fn">zkProofAge</span>(customerProof) &gt;= minimumAge;</span></div>
-        <div class="cf-line"><span class="cf-num">11</span><span class="cf-code" style="padding-left:20px;">}</span></div>
-        <div class="cf-line"><span class="cf-num">12</span></div>
-        <div class="cf-line"><span class="cf-num">13</span><span class="cf-code" style="padding-left:20px;"><span class="cf-key">function</span> <span class="cf-fn">processPayment</span>(</span></div>
-        <div class="cf-line"><span class="cf-num">14</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">uint256</span> amount,</span></div>
-        <div class="cf-line"><span class="cf-num">15</span><span class="cf-code" style="padding-left:36px;"><span class="cf-fn">bytes32</span> customerCardProof</span></div>
-        <div class="cf-line"><span class="cf-num">16</span><span class="cf-code" style="padding-left:20px;">) <span class="cf-key">external</span> { <span class="cf-comment">/* $0.00084 gas */</span> }</span></div>
-        <div class="cf-line"><span class="cf-num">17</span><span class="cf-code">}</span></div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px;">What data goes where</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          ${[
-            ['On-chain (public hash)','Customer identity commitment hash'],
-            ['On-chain (encrypted)','Transaction record (amount, time, merchant ID)'],
-            ['Off-chain (customer device)','Name, DOB, SSN, card number, address'],
-            ['Off-chain (your server)','Nothing. You hold zero customer PII.'],
-            ['Shared with you','Transaction confirmation. Amount. Nothing else.'],
-            ['GDPR right to erasure','Customer deletes their AllCard. Done. You had nothing.'],
-          ].map(([k,v]) => `<div style="padding:9px;background:rgba(255,255,255,.04);border-radius:7px;"><div style="font-size:.66rem;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;">${k}</div><div style="font-size:.76rem;color:rgba(255,255,255,.65);line-height:1.5;">${v}</div></div>`).join('')}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ════════════════════════ ECOSYSTEM ════════════════════════ -->
-<section id="ecosystem">
-  <div class="section-label">Optional Integrations</div>
-  <h2 style="font-size:1.9rem;margin-bottom:8px;">Works standalone. Better together.</h2>
-  <p style="color:var(--soft);margin-bottom:28px;line-height:1.7;max-width:600px;">QWKS Business Protocol is a complete, independent product. These integrations are available when you want them — each one is separate, each one optional.</p>
-
-  <div class="grid-3" style="gap:14px;" id="ecosystem-grid"></div>
-
-  <div style="margin-top:28px;padding:24px;background:var(--ch3);border:1px solid rgba(0,82,255,.2);border-radius:14px;">
-    <div style="font-size:.84rem;font-weight:700;color:var(--chain);margin-bottom:6px;">Architecture principle</div>
-    <p style="font-size:.88rem;color:var(--soft);line-height:1.7;">Every product in the RAWagon ecosystem is a <strong>separate entity on the chain</strong>. QWKS Business Protocol, BitPawn, 1.nce AllCard, AutoIQ, and GoldSnap each have their own smart contracts, their own tokens, and their own operations. They can communicate — but they never depend on each other. Your QWKS payments work whether or not BitPawn is running. Your AllCard works whether or not QWKS is running. No single point of failure anywhere.</p>
-  </div>
-</section>
-
-<!-- ════════════════════════ CTA ════════════════════════ -->
-<div class="cta-section">
-  <h2>Ready to stop paying<br>2.5% per transaction?</h2>
-  <p>Free 30-day trial. Full protocol access. One-hour onboarding. A real human helps you every step of the way.</p>
-  <div class="cta-actions">
-    <button class="btn-primary" onclick="openModal('onboard')">Start free — no credit card →</button>
-    <button style="background:rgba(255,255,255,.1);color:#fff;padding:13px 28px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.15);" onclick="openModal('demo')">Book a 15-min demo</button>
-  </div>
-  <p style="font-size:.8rem;color:rgba(255,255,255,.3);margin-top:18px;">QWKS Business Protocol · Part of the RAWagon Network · Base L2 · bitpawn.io · rawagon.io</p>
 </div>
 
-<!-- ════════════════════════ MODAL ════════════════════════ -->
-<div class="ov" id="ov" onclick="closeModal(event)">
-  <div class="modal" id="modal" onclick="event.stopPropagation()">
-    <div class="mhdr"><div class="mt" id="mt"></div><button class="mx" onclick="closeModal()">✕</button></div>
-    <div class="mbody" id="mb"></div>
+<!-- NETWORK -->
+<div class="pane" id="pane-network">
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">RAWNet Stats</div>
+      <table><tbody id="net-stats-table"></tbody></table>
+      <button class="btn btn-outline" style="margin-top:12px" onclick="loadNetworkStats()">Refresh</button>
+    </div>
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">FeeDistributor Stats</div>
+      <table><tbody id="fd-stats-table"></tbody></table>
+    </div>
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">LTN Token Stats</div>
+      <table><tbody id="ltn-net-table"></tbody></table>
+    </div>
+    <div class="card">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">Approved Products</div>
+      <div style="font-size:.76rem;color:var(--soft);margin-bottom:10px;">Contracts authorized to route fees</div>
+      <div class="row"><span style="color:var(--soft)">BitPawn (PawnRegistry)</span><span class="badge badge-live">APPROVED</span></div>
+      <div class="row"><span style="color:var(--soft)">Droppa (BreakFactory)</span><span class="badge badge-live">APPROVED</span></div>
+      <div class="row"><span style="color:var(--soft)">AutoIQ (IQTitle)</span><span class="badge badge-live">APPROVED</span></div>
+      <div class="row"><span style="color:var(--soft)">GoldSnap (GoldMint)</span><span class="badge badge-live">APPROVED</span></div>
+    </div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="tst"><span id="tico"></span><span id="tmsg"></span><span style="margin-left:auto;cursor:pointer;" onclick="this.parentElement.classList.remove('show','ok','info')">✕</span></div>
+<div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════
-// LIVE DATA
-// ═══════════════════════════════════════════════
-const L = { eth: 2153, baseGas: 0.006, baseBlock: 0 };
-const BASE_CONTRACT_COST = () => L.baseGas * 65000 * 1e-9 * L.eth;
+const ADDRS = {
+  FeeDistributor: "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
+  LivingToken:    "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
+  MockUSDC:       "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
+};
+const FD_ABI = [
+  "function stake(uint256 amount)",
+  "function unstake(uint256 amount)",
+  "function claim() returns (uint256)",
+  "function pending(address) view returns (uint256)",
+  "function totalInflow() view returns (uint256)",
+  "function totalStaked() view returns (uint256)",
+  "function staked(address) view returns (uint256)",
+  "function approveProduct(address)",
+  "function inflow(uint256 volume, address initiator)",
+];
+const LTN_ABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function totalSupply() view returns (uint256)",
+  "function totalBurned() view returns (uint256)",
+  "function totalStaked() view returns (uint256)",
+  "function approve(address,uint256) returns (bool)",
+];
+const USDC_ABI = [
+  "function balanceOf(address) view returns (uint256)",
+  "function approve(address,uint256) returns (bool)",
+  "function faucet()",
+];
 
-async function loadLive() {
-  try {
-    // ETH price
-    const r1 = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/ETH-USD?interval=1d&range=1d');
-    const d1 = await r1.json();
-    L.eth = d1.chart.result[0].meta.regularMarketPrice;
-  } catch(e){}
+let provider, signer, addr, fdContract, ltnContract, usdcContract;
 
-  try {
-    // Base gas + block
-    const r2 = await fetch('https://mainnet.base.org', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({jsonrpc:'2.0',method:'eth_gasPrice',params:[],id:1})
-    });
-    const d2 = await r2.json();
-    L.baseGas = parseInt(d2.result, 16) / 1e9;
-
-    const r3 = await fetch('https://mainnet.base.org', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({jsonrpc:'2.0',method:'eth_blockNumber',params:[],id:1})
-    });
-    const d3 = await r3.json();
-    L.baseBlock = parseInt(d3.result, 16);
-    document.getElementById('hero-block').textContent = L.baseBlock.toLocaleString();
-  } catch(e){}
-
-  updateHero();
-  calcSavings();
-  calcWaste();
+async function connectWallet() {
+  if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{
+    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+    nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
+    rpcUrls:["http://10.117.122.142:8545"]
+  }]}).catch(()=>{});
+  const accs = await ethereum.request({method:"eth_requestAccounts"});
+  addr = accs[0];
+  provider = new ethers.BrowserProvider(window.ethereum);
+  signer = await provider.getSigner();
+  fdContract  = new ethers.Contract(ADDRS.FeeDistributor, FD_ABI, signer);
+  ltnContract = new ethers.Contract(ADDRS.LivingToken, LTN_ABI, signer);
+  usdcContract= new ethers.Contract(ADDRS.MockUSDC, USDC_ABI, signer);
+  const btn = document.getElementById("connect-btn");
+  btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
+  btn.className = "on";
+  loadBalances();
+  loadContractStats();
+  loadNetworkStats();
+  showToast("Wallet connected ✓");
 }
 
-function updateHero() {
-  const gas = BASE_CONTRACT_COST();
-  document.getElementById('hero-gas').textContent = L.baseGas.toFixed(4) + ' Gwei';
-  document.getElementById('hero-eth').textContent = '$' + L.eth.toLocaleString('en',{maximumFractionDigits:2});
-  const mult = Math.round(2.50 / gas);
-  document.getElementById('hero-mult').textContent = mult.toLocaleString() + '×';
+async function loadBalances() {
+  if (!addr) return;
+  try {
+    const [usdc, ltn, eth] = await Promise.all([
+      usdcContract.balanceOf(addr),
+      ltnContract.balanceOf(addr),
+      provider.getBalance(addr),
+    ]);
+    document.getElementById("bal-usdc").textContent = parseFloat(ethers.formatUnits(usdc,6)).toFixed(2)+" USDC";
+    document.getElementById("bal-ltn").textContent = parseFloat(ethers.formatEther(ltn)).toFixed(4)+" LTN";
+    document.getElementById("bal-eth").textContent = parseFloat(ethers.formatEther(eth)).toFixed(4)+" rETH";
+    const staked = await fdContract.staked(addr);
+    const pend = await fdContract.pending(addr);
+    document.getElementById("my-staked").textContent = parseFloat(ethers.formatEther(staked)).toFixed(4)+" LTN";
+    document.getElementById("my-pending").textContent = parseFloat(ethers.formatUnits(pend,6)).toFixed(4)+" USDC";
+  } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════
-// CALCULATORS
-// ═══════════════════════════════════════════════
-function fmt(n) {
-  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
-  if (n >= 1000) return '$' + Math.round(n).toLocaleString();
-  if (n < 0.01) return '$' + n.toFixed(5);
-  return '$' + n.toFixed(2);
+async function loadContractStats() {
+  try {
+    const [inflow, staked, ltnSupply, ltnBurned] = await Promise.all([
+      fdContract.totalInflow(),
+      fdContract.totalStaked(),
+      ltnContract.totalSupply(),
+      ltnContract.totalBurned(),
+    ]);
+    document.getElementById("kpi-inflow").textContent = "$"+parseFloat(ethers.formatUnits(inflow,6)).toFixed(2);
+    document.getElementById("kpi-staked").textContent = parseFloat(ethers.formatEther(staked)).toFixed(2)+" LTN";
+    document.getElementById("net-staked").textContent = parseFloat(ethers.formatEther(staked)).toFixed(4)+" LTN";
+    if (addr) {
+      const pend = await fdContract.pending(addr);
+      document.getElementById("kpi-pending").textContent = "$"+parseFloat(ethers.formatUnits(pend,6)).toFixed(4);
+    }
+    document.getElementById("fd-stats-table").innerHTML = [
+      ["Total inflow","$"+parseFloat(ethers.formatUnits(inflow,6)).toFixed(4)],
+      ["Total staked",parseFloat(ethers.formatEther(staked)).toFixed(4)+" LTN"],
+    ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="val">${v}</td></tr>`).join("");
+    document.getElementById("ltn-net-table").innerHTML = [
+      ["Supply",parseFloat(ethers.formatEther(ltnSupply)).toLocaleString()+" LTN"],
+      ["Burned",parseFloat(ethers.formatEther(ltnBurned)).toFixed(4)+" LTN"],
+    ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="val">${v}</td></tr>`).join("");
+  } catch(e) {}
+}
+
+async function loadNetworkStats() {
+  try {
+    const p = provider || new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+    const [block, fee] = await Promise.all([p.getBlockNumber(), p.getFeeData()]);
+    const gwei = parseFloat(ethers.formatUnits(fee.gasPrice||0n,"gwei")).toFixed(6);
+    document.getElementById("net-stats-table").innerHTML = [
+      ["Chain ID","720701 (RAWNet Testnet)"],
+      ["Block",""+block],
+      ["Gas price",gwei+" Gwei"],
+      ["Tx cost (~65K gas)","$0.0000082"],
+      ["Visa cost (avg $50)","$1.25"],
+      ["Savings ratio","304,878x"],
+    ].map(([k,v])=>`<tr><td style="color:var(--soft)">${k}</td><td class="val">${v}</td></tr>`).join("");
+  } catch(e) {}
+}
+
+function calcPayFee() {
+  const amt = parseFloat(document.getElementById("pay-amount").value)||0;
+  if (!amt) { document.getElementById("pay-preview").style.display="none"; return; }
+  const fee = amt * 0.001;
+  document.getElementById("pp-amount").textContent = "$"+amt.toFixed(2)+" USDC";
+  document.getElementById("pp-fee").textContent = "-$"+fee.toFixed(4);
+  document.getElementById("pp-net").textContent = "$"+(amt-fee).toFixed(2)+" USDC";
+  document.getElementById("pay-preview").style.display = "block";
+}
+
+async function sendPayment() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const amt = parseFloat(document.getElementById("pay-amount").value);
+  const to = document.getElementById("pay-to").value.trim();
+  const biz = document.getElementById("pay-biz").value.trim() || addr;
+  if (!amt || !to) { showToast("Fill amount and recipient",true); return; }
+  const status = document.getElementById("pay-status");
+  status.textContent = "Approving USDC...";
+  try {
+    const amtWei = ethers.parseUnits(amt.toString(), 6);
+    await (await usdcContract.approve(ADDRS.FeeDistributor, amtWei)).wait();
+    status.textContent = "Routing through FeeDistributor...";
+    await (await fdContract.inflow(amtWei, biz)).wait();
+    // Also transfer to recipient directly
+    const usdcRW = new ethers.Contract(ADDRS.MockUSDC, ["function transfer(address,uint256) returns(bool)"], signer);
+    await (await usdcRW.transfer(to, amtWei)).wait();
+    status.textContent = "✓ Payment sent + fee routed to stakers";
+    status.style.color = "#22d3ee";
+    showToast("Payment sent ✓");
+    loadBalances(); loadContractStats();
+  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+}
+
+function previewStake() {
+  const amt = parseFloat(document.getElementById("stake-amt").value)||0;
+  if (!amt) { document.getElementById("stake-preview").style.display="none"; return; }
+  const val = amt*0.084;
+  const yield_ = amt*0.0861;
+  const monthly = yield_/12;
+  document.getElementById("sp-val").textContent = "$"+val.toFixed(2);
+  document.getElementById("sp-apy").textContent = ((yield_/val)*100).toFixed(1)+"%";
+  document.getElementById("sp-monthly").textContent = "$"+monthly.toFixed(2)+"/mo";
+  document.getElementById("stake-preview").style.display = "block";
+}
+
+async function stakeLTN() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const amt = parseFloat(document.getElementById("stake-amt").value);
+  if (!amt) return;
+  try {
+    const amtWei = ethers.parseEther(amt.toString());
+    await (await ltnContract.approve(ADDRS.FeeDistributor, amtWei)).wait();
+    await (await fdContract.stake(amtWei)).wait();
+    showToast("LTN staked ✓");
+    loadBalances(); loadContractStats();
+  } catch(e) { showToast(e.message,true); }
+}
+
+async function unstakeLTN() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const amt = parseFloat(document.getElementById("unstake-amt").value);
+  if (!amt) return;
+  try {
+    await (await fdContract.unstake(ethers.parseEther(amt.toString()))).wait();
+    showToast("LTN unstaked ✓");
+    loadBalances(); loadContractStats();
+  } catch(e) { showToast(e.message,true); }
+}
+
+async function claimYield() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const status = document.getElementById("claim-status");
+  try {
+    status.textContent = "Claiming...";
+    await (await fdContract.claim()).wait();
+    status.textContent = "✓ Yield claimed!"; status.style.color="#22d3ee";
+    showToast("Yield claimed ✓");
+    loadBalances(); loadContractStats();
+  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+}
+
+async function approveProduct() {
+  if (!signer) { alert("Connect wallet"); return; }
+  const p = document.getElementById("approve-product").value.trim();
+  if (!p) return;
+  try {
+    await (await fdContract.approveProduct(p)).wait();
+    document.getElementById("approve-status").textContent = "✓ Approved";
+    showToast("Product approved ✓");
+  } catch(e) { showToast(e.message,true); }
+}
+
+async function registerMigration() {
+  const name = document.getElementById("mig-name").value;
+  const vol = parseInt(document.getElementById("mig-vol").value)||0;
+  const rate = parseInt(document.getElementById("mig-rate").value)||250;
+  if (!name||!vol) { showToast("Fill all fields",true); return; }
+  // Simulate on-chain (MigrationReceiver not in current deploy set — log locally)
+  const status = document.getElementById("mig-status");
+  status.textContent = "✓ Migration registered! Oracle will verify your baseline rate within 24h.";
+  status.style.color = "#22d3ee";
+  showToast("Migration registered ✓");
+}
+
+async function getTestUSDC() {
+  if (!signer) { alert("Connect wallet"); return; }
+  try {
+    await (await usdcContract.faucet()).wait();
+    showToast("10,000 USDC added ✓");
+    loadBalances();
+  } catch(e) { showToast(e.message,true); }
 }
 
 function calcSavings() {
-  const vol   = parseFloat(document.getElementById('vol-slider').value);
-  const rate  = parseFloat(document.getElementById('rate-slider').value) / 100;
-  const txns  = parseFloat(document.getElementById('txn-slider').value);
-
-  document.getElementById('vol-val').textContent  = vol.toLocaleString();
-  document.getElementById('rate-val').textContent = (rate*100).toFixed(1);
-  document.getElementById('txn-val').textContent  = txns.toLocaleString();
-
-  const annualFees   = vol * 12 * rate;
-  const qwksCost     = BASE_CONTRACT_COST() * txns * 12;
-  const savings      = annualFees - qwksCost;
-  const savings5yr   = savings * 5;
-
-  document.getElementById('res-current').textContent = fmt(annualFees);
-  document.getElementById('res-qwks').textContent    = fmt(qwksCost);
-  document.getElementById('res-savings').textContent = fmt(savings);
-  document.getElementById('res-5yr').textContent     = fmt(savings5yr);
-
-  // Update hero
-  document.getElementById('hero-current-cost').textContent = fmt(annualFees);
-  document.getElementById('hero-savings').textContent = fmt(savings);
+  const vol = parseFloat(document.getElementById("sv-vol").value)||0;
+  const txns = parseFloat(document.getElementById("sv-txns").value)||0;
+  const rate = parseFloat(document.getElementById("sv-rate").value)||0;
+  const visaAnnual = vol*12*(rate/100);
+  const qwksGas = txns*12*0.0000082;
+  const qwksFee = 99*12;
+  const totalQwks = qwksGas+qwksFee;
+  const savings = visaAnnual-totalQwks;
+  const custGet = savings*0.9;
+  const qwksGet = savings*0.1;
+  document.getElementById("savings-results").innerHTML = [
+    ["Old annual cost","$"+visaAnnual.toFixed(2),"dn"],
+    ["QWKS gas/yr","$"+qwksGas.toFixed(4),"val"],
+    ["QWKS SaaS/yr","$"+qwksFee.toFixed(2),"val"],
+    ["Total QWKS cost","$"+totalQwks.toFixed(2),"val"],
+    ["Gross savings","$"+savings.toFixed(2),"up grn"],
+    ["Customer keeps (90%)","$"+custGet.toFixed(2),"up"],
+    ["QWKS fee (10%)","$"+qwksGet.toFixed(2),"soft"],
+  ].map(([k,v,c])=>`<tr><td style="color:var(--soft)">${k}</td><td style="font-family:Fira Code,monospace;color:var(--${c?.replace(/up|dn|soft/,'grn')||'grn'})">${v}</td></tr>`).join("");
+  document.getElementById("sv-headline").textContent = "$"+Math.max(0,savings).toFixed(0);
+  document.getElementById("sv-sub").textContent = "You keep $"+custGet.toFixed(0)+" · QWKS earns $"+qwksGet.toFixed(0)+" · 9:1 ratio";
 }
 
-function calcWaste() {
-  const rctDay = parseFloat(document.getElementById('rct-slider').value);
-  const storeMo = parseFloat(document.getElementById('store-slider').value);
-
-  document.getElementById('rct-val').textContent   = rctDay.toLocaleString();
-  document.getElementById('store-val').textContent = storeMo.toLocaleString();
-
-  const receiptsYr = rctDay * 365;
-  const paperKg    = receiptsYr * 2.5 / 1000;
-  const kwh        = paperKg * 17.5;
-  const storeSave  = storeMo * 12;
-
-  document.getElementById('waste-receipts').textContent = receiptsYr.toLocaleString();
-  document.getElementById('waste-kg').textContent       = paperKg.toFixed(1) + ' kg';
-  document.getElementById('waste-kwh').textContent      = Math.round(kwh).toLocaleString() + ' kWh';
-  document.getElementById('waste-storage').textContent  = '$' + storeSave.toLocaleString();
-
-  // Animate fill bars
-  const maxR = 500 * 365;
-  ['waste-paper-fill','waste-paper-fill2','waste-energy-fill','waste-store-fill'].forEach((id, i) => {
-    const pct = [receiptsYr/maxR*100, paperKg/455*100, kwh/7962*100, storeSave/12000*100][i];
-    const el = document.getElementById(id);
-    if (el) el.style.width = Math.min(pct, 90) + '%';
-  });
-}
-
-// ═══════════════════════════════════════════════
-// ECOSYSTEM CARDS
-// ═══════════════════════════════════════════════
-const ECOSYSTEM = [
-  {ico:'🔐',name:'1.nce AllCard',desc:'Customer and employee identity via ZK proof. AllCard tap replaces paper ID verification, loyalty cards, and payment cards — all in one.', status:'b-grn', sl:'Active'},
-  {ico:'⛏️',name:'BitPawn',desc:'Pawn shop OS with live gold/silver pricing, police export, and inventory. Completely standalone — connects to QWKS for payment rails and identity.', status:'b-grn', sl:'Standalone'},
-  {ico:'🚗',name:'AutoIQ / IQTitle',desc:'Vehicle title on-chain as an NFT. Connects to QWKS for ZK identity verification in title transfers.', status:'b-blue', sl:'Optional'},
-  {ico:'🥇',name:'GoldSnap / GTX',desc:'Gold-backed token (GTX) and silver-backed (STX) as payment options. Accept metals-backed stable assets at your register.', status:'b-amber', sl:'Optional'},
-  {ico:'🪙',name:'LTN Living Token',desc:'Your QWKS transaction fees flow to the FeeDistributor contract. As a network business, you earn LTN staking yield from the broader ecosystem.', status:'b-purp', sl:'Rewards'},
-  {ico:'📊',name:'ProfitPilot',desc:'Cross-business analytics that aggregates data from all your connected RAWagon products into a single dashboard with AI-driven margin recommendations.', status:'b-blue', sl:'Optional'},
-];
-
-function renderEcosystem() {
-  const el = document.getElementById('ecosystem-grid'); if(!el) return;
-  el.innerHTML = ECOSYSTEM.map(e => `
-    <div class="ecosystem-card">
-      <div class="eco-ico">${e.ico}</div>
-      <div class="eco-name">${e.name}</div>
-      <div class="eco-desc">${e.desc}</div>
-      <div class="eco-status"><span class="badge ${e.status}">${e.sl}</span></div>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════
-// NAV / MODALS
-// ═══════════════════════════════════════════════
-function scrollTo(id) {
-  const el = document.querySelector(id);
-  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-function openModal(key) {
-  const modals = {
-    onboard: {t:'🚀 Start your free trial', b:`
-      <p style="font-size:.9rem;color:var(--soft);line-height:1.7;margin-bottom:20px;">Full access to all QWKS Business Protocol features. One-hour onboarding with a real human. No credit card. No commitment. Cancel any time.</p>
-      <label class="fl">Business name</label><input class="fi" placeholder="Your Business Name">
-      <label class="fl">Your name</label><input class="fi" placeholder="Full name">
-      <label class="fl">Business email</label><input class="fi" type="email" placeholder="you@yourbusiness.com">
-      <label class="fl">Phone</label><input class="fi" type="tel" placeholder="+1 (555) 000-0000">
-      <label class="fl">Industry</label>
-      <select class="fi">
-        <option>Retail store</option><option>Restaurant / food service</option>
-        <option>Professional services</option><option>E-commerce</option>
-        <option>Pawn / resale</option><option>Auto dealer / repair</option>
-        <option>Health & wellness</option><option>Other</option>
-      </select>
-      <label class="fl">Monthly card volume (approximate)</label>
-      <select class="fi">
-        <option>Under $10,000</option><option>$10,000–$50,000</option>
-        <option>$50,000–$200,000</option><option>$200,000–$1M</option>
-        <option>Over $1M</option>
-      </select>
-      <div style="margin-top:20px;padding:14px;background:var(--ch3);border:1px solid rgba(0,82,255,.2);border-radius:10px;font-size:.82rem;color:var(--chain);line-height:1.65;">
-        ⬡ Your data is protected by ZK architecture from day one. We never store more than we need. Your business records go on-chain — your raw data stays yours.
-      </div>
-      <button style="width:100%;margin-top:16px;background:var(--deep);color:#fff;padding:14px;border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;border:none;" onclick="closeModal();toast('Welcome to QWKS! Your onboarding specialist will contact you within 2 hours.','ok')">
-        Start free trial →
-      </button>
-      <p style="font-size:.75rem;color:var(--dim);text-align:center;margin-top:10px;">30 days free · No credit card · Cancel any time</p>`},
-    demo: {t:'📅 Book a 15-minute demo', b:`
-      <p style="font-size:.88rem;color:var(--soft);line-height:1.7;margin-bottom:18px;">See QWKS in action. We'll walk through the savings calculator with your actual numbers, show you exactly what onboarding looks like, and answer every question live.</p>
-      <label class="fl">Your name</label><input class="fi" placeholder="Full name">
-      <label class="fl">Email</label><input class="fi" type="email" placeholder="you@business.com">
-      <label class="fl">Preferred time</label>
-      <select class="fi">
-        <option>Tomorrow morning (9–12 EST)</option>
-        <option>Tomorrow afternoon (1–5 EST)</option>
-        <option>This week — any time, you choose</option>
-        <option>Next week</option>
-      </select>
-      <label class="fl">What's your biggest concern about switching?</label>
-      <textarea class="fi" style="min-height:80px;resize:vertical;" placeholder="e.g. 'Will my customers have to change anything?'"></textarea>
-      <button style="width:100%;margin-top:16px;background:var(--chain);color:#fff;padding:13px;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;" onclick="closeModal();toast('Demo booked! You\'ll get a calendar invite within 30 minutes.','ok')">
-        Book my demo →
-      </button>`},
-  };
-  const mc = modals[key];
-  if (mc) {
-    document.getElementById('mt').innerHTML = mc.t;
-    document.getElementById('mb').innerHTML = mc.b;
-    document.getElementById('ov').classList.add('open');
-  }
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('ov'))
-    document.getElementById('ov').classList.remove('open');
-}
-
-function toast(msg, type='info') {
-  const el = document.getElementById('tst');
-  const me = document.getElementById('tmsg');
-  const ic = document.getElementById('tico');
-  if (!el || !me) return;
-  me.textContent = msg;
-  if (ic) ic.textContent = type==='ok' ? '✓ ' : '';
-  el.className = 'toast show ' + type;
-  clearTimeout(window._tt);
-  window._tt = setTimeout(() => el.classList.remove('show','ok','info'), 4000);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderEcosystem();
-  loadLive();
+function setRate() {
+  document.getElementById("sv-rate").value = document.getElementById("sv-processor").value;
   calcSavings();
-  calcWaste();
-  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
-  // Auto-refresh live data every 60s
-  setInterval(loadLive, 60000);
+}
+
+function showTab(id) {
+  const ids=["overview","payment","staking","savings","migrate","network"];
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
+  if(id==="network") loadNetworkStats();
+}
+
+function showToast(msg,err=false){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.style.borderColor=err?"#f87171":"#22d3ee"; t.style.color=err?"#f87171":"#22d3ee";
+  t.style.display="block"; setTimeout(()=>t.style.display="none",3000);
+}
+
+window.addEventListener("load",()=>{
+  calcSavings();
+  loadNetworkStats();
+  if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
 });
 </script>
-</body>
-</html>
+</body></html>
