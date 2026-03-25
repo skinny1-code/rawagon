@@ -64,6 +64,7 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="tab" onclick="showTab('staking')">LTN Staking</div>
     <div class="tab" onclick="showTab('savings')">Savings Calc</div>
     <div class="tab" onclick="showTab('migrate')">Migrate</div>
+    <div class="tab" onclick="showTab('airouter')">AI Router</div>
     <div class="tab" onclick="showTab('network')">Network</div>
   </div>
   <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
@@ -283,6 +284,63 @@ input:focus,select:focus{border-color:var(--indigo);}
   </div>
 </div>
 
+
+<!-- AI ROUTER (LivingToken AIPolicyRouter) -->
+<div class="pane" id="pane-airouter">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title" style="color:var(--indigo)">AIPolicyRouter — Route Intent</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">
+          The AIPolicyRouter is an AI-governed token routing system. An AI policy signer generates off-chain RouteIntent structs, signs them with EIP-712, and the contract verifies + executes the route. Prevents replay attacks via nonce + deadline.
+        </div>
+        <label>Route To Address</label>
+        <input id="ar-to" placeholder="0x...">
+        <label>LTN Amount</label>
+        <input type="number" id="ar-amount" placeholder="100.0">
+        <label>AI Score (0–100)</label>
+        <input type="number" id="ar-score" placeholder="87" min="0" max="100">
+        <div style="padding:10px;background:var(--in3);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font-size:.76rem;">
+          <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--soft)">Policy signer</span><span class="mono" style="font-size:.7rem;color:var(--indigo)">AI agent (off-chain)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--soft)">Verification</span><span class="mono" style="font-size:.7rem;color:var(--grn)">On-chain ecrecover</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--soft)">Daily cap</span><span class="mono" style="font-size:.7rem;color:var(--gold)">Configurable by owner</span></div>
+          <div style="display:flex;justify-content:space-between;padding:3px 0"><span style="color:var(--soft)">Anti-replay</span><span class="mono" style="font-size:.7rem;color:var(--grn)">spentNonce mapping</span></div>
+        </div>
+        <button class="btn btn-indigo" style="width:100%" onclick="simulateRoute()">Simulate Route Intent</button>
+        <div id="ar-result" style="margin-top:10px;font-size:.76rem;color:var(--soft);min-height:14px;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">AIPolicyRouter.sol Architecture</div>
+        <div style="font-family:DM Mono,monospace;font-size:.68rem;background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:12px;color:var(--grn);line-height:1.8;">
+          <div style="color:var(--dim)">// RouteIntent struct</div>
+          <div>address to;</div>
+          <div>uint256 amount;</div>
+          <div>uint256 score; <span style="color:var(--dim)">// AI confidence 0-100</span></div>
+          <div>uint256 nonce;</div>
+          <div>uint256 deadline;</div>
+          <br>
+          <div style="color:var(--dim)">// Guardrails</div>
+          <div>uint256 dailyCap;</div>
+          <div>uint256 perTxMax;</div>
+          <div>mapping(uint256=&gt;uint256) spentByDay;</div>
+          <div>mapping(bytes32=&gt;bool) usedNonces;</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Route Rules</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(99,102,241,.1)"><span style="color:var(--soft)">Min AI score</span><span class="mono" style="color:var(--indigo)">70 / 100</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(99,102,241,.1)"><span style="color:var(--soft)">Daily cap</span><span class="mono" style="color:var(--gold)">Configurable</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(99,102,241,.1)"><span style="color:var(--soft)">Deadline</span><span class="mono" style="color:var(--grn)">block.timestamp check</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(99,102,241,.1)"><span style="color:var(--soft)">Signer</span><span class="mono" style="color:var(--indigo)">AI policy agent (ECR)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Pausable</span><span class="mono" style="color:var(--grn)">Emergency stop</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -543,7 +601,7 @@ function setRate() {
 }
 
 function showTab(id) {
-  const ids=["overview","payment","staking","savings","migrate","network"];
+  const ids=["overview","payment","staking","savings","migrate","airouter","network"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="network") loadNetworkStats();
@@ -555,6 +613,30 @@ function showToast(msg,err=false){
   t.style.display="block"; setTimeout(()=>t.style.display="none",3000);
 }
 
+
+async function simulateRoute() {
+  const to = document.getElementById("ar-to").value.trim() || (addr || "0x0000000000000000000000000000000000000000");
+  const amount = parseFloat(document.getElementById("ar-amount").value)||100;
+  const score = parseInt(document.getElementById("ar-score").value)||87;
+  const el = document.getElementById("ar-result");
+  if (score < 70) { el.textContent = "✗ Score "+score+" below minimum threshold (70)"; el.style.color="var(--red)"; return; }
+  // Simulate EIP-712 RouteIntent hash
+  const enc = new TextEncoder();
+  const nonce = Date.now();
+  const deadline = Math.floor(Date.now()/1000) + 300;
+  const intentStr = JSON.stringify({to,amount,score,nonce,deadline});
+  const buf = await crypto.subtle.digest("SHA-256", enc.encode("RouteIntent:"+intentStr));
+  const hash = "0x"+Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);
+  el.innerHTML = `<div style="padding:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;">
+    <div style="font-weight:700;color:var(--grn);margin-bottom:6px">✓ Route intent valid — AI score ${score}/100</div>
+    <div style="font-size:.7rem;display:flex;flex-direction:column;gap:3px;">
+      <div>Hash: <span class="mono" style="color:var(--indigo)">${hash}...</span></div>
+      <div>Amount: <span class="mono" style="color:var(--gold)">${amount} LTN</span></div>
+      <div>Deadline: <span class="mono" style="color:var(--soft)">${new Date(deadline*1000).toLocaleTimeString()}</span></div>
+      <div>Status: <span class="mono" style="color:var(--grn)">Awaiting policy signer</span></div>
+    </div>
+  </div>`;
+}
 window.addEventListener("load",()=>{
   calcSavings();
   loadNetworkStats();

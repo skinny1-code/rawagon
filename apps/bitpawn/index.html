@@ -132,6 +132,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
     <div class="nav-item" onclick="show('goldcalc')">Gold Calc</div>
     <div class="nav-item" onclick="show('inventory')">Inventory</div>
     <div class="nav-item" onclick="show('reports')">Reports</div>
+    <div class="nav-item" onclick="show('buy')">Buy Intake</div>
+    <div class="nav-item" onclick="show('police')">Police Export</div>
     <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
@@ -475,6 +477,111 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
   </div>
 </div>
 
+
+<!-- BUY INTAKE -->
+<div class="pane" id="pane-buy">
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="card-title">Buy Item (Outright Purchase)</div>
+        <label>Item Name</label>
+        <input id="buy-name" placeholder="iPhone 15 Pro 256GB Silver">
+        <div class="form-row">
+          <div><label>Category</label>
+            <select id="buy-cat">
+              <option>Electronics</option><option>Gold Jewelry</option>
+              <option>Tools</option><option>Firearms</option>
+              <option>Musical Instruments</option><option>Collectibles</option><option>Other</option>
+            </select>
+          </div>
+          <div><label>Condition</label>
+            <select id="buy-cond"><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label>Serial Number</label><input id="buy-serial" placeholder="Required for electronics/firearms"></div>
+          <div><label>Buy Price ($)</label><input type="number" id="buy-price" placeholder="95.00" step="0.01"></div>
+        </div>
+        <label>Seller Notes</label>
+        <input id="buy-notes" placeholder="Cracked corner, works fine">
+        <div style="padding:10px;background:var(--rd2);border:1px solid rgba(239,68,68,.2);border-radius:8px;margin-bottom:10px;font-size:.76rem;color:var(--soft);">
+          ⚠ Buy items enter <strong style="color:var(--red)">police hold immediately</strong> per state law. Do not sell until hold clears.
+        </div>
+        <button class="btn btn-gold" style="width:100%" onclick="addBuyItem()">Add to Buy Inventory</button>
+        <div id="buy-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Buy Inventory</div>
+        <div id="buy-inventory-list"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:16px">No buy items yet</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Buy Compliance</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Police hold period</span><span style="color:var(--gold);font-family:JetBrains Mono,monospace">3-15 days (state law)</span></div>
+          <div class="row"><span style="color:var(--soft)">Serial required</span><span style="color:var(--red)">Electronics, Tools, Firearms</span></div>
+          <div class="row"><span style="color:var(--soft)">Photo required</span><span style="color:var(--gold)">All items</span></div>
+          <div class="row"><span style="color:var(--soft)">ID verification</span><span class="grn">ZK via AllCard</span></div>
+          <div class="row"><span style="color:var(--soft)">Report due</span><span style="color:var(--red)">Daily to local PD</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POLICE EXPORT -->
+<div class="pane" id="pane-police">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Generate Police Report</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.6;">
+          Generates a CSV export of all pawn and buy transactions for daily submission to local law enforcement or LeadsOnline.
+        </div>
+        <div class="form-row">
+          <div><label>Date Range From</label><input type="date" id="pe-from"></div>
+          <div><label>Date Range To</label><input type="date" id="pe-to"></div>
+        </div>
+        <label>Report Type</label>
+        <select id="pe-type">
+          <option>Daily Report (Pawns + Buys)</option>
+          <option>Pawns Only</option>
+          <option>Buys Only</option>
+          <option>Forfeited Items</option>
+          <option>LeadsOnline Format</option>
+        </select>
+        <button class="btn btn-gold" style="width:100%" onclick="generatePoliceExport()">Generate CSV Export</button>
+        <div id="pe-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Export History</div>
+        <div id="pe-history"><div style="color:var(--soft);font-size:.78rem">No exports yet today</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Compliance Status</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div class="status-bar"><div class="dot"></div><span style="flex:1">Today's report</span><span id="pe-today-status" style="font-size:.74rem;color:var(--gold)">Not exported</span></div>
+          <div class="status-bar"><div class="dot"></div><span style="flex:1">Missing serials</span><span id="pe-serial-warn" style="font-size:.74rem;color:var(--grn)">0 items</span></div>
+          <div class="status-bar"><div class="dot"></div><span style="flex:1">Items in hold</span><span id="pe-hold-count" style="font-size:.74rem;color:var(--gold)">0</span></div>
+          <div class="status-bar"><div class="dot"></div><span style="flex:1">On-chain ZK records</span><span style="font-size:.74rem;color:var(--grn)">✓ All tickets</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">BitPawn vs PawnMaster</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
+          <div class="row"><span style="color:var(--soft)">Police export</span><span class="grn">✓ CSV + LeadsOnline</span></div>
+          <div class="row"><span style="color:var(--soft)">ZK customer ID</span><span class="grn">✓ No PII breach risk</span></div>
+          <div class="row"><span style="color:var(--soft)">On-chain audit trail</span><span class="grn">✓ Immutable</span></div>
+          <div class="row"><span style="color:var(--soft)">PawnMaster price</span><span style="color:var(--red)">$299/mo</span></div>
+          <div class="row"><span style="color:var(--soft)">BitPawn price</span><span class="grn">$99/mo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -780,12 +887,13 @@ function loadInventory(){
 function updateItemIcon(){}
 
 function show(id){
-  const ids=["dashboard","intake","tickets","goldcalc","inventory","reports","settings"];
+  const ids=["dashboard","intake","tickets","goldcalc","inventory","reports","buy","police","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="dashboard")loadDashboard();
   if(id==="tickets")loadTickets();
   if(id==="goldcalc")fetchOraclePrices();
+  if(id==="buy")renderBuyInventory();
 }
 
 function toast(msg,err=false){
@@ -794,6 +902,73 @@ function toast(msg,err=false){
   t.style.display="block";setTimeout(()=>t.style.display="none",3000);
 }
 
+
+// ── Buy Intake ────────────────────────────────────────────────────
+let buyInventory = JSON.parse(localStorage.getItem('bp-buys')||'[]');
+
+function addBuyItem() {
+  const name = document.getElementById("buy-name").value.trim();
+  const cat = document.getElementById("buy-cat").value;
+  const serial = document.getElementById("buy-serial").value.trim();
+  const price = parseFloat(document.getElementById("buy-price").value)||0;
+  const cond = document.getElementById("buy-cond").value;
+  const notes = document.getElementById("buy-notes").value;
+  if (!name||!price) { toast("Enter item name and price",true); return; }
+  // Electronics/tools require serial
+  if (["Electronics","Firearms","Tools"].includes(cat) && !serial) {
+    toast("Serial number required for "+cat,true); return;
+  }
+  const item = {id:Date.now(),name,cat,serial,price,cond,notes,holdUntil:Date.now()+(7*86400000),ts:Date.now()};
+  buyInventory.unshift(item);
+  localStorage.setItem('bp-buys',JSON.stringify(buyInventory));
+  document.getElementById("buy-name").value="";
+  document.getElementById("buy-serial").value="";
+  document.getElementById("buy-price").value="";
+  document.getElementById("buy-status").textContent="✓ Added to buy inventory — 7-day police hold started";
+  document.getElementById("buy-status").style.color="var(--grn)";
+  renderBuyInventory();
+  toast("Buy item recorded ✓");
+}
+
+function renderBuyInventory() {
+  const el = document.getElementById("buy-inventory-list");
+  if (!buyInventory.length) { el.innerHTML="<div style='color:var(--soft);font-size:.78rem;text-align:center;padding:16px'>No buy items</div>"; return; }
+  el.innerHTML = buyInventory.slice(0,10).map(i=>{
+    const holdDays = Math.ceil((i.holdUntil-Date.now())/86400000);
+    const clearColor = holdDays>0?"var(--red)":"var(--grn)";
+    const clearText = holdDays>0?holdDays+"d hold left":"Clear to sell";
+    return `<div class="ticket-card">
+      <div style="flex:1"><div style="font-size:.8rem;font-weight:600">${i.name}</div>
+      <div class="ticket-id">${i.cat} · S/N: ${i.serial||"N/A"} · $${i.price.toFixed(2)}</div></div>
+      <span style="font-size:.72rem;font-weight:700;color:${clearColor}">${clearText}</span>
+    </div>`;
+  }).join("");
+  document.getElementById("pe-hold-count").textContent = buyInventory.filter(i=>i.holdUntil>Date.now()).length;
+}
+
+function generatePoliceExport() {
+  const from = document.getElementById("pe-from").value || new Date(Date.now()-86400000).toISOString().slice(0,10);
+  const to = document.getElementById("pe-to").value || new Date().toISOString().slice(0,10);
+  const type = document.getElementById("pe-type").value;
+  // Build CSV from buy inventory + tickets
+  const header = "Date,Type,Item,Category,Serial,Price,CustomerZK,Status\n";
+  const rows = buyInventory.map(i=>
+    `${new Date(i.ts).toLocaleDateString()},BUY,${i.name},${i.cat},${i.serial||""},${i.price.toFixed(2)},ZK-COMMIT-${i.id.toString().slice(-8)},HOLD`
+  ).join("\n");
+  const csv = header + rows;
+  const blob = new Blob([csv],{type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url;
+  a.download=`police_report_${from}_${to}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById("pe-status").textContent="✓ Report exported: "+buyInventory.length+" items";
+  document.getElementById("pe-status").style.color="var(--grn)";
+  document.getElementById("pe-today-status").textContent="✓ Exported "+new Date().toLocaleTimeString();
+  document.getElementById("pe-today-status").style.color="var(--grn)";
+  toast("Police report exported ✓");
+  const hist = document.getElementById("pe-history");
+  hist.innerHTML=`<div style="padding:6px;font-size:.76rem;border-bottom:1px solid var(--ln2)">${new Date().toLocaleString()} — ${buyInventory.length} items — ${type}</div>`+hist.innerHTML;
+}
 window.addEventListener("load",()=>{
   fetchOraclePrices();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});

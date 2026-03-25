@@ -1,5 +1,52 @@
 # RAWagon — Network-Layer Fintech Infrastructure
 
+
+## Quick Start (Termux / Local)
+
+```bash
+# 1. Start Ganache
+ganache --port 8545 --host 0.0.0.0 --deterministic --chain.chainId 720701 --quiet &
+
+# 2. Deploy contracts
+node scripts/deploy-ganache.js
+
+# 3. Start app server
+node server.js
+# → http://10.117.122.142:3000
+
+# 4. Run tests
+node scripts/run-all-tests.js
+# → 87/87 passing
+
+# 5. Start AI agents (optional — needs ANTHROPIC_API_KEY)
+export ANTHROPIC_API_KEY=sk-ant-...
+node agents/agent-system.js
+```
+
+## Apps
+| App | URL | Contract |
+|-----|-----|----------|
+| RAWagon OS | `/apps/rawagon-os/` | LivingToken.sol |
+| 1.nce AllCard | `/apps/1nce-allcard/` | EmployeeVault.sol |
+| BitPawn | `/apps/bitpawn/` | PawnRegistry.sol |
+| Droppa | `/apps/droppa/` | BreakFactory.sol |
+| AutoIQ | `/apps/autoiq/` | IQTitle.sol |
+| GoldSnap | `/apps/goldsnap/` | GoldMint.sol |
+| QWKS Protocol | `/apps/qwks-protocol/` | FeeDistributor.sol |
+| ProfitPilot | `/apps/profitpilot/` | EntityAllocation.sol |
+
+## Contract Addresses (RAWNet Testnet — chainId 720701)
+```
+MockUSDC:       0xFC628dd79137395F3C9744e33b1c5DE554D94882
+LivingToken:    0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D
+FeeDistributor: 0x7C728214be9A0049e6a86f2137ec61030D0AA964
+EmployeeVault:  0x86072CbFF48dA3C1F01824a6761A03F105BCC697
+GoldMint:       0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA
+IQTitle:        0xA586074FA4Fe3E546A132a16238abe37951D41fE
+PawnRegistry:   0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A
+BreakFactory:   0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68
+```
+
 > **One network. Every transaction. Owned by its users.**
 
 RAWagon is a monorepo for the RAWagon ecosystem — a blockchain-native payment and identity network built on Base L2.

@@ -363,7 +363,7 @@
     "evm": {
       "name": "RAWNet Testnet",
       "chain_id": 720701,
-      "rpc": "https://testnet-rpc.rawnet.io"
+      "rpc": "http://10.117.122.142:8545"
     },
     "solana": {
       "name": "Solana Mainnet",
@@ -379,8 +379,9 @@
   "contract": {
     "name": "EntityAllocation",
     "file": "contracts/Allocation/EntityAllocation.sol",
-    "status": "deploy-pending",
-    "audited": false
+    "status": "deployed-rawnet-testnet",
+    "audited": false,
+    "address": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
   },
   "totals": {
     "year2_gross_revenue": 29126267,

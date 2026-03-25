@@ -31,8 +31,8 @@ const CHAINS = {
     chainId:    "0xAFD3D",  // 720701
     chainName:  "RAWNet Testnet",
     nativeCurrency: { name: "RAW Ether", symbol: "rETH", decimals: 18 },
-    rpcUrls:         ["https://testnet-rpc.rawnet.io"],
-    blockExplorerUrls: ["https://testnet-explorer.rawnet.io"],
+    rpcUrls:         ["http://10.117.122.142:8545"],
+    blockExplorerUrls: ["http://localhost:3000"],
   },
 };
 

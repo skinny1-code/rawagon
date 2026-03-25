@@ -113,6 +113,9 @@ input:focus,select:focus{border-color:var(--teal);}
     <div class="htab" onclick="showTab('ltn')">LTN Lifecycle</div>
     <div class="htab" onclick="showTab('network')">Network</div>
     <div class="htab" onclick="showTab('entities')">Entities</div>
+    <div class="htab" onclick="showTab('compound')">Compound Calc</div>
+    <div class="htab" onclick="showTab('ipvault')">IP Vault</div>
+    <div class="htab" onclick="showTab('hardware')">Hardware</div>
   </div>
   <div class="hdr-right">
     <div class="live-dot"></div>
@@ -260,6 +263,89 @@ input:focus,select:focus{border-color:var(--teal);}
   <div id="entities-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line2);"></div>
 </div>
 
+
+<!-- COMPOUND CALCULATOR -->
+<div class="pane" id="pane-compound">
+  <div class="g2">
+    <div class="panel">
+      <div class="panel-title">Compound Interest Calculator</div>
+      <label>Principal ($)</label>
+      <input type="number" id="cp-principal" value="1000" oninput="calcCompound()">
+      <label>Annual Rate (%)</label>
+      <input type="number" id="cp-rate" value="50" oninput="calcCompound()">
+      <label>Years</label>
+      <input type="number" id="cp-years" value="1" min="1" max="30" oninput="calcCompound()">
+      <label>Compounding Frequency</label>
+      <select id="cp-freq" onchange="calcCompound()">
+        <option value="continuous">Continuous</option>
+        <option value="8760">Hourly (8,760/yr)</option>
+        <option value="365">Daily (365/yr)</option>
+        <option value="52">Weekly (52/yr)</option>
+        <option value="12">Monthly (12/yr)</option>
+        <option value="4">Quarterly (4/yr)</option>
+        <option value="1">Annual (1/yr)</option>
+      </select>
+      <div id="cp-result" style="padding:14px;background:var(--gn2);border:1px solid rgba(34,211,238,.15);border-radius:8px;margin-top:4px;font-size:.82rem;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--soft)">End value</span><span id="cp-end" class="mono teal">—</span></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--soft)">Total gain</span><span id="cp-gain" class="mono grn">—</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Effective APY</span><span id="cp-apy" class="mono gold">—</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Frequency Comparison (50% APR · $1,000 · 1 yr)</div>
+      <div id="compound-comparison-bars"></div>
+      <div style="margin-top:12px;font-size:.7rem;color:var(--dim)">Source: compounding_comparison_50apr_1year.csv · RAWagon staking projections</div>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-title">LTN Staking Compound Projection</div>
+      <table>
+        <thead><tr><th>Year</th><th>LTN Staked</th><th>Annual Yield</th><th>Compounded Value</th><th>Phase</th></tr></thead>
+        <tbody id="ltn-compound-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- IP VAULT -->
+<div class="pane" id="pane-ipvault">
+  <div class="g2">
+    <div class="panel">
+      <div class="panel-title">RAWagon™ Genesis IP Vault</div>
+      <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">
+        RAWagon has established a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filed March 22, 2026.
+      </div>
+      <div id="ip-vault-list"></div>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:14px;">
+        <div class="panel-title">Patent Applications</div>
+        <table>
+          <thead><tr><th>Application</th><th>Filing Date</th><th>Status</th><th>Inventions</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026-PROV-001</td><td>Mar 22, 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>5 inventions</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe-2026-PROV</td><td>Mar 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>Behavioral biometric</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--gold)">WaV5-PATENT-DRAFT</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">DRAFTING</span></td><td>Wearable audio</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <div class="panel-title">12-Month Patent Timeline</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span class="teal">Mar 22, 2026 ✓</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Non-provisional deadline</span><span class="gold">Mar 22, 2027</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Attorney engagement</span><span class="gold">Sep 2026</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Est. prosecution cost</span><span style="color:var(--soft)">$15K–$25K</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Days remaining</span><span id="patent-days" class="teal">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HARDWARE -->
+<div class="pane" id="pane-hardware">
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;" id="hardware-grid"></div>
+</div>
 <script>
 // ── Contract addresses ──────────────────────────────────────────
 const CONTRACTS = {
@@ -568,13 +654,117 @@ async function refreshNetwork() {
 }
 
 function showTab(id) {
-  document.querySelectorAll(".htab").forEach((t,i)=>t.classList.toggle("active",["dashboard","calculator","ltn","network","entities"][i]===id));
+  document.querySelectorAll(".htab").forEach((t,i)=>t.classList.toggle("active",["dashboard","calculator","ltn","network","entities","compound","ipvault","hardware"][i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
 }
 
 // ── Init ─────────────────────────────────────────────────────────
+
+// ── Compound Calculator (from compounding_comparison_50apr_1year.csv) ──────
+const COMPOUND_DATA = [
+  {label:"Continuous",n:"continuous",value:1648.72,apy:64.87},
+  {label:"Hourly",n:8760,value:1648.70,apy:64.87},
+  {label:"Daily",n:365,value:1648.16,apy:64.82},
+  {label:"Weekly",n:52,value:1644.79,apy:64.48},
+  {label:"Monthly",n:12,value:1632.09,apy:63.21},
+  {label:"Quarterly",n:4,value:1601.81,apy:60.18},
+  {label:"Annual",n:1,value:1500.00,apy:50.00},
+];
+
+function calcCompound() {
+  const P=parseFloat(document.getElementById("cp-principal").value)||1000;
+  const r=parseFloat(document.getElementById("cp-rate").value)/100||0.5;
+  const t=parseFloat(document.getElementById("cp-years").value)||1;
+  const freq=document.getElementById("cp-freq").value;
+  let endVal, apy;
+  if(freq==="continuous"){endVal=P*Math.exp(r*t);apy=(Math.exp(r)-1)*100;}
+  else{const n=parseInt(freq);endVal=P*Math.pow(1+r/n,n*t);apy=(Math.pow(1+r/n,n)-1)*100;}
+  document.getElementById("cp-end").textContent="$"+endVal.toFixed(2);
+  document.getElementById("cp-gain").textContent="+$"+(endVal-P).toFixed(2);
+  document.getElementById("cp-apy").textContent=apy.toFixed(2)+"%";
+}
+
+function renderCompoundBars() {
+  const max=COMPOUND_DATA[0].value;
+  document.getElementById("compound-comparison-bars").innerHTML=COMPOUND_DATA.map(d=>`
+    <div class="bar-row">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(d.value/max*100).toFixed(1)}%;background:var(--teal)"></div></div>
+      <div class="bar-val">$${d.value.toFixed(0)} (${d.apy}%)</div>
+    </div>`).join("");
+}
+
+function renderLTNCompound() {
+  const phases=["Subscriber","Participant","Stakeholder","Owner","Partner"];
+  const colors=["#ef4444","#f59e0b","#06b6d4","#10b981","#8b5cf6"];
+  let staked=10000,yield_=0,total=staked*0.084;
+  const rows=Array.from({length:10},(_, i)=>{
+    const apy=0.12,yr=i+1;
+    yield_=staked*0.084*apy;
+    total=staked*0.084*Math.pow(1+apy,yr);
+    staked=Math.min(staked+Math.round(yield_/0.084),1000000);
+    const phase=phases[Math.min(Math.floor(i/2),4)];
+    const col=colors[Math.min(Math.floor(i/2),4)];
+    return `<tr><td>${yr}</td><td class="mono">${staked.toLocaleString()} LTN</td><td class="mono gold">$${yield_.toFixed(2)}</td><td class="mono teal">$${total.toFixed(2)}</td><td><span style="color:${col};font-size:.74rem;font-weight:700">${phase}</span></td></tr>`;
+  });
+  document.getElementById("ltn-compound-table").innerHTML=rows.join("");
+}
+
+// ── IP Vault ──────────────────────────────────────────────────────────────
+function renderIPVault() {
+  const items=[
+    {n:1,title:"Patents Bundle",desc:"RAW-2026-PROV-001 (5 inventions) + AuraMe + WaV5",status:"Filed"},
+    {n:2,title:"Trademark Filings",desc:"RAWagon™ + all sub-brands (QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap)",status:"Pending"},
+    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Filed"},
+    {n:4,title:"Licensing Templates",desc:"Modular licensing for 7 entity products + hardware",status:"Drafted"},
+    {n:5,title:"Legal Clearance Summary",desc:"Conflict checks vs prior art — all 5 inventions cleared",status:"Complete"},
+    {n:6,title:"NFT Governance Clause",desc:"On-chain IP proof via IQCAR-style NFT minting for each invention",status:"Spec"},
+    {n:7,title:"LLC Startup Docs",desc:"Wyoming/New Mexico LLC — tax optimization structure",status:"Pending"},
+    {n:8,title:"Master Compensation Agreement",desc:"Profit-sharing · Founder 15% across all entities",status:"Active"},
+    {n:9,title:"Patent Fortress Kit",desc:"Multi-layer protection: provisional + continuation + international",status:"Phase 1"},
+    {n:10,title:"IP Vault Summary",desc:"Investor/legal-ready one-pager for due diligence",status:"Ready"},
+  ];
+  const statusColors={Filed:"var(--grn)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
+  document.getElementById("ip-vault-list").innerHTML=items.map(i=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2)">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--tl2);border:1px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--teal);flex-shrink:0">${i.n}</div>
+      <div style="flex:1"><div style="font-size:.8rem;font-weight:600;margin-bottom:1px">${i.title}</div><div style="font-size:.7rem;color:var(--soft)">${i.desc}</div></div>
+      <span style="font-size:.66rem;font-weight:700;color:${statusColors[i.status]||"var(--soft)"};padding:2px 8px;border-radius:10px;border:1px solid currentColor;opacity:.9;white-space:nowrap">${i.status}</span>
+    </div>`).join("");
+  // Patent countdown
+  const deadline=new Date("2027-03-22");
+  const days=Math.floor((deadline-new Date())/86400000);
+  const el=document.getElementById("patent-days");
+  if(el)el.textContent=days+" days to non-provisional deadline";
+}
+
+// ── Hardware Products ─────────────────────────────────────────────────────
+function renderHardware() {
+  const products=[
+    {emoji:"🎧",name:"WaV⁵ Stealth Node",status:"Pilot Build",desc:"Wearable open-ear audio device. Cartilage-coupled piezo transducer, ESP32-S3, real-time psychoacoustic DSP, binaural spatialization. SnapMod dock for accessory expansion.",specs:["ESP32-S3-WROOM-1-N8R2 MCU","TLV320AIC3206 audio codec","Piezo transducer 12–15mm","USB-C · 3.3V TPS62177","Control: USB CDC JSON API"],bom_qty:"20 boards pilot",color:"#8b5cf6"},
+    {emoji:"👁️",name:"PaperThin™ Display",status:"5-Unit Pilot",desc:"0.35–0.60mm transparent waveguide lens with micro-LED display layer. MIPI input compatible. Optical clarity >95%, haze <1%. AR/HUD integration target.",specs:["Flexible polymer waveguide","Micro-LED tile array","MIPI input (external driver)","60–80mm arc radius","Scratch-resistant coating"],bom_qty:"5 pilot units",color:"#06b6d4"},
+    {emoji:"🔑",name:"TeloKey™ Housing",status:"3-5 First Articles",desc:"6061-T6 aluminum enclosure for Telo key device. Bead-blast anodized finish, ±0.05mm tolerances, button and LED cutouts. 1m drop tested.",specs:["6061-T6 aluminum","Bead-blast + anodize","±0.05mm mating faces","Button/LED cutouts","1m drop test"],bom_qty:"3–5 first articles",color:"#10b981"},
+    {emoji:"🧠",name:"AuraMe Sensor Node",status:"Spec Phase",desc:"Behavioral biometric capture device. Integrates with AllCard for keystroke dynamics, gyro, pressure, and motion capture. Feeds master key derivation.",specs:["Behavioral multi-vector","Keystroke + gyro + pressure","SHA-256 key derivation","BLE + USB-C","AllCard integration"],bom_qty:"TBD",color:"#f59e0b"},
+  ];
+  document.getElementById("hardware-grid").innerHTML=products.map(p=>`
+    <div class="panel" style="border-top:3px solid ${p.color}">
+      <div style="font-size:2rem;margin-bottom:8px">${p.emoji}</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:3px">${p.name}</div>
+      <div style="margin-bottom:8px"><span style="font-size:.64rem;font-weight:700;color:${p.color};padding:2px 8px;border-radius:10px;border:1px solid currentColor">${p.status}</span></div>
+      <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;line-height:1.5">${p.desc}</div>
+      <div style="font-size:.7rem;color:var(--dim)">
+        ${p.specs.map(s=>`<div style="padding:2px 0">· ${s}</div>`).join("")}
+      </div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:8px">Pilot qty: ${p.bom_qty}</div>
+    </div>`).join("");
+}
 window.addEventListener("load",()=>{
   renderEntityBars();
+  renderCompoundBars();
+  calcCompound();
+  renderLTNCompound();
+  renderIPVault();
+  renderHardware();
   renderAllocBars();
   renderContractTable();
   renderLifecycle();

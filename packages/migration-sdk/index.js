@@ -82,7 +82,7 @@ class QWKSMigration {
       network: {
         recommended: 'RAWNet Testnet',
         chainId: 720701,
-        rpc: 'https://testnet-rpc.rawnet.io',
+        rpc: 'http://10.117.122.142:8545',
         baseL2AnnualCost: parseFloat(baseL2Annual.toFixed(4)),
         rawnetAnnualCost: parseFloat(rawnetAnnual.toFixed(6)),
         rawnetVsBase: Math.round(baseL2TxCost / rawnetTxCost) + 'x cheaper',
@@ -149,7 +149,7 @@ class QWKSMigration {
 
       case 4: // AllCard issuance
         result.action = 'Send AllCard enrollment link to each employee';
-        result.enrollUrl = 'https://allcard.rawnet.io/enroll?employer=YOUR_REGISTRY_NFT';
+        result.enrollUrl = 'http://10.117.122.142:3000/apps/1nce-allcard/?employer=YOUR_REGISTRY_NFT';
         result.payrollCost = `$${(0.0000082 * 12).toFixed(7)}/employee/year (vs $0.50 ACH = ${Math.round(0.50/(0.0000082))}x more expensive)`;
         break;
 
@@ -167,7 +167,7 @@ class QWKSMigration {
           network: 'RAWNet Testnet (chainId 720701)',
           gasCost: '$0.0000082',
           expectedTime: '500ms',
-          faucet: 'https://faucet.testnet.rawnet.io',
+          faucet: 'http://10.117.122.142:8545',
         };
         break;
     }

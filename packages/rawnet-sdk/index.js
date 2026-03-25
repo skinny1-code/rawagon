@@ -19,16 +19,16 @@ const NETWORKS = {
   testnet: {
     name:     'RAWNet Testnet',
     chainId:  720701,
-    rpc:      'https://testnet-rpc.rawnet.io',
-    explorer: 'https://testnet-explorer.rawnet.io',
-    faucet:   'https://faucet.testnet.rawnet.io',
+    rpc:      process.env.RAWNET_RPC || 'http://10.117.122.142:8545',
+    explorer: 'http://10.117.122.142:3000', // local explorer placeholder
+    faucet:   'http://10.117.122.142:8545', // call MockUSDC.faucet() instead
     gasPrice: 60, // wei (0.00006 Gwei)
   },
   mainnet: {
     name:     'RAWNet',
     chainId:  72070,
-    rpc:      'https://rpc.rawnet.io',
-    explorer: 'https://explorer.rawnet.io',
+    rpc:      process.env.RAWNET_MAINNET_RPC || 'http://10.117.122.142:8545', // mainnet when live
+    explorer: 'http://10.117.122.142:3000',
     gasPrice: 60,
   },
   base: {

@@ -28,6 +28,7 @@ const AGENTS = [
   { id:'autoiq',    name:'AutoIQ Agent',     emoji:'🚗', app:'apps/autoiq/index.html',        contract:'contracts/AutoIQ/IQTitle.sol',       addr:'0xA586074FA4Fe3E546A132a16238abe37951D41fE', focus:'VIN decode NHTSA API, IQCAR mint, title transfer, recall lookup' },
   { id:'allcard',   name:'AllCard Agent',    emoji:'🪪', app:'apps/1nce-allcard/index.html',  contract:'contracts/AllCard/EmployeeVault.sol', addr:'0x86072CbFF48dA3C1F01824a6761A03F105BCC697', focus:'ZK identity, shifting PAN, 8 modes, employer enrollment' },
   { id:'qwks',      name:'QWKS Agent',       emoji:'⛓',  app:'apps/qwks-protocol/index.html', contract:'contracts/QWKS/FeeDistributor.sol',  addr:'0x7C728214be9A0049e6a86f2137ec61030D0AA964', focus:'fee routing, LTN staking, savings calculator, business onboarding' },
+  { id:'profitpilot', name:'ProfitPilot Agent',  emoji:'📊', app:'apps/profitpilot/index.html',    contract:'contracts/Allocation/EntityAllocation.sol', addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'entity revenue charts, LTN staking projections, compound calculator, IP vault, hardware tracker' },
   { id:'rawagonos', name:'RAWagon OS Agent', emoji:'⬡',  app:'apps/rawagon-os/index.html',    contract:'contracts/LTN/LivingToken.sol',      addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'OS navigation, LTN stats, wallet connect, app links' },
 ];
 

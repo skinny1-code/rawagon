@@ -246,8 +246,8 @@ select.fi option{background:var(--deep);}
   <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
     <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="https://sepolia.basescan.org" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">Base Sepolia ↗</a>
-    <span style="font-size:11px;color:#333360;">chainId 84532</span>
+    <a href="https://sepolia.10.117.122.142:8545" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
+    <span style="font-size:11px;color:#333360;">chainId 720701</span>
   </div>
 </div>
 <style>
@@ -259,10 +259,10 @@ select.fi option{background:var(--deep);}
 <script>
 (function(){
   const CHAIN = {
-    chainId:"0x14A34",chainName:"Base Sepolia",
+    chainId:"0x14A34",chainName:"RAWNet Testnet",
     nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
     rpcUrls:["https://sepolia.base.org"],
-    blockExplorerUrls:["https://sepolia.basescan.org"]
+    blockExplorerUrls:["https://sepolia.10.117.122.142:8545"]
   };
   const wrap = document.getElementById("rwc-btn-wrap");
   const btn  = document.createElement("button");
@@ -282,7 +282,7 @@ select.fi option{background:var(--deep);}
       const chip = document.querySelector(".identity-chip-name");
       if(chip) chip.textContent = shortAddr;
       btn.className = "connected";
-      chainEl.textContent = "Base Sepolia";
+      chainEl.textContent = "RAWNet Testnet";
       try{
         const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
         const eth = (parseInt(hex,16)/1e18).toFixed(4);

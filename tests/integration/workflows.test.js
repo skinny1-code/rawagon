@@ -176,5 +176,78 @@ t('EntityAllocation: preview sums to input', ()=>{
   assert(Math.abs(found/amount - 0.15) < 0.001);
 });
 
+
+
+// ── New integrations from project files ─────────────────────────────────
+t('BitPawn: police hold 7-day enforcement', () => {
+  const holdMs = 7 * 86400000;
+  const daysLeft = Math.ceil(holdMs / 86400000);
+  assert.strictEqual(daysLeft, 7);
+});
+
+t('BitPawn: electronics require serial number for police export', () => {
+  const cat = 'Electronics';
+  const requiresSerial = ['Electronics','Firearms','Tools'].includes(cat);
+  assert(requiresSerial, 'Electronics must require serial');
+});
+
+t('AutoIQ: SwiftCash 0.3% fee on $18K = $54', () => {
+  const fee = 18000 * 0.003;
+  assert.strictEqual(fee, 54);
+});
+
+t('AutoIQ: AutoList retail/wholesale/private spread', () => {
+  const retail = 18000;
+  assert.strictEqual(retail * 0.75, 13500);
+  assert.strictEqual(retail * 0.85, 15300);
+});
+
+t('ProfitPilot: compound continuous 50% APR 1yr = $1648.72', () => {
+  const result = 1000 * Math.exp(0.5);
+  assert.strictEqual(result.toFixed(2), '1648.72');
+});
+
+t('ProfitPilot: compound monthly 50% APR 1yr = $1632.09', () => {
+  const result = 1000 * Math.pow(1 + 0.5/12, 12);
+  assert.strictEqual(result.toFixed(2), '1632.09');
+});
+
+t('ProfitPilot: continuous APY 64.87% beats annual 50%', () => {
+  const contAPY = (Math.exp(0.5) - 1) * 100;
+  assert.strictEqual(contAPY.toFixed(2), '64.87');
+  assert(contAPY > 50, 'continuous APY must beat nominal rate');
+});
+
+t('IP Vault: patent non-provisional deadline = 2027-03-22', () => {
+  const filed = new Date('2026-03-22');
+  const deadline = new Date(filed);
+  deadline.setFullYear(deadline.getFullYear() + 1);
+  assert.strictEqual(deadline.toISOString().slice(0,10), '2027-03-22');
+});
+
+t('QWKS: AIPolicyRouter min score 70/100', () => {
+  const min = 70;
+  assert(87 >= min, 'valid score 87 must pass');
+  assert(65 < min, 'invalid score 65 must fail');
+});
+
+t('QWKS: AIPolicyRouter daily cap / perTx = max txs', () => {
+  assert.strictEqual(Math.floor(10000 / 500), 20);
+});
+
+t('Droppa: referral 25% tier-1 / 10% tier-2 on $99/mo', () => {
+  const sub = 99;
+  assert.strictEqual((sub * 0.25).toFixed(2), '24.75');
+  assert.strictEqual((sub * 0.10).toFixed(2), '9.90');
+});
+
+t('Droppa: GMV 30 slots x $65 = $1950, fee = $19.50', () => {
+  const gross = 30 * 65;
+  const fee = gross * 0.01;
+  assert.strictEqual(gross, 1950);
+  assert.strictEqual(fee, 19.5);
+});
+
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

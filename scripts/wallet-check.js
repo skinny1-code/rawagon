@@ -39,8 +39,8 @@ async function main() {
   }
 
   console.log('\n  RAWNet Testnet (chainId 720701):');
-  console.log('  RPC: https://testnet-rpc.rawnet.io');
-  console.log('  Faucet: https://faucet.testnet.rawnet.io');
+  console.log('  RPC: http://10.117.122.142:8545');
+  console.log('  Faucet: call MockUSDC.faucet()');
   console.log('\n  Founder Solana: 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78');
   console.log('══════════════════════════════════════════════\n');
 }

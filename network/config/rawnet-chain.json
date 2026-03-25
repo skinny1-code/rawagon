@@ -7,10 +7,10 @@
     "decimals": 18
   },
   "rpc": [
-    "https://rpc.rawnet.io"
+    "http://10.117.122.142:8545"
   ],
   "testnetRpc": [
-    "https://testnet-rpc.rawnet.io"
+    "http://10.117.122.142:8545"
   ],
   "performance": {
     "blockTime_ms": 500,
@@ -30,6 +30,6 @@
   },
   "testnet": {
     "chainId": 720701,
-    "faucet": "https://faucet.testnet.rawnet.io"
+    "faucet": "MockUSDC.faucet()"
   }
 }

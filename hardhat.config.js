@@ -25,7 +25,7 @@ module.exports = {
     },
     // RAWNet Testnet (when live)
     rawnet_testnet: {
-      url:      process.env.RAWNET_RPC_URL || "https://testnet-rpc.rawnet.io",
+      url:      process.env.RAWNET_RPC_URL || "http://10.117.122.142:8545",
       chainId:  720701,
       accounts: [PK],
       gasPrice: 60, // 60 wei = 0.00006 Gwei
