@@ -1,0 +1,26 @@
+{
+  "name": "@rawagon/stripe-mcp",
+  "version": "0.1.0",
+  "description": "Stripe MCP server for RAWagon payment operations",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "stripe-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc --project tsconfig.json --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.1",
+    "stripe": "^17.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
