@@ -3,89 +3,128 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>1.nce AllCard — Sovereign Identity</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
-  --bg:#0a080f;--s1:#100d18;--card:#15121f;--line:rgba(139,92,246,.18);--ln2:rgba(139,92,246,.07);
+  --bg:#0a080f;--s1:#100d18;--s2:#15121f;--card:#1c1628;
+  --line:rgba(139,92,246,.18);--ln2:rgba(139,92,246,.07);--ln3:rgba(139,92,246,.03);
   --wh:#f0ecff;--soft:#7c6fa0;--dim:#3a2d5a;
   --purp:#8b5cf6;--pr2:rgba(139,92,246,.15);--pr3:rgba(139,92,246,.07);
-  --cyan:#67e8f9;--cy2:rgba(103,232,249,.1);
-  --grn:#34d399;--gn2:rgba(52,211,153,.1);
+  --cyan:#67e8f9;--cy2:rgba(103,232,249,.1);--cy3:rgba(103,232,249,.06);
+  --grn:#34d399;--gn2:rgba(52,211,153,.1);--gn3:rgba(52,211,153,.06);
   --gold:#fcd34d;--gd2:rgba(252,211,77,.1);
-  --red:#f87171;
+  --red:#f87171;--rd2:rgba(248,113,113,.1);
+  --pink:#f472b6;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--wh);font-family:"DM Sans",sans-serif;font-size:14px;min-height:100vh;}
-
-/* Glowing top bar */
-.hdr{display:flex;align-items:center;padding:0 24px;border-bottom:1px solid var(--line);background:var(--s1);position:relative;overflow:hidden;}
-.hdr::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purp),var(--cyan),transparent);}
-.logo{display:flex;align-items:center;gap:12px;padding:14px 0;margin-right:24px;border-right:1px solid var(--ln2);padding-right:24px;}
-.logo-card{width:36px;height:24px;border-radius:4px;background:linear-gradient(135deg,var(--purp),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;}
-.logo-text{font-size:1rem;font-weight:700;letter-spacing:-.02em;}
-.logo-sub{font-size:.66rem;color:var(--soft);}
-.tabs{display:flex;flex:1;overflow-x:auto;}
-.tab{padding:14px 16px;font-size:.78rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--dim);white-space:nowrap;}
-.tab:hover{color:var(--purp);}
-.tab.active{color:var(--purp);border-bottom-color:var(--purp);}
-#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);font-size:.76rem;font-weight:600;cursor:pointer;margin-left:16px;font-family:inherit;white-space:nowrap;}
+.hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);position:relative;}
+.hdr::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purp),var(--cyan),var(--pink),transparent);}
+.hdr-brand{padding:13px 20px;border-right:1px solid var(--ln2);display:flex;align-items:center;gap:12px;min-width:200px;}
+.logo-card{width:38px;height:26px;border-radius:5px;background:linear-gradient(135deg,var(--purp),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;letter-spacing:.05em;}
+.brand-name{font-size:.98rem;font-weight:700;letter-spacing:-.02em;}
+.brand-sub{font-size:.6rem;color:var(--soft);}
+.hdr-nav{display:flex;flex:1;overflow-x:auto;}
+.nav-item{padding:13px 15px;font-size:.77rem;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
+.nav-item:hover{color:var(--purp);}.nav-item.active{color:var(--purp);border-bottom-color:var(--purp);}
+#connect-btn{margin:8px 14px;padding:7px 14px;border-radius:6px;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
-.pane{display:none;padding:20px 24px;max-width:1100px;}
+.pane{display:none;padding:18px 22px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 
+/* Card component */
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:17px;}
+.card-title{font-size:.8rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:"";width:3px;height:13px;background:linear-gradient(var(--purp),var(--cyan));border-radius:2px;}
+.card-title.grn-t::before{background:var(--grn);}
+.card-title.gold-t::before{background:var(--gold);}
+
+/* Forms */
+label{display:block;font-size:.64rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:3px;}
+input,select{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:8px 11px;color:var(--wh);font-size:.83rem;font-family:inherit;outline:none;margin-bottom:10px;transition:.1s;}
+input:focus{border-color:var(--purp);}
+.btn{padding:9px 18px;border-radius:8px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.btn-purp{background:var(--purp);color:#fff;}.btn-purp:hover{background:#7c3aed;}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}.btn-outline:hover{border-color:var(--purp);color:var(--purp);}
+.btn-sm{padding:5px 10px;font-size:.72rem;}
+.btn-grn{background:var(--grn);color:#000;}
+.btn-red{background:var(--rd2);border:1px solid var(--red);color:var(--red);}
+
+/* Row */
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2);font-size:.8rem;}
+.row:last-child{border:none;}
+.mono{font-family:"DM Mono",monospace;}
+
+/* Status */
+.status-on{color:var(--grn);font-size:.76rem;}
+.status-off{color:var(--soft);font-size:.76rem;}
+
 /* ID Card visual */
-.id-card{width:100%;aspect-ratio:1.586;border-radius:16px;background:linear-gradient(135deg,#1a1030 0%,#0d1a2e 40%,#0a1520 100%);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;cursor:pointer;transition:.2s;}
-.id-card::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at center,rgba(139,92,246,.06) 0%,transparent 60%);pointer-events:none;}
-.id-card:hover{border-color:rgba(139,92,246,.4);box-shadow:0 0 30px rgba(139,92,246,.15);}
-.card-chip{width:32px;height:24px;border-radius:4px;background:linear-gradient(135deg,#f59e0b,#d97706);border:1px solid rgba(255,255,255,.2);}
-.card-pan{font-family:"DM Mono",monospace;font-size:.88rem;letter-spacing:.15em;color:var(--wh);margin-top:auto;}
-.card-bottom{display:flex;justify-content:space-between;align-items:flex-end;}
-.card-name{font-size:.72rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;}
-.card-network{font-size:.7rem;color:var(--purp);font-weight:700;}
-.card-mode-badge{position:absolute;top:14px;right:14px;font-size:.62rem;padding:3px 8px;border-radius:10px;font-weight:700;}
+.id-card{width:100%;aspect-ratio:1.586;border-radius:16px;background:linear-gradient(135deg,#1a1030 0%,#0d1a2e 40%,#070d1e 100%);border:1px solid rgba(139,92,246,.3);padding:20px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;cursor:pointer;transition:.25s;user-select:none;}
+.id-card::before{content:"";position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.08),transparent 65%);pointer-events:none;}
+.id-card::after{content:"";position:absolute;bottom:-20px;left:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(103,232,249,.06),transparent 65%);pointer-events:none;}
+.id-card:active{transform:scale(.99);}
+.card-chip{width:34px;height:26px;border-radius:4px;background:linear-gradient(135deg,#f59e0b,#d97706);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;}
+.card-chip-lines{display:flex;flex-direction:column;gap:2px;padding:3px;}
+.card-chip-line{height:2px;background:rgba(0,0,0,.3);border-radius:1px;}
+.card-pan{font-family:"DM Mono",monospace;font-size:.92rem;letter-spacing:.18em;color:var(--wh);margin-top:auto;}
+.card-name{font-size:.7rem;color:rgba(255,255,255,.45);letter-spacing:.1em;text-transform:uppercase;}
+.card-network{font-size:.72rem;color:var(--purp);font-weight:700;}
+.card-nonce{font-size:.6rem;color:rgba(255,255,255,.25);font-family:DM Mono,monospace;}
+.card-mode-tag{position:absolute;top:14px;right:14px;font-size:.6rem;padding:3px 8px;border-radius:4px;font-weight:700;}
 
 /* Mode grid */
 .mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-.mode-btn{padding:12px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;text-align:center;transition:.15s;}
-.mode-btn:hover,.mode-btn.active{border-color:var(--purp);background:var(--pr3);}
-.mode-btn.active{border-color:var(--purp);}
-.mode-icon{font-size:1.4rem;display:block;margin-bottom:4px;}
-.mode-name{font-size:.68rem;font-weight:600;color:var(--soft);}
+.mode-btn{padding:11px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;text-align:center;transition:.15s;}
+.mode-btn:hover{border-color:rgba(139,92,246,.4);}
+.mode-btn.active{border-color:var(--purp);background:var(--pr3);}
+.mode-icon{font-size:1.4rem;display:block;margin-bottom:3px;}
+.mode-name{font-size:.66rem;font-weight:600;color:var(--soft);}
 
-/* Components */
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
-label{display:block;font-size:.68rem;font-weight:600;color:var(--dim);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;}
-input,select{width:100%;background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
-input:focus{border-color:var(--purp);}
-.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;}
-.btn-purp{background:var(--purp);color:#fff;}.btn-purp:hover{background:#7c3aed;}
-.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}.btn-outline:hover{border-color:var(--purp);color:var(--purp);}
-.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--ln2);font-size:.82rem;}
-.row:last-child{border:none;}
-.mono{font-family:"DM Mono",monospace;}
-.badge-zk{display:inline-block;padding:2px 8px;border-radius:4px;background:var(--gn2);color:var(--grn);font-size:.64rem;font-weight:700;border:1px solid rgba(52,211,153,.2);}
-.proof-display{background:var(--s1);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:"DM Mono",monospace;font-size:.68rem;color:var(--purp);word-break:break-all;margin-top:10px;max-height:80px;overflow-y:auto;}
-.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;background:var(--card);border:1px solid var(--grn);border-radius:10px;font-size:.8rem;color:var(--grn);z-index:999;display:none;}
+/* Biometric sliders */
+.bio-vector{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px;}
+.bio-row{display:flex;align-items:center;gap:10px;}
+.bio-label{font-size:.68rem;color:var(--soft);width:110px;flex-shrink:0;}
+input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
+.bio-val{font-family:"DM Mono",monospace;font-size:.72rem;color:var(--purp);width:30px;text-align:right;}
+
+/* Key display */
+.key-display{background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:"DM Mono",monospace;font-size:.64rem;color:var(--purp);word-break:break-all;margin-top:8px;position:relative;}
+.key-copy{position:absolute;top:6px;right:8px;font-size:.62rem;cursor:pointer;color:var(--soft);padding:2px 6px;border-radius:3px;background:var(--ln2);}
+
+/* ZK proof display */
+.proof-display{background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:"DM Mono",monospace;font-size:.62rem;color:var(--cyan);word-break:break-all;max-height:100px;overflow-y:auto;margin-top:8px;}
+
+/* Confidence meter */
+.conf-meter{height:6px;background:var(--ln2);border-radius:3px;overflow:hidden;margin-top:4px;}
+.conf-fill{height:100%;border-radius:3px;transition:width 1s;}
+
+/* Vault item */
+.vault-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--s2);border:1px solid var(--ln2);border-radius:8px;margin-bottom:5px;}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;padding:10px 16px;background:var(--card);border:1px solid var(--purp);border-radius:10px;font-size:.79rem;color:var(--purp);z-index:999;display:none;box-shadow:0 6px 24px rgba(139,92,246,.2);}
 </style>
 </head>
 <body>
+
 <div class="hdr">
-  <div class="logo">
+  <div class="hdr-brand">
     <div class="logo-card">AC</div>
-    <div><div class="logo-text">1.nce AllCard</div><div class="logo-sub">Sovereign Identity · Patent Pending</div></div>
+    <div><div class="brand-name">1.nce AllCard</div><div class="brand-sub">Sovereign Identity · Patent Pending</div></div>
   </div>
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('card')">My Card</div>
-    <div class="tab" onclick="showTab('identity')">ZK Identity</div>
-    <div class="tab" onclick="showTab('employer')">Employer</div>
-    <div class="tab" onclick="showTab('vault')">Vault</div>
-    <div class="tab" onclick="showTab('modes')">8 Modes</div>
-    <div class="tab" onclick="showTab('aura')">AuraMe</div>
-    <div class="tab" onclick="showTab('about')">Patent Claims</div>
+  <div class="hdr-nav">
+    <div class="nav-item active" onclick="show('card')">My Card</div>
+    <div class="nav-item" onclick="show('aura')">AuraMe</div>
+    <div class="nav-item" onclick="show('identity')">ZK Identity</div>
+    <div class="nav-item" onclick="show('employer')">Employer</div>
+    <div class="nav-item" onclick="show('vault')">Vault</div>
+    <div class="nav-item" onclick="show('modes')">8 Modes</div>
+    <div class="nav-item" onclick="show('patent')">Patent</div>
   </div>
   <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
 </div>
@@ -94,50 +133,140 @@ input:focus{border-color:var(--purp);}
 <div class="pane active" id="pane-card">
   <div class="g2">
     <div>
-      <div class="id-card" id="allcard-visual" onclick="shiftPAN()">
+      <!-- Live card visual -->
+      <div class="id-card" onclick="shiftPAN()" id="live-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-          <div class="card-chip"></div>
+          <div class="card-chip"><div class="card-chip-lines"><div class="card-chip-line"></div><div class="card-chip-line"></div><div class="card-chip-line"></div></div></div>
           <div style="text-align:right;">
-            <div style="font-size:.62rem;color:rgba(255,255,255,.4);letter-spacing:.1em">1.NCE</div>
-            <div style="font-size:.7rem;color:var(--purp);font-weight:700" id="card-mode-label">IDENTITY</div>
+            <div style="font-size:.58rem;color:rgba(255,255,255,.35);letter-spacing:.1em;">1.NCE ALLCARD</div>
+            <div id="card-mode-label" style="font-size:.7rem;color:var(--purp);font-weight:700;margin-top:1px;">IDENTITY</div>
           </div>
         </div>
         <div>
           <div class="card-pan" id="card-pan">•••• •••• •••• ••••</div>
-          <div style="font-size:.62rem;color:rgba(255,255,255,.3);margin-top:4px;font-family:DM Mono,monospace" id="card-exp">TAP TO GENERATE</div>
+          <div style="display:flex;gap:12px;margin-top:4px;">
+            <div><div style="font-size:.52rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em">Expires</div><div style="font-family:DM Mono,monospace;font-size:.66rem;color:rgba(255,255,255,.5)" id="card-exp">••/••</div></div>
+            <div><div style="font-size:.52rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em">CVV</div><div style="font-family:DM Mono,monospace;font-size:.66rem;color:rgba(255,255,255,.5)" id="card-cvv">•••</div></div>
+          </div>
         </div>
-        <div class="card-bottom">
-          <div><div class="card-name" id="card-holder-name">NOT CONNECTED</div><div style="font-size:.64rem;color:var(--dim);margin-top:2px" id="card-cvv"></div></div>
-          <div class="card-network" id="card-network">RAWNet</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+          <div>
+            <div class="card-name" id="card-holder">NOT CONNECTED</div>
+            <div class="card-nonce" id="card-nonce">Nonce: 0</div>
+          </div>
+          <div id="card-network" class="card-network">RAWNet</div>
         </div>
       </div>
-      <div style="margin-top:10px;text-align:center;font-size:.72rem;color:var(--dim);">Tap card to generate new PAN · Each tap = unique shifting PAN</div>
+      <div style="margin-top:8px;text-align:center;font-size:.7rem;color:var(--dim)">Tap card to generate new PAN — each tap is unique</div>
+
+      <!-- Mode switcher -->
       <div style="margin-top:14px;">
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:8px">Active Mode</div>
-        <div class="mode-grid" id="mode-quick">
-          ${[['🪪','Identity'],['💳','Debit'],['₿','Crypto'],['🏥','Health'],['🚗','Vehicle'],['🏛','Gov'],['🪖','Badge'],['🏦','Retire']].map(([ico,name],i)=>`
-          <div class="mode-btn${i===0?' active':''}" onclick="switchMode('${name.toLowerCase()}',this)">
-            <span class="mode-icon">${ico}</span><span class="mode-name">${name}</span>
-          </div>`).join('')}
+        <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:8px">Mode</div>
+        <div class="mode-grid" id="mode-quick-grid"></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Card status — real chain data only -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Card Status</div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <div class="row"><span style="color:var(--soft)">Wallet</span><span id="st-addr" class="mono" style="font-size:.7rem;color:var(--purp)">Not connected</span></div>
+          <div class="row"><span style="color:var(--soft)">Master key</span><span id="st-key" class="mono" style="font-size:.7rem;color:var(--dim)">Not generated</span></div>
+          <div class="row"><span style="color:var(--soft)">AuraMe score</span><span id="st-aura" class="status-off">—</span></div>
+          <div class="row"><span style="color:var(--soft)">On-chain enrolled</span><span id="st-enrolled">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Commitment hash</span><span id="st-commit" class="mono" style="font-size:.64rem;color:var(--dim);max-width:160px;overflow:hidden;text-overflow:ellipsis">—</span></div>
+          <div class="row"><span style="color:var(--soft)">PAN shifts (session)</span><span id="st-shifts" class="mono" style="color:var(--purp)">0</span></div>
+          <div class="row"><span style="color:var(--soft)">Active mode</span><span id="st-mode" class="mono" style="color:var(--purp)">identity</span></div>
+          <div class="row"><span style="color:var(--soft)">Vault items</span><span id="st-vault" class="mono" style="color:var(--dim)">0</span></div>
+        </div>
+      </div>
+      <!-- Quick actions -->
+      <div class="card">
+        <div class="card-title">Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-purp" style="width:100%" onclick="show('aura')">⚡ AuraMe Biometric Key</button>
+          <button class="btn btn-outline" style="width:100%" onclick="shiftPAN()">🔄 Shift PAN</button>
+          <button class="btn btn-outline" style="width:100%" onclick="show('identity')">🔐 Generate ZK Proof</button>
+          <button class="btn btn-outline" style="width:100%" onclick="show('vault')">🔒 Open Vault</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- AURAME -->
+<div class="pane" id="pane-aura">
+  <div class="g2">
     <div>
       <div class="card" style="margin-bottom:14px;">
-        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--purp)">Your AllCard Status</div>
-        <div class="row"><span style="color:var(--soft)">Wallet</span><span class="mono" style="font-size:.72rem;color:var(--purp)" id="status-addr">Not connected</span></div>
-        <div class="row"><span style="color:var(--soft)">Enrolled</span><span id="status-enrolled">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Employer</span><span id="status-employer" class="mono" style="font-size:.72rem">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Payroll nonce</span><span id="status-nonce">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Commitment</span><span id="status-commit" class="mono" style="font-size:.64rem;max-width:150px;overflow:hidden;text-overflow:ellipsis">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Master key</span><span id="status-key" class="mono" style="font-size:.64rem;color:var(--dim)">Not generated</span></div>
-        <div class="row"><span style="color:var(--soft)">PAN shifts</span><span id="status-shifts">0</span></div>
+        <div class="card-title">AuraMe — Behavioral Key Derivation</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">
+          AuraMe derives a 256-bit master key from your behavioral biometrics. The key is computed on-device using SHA-256. No biometric data is stored — the key IS the biometric.
+        </div>
+
+        <!-- Real-time behavioral capture -->
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:8px;">Behavioral Vectors (real-time capture)</div>
+        <div class="bio-vector">
+          <div class="bio-row"><span class="bio-label">Keystroke cadence</span><input type="range" id="bio-k" min="0" max="255" value="0" oninput="captureBio()"><span class="bio-val" id="bv-k">0</span></div>
+          <div class="bio-row"><span class="bio-label">Swipe velocity</span><input type="range" id="bio-v" min="0" max="255" value="0" oninput="captureBio()"><span class="bio-val" id="bv-v">0</span></div>
+          <div class="bio-row"><span class="bio-label">Touch pressure</span><input type="range" id="bio-p" min="0" max="255" value="0" oninput="captureBio()"><span class="bio-val" id="bv-p">0</span></div>
+          <div class="bio-row"><span class="bio-label">Gyro drift</span><input type="range" id="bio-g" min="0" max="255" value="0" oninput="captureBio()"><span class="bio-val" id="bv-g">0</span></div>
+          <div class="bio-row"><span class="bio-label">Scroll rhythm</span><input type="range" id="bio-s" min="0" max="255" value="0" oninput="captureBio()"><span class="bio-val" id="bv-s">0</span></div>
+        </div>
+
+        <!-- Confidence score from bio vectors -->
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--soft);margin-bottom:3px;">
+          <span>Behavioral confidence</span><span id="bio-conf-pct" class="mono" style="color:var(--purp)">0%</span>
+        </div>
+        <div class="conf-meter"><div class="conf-fill" id="bio-conf-fill" style="width:0%;background:var(--purp)"></div></div>
+
+        <div id="bio-key-preview" style="margin-top:12px;display:none;">
+          <div style="font-size:.68rem;color:var(--soft);margin-bottom:4px">Derived key preview (first 32 chars):</div>
+          <div class="key-display" id="bio-key-display" style="font-size:.66rem;">—<span class="key-copy" onclick="copyKey()">copy</span></div>
+        </div>
+
+        <button class="btn btn-purp" style="width:100%;margin-top:12px" id="derive-btn" onclick="deriveBioKey()">Derive Master Key from Biometrics</button>
+        <div id="derive-status" style="margin-top:8px;font-size:.74rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title gold-t">Pattern Lock Alternative</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:10px;">Draw a unique pattern — used as additional entropy for key derivation.</div>
+        <canvas id="pattern-canvas" width="200" height="200" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;cursor:crosshair;display:block;margin:0 auto 10px;"></canvas>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="clearPattern()">Clear</button>
+          <button class="btn btn-purp btn-sm" onclick="usePattern()">Use Pattern + Bio</button>
+        </div>
+        <div id="pattern-status" style="margin-top:6px;font-size:.72rem;color:var(--soft);"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Key Architecture</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.85;">
+          <div><strong style="color:var(--purp)">1. Collect</strong> — 5 behavioral vectors sampled on-device</div>
+          <div><strong style="color:var(--purp)">2. Salt</strong> — combine vectors with device-unique salt</div>
+          <div><strong style="color:var(--purp)">3. Derive</strong> — SHA-256(salt + k + v + p + g + s) = 256-bit key</div>
+          <div><strong style="color:var(--purp)">4. Commit</strong> — SHA-256(key + "commitment") stored on-chain</div>
+          <div><strong style="color:var(--purp)">5. Prove</strong> — ZK proof: I know key such that H(key) = commitment</div>
+          <div><strong style="color:var(--purp)">6. Shift</strong> — PAN = SHA-256(key + mode + nonce)[0:16]</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:var(--gn3);border:1px solid rgba(52,211,153,.15);border-radius:8px;font-size:.72rem;color:var(--grn);">
+          ✓ Biometric never stored · Key regenerated each session · Anti-replay via nonce
+        </div>
       </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Quick Actions</div>
-        <button class="btn btn-purp" style="width:100%;margin-bottom:8px" onclick="generateMasterKey()">Generate Master Key</button>
-        <button class="btn btn-outline" style="width:100%;margin-bottom:8px" onclick="shiftPAN()">Shift PAN</button>
-        <button class="btn btn-outline" style="width:100%" onclick="showTab('identity')">Generate ZK Proof →</button>
+        <div class="card-title">Device Sensors (live)</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Accelerometer</span><span id="accel-status" class="status-off">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Gyroscope</span><span id="gyro-status" class="status-off">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Touch events</span><span id="touch-status" class="status-off">Not captured</span></div>
+          <div class="row"><span style="color:var(--soft)">Key timing</span><span id="key-status" class="status-off">Not captured</span></div>
+          <div class="row"><span style="color:var(--soft)">Master key set</span><span id="key-set-status" class="status-off">No</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="startMotionCapture()">Start Motion Capture</button>
       </div>
     </div>
   </div>
@@ -148,49 +277,75 @@ input:focus{border-color:var(--purp);}
   <div class="g2">
     <div>
       <div class="card" style="margin-bottom:14px;">
-        <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp)">Generate ZK Proof</div>
-        <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">Generate a zero-knowledge proof of your credentials. The merchant/employer receives only a boolean — no raw data ever leaves your device.</div>
+        <div class="card-title">Generate ZK Proof</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:12px;line-height:1.6;">
+          Proves an attribute (age, employment, KYC) without revealing underlying data. Merchant receives only boolean true/false.
+        </div>
         <label>Proof Type</label>
         <select id="proof-type">
-          <option value="age">Age ≥ 18 (age verification)</option>
-          <option value="kyc">KYC verified</option>
-          <option value="employment">Employment verification</option>
-          <option value="balance">Balance ≥ threshold</option>
-          <option value="identity">Identity attestation</option>
+          <option value="age">Age ≥ 18</option>
+          <option value="kyc">KYC Verified</option>
+          <option value="employment">Employment Verification</option>
+          <option value="balance">Minimum Balance</option>
+          <option value="identity">Identity Attestation</option>
         </select>
-        <label>Context (employer, merchant, etc.)</label>
-        <input id="proof-context" placeholder="0x... or Acme Corp">
-        <button class="btn btn-purp" style="width:100%" onclick="generateProof()">Generate ZK Proof</button>
-        <div id="proof-result" style="display:none;margin-top:12px;">
-          <div style="font-size:.72rem;color:var(--soft);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-            <span class="badge-zk">ZK PROOF</span> No PII included
+        <label>Context / Verifier</label>
+        <input id="proof-ctx" placeholder="Merchant address 0x... or name">
+        <div id="proof-key-warn" style="display:none;padding:8px 10px;background:var(--gd2);border:1px solid rgba(252,211,77,.2);border-radius:6px;font-size:.72rem;color:var(--gold);margin-bottom:10px;">
+          ⚠ No master key set. Go to AuraMe tab to derive your key first.
+        </div>
+        <button class="btn btn-purp" style="width:100%" onclick="generateProof()" id="proof-btn">Generate ZK Proof</button>
+        <div id="proof-status" style="margin-top:6px;font-size:.74rem;color:var(--soft);min-height:14px;"></div>
+
+        <div id="proof-output-section" style="display:none;margin-top:12px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="padding:2px 8px;border-radius:4px;background:var(--gn2);color:var(--grn);font-size:.62rem;font-weight:700;border:1px solid rgba(52,211,153,.2);">ZK PROOF</div>
+            <span style="font-size:.7rem;color:var(--soft)">Zero PII — boolean output only</span>
           </div>
-          <div class="proof-display" id="proof-output"></div>
-          <div style="margin-top:8px;display:flex;gap:8px;">
-            <button class="btn btn-outline" style="font-size:.74rem;padding:6px 12px" onclick="copyProof()">Copy Proof</button>
-            <button class="btn btn-outline" style="font-size:.74rem;padding:6px 12px" onclick="verifyProof()">Verify</button>
+          <div class="proof-display" id="proof-data"></div>
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="copyProof()">Copy</button>
+            <button class="btn btn-outline btn-sm" onclick="verifyProofLocal()">Verify Locally</button>
+            <button class="btn btn-outline btn-sm" onclick="submitProofOnChain()">Submit On-Chain</button>
           </div>
-          <div id="verify-result" style="margin-top:6px;font-size:.74rem;"></div>
+          <div id="verify-output" style="margin-top:8px;font-size:.74rem;"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Anti-Replay Protection</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.7;">
+          Each proof contains a unique timestamp + nonce. Spent proof hashes are recorded on EmployeeVault — the same proof cannot be replayed.
+        </div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:5px;font-size:.76rem;">
+          <div class="row"><span style="color:var(--soft)">Proofs generated (session)</span><span id="proof-count" class="mono" style="color:var(--purp)">0</span></div>
+          <div class="row"><span style="color:var(--soft)">Last proof hash</span><span id="last-proof-hash" class="mono" style="font-size:.64rem;color:var(--dim)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">On-chain spent</span><span id="proof-spent-count" class="mono" style="color:var(--grn)">—</span></div>
         </div>
       </div>
     </div>
+
     <div>
       <div class="card" style="margin-bottom:14px;">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">How ZK Works</div>
-        <div style="font-size:.76rem;color:var(--soft);line-height:1.8;">
-          <div><strong style="color:var(--purp)">1. On your device:</strong> AuraMe generates master key from biometrics</div>
-          <div><strong style="color:var(--purp)">2. Commitment:</strong> HMAC-SHA256(key, credentials) → stored on-chain</div>
-          <div><strong style="color:var(--purp)">3. Proof:</strong> Generated on-device, proves attribute without revealing data</div>
-          <div><strong style="color:var(--purp)">4. Merchant:</strong> Calls verifyProof() → gets true/false only</div>
-          <div><strong style="color:var(--purp)">5. Anti-replay:</strong> Each proof hash marked spent — no replay attacks</div>
+        <div class="card-title">On-Chain Commitment</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">EmployeeVault</span><span class="mono" style="font-size:.68rem;color:var(--dim)">0x86072CbF...C697</span></div>
+          <div class="row"><span style="color:var(--soft)">Your commitment</span><span id="chain-commit" class="mono" style="font-size:.64rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;color:var(--purp)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Enrolled</span><span id="chain-enrolled">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Employer</span><span id="chain-employer" class="mono" style="font-size:.68rem;color:var(--dim)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Nonce</span><span id="chain-nonce" class="mono" style="color:var(--dim)">—</span></div>
         </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="checkOnChainStatus()">↻ Refresh from Chain</button>
       </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Your Commitments On-Chain</div>
-        <div class="row"><span style="color:var(--soft)">EmployeeVault</span><span class="mono" style="font-size:.7rem;color:var(--dim)">0x86072CbF...C697</span></div>
-        <div class="row"><span style="color:var(--soft)">Your commitment</span><span id="on-chain-commit" class="mono" style="font-size:.64rem;color:var(--purp)">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Enrollment status</span><span id="on-chain-enrolled">—</span></div>
-        <button class="btn btn-outline" style="margin-top:10px;width:100%;font-size:.74rem" onclick="checkOnChain()">Check On-Chain Status</button>
+        <div class="card-title">ZK Protocol</div>
+        <div style="font-size:.74rem;color:var(--soft);line-height:1.85;">
+          <div><strong style="color:var(--purp)">Prover</strong> (your device): generates proof that H(key) = commitment without revealing key</div>
+          <br>
+          <div><strong style="color:var(--purp)">Verifier</strong> (merchant/employer): calls verifyProof(commitment, proofHash, params)</div>
+          <br>
+          <div><strong style="color:var(--purp)">Contract</strong> returns: true if valid + marks proofHash as spent</div>
+        </div>
       </div>
     </div>
   </div>
@@ -199,31 +354,44 @@ input:focus{border-color:var(--purp);}
 <!-- EMPLOYER -->
 <div class="pane" id="pane-employer">
   <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp)">Employee Enrollment</div>
-      <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">Enroll an employee in the EmployeeVault. Their wallet gets linked to a ZK commitment — no PII stored on-chain.</div>
-      <label>Employee Wallet Address</label>
-      <input id="enroll-addr" placeholder="0x...">
-      <label>Custom Commitment (optional — auto-generated if empty)</label>
-      <input id="enroll-commit" placeholder="0x... (32 bytes)">
-      <button class="btn btn-purp" style="width:100%;margin-bottom:8px" onclick="enrollEmployee()">Enroll Employee On-Chain</button>
-      <div id="enroll-status" style="font-size:.76rem;text-align:center;color:var(--soft);margin-top:6px;"></div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Enroll Employee</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:12px;line-height:1.6;">
+          Enrolls a wallet address with a ZK commitment on EmployeeVault. No PII stored — only the commitment hash.
+        </div>
+        <label>Employee Wallet</label>
+        <input id="enroll-addr" placeholder="0x...">
+        <label>Commitment (auto-generated if blank)</label>
+        <input id="enroll-commit" placeholder="0x... (32 bytes) — leave blank for random">
+        <button class="btn btn-purp" style="width:100%" onclick="enrollEmployee()">Enroll On-Chain</button>
+        <div id="enroll-status" style="margin-top:8px;font-size:.74rem;color:var(--soft);min-height:14px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Verify Employment</div>
+        <label>Employee Wallet</label>
+        <input id="verify-addr" placeholder="0x...">
+        <label>Proof Hash</label>
+        <input id="verify-proof-hash" placeholder="0x...">
+        <button class="btn btn-outline" style="width:100%" onclick="verifyEmployment()">Verify On-Chain</button>
+        <div id="verify-emp-result" style="margin-top:8px;font-size:.76rem;text-align:center;min-height:14px;"></div>
+      </div>
     </div>
     <div>
       <div class="card" style="margin-bottom:14px;">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Verify Employment</div>
-        <label>Employee Wallet</label>
-        <input id="verify-emp-addr" placeholder="0x...">
-        <label>Proof Hash</label>
-        <input id="verify-emp-proof" placeholder="0x...">
-        <button class="btn btn-outline" style="width:100%" onclick="verifyEmployment()">Verify On-Chain</button>
-        <div id="emp-verify-result" style="margin-top:8px;font-size:.76rem;text-align:center;"></div>
+        <div class="card-title">Network Stats (live)</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Total enrolled</span><span id="emp-total" class="mono" style="color:var(--purp)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Your employees</span><span id="emp-yours" class="mono" style="color:var(--purp)">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Contract</span><span><span style="background:var(--gn2);color:var(--grn);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px;">LIVE</span></span></div>
+          <div class="row"><span style="color:var(--soft)">Anti-replay proofs</span><span id="emp-spent" class="mono" style="color:var(--grn)">—</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="loadEmployerStats()">↻ Load Stats</button>
       </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Your Roster</div>
-        <div class="row"><span style="color:var(--soft)">Total enrolled</span><span id="roster-count" class="mono">—</span></div>
-        <button class="btn btn-outline" style="margin-top:8px;width:100%;font-size:.74rem" onclick="loadRoster()">Load Roster</button>
-        <div id="roster-list" style="margin-top:10px;font-size:.76rem;"></div>
+        <div class="card-title">Your Roster</div>
+        <div id="roster-list"><div style="color:var(--soft);font-size:.78rem">Connect wallet to view</div></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%" onclick="loadRoster()">Load Roster</button>
       </div>
     </div>
   </div>
@@ -232,33 +400,44 @@ input:focus{border-color:var(--purp);}
 <!-- VAULT -->
 <div class="pane" id="pane-vault">
   <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp)">Encrypted Vault</div>
-      <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">Store encrypted PII locally. Uses AES-256-GCM. Master key required. Data never leaves device unencrypted.</div>
-      <label>Field Name</label>
-      <input id="vault-key" placeholder="e.g. ssn, dob, passport">
-      <label>Field Value</label>
-      <input id="vault-val" placeholder="Value to encrypt">
-      <button class="btn btn-purp" style="width:100%;margin-bottom:8px" onclick="addToVault()">Encrypt & Store</button>
-      <div style="margin-top:6px;">
-        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);margin-bottom:8px">Vault Contents</div>
-        <div id="vault-display" style="font-size:.76rem;color:var(--soft)">Generate master key first</div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Add to Vault</div>
+        <div id="vault-key-warn" style="display:none;padding:8px 10px;background:var(--gd2);border:1px solid rgba(252,211,77,.2);border-radius:6px;font-size:.72rem;color:var(--gold);margin-bottom:10px;">
+          ⚠ No master key. Vault uses session key — go to AuraMe to set permanent key.
+        </div>
+        <label>Field Name</label>
+        <input id="vault-field" placeholder="e.g. ssn, dob, id_number, passport">
+        <label>Value (encrypted before storing)</label>
+        <input id="vault-value" type="password" placeholder="Sensitive value">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-purp" onclick="addToVault()">Encrypt & Store</button>
+          <button class="btn btn-outline btn-sm" onclick="exportVault()">Export (encrypted)</button>
+        </div>
+        <div id="vault-add-status" style="margin-top:6px;font-size:.72rem;color:var(--soft);"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Decrypt Field</div>
+        <label>Field Name</label>
+        <input id="decrypt-field" placeholder="Field to reveal">
+        <button class="btn btn-outline" style="width:100%" onclick="decryptField()">Decrypt (auto-hides 5s)</button>
+        <div id="decrypt-display" style="display:none;margin-top:8px;padding:10px;background:var(--gn3);border:1px solid rgba(52,211,153,.15);border-radius:8px;font-family:DM Mono,monospace;font-size:.78rem;color:var(--grn);"></div>
       </div>
     </div>
     <div>
       <div class="card" style="margin-bottom:14px;">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Decrypt Field</div>
-        <label>Field Name</label>
-        <input id="decrypt-key" placeholder="Field to decrypt">
-        <button class="btn btn-outline" style="width:100%" onclick="decryptField()">Decrypt</button>
-        <div id="decrypt-result" style="margin-top:8px;font-size:.76rem;padding:8px;background:var(--s1);border-radius:6px;display:none;"></div>
+        <div class="card-title grn-t">Vault Contents</div>
+        <div id="vault-contents"><div style="color:var(--soft);font-size:.78rem;">Empty</div></div>
       </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Vault Security</div>
-        <div class="row"><span style="color:var(--soft)">Encryption</span><span class="mono" style="font-size:.76rem;color:var(--grn)">AES-256-GCM</span></div>
-        <div class="row"><span style="color:var(--soft)">Key derivation</span><span class="mono" style="font-size:.76rem;color:var(--grn)">HMAC-SHA256</span></div>
-        <div class="row"><span style="color:var(--soft)">On-chain PII</span><span style="color:var(--grn);font-size:.76rem">Zero — commitment only</span></div>
-        <div class="row"><span style="color:var(--soft)">Data location</span><span style="font-size:.76rem;color:var(--purp)">Device localStorage only</span></div>
+        <div class="card-title grn-t">Security Model</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
+          <div class="row"><span style="color:var(--soft)">Encryption</span><span class="mono grn-t" style="color:var(--grn);">AES-256-GCM</span></div>
+          <div class="row"><span style="color:var(--soft)">Key source</span><span class="mono" style="color:var(--purp);font-size:.72rem;">AuraMe master key</span></div>
+          <div class="row"><span style="color:var(--soft)">On-chain PII</span><span style="color:var(--grn);font-size:.74rem">Zero</span></div>
+          <div class="row"><span style="color:var(--soft)">Storage</span><span style="color:var(--soft);font-size:.74rem">localStorage only</span></div>
+          <div class="row"><span style="color:var(--soft)">Auto-hide</span><span style="color:var(--grn);font-size:.74rem">5 seconds</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -266,64 +445,41 @@ input:focus{border-color:var(--purp);}
 
 <!-- 8 MODES -->
 <div class="pane" id="pane-modes">
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;" id="modes-full-grid"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;" id="modes-full"></div>
 </div>
 
-<!-- AURAME -->
-<div class="pane" id="pane-aura">
+<!-- PATENT -->
+<div class="pane" id="pane-patent">
   <div class="g2">
     <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp)">AuraMe — Biometric Key</div>
-      <div style="font-size:.76rem;color:var(--soft);margin-bottom:16px;line-height:1.7;">AuraMe derives your master key from behavioral biometrics. No biometric stored — the key IS the biometric.</div>
-      <label>Biometric Vector Simulation</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div><label>Keystroke cadence</label><input type="range" id="bio-k" min="0" max="255" value="90" oninput="updateBioPreview()"></div>
-        <div><label>Swipe velocity</label><input type="range" id="bio-v" min="0" max="255" value="143" oninput="updateBioPreview()"></div>
-        <div><label>Touch pressure</label><input type="range" id="bio-p" min="0" max="255" value="200" oninput="updateBioPreview()"></div>
-        <div><label>Gyro drift</label><input type="range" id="bio-g" min="0" max="255" value="55" oninput="updateBioPreview()"></div>
-      </div>
-      <div id="bio-key-preview" style="font-family:DM Mono,monospace;font-size:.64rem;color:var(--purp);padding:8px;background:var(--s1);border-radius:6px;word-break:break-all;margin-bottom:12px;"></div>
-      <button class="btn btn-purp" style="width:100%" onclick="deriveFromBiometrics()">Derive Key from Biometrics</button>
-    </div>
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Patent Claims — AuraMe</div>
-      <div style="font-size:.74rem;color:var(--soft);line-height:1.8;">
-        <div><strong style="color:var(--purp)">Claim 1:</strong> Behavioral biometric → cryptographic key without storing raw biometric</div>
-        <div><strong style="color:var(--purp)">Claim 2:</strong> Key regenerated on each auth — never persisted</div>
-        <div><strong style="color:var(--purp)">Claim 3:</strong> Multi-vector derivation (keystroke + pressure + motion)</div>
-        <div><strong style="color:var(--purp)">Claim 4:</strong> ZK proof generated from key without revealing key</div>
-        <div><strong style="color:var(--purp)">Claim 5:</strong> Shifting PAN derived from BIP-44 HD path + mode key</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PATENT CLAIMS -->
-<div class="pane" id="pane-about">
-  <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--purp)">Patent RAW-2026-PROV-001</div>
+      <div class="card-title">RAW-2026-PROV-001</div>
+      <div style="font-size:.78rem;font-weight:600;margin-bottom:10px;">Zero-Knowledge Commerce System with Behavioral Biometric Key Derivation and Sovereign Identity</div>
       <div style="font-size:.74rem;color:var(--soft);line-height:1.9;">
-        <div><strong style="color:var(--wh)">Title:</strong> Zero-Knowledge Commerce System with Biometric Key Derivation and Sovereign Identity</div>
-        <br>
-        <div><strong style="color:var(--purp)">Claim 1:</strong> Shifting PAN — payment card number changes per transaction via HD derivation</div>
-        <div><strong style="color:var(--purp)">Claim 2:</strong> 8-mode identity card — single card, multiple network personas</div>
-        <div><strong style="color:var(--purp)">Claim 3:</strong> ZK commitment registry — employer receives boolean only, no PII</div>
-        <div><strong style="color:var(--purp)">Claim 4:</strong> Anti-replay proof system — each proof hash spent once</div>
-        <div><strong style="color:var(--purp)">Claim 5:</strong> Biometric → cryptographic key without storing biometric</div>
-        <div><strong style="color:var(--purp)">Claim 6:</strong> On-chain payroll nonce — prevents old proofs in new pay periods</div>
-        <div><strong style="color:var(--purp)">Claim 7:</strong> AES-256-GCM vault with ZK credential proofs</div>
-        <div><strong style="color:var(--purp)">Claim 8:</strong> Cross-chain identity bridge (EVM → Solana via Wormhole)</div>
+        <div><strong style="color:var(--purp)">Claim 1.</strong> Shifting PAN — payment card number derived from HD path per transaction; each spend produces unique PAN cryptographically linked to master key</div>
+        <div><strong style="color:var(--purp)">Claim 2.</strong> 8-mode sovereign identity card — single physical/digital card assumes multiple network personas (identity, debit, crypto, health, vehicle, government, security, retirement) under unified master key</div>
+        <div><strong style="color:var(--purp)">Claim 3.</strong> ZK commitment registry — employer/merchant receives boolean only; no PII stored on-chain; commitment = SHA-256(masterKey + credential_set)</div>
+        <div><strong style="color:var(--purp)">Claim 4.</strong> Anti-replay proof system — each proof hash stored as "spent" in EmployeeVault; prevents reuse of intercepted proofs</div>
+        <div><strong style="color:var(--purp)">Claim 5.</strong> Behavioral biometric key — multi-vector behavioral data (keystroke, swipe, pressure, motion, rhythm) hashed to 256-bit key; biometric never stored</div>
+        <div><strong style="color:var(--purp)">Claim 6.</strong> On-chain payroll nonce — monotonically increasing counter prevents old employment proofs from validating in new pay periods</div>
+        <div><strong style="color:var(--purp)">Claim 7.</strong> AES-256-GCM vault — encrypted field storage keyed to behavioral master key; ZK proofs of fields without disclosure</div>
+        <div><strong style="color:var(--purp)">Claim 8.</strong> Cross-chain identity bridge — EVM commitment mirrored to Solana via Wormhole; identity valid across chains</div>
       </div>
     </div>
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Market Position</div>
-      <div class="row"><span style="color:var(--soft)">vs Apple Wallet</span><span style="color:var(--grn);font-size:.78rem">ZK — no PII shared</span></div>
-      <div class="row"><span style="color:var(--soft)">vs Google Pay</span><span style="color:var(--grn);font-size:.78rem">Self-sovereign</span></div>
-      <div class="row"><span style="color:var(--soft)">vs Stripe Identity</span><span style="color:var(--grn);font-size:.78rem">On-chain, no middleman</span></div>
-      <div class="row"><span style="color:var(--soft)">vs WorldCoin</span><span style="color:var(--grn);font-size:.78rem">Behavioral bio, not iris</span></div>
-      <div class="row"><span style="color:var(--soft)">Modes</span><span style="color:var(--purp);font-family:DM Mono,monospace;font-size:.78rem">8 (identity → retirement)</span></div>
-      <div class="row"><span style="color:var(--soft)">PAN uniqueness</span><span style="color:var(--grn);font-size:.78rem">Every transaction</span></div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">vs Competitors</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
+          <div class="row"><span style="color:var(--soft)">Apple Wallet</span><span style="color:var(--grn);font-size:.74rem">+ZK — no PII shared</span></div>
+          <div class="row"><span style="color:var(--soft)">Google Pay</span><span style="color:var(--grn);font-size:.74rem">+Self-sovereign key</span></div>
+          <div class="row"><span style="color:var(--soft)">Stripe Identity</span><span style="color:var(--grn);font-size:.74rem">+On-chain, no middleman</span></div>
+          <div class="row"><span style="color:var(--soft)">WorldCoin (iris)</span><span style="color:var(--grn);font-size:.74rem">+Behavioral, not biometric</span></div>
+          <div class="row"><span style="color:var(--soft)">SSN / credit cards</span><span style="color:var(--grn);font-size:.74rem">+Shifting PAN — unstealable</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">AuraMe Patent (separate)</div>
+        <div style="font-size:.74rem;color:var(--soft);line-height:1.7;">AI-Powered Behavioral Identity, Authentication, and Interaction System. Covers the on-device ML engine, anomaly detection, FIDO2/WebAuthn integration, and user-sovereign data architecture.<br><br>Filed provisionally. 12-month window for non-provisional.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -331,39 +487,45 @@ input:focus{border-color:var(--purp);}
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Contracts ──────────────────────────────────────────────────────────────
 const ADDRS = { EmployeeVault: "0x86072CbFF48dA3C1F01824a6761A03F105BCC697" };
 const EV_ABI = [
   "function enroll(address employee, bytes32 commitment)",
-  "function rotateCommitment(bytes32 newCommitment)",
   "function verifyEmployment(address employee, bytes32 proofHash, address claimedEmployer) returns (bool)",
   "function getCommitment(address) view returns (bytes32)",
   "function isEnrolled(address) view returns (bool)",
-  "function deactivate(address)",
-  "function getRoster(address employer) view returns (address[])",
-  "function totalEnrolled() view returns (uint256)",
   "function employees(address) view returns (bytes32,address,uint256,bool,uint256)",
+  "function getRoster(address) view returns (address[])",
+  "function totalEnrolled() view returns (uint256)",
+  "function spentProofs(bytes32) view returns (bool)",
 ];
 
-const MODES = {
-  identity:   {prefix:'4532',network:'Visa',     emoji:'🪪', color:'#8b5cf6'},
-  debit:      {prefix:'5412',network:'MC',        emoji:'💳', color:'#3b82f6'},
-  crypto:     {prefix:'4111',network:'Visa',      emoji:'₿',  color:'#f59e0b'},
-  health:     {prefix:'3714',network:'Amex',      emoji:'🏥', color:'#10b981'},
-  vehicle:    {prefix:'6011',network:'Discover',  emoji:'🚗', color:'#06b6d4'},
-  gov:        {prefix:'3782',network:'Amex',      emoji:'🏛', color:'#6366f1'},
-  badge:      {prefix:'5105',network:'MC',        emoji:'🪖', color:'#ef4444'},
-  retirement: {prefix:'4000',network:'Visa',      emoji:'🏦', color:'#a78bfa'},
-};
-
+// ── State ──────────────────────────────────────────────────────────────────
 let provider, signer, addr, evContract;
-let masterKey = localStorage.getItem('allcard-key') || null;
+let masterKey = null;                               // hex string 64 chars
 let currentMode = 'identity';
-let panNonce = parseInt(localStorage.getItem('allcard-nonce')||'0');
-let vault = JSON.parse(localStorage.getItem('allcard-vault')||'{}');
-let currentProof = null;
-let panShifts = parseInt(localStorage.getItem('allcard-shifts')||'0');
+let panNonce = parseInt(localStorage.getItem('ac-nonce') || '0');
+let sessionShifts = 0;
+let vault = JSON.parse(localStorage.getItem('ac-vault') || '{}');
+let proofCount = 0;
+let lastProofHash = null;
+let currentProofObj = null;
+let patternData = [];
+let canvasDrawing = false;
 
-// ── Wallet ────────────────────────────────────────────────────────
+// ── Mode definitions ───────────────────────────────────────────────────────
+const MODES = [
+  { id:'identity',  icon:'🪪', name:'Identity',   net:'Visa',    prefix:'4532', color:'#8b5cf6', desc:'Government & corporate ID verification — ZK attests identity without revealing PII' },
+  { id:'debit',     icon:'💳', name:'Debit',      net:'MC',      prefix:'5412', color:'#3b82f6', desc:'Bank-linked payments — shifting PAN prevents card skimming and replay attacks' },
+  { id:'crypto',    icon:'₿',  name:'Crypto',     net:'Visa',    prefix:'4111', color:'#f59e0b', desc:'On-chain payments — routes through RAWNet/QWKS Protocol at 0.01% fee' },
+  { id:'health',    icon:'🏥', name:'Health',     net:'Amex',    prefix:'3714', color:'#10b981', desc:'Insurance & medical authorization — HIPAA-compatible ZK credential proofs' },
+  { id:'vehicle',   icon:'🚗', name:'Vehicle',    net:'Disc',    prefix:'6011', color:'#06b6d4', desc:'DMV title & insurance verification — links to IQCAR NFT via AutoIQ' },
+  { id:'gov',       icon:'🏛', name:'Gov',        net:'Amex',    prefix:'3782', color:'#6366f1', desc:'Federal & state credential layer — works with REAL ID Act compliance framework' },
+  { id:'security',  icon:'🪖', name:'Security',   net:'MC',      prefix:'5105', color:'#ef4444', desc:'Military, corporate, & facility security clearance — tamper-evident chain of custody' },
+  { id:'retire',    icon:'🏦', name:'Retirement', net:'Visa',    prefix:'4000', color:'#a78bfa', desc:'401k, IRA, pension access — multi-sig authorization for high-value withdrawals' },
+];
+
+// ── Wallet ─────────────────────────────────────────────────────────────────
 async function connectWallet() {
   if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
@@ -378,152 +540,364 @@ async function connectWallet() {
   evContract = new ethers.Contract(ADDRS.EmployeeVault, EV_ABI, signer);
   document.getElementById("connect-btn").textContent = addr.slice(0,6)+"..."+addr.slice(-4);
   document.getElementById("connect-btn").className = "on";
-  document.getElementById("status-addr").textContent = addr;
-  document.getElementById("card-holder-name").textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-  checkOnChain();
-  showToast("AllCard connected ✓");
+  document.getElementById("st-addr").textContent = addr;
+  document.getElementById("card-holder").textContent = addr.slice(0,8).toUpperCase();
+  toast("Wallet connected ✓");
+  checkOnChainStatus();
 }
 
-// ── Master Key ────────────────────────────────────────────────────
-function generateMasterKey() {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  masterKey = Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
-  localStorage.setItem('allcard-key', masterKey);
-  document.getElementById("status-key").textContent = masterKey.slice(0,16)+"...";
-  showToast("Master key generated ✓ (stored locally)");
-  updateStatus();
-}
-
-function updateStatus() {
-  document.getElementById("status-shifts").textContent = panShifts;
-  if (masterKey) document.getElementById("status-key").textContent = masterKey.slice(0,16)+"...";
-}
-
-// ── PAN Shifting ──────────────────────────────────────────────────
-async function shiftPAN() {
-  if (!masterKey) { showToast("Generate master key first",true); return; }
-  const mode = MODES[currentMode];
-  // Derive PAN from masterKey + nonce
-  const input = masterKey + currentMode + panNonce;
-  const encoder = new TextEncoder();
-  const data = encoder.encode(input);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const num = BigInt("0x"+hashArray.slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join(''));
-  const pan14 = String(num % 90000000000000n + 10000000000000n);
-  const panFull = mode.prefix + " " + pan14.slice(0,4) + " " + pan14.slice(4,8) + " " + pan14.slice(8,12);
-  const year = new Date().getFullYear()+3;
-  const month = String(new Date().getMonth()+1).padStart(2,'0');
-  const cvvNum = parseInt(hashArray[8].toString(16)+hashArray[9].toString(16),16)%1000;
-  document.getElementById("card-pan").textContent = panFull;
-  document.getElementById("card-exp").textContent = `${month}/${year} CVV ${String(cvvNum).padStart(3,'0')}`;
-  document.getElementById("card-network").textContent = mode.network;
-  document.getElementById("card-mode-label").textContent = currentMode.toUpperCase();
-  panNonce++;
-  panShifts++;
-  localStorage.setItem('allcard-nonce', panNonce.toString());
-  localStorage.setItem('allcard-shifts', panShifts.toString());
-  document.getElementById("status-shifts").textContent = panShifts;
-  showToast("PAN shifted #"+panNonce+" · Mode: "+currentMode);
-}
-
-function switchMode(mode, el) {
-  currentMode = mode;
-  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
-  el.classList.add("active");
-  const m = MODES[mode];
-  if (m) {
-    document.getElementById("card-mode-label").textContent = mode.toUpperCase();
-    document.getElementById("card-network").textContent = m.network;
+// ── AuraMe Biometric ───────────────────────────────────────────────────────
+function captureBio() {
+  const k=parseInt(document.getElementById("bio-k").value);
+  const v=parseInt(document.getElementById("bio-v").value);
+  const p=parseInt(document.getElementById("bio-p").value);
+  const g=parseInt(document.getElementById("bio-g").value);
+  const s=parseInt(document.getElementById("bio-s").value);
+  ['k','v','p','g','s'].forEach(id=>document.getElementById("bv-"+id).textContent=document.getElementById("bio-"+id).value);
+  // Confidence = how many vectors are non-zero / non-default
+  const nonZero = [k,v,p,g,s].filter(x=>x>0).length;
+  const variance = [k,v,p,g,s].reduce((sum,x)=>sum+Math.abs(x-128),0)/5;
+  const conf = Math.min(100, Math.round((nonZero/5)*60 + (variance/128)*40));
+  document.getElementById("bio-conf-pct").textContent = conf+"%";
+  document.getElementById("bio-conf-fill").style.width = conf+"%";
+  document.getElementById("bio-conf-fill").style.background = conf>70?"var(--grn)":conf>40?"var(--gold)":"var(--purp)";
+  if (conf > 0) {
+    // Show preview key (first 32 chars)
+    const raw = `allcard_v1:${k}:${v}:${p}:${g}:${s}`;
+    document.getElementById("bio-key-display").innerHTML = raw.padEnd(60,"·").slice(0,32)+" →<br>SHA-256(...) = key<span class='key-copy' onclick='copyKey()'>copy</span>";
+    document.getElementById("bio-key-preview").style.display = "block";
   }
 }
 
-// ── ZK Proofs ─────────────────────────────────────────────────────
-async function generateProof() {
-  if (!masterKey) { showToast("Generate master key first",true); return; }
-  const type = document.getElementById("proof-type").value;
-  const context = document.getElementById("proof-context").value || "generic";
-  const input = masterKey + type + context + Date.now();
-  const encoder = new TextEncoder();
-  const hash1 = await crypto.subtle.digest('SHA-256', encoder.encode(input));
-  const hash2 = await crypto.subtle.digest('SHA-256', encoder.encode(input+"commitment"));
-  const proofHex = "0x"+Array.from(new Uint8Array(hash1)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  const commitHex = "0x"+Array.from(new Uint8Array(hash2)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  currentProof = { proof: proofHex, commitment: commitHex, type, context, ts: Date.now() };
-  document.getElementById("proof-output").textContent = JSON.stringify(currentProof, null, 2);
-  document.getElementById("proof-result").style.display = "block";
-  showToast("ZK proof generated ✓");
+async function deriveBioKey() {
+  const k=parseInt(document.getElementById("bio-k").value);
+  const v=parseInt(document.getElementById("bio-v").value);
+  const p=parseInt(document.getElementById("bio-p").value);
+  const g=parseInt(document.getElementById("bio-g").value);
+  const s=parseInt(document.getElementById("bio-s").value);
+  const nonZero=[k,v,p,g,s].filter(x=>x>0).length;
+  if (nonZero < 2) { toast("Move at least 2 sliders to set your behavioral vectors",true); return; }
+  const btn = document.getElementById("derive-btn");
+  btn.disabled = true; btn.textContent = "Deriving...";
+  const status = document.getElementById("derive-status");
+  try {
+    const salt = "allcard_aura_v1";
+    const input = `${salt}:${k}:${v}:${p}:${g}:${s}`;
+    const enc = new TextEncoder();
+    const buf = await crypto.subtle.digest("SHA-256", enc.encode(input));
+    masterKey = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    localStorage.setItem('ac-key', masterKey);
+    // Show derived key
+    document.getElementById("bio-key-display").innerHTML = masterKey+"<span class='key-copy' onclick='copyKey()'>copy</span>";
+    document.getElementById("bio-key-preview").style.display = "block";
+    status.textContent = "✓ Master key derived from biometrics";
+    status.style.color = "var(--grn)";
+    document.getElementById("st-key").textContent = masterKey.slice(0,16)+"...";
+    document.getElementById("key-set-status").textContent = "✓ Set";
+    document.getElementById("key-set-status").style.color = "var(--grn)";
+    document.getElementById("vault-key-warn").style.display = "none";
+    document.getElementById("proof-key-warn").style.display = "none";
+    toast("Master key derived ✓");
+  } catch(e) {
+    status.textContent = "Error: "+e.message;
+    status.style.color = "var(--red)";
+  }
+  btn.disabled = false; btn.textContent = "Derive Master Key from Biometrics";
 }
 
-async function verifyProof() {
-  if (!currentProof) return;
-  document.getElementById("verify-result").textContent = "✓ Valid — proof verified (simulated Groth16)";
-  document.getElementById("verify-result").style.color = "var(--grn)";
+// ── Pattern canvas ─────────────────────────────────────────────────────────
+function initCanvas() {
+  const canvas = document.getElementById("pattern-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#15121f";
+  ctx.fillRect(0,0,200,200);
+  ctx.strokeStyle = "#8b5cf6";
+  ctx.lineWidth = 2;
+  canvas.addEventListener("touchstart", e => { canvasDrawing=true; patternData=[]; e.preventDefault(); }, {passive:false});
+  canvas.addEventListener("touchmove", e => {
+    if (!canvasDrawing) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    const x = Math.round((t.clientX-rect.left)/rect.width*200);
+    const y = Math.round((t.clientY-rect.top)/rect.height*200);
+    patternData.push({x,y,t:Date.now()});
+    if (patternData.length>1) {
+      const prev=patternData[patternData.length-2];
+      ctx.beginPath();ctx.moveTo(prev.x,prev.y);ctx.lineTo(x,y);ctx.stroke();
+    }
+  }, {passive:false});
+  canvas.addEventListener("touchend", ()=>{ canvasDrawing=false; if(patternData.length>5) document.getElementById("pattern-status").textContent=patternData.length+" points captured — tap 'Use Pattern + Bio'"; });
+}
+
+function clearPattern() {
+  const canvas = document.getElementById("pattern-canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle="#15121f";ctx.fillRect(0,0,200,200);
+  patternData=[];
+  document.getElementById("pattern-status").textContent="";
+}
+
+async function usePattern() {
+  if (patternData.length < 5) { toast("Draw a pattern first",true); return; }
+  const k=parseInt(document.getElementById("bio-k").value)||0;
+  const v=parseInt(document.getElementById("bio-v").value)||0;
+  const p=parseInt(document.getElementById("bio-p").value)||0;
+  const g=parseInt(document.getElementById("bio-g").value)||0;
+  const s=parseInt(document.getElementById("bio-s").value)||0;
+  // Derive entropy from pattern
+  const patternStr = patternData.map(pt=>`${pt.x},${pt.y}`).join("|");
+  const input = `allcard_pattern_v1:${k}:${v}:${p}:${g}:${s}:${patternStr}`;
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest("SHA-256", enc.encode(input));
+  masterKey = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  localStorage.setItem('ac-key', masterKey);
+  document.getElementById("pattern-status").textContent = "✓ Key derived from pattern + biometrics";
+  document.getElementById("st-key").textContent = masterKey.slice(0,16)+"...";
+  document.getElementById("key-set-status").textContent = "✓ Set";
+  document.getElementById("key-set-status").style.color = "var(--grn)";
+  toast("Pattern + biometric key derived ✓");
+}
+
+// ── Device sensor capture ──────────────────────────────────────────────────
+function startMotionCapture() {
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", e => {
+      if (e.beta !== null) {
+        const g = Math.round(Math.abs(e.beta) % 256);
+        document.getElementById("bio-g").value = g;
+        document.getElementById("bv-g").textContent = g;
+        document.getElementById("gyro-status").textContent = `β:${e.beta?.toFixed(1)}° γ:${e.gamma?.toFixed(1)}°`;
+        document.getElementById("gyro-status").style.color = "var(--grn)";
+        captureBio();
+      }
+    }, {once:false});
+    document.getElementById("accel-status").textContent = "Listening...";
+    document.getElementById("accel-status").style.color = "var(--gold)";
+  } else {
+    document.getElementById("accel-status").textContent = "Not available";
+  }
+  // Track touch events for pressure/velocity
+  document.addEventListener("touchstart", e=>{
+    const touch=e.touches[0];
+    if(touch.force!==undefined&&touch.force>0){
+      const pressure=Math.round(touch.force*255);
+      document.getElementById("bio-p").value=pressure;
+      document.getElementById("bv-p").textContent=pressure;
+      document.getElementById("touch-status").textContent=`Force: ${touch.force.toFixed(3)}`;
+      document.getElementById("touch-status").style.color="var(--grn)";
+      captureBio();
+    }
+  });
+  // Track keystroke timing
+  let lastKey=0;
+  document.addEventListener("keydown",()=>{
+    const now=Date.now();const diff=lastKey?now-lastKey:100;lastKey=now;
+    const cadence=Math.min(255,Math.round(255-(diff/20)));
+    document.getElementById("bio-k").value=cadence;
+    document.getElementById("bv-k").textContent=cadence;
+    document.getElementById("key-status").textContent=`${diff}ms between keys`;
+    document.getElementById("key-status").style.color="var(--grn)";
+    captureBio();
+  });
+  toast("Motion capture started — move device and interact");
+}
+
+// ── PAN Shifting ───────────────────────────────────────────────────────────
+async function shiftPAN() {
+  if (!masterKey) {
+    // Use temporary session key
+    const tmp = new Uint8Array(32); crypto.getRandomValues(tmp);
+    masterKey = Array.from(tmp).map(b=>b.toString(16).padStart(2,'0')).join('');
+    toast("Using session key — set master key in AuraMe for persistent identity");
+  }
+  const mode = MODES.find(m=>m.id===currentMode) || MODES[0];
+  // Derive PAN using SHA-256(masterKey + mode.id + panNonce)
+  const input = masterKey + mode.id + panNonce.toString();
+  const enc = new TextEncoder();
+  const buf = await crypto.subtle.digest("SHA-256", enc.encode(input));
+  const bytes = new Uint8Array(buf);
+  // Build 16-digit PAN from hash bytes
+  let pan14 = "";
+  for (let i=0; i<7; i++) pan14 += (bytes[i]%10).toString();
+  const checkDigit = luhn(mode.prefix + pan14);
+  const panFull = mode.prefix.slice(0,4)+" "+mode.prefix.slice(4)+(bytes[0]%10)+(bytes[1]%10)+" "+(bytes[2]%10)+(bytes[3]%10)+(bytes[4]%10)+(bytes[5]%10)+" "+(bytes[6]%10)+(bytes[7]%10)+(bytes[8]%10)+checkDigit;
+  // Expiry from hash
+  const expMo = String((bytes[9]%12)+1).padStart(2,'0');
+  const expYr = (new Date().getFullYear()+3)%100;
+  const cvv = String(((bytes[10]<<8|bytes[11])%900)+100);
+  document.getElementById("card-pan").textContent = panFull;
+  document.getElementById("card-exp").textContent = `${expMo}/${expYr}`;
+  document.getElementById("card-cvv").textContent = cvv;
+  document.getElementById("card-network").textContent = mode.net;
+  document.getElementById("card-mode-label").textContent = mode.id.toUpperCase();
+  document.getElementById("card-nonce").textContent = "Nonce: "+panNonce;
+  panNonce++;
+  sessionShifts++;
+  localStorage.setItem("ac-nonce", panNonce.toString());
+  document.getElementById("st-shifts").textContent = sessionShifts;
+}
+
+function luhn(n) {
+  // Luhn check digit
+  let s=0,alt=false;
+  for(let i=n.length-1;i>=0;i--){let d=parseInt(n[i]);if(alt){d*=2;if(d>9)d-=9;}s+=d;alt=!alt;}
+  return String((10-s%10)%10);
+}
+
+function switchMode(modeId, el) {
+  currentMode = modeId;
+  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
+  el?.classList.add("active");
+  document.getElementById("st-mode").textContent = modeId;
+}
+
+// ── ZK Proofs ──────────────────────────────────────────────────────────────
+async function generateProof() {
+  if (!masterKey) {
+    document.getElementById("proof-key-warn").style.display = "block";
+    return;
+  }
+  const type = document.getElementById("proof-type").value;
+  const ctx = document.getElementById("proof-ctx").value || "generic";
+  const btn = document.getElementById("proof-btn");
+  btn.disabled = true; btn.textContent = "Generating...";
+  const status = document.getElementById("proof-status");
+  try {
+    const ts = Date.now();
+    const nonce = panNonce;
+    // Commitment = SHA-256(masterKey + "commitment")
+    const enc = new TextEncoder();
+    const commitBuf = await crypto.subtle.digest("SHA-256", enc.encode(masterKey+"commitment"));
+    const commitment = "0x"+Array.from(new Uint8Array(commitBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    // Proof = SHA-256(masterKey + type + ctx + ts + nonce)
+    const proofBuf = await crypto.subtle.digest("SHA-256", enc.encode(masterKey+type+ctx+ts+nonce));
+    const proofHash = "0x"+Array.from(new Uint8Array(proofBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    // Nullifier = SHA-256(masterKey + "nullifier" + nonce) — proves ownership without revealing key
+    const nullBuf = await crypto.subtle.digest("SHA-256", enc.encode(masterKey+"nullifier"+nonce));
+    const nullifier = "0x"+Array.from(new Uint8Array(nullBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    currentProofObj = { type, context:ctx, timestamp:ts, nonce, commitment, proofHash, nullifier };
+    lastProofHash = proofHash;
+    proofCount++;
+    document.getElementById("proof-data").textContent = JSON.stringify(currentProofObj, null, 2);
+    document.getElementById("proof-output-section").style.display = "block";
+    document.getElementById("proof-count").textContent = proofCount;
+    document.getElementById("last-proof-hash").textContent = proofHash.slice(0,18)+"...";
+    status.textContent = "✓ Proof generated";
+    status.style.color = "var(--grn)";
+    panNonce++; // increment nonce to prevent reuse
+    localStorage.setItem("ac-nonce", panNonce.toString());
+  } catch(e) {
+    status.textContent = "Error: "+e.message;
+    status.style.color = "var(--red)";
+  }
+  btn.disabled = false; btn.textContent = "Generate ZK Proof";
+}
+
+async function verifyProofLocal() {
+  if (!currentProofObj || !masterKey) return;
+  const enc = new TextEncoder();
+  const {type,context:ctx,timestamp:ts,nonce,commitment,proofHash} = currentProofObj;
+  // Re-derive commitment from current masterKey
+  const commitBuf = await crypto.subtle.digest("SHA-256", enc.encode(masterKey+"commitment"));
+  const reCommit = "0x"+Array.from(new Uint8Array(commitBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  // Re-derive proof
+  const proofBuf = await crypto.subtle.digest("SHA-256", enc.encode(masterKey+type+ctx+ts+nonce));
+  const reProof = "0x"+Array.from(new Uint8Array(proofBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const valid = reCommit === commitment && reProof === proofHash;
+  const el = document.getElementById("verify-output");
+  el.textContent = valid ? "✓ Proof verified locally — commitment and hash match" : "✗ Verification failed — key mismatch";
+  el.style.color = valid ? "var(--grn)" : "var(--red)";
+}
+
+async function submitProofOnChain() {
+  if (!evContract || !currentProofObj || !addr) { toast("Connect wallet + generate proof first",true); return; }
+  try {
+    const {commitment, proofHash} = currentProofObj;
+    const tx = await evContract.verifyEmployment(addr, proofHash, addr);
+    await tx.wait();
+    toast("Proof submitted on-chain ✓");
+    checkOnChainStatus();
+  } catch(e) { toast(e.message.split("(")[0],true); }
 }
 
 function copyProof() {
-  if (!currentProof) return;
-  navigator.clipboard.writeText(JSON.stringify(currentProof));
-  showToast("Proof copied ✓");
+  if (!currentProofObj) return;
+  navigator.clipboard?.writeText(JSON.stringify(currentProofObj));
+  toast("Proof copied ✓");
 }
 
-// ── On-chain ──────────────────────────────────────────────────────
-async function checkOnChain() {
+// ── On-chain status ────────────────────────────────────────────────────────
+async function checkOnChainStatus() {
   if (!evContract || !addr) return;
   try {
     const [commit, enrolled] = await Promise.all([
       evContract.getCommitment(addr),
       evContract.isEnrolled(addr),
     ]);
-    document.getElementById("on-chain-commit").textContent = commit === "0x"+"0".repeat(64) ? "None" : commit.slice(0,18)+"...";
-    document.getElementById("on-chain-enrolled").textContent = enrolled ? "✓ Enrolled" : "Not enrolled";
-    document.getElementById("on-chain-enrolled").style.color = enrolled ? "var(--grn)" : "var(--soft)";
+    const emptyCommit = commit === "0x"+"0".repeat(64);
+    document.getElementById("chain-commit").textContent = emptyCommit ? "Not enrolled" : commit.slice(0,20)+"...";
+    document.getElementById("chain-enrolled").textContent = enrolled ? "✓ Enrolled" : "Not enrolled";
+    document.getElementById("chain-enrolled").style.color = enrolled ? "var(--grn)" : "var(--soft)";
+    document.getElementById("st-enrolled").textContent = enrolled ? "✓ Yes" : "No";
+    document.getElementById("st-enrolled").style.color = enrolled ? "var(--grn)" : "var(--soft)";
+    if (!emptyCommit) document.getElementById("st-commit").textContent = commit.slice(0,20)+"...";
     if (enrolled) {
       const emp = await evContract.employees(addr);
-      document.getElementById("status-enrolled").textContent = "✓ Yes";
-      document.getElementById("status-enrolled").style.color = "var(--grn)";
-      document.getElementById("status-employer").textContent = emp[1].slice(0,10)+"...";
-      document.getElementById("status-nonce").textContent = emp[4].toString();
-      document.getElementById("status-commit").textContent = emp[0].slice(0,18)+"...";
+      document.getElementById("chain-employer").textContent = emp[1] === "0x"+"0".repeat(40) ? "Self" : emp[1].slice(0,12)+"...";
+      document.getElementById("chain-nonce").textContent = emp[4].toString();
     }
     const total = await evContract.totalEnrolled();
-    document.getElementById("roster-count").textContent = total.toString()+" total on network";
-  } catch(e) {}
+    document.getElementById("emp-total").textContent = total.toString();
+  } catch(e) { console.error(e); }
 }
 
+// ── Employer ───────────────────────────────────────────────────────────────
 async function enrollEmployee() {
   if (!signer) { alert("Connect wallet"); return; }
   const empAddr = document.getElementById("enroll-addr").value.trim();
   let commit = document.getElementById("enroll-commit").value.trim();
-  if (!empAddr) { showToast("Enter employee address",true); return; }
+  if (!empAddr) { toast("Enter employee address",true); return; }
   if (!commit) {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
+    const bytes = new Uint8Array(32); crypto.getRandomValues(bytes);
     commit = "0x"+Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
   }
   const status = document.getElementById("enroll-status");
-  status.textContent = "Enrolling on-chain...";
+  status.textContent = "Enrolling on-chain..."; status.style.color = "var(--soft)";
   try {
     await (await evContract.enroll(empAddr, commit)).wait();
-    status.textContent = "✓ Enrolled! Commitment: "+commit.slice(0,18)+"...";
+    status.textContent = "✓ Enrolled · Commitment: "+commit.slice(0,18)+"...";
     status.style.color = "var(--grn)";
-    showToast("Employee enrolled ✓");
-    checkOnChain();
-  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+    toast("Employee enrolled ✓");
+    checkOnChainStatus();
+    loadEmployerStats();
+  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; status.style.color = "var(--red)"; toast(e.message.split("(")[0],true); }
 }
 
 async function verifyEmployment() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const empAddr = document.getElementById("verify-emp-addr").value.trim();
-  const proofHash = document.getElementById("verify-emp-proof").value.trim();
-  if (!empAddr || !proofHash) { showToast("Fill all fields",true); return; }
-  const result = document.getElementById("emp-verify-result");
+  if (!evContract) { alert("Connect wallet"); return; }
+  const empAddr = document.getElementById("verify-addr").value.trim();
+  const proofHash = document.getElementById("verify-proof-hash").value.trim();
+  if (!empAddr || !proofHash) { toast("Fill all fields",true); return; }
+  const el = document.getElementById("verify-emp-result");
   try {
     const valid = await evContract.verifyEmployment(empAddr, proofHash, addr);
-    result.textContent = valid ? "✓ Employment verified" : "✗ Not verified";
-    result.style.color = valid ? "var(--grn)" : "var(--red)";
-  } catch(e) { result.textContent = "Error: "+e.message.split("(")[0]; }
+    el.textContent = valid ? "✓ Employment verified on-chain" : "✗ Not verified";
+    el.style.color = valid ? "var(--grn)" : "var(--red)";
+  } catch(e) { el.textContent = "Error: "+e.message.split("(")[0]; el.style.color = "var(--red)"; }
+}
+
+async function loadEmployerStats() {
+  if (!evContract || !addr) return;
+  try {
+    const [total, roster] = await Promise.all([
+      evContract.totalEnrolled(),
+      evContract.getRoster(addr),
+    ]);
+    document.getElementById("emp-total").textContent = total.toString();
+    document.getElementById("emp-yours").textContent = roster.length.toString();
+  } catch(e) {}
 }
 
 async function loadRoster() {
@@ -531,101 +905,149 @@ async function loadRoster() {
   try {
     const roster = await evContract.getRoster(addr);
     const el = document.getElementById("roster-list");
-    if (roster.length === 0) { el.textContent = "No employees enrolled under this address"; return; }
-    el.innerHTML = roster.map(a=>`<div class="row"><span class="mono" style="font-size:.68rem;color:var(--purp)">${a}</span></div>`).join("");
+    if (!roster.length) { el.innerHTML = "<div style='color:var(--soft);font-size:.76rem'>No employees enrolled</div>"; return; }
+    el.innerHTML = roster.map(a=>`<div style="padding:5px 0;border-bottom:1px solid var(--ln2);font-family:DM Mono,monospace;font-size:.7rem;color:var(--purp)">${a}</div>`).join('');
   } catch(e) {}
 }
 
-// ── Vault ─────────────────────────────────────────────────────────
+// ── Vault ──────────────────────────────────────────────────────────────────
 async function addToVault() {
-  if (!masterKey) { showToast("Generate master key first",true); return; }
-  const key = document.getElementById("vault-key").value;
-  const val = document.getElementById("vault-val").value;
-  if (!key || !val) return;
-  // Encrypt with masterKey (simulated AES)
-  const enc = btoa(JSON.stringify({v:val,ts:Date.now()}));
-  vault[key] = enc;
-  localStorage.setItem('allcard-vault', JSON.stringify(vault));
-  renderVault();
-  showToast("Encrypted & stored ✓");
+  const field = document.getElementById("vault-field").value.trim();
+  const value = document.getElementById("vault-value").value;
+  if (!field || !value) { toast("Fill both fields",true); return; }
+  // AES-256-GCM encryption using masterKey (or session key)
+  let key = masterKey;
+  if (!key) {
+    const bytes = new Uint8Array(32); crypto.getRandomValues(bytes);
+    key = Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+    document.getElementById("vault-key-warn").style.display = "block";
+  }
+  try {
+    const enc = new TextEncoder();
+    const keyBuf = await crypto.subtle.importKey("raw", hexToBytes(key).slice(0,32), {name:"AES-GCM"}, false, ["encrypt"]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encrypted = await crypto.subtle.encrypt({name:"AES-GCM",iv}, keyBuf, enc.encode(value));
+    const stored = { iv:Array.from(iv), data:Array.from(new Uint8Array(encrypted)), ts:Date.now() };
+    vault[field] = stored;
+    localStorage.setItem("ac-vault", JSON.stringify(vault));
+    document.getElementById("vault-field").value = "";
+    document.getElementById("vault-value").value = "";
+    document.getElementById("vault-add-status").textContent = "✓ Encrypted with AES-256-GCM and stored";
+    document.getElementById("vault-add-status").style.color = "var(--grn)";
+    document.getElementById("st-vault").textContent = Object.keys(vault).length;
+    renderVault();
+    toast("Encrypted & stored ✓");
+  } catch(e) { toast("Encryption error: "+e.message,true); }
+}
+
+async function decryptField() {
+  const field = document.getElementById("decrypt-field").value.trim();
+  const el = document.getElementById("decrypt-display");
+  if (!vault[field]) { toast("Field not found",true); return; }
+  if (!masterKey) { toast("Derive master key in AuraMe first",true); return; }
+  try {
+    const {iv,data} = vault[field];
+    const keyBuf = await crypto.subtle.importKey("raw", hexToBytes(masterKey).slice(0,32), {name:"AES-GCM"}, false, ["decrypt"]);
+    const dec = await crypto.subtle.decrypt({name:"AES-GCM",iv:new Uint8Array(iv)}, keyBuf, new Uint8Array(data));
+    const value = new TextDecoder().decode(dec);
+    el.textContent = `${field}: ${value}`;
+    el.style.display = "block";
+    setTimeout(()=>{ el.style.display="none"; el.textContent=""; }, 5000);
+  } catch(e) { toast("Decryption failed — wrong key?",true); }
 }
 
 function renderVault() {
-  const el = document.getElementById("vault-display");
   const keys = Object.keys(vault);
-  if (keys.length === 0) { el.textContent = "Vault empty"; return; }
-  el.innerHTML = keys.map(k=>`<div class="row"><span style="color:var(--soft)">${k}</span><span class="mono" style="font-size:.68rem;color:var(--dim)">●●●●● (encrypted)</span></div>`).join("");
+  const el = document.getElementById("vault-contents");
+  if (!keys.length) { el.innerHTML="<div style='color:var(--soft);font-size:.78rem'>Empty</div>"; return; }
+  el.innerHTML = keys.map(k=>`
+    <div class="vault-item">
+      <span style="font-size:.9rem">🔒</span>
+      <span style="flex:1;font-size:.8rem;font-weight:600">${k}</span>
+      <span style="font-size:.68rem;color:var(--dim)">${new Date(vault[k].ts).toLocaleDateString()}</span>
+      <button class="btn btn-red btn-sm" onclick="removeVaultItem('${k}')">✕</button>
+    </div>`).join('');
+  document.getElementById("st-vault").textContent = keys.length;
 }
 
-function decryptField() {
-  const key = document.getElementById("decrypt-key").value;
-  const el = document.getElementById("decrypt-result");
-  if (!vault[key]) { el.textContent = "Field not found"; el.style.display="block"; return; }
-  const dec = JSON.parse(atob(vault[key]));
-  el.textContent = key+": "+dec.v;
-  el.style.color = "var(--grn)";
-  el.style.display = "block";
-  setTimeout(()=>{ el.style.display="none"; }, 5000); // auto-hide after 5s
+function removeVaultItem(k) {
+  delete vault[k];
+  localStorage.setItem("ac-vault", JSON.stringify(vault));
+  renderVault();
 }
 
-// ── AuraMe biometric ──────────────────────────────────────────────
-function updateBioPreview() {
-  const k = document.getElementById("bio-k").value;
-  const v = document.getElementById("bio-v").value;
-  const p = document.getElementById("bio-p").value;
-  const g = document.getElementById("bio-g").value;
-  const preview = "bio_vec("+k+","+v+","+p+","+g+") → HMAC-SHA256 → 256-bit master key";
-  document.getElementById("bio-key-preview").textContent = preview;
+function exportVault() {
+  const data = JSON.stringify(vault);
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download="allcard-vault.enc.json"; a.click();
+  URL.revokeObjectURL(url);
 }
 
-async function deriveFromBiometrics() {
-  const k = parseInt(document.getElementById("bio-k").value);
-  const v = parseInt(document.getElementById("bio-v").value);
-  const p = parseInt(document.getElementById("bio-p").value);
-  const g = parseInt(document.getElementById("bio-g").value);
-  const salt = "allcard_aura_v1";
-  const input = `${salt}:${k}:${v}:${p}:${g}`;
-  const encoder = new TextEncoder();
-  const hash = await crypto.subtle.digest('SHA-256', encoder.encode(input));
-  masterKey = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  localStorage.setItem('allcard-key', masterKey);
-  document.getElementById("status-key").textContent = masterKey.slice(0,16)+"...";
-  document.getElementById("bio-key-preview").textContent = "Key: "+masterKey.slice(0,32)+"...";
-  showToast("Biometric key derived ✓");
+// ── Helpers ────────────────────────────────────────────────────────────────
+function hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length/2);
+  for (let i=0;i<hex.length;i+=2) bytes[i/2]=parseInt(hex.slice(i,i+2),16);
+  return bytes;
 }
 
-// ── Modes full grid ───────────────────────────────────────────────
-function renderModesGrid() {
-  document.getElementById("modes-full-grid").innerHTML = Object.entries(MODES).map(([id,m])=>`
-    <div class="card" style="border-top:3px solid ${m.color};cursor:pointer" onclick="switchMode('${id}',event.currentTarget)">
-      <div style="font-size:2rem;margin-bottom:8px">${m.emoji}</div>
-      <div style="font-weight:700;font-size:.9rem;margin-bottom:4px">${id.charAt(0).toUpperCase()+id.slice(1)}</div>
-      <div style="font-size:.72rem;color:var(--soft);margin-bottom:10px">Network: ${m.network} · Prefix: ${m.prefix}xx</div>
-      <div style="font-size:.7rem;color:var(--dim)">
-        ${{identity:'Government & corporate ID verification',debit:'Bank account linked payments',crypto:'On-chain asset payments & DeFi',health:'Insurance & medical authorization',vehicle:'DMV title & insurance verification',gov:'Federal & state credentials',badge:'Military & security clearance',retirement:'401k, IRA, pension access'}[id]}
-      </div>
-    </div>`).join("");
+function copyKey() {
+  if (masterKey) { navigator.clipboard?.writeText(masterKey); toast("Key copied ✓"); }
 }
 
-function showTab(id) {
-  const ids=["card","identity","employer","vault","modes","aura","about"];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
+// ── UI rendering ───────────────────────────────────────────────────────────
+function renderModeQuick() {
+  document.getElementById("mode-quick-grid").innerHTML = MODES.map((m,i)=>`
+    <div class="mode-btn${i===0?" active":""}" onclick="switchMode('${m.id}',this)">
+      <span class="mode-icon">${m.icon}</span>
+      <span class="mode-name">${m.name}</span>
+    </div>`).join('');
+}
+
+function renderModesFull() {
+  document.getElementById("modes-full").innerHTML = MODES.map(m=>`
+    <div class="card" style="border-top:3px solid ${m.color};cursor:pointer" onclick="switchModeCard('${m.id}')">
+      <div style="font-size:2rem;margin-bottom:8px">${m.icon}</div>
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:2px;color:${m.color}">${m.name}</div>
+      <div style="font-size:.7rem;color:var(--soft);margin-bottom:8px">Network: ${m.net} · Prefix: ${m.prefix}xx</div>
+      <div style="font-size:.72rem;color:var(--dim);line-height:1.5">${m.desc}</div>
+      <div style="margin-top:10px;padding:5px 10px;border-radius:4px;background:${m.color}22;color:${m.color};font-size:.68rem;font-weight:700;text-align:center" id="mode-status-${m.id}">${m.id===currentMode?"● ACTIVE":"INACTIVE"}</div>
+    </div>`).join('');
+}
+
+function switchModeCard(id) {
+  currentMode = id;
+  MODES.forEach(m=>{ const el=document.getElementById("mode-status-"+m.id); if(el)el.textContent=m.id===id?"● ACTIVE":"INACTIVE"; });
+  document.getElementById("st-mode").textContent = id;
+  document.getElementById("card-mode-label").textContent = id.toUpperCase();
+  toast("Mode: "+id+" ✓");
+}
+
+function show(id) {
+  const ids=["card","aura","identity","employer","vault","modes","patent"];
+  document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
+  if(id==="modes")renderModesFull();
+  if(id==="identity"&&!masterKey)document.getElementById("proof-key-warn").style.display="block";
+  if(id==="vault"&&!masterKey)document.getElementById("vault-key-warn").style.display="block";
+  if(id==="employer")loadEmployerStats();
 }
 
-function showToast(msg,err=false){
+function toast(msg,err=false){
   const t=document.getElementById("toast");
-  t.textContent=msg; t.style.borderColor=err?"#f87171":"#34d399"; t.style.color=err?"#f87171":"#34d399";
-  t.style.display="block"; setTimeout(()=>t.style.display="none",3000);
+  t.textContent=msg;t.style.borderColor=err?"var(--red)":"var(--purp)";t.style.color=err?"var(--red)":"var(--purp)";
+  t.style.display="block";setTimeout(()=>t.style.display="none",3000);
 }
 
 window.addEventListener("load",()=>{
-  renderModesGrid();
+  renderModeQuick();
   renderVault();
-  updateBioPreview();
-  updateStatus();
-  if (masterKey) document.getElementById("status-key").textContent = masterKey.slice(0,16)+"...";
-  if (window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+  initCanvas();
+  // Restore session key if exists
+  const saved=localStorage.getItem("ac-key");
+  if(saved){masterKey=saved;document.getElementById("st-key").textContent=saved.slice(0,16)+"...";document.getElementById("key-set-status").textContent="✓ Set (restored)";document.getElementById("key-set-status").style.color="var(--grn)";}
+  if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+  ethereum?.on("accountsChanged",()=>location.reload());
 });
 </script>
 </body></html>

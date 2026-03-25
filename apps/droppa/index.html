@@ -2,314 +2,494 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Droppa — Live Commerce Breaks</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Droppa™ — Seller Operating System</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#07040f;--s1:#0c0716;--s2:#11091d;--card:#160d22;
-  --line:rgba(139,92,246,.2);--ln2:rgba(139,92,246,.07);
+  --line:rgba(139,92,246,.2);--ln2:rgba(139,92,246,.07);--ln3:rgba(139,92,246,.04);
   --wh:#f0eaff;--soft:#7c6a9a;--dim:#3d2d5a;
   --purp:#8b5cf6;--pr2:rgba(139,92,246,.18);--pr3:rgba(139,92,246,.07);
-  --pink:#ec4899;--pk2:rgba(236,72,153,.12);
-  --grn:#34d399;--gn2:rgba(52,211,153,.12);
+  --pink:#ec4899;--pk2:rgba(236,72,153,.12);--pk3:rgba(236,72,153,.06);
+  --grn:#34d399;--gn2:rgba(52,211,153,.12);--gn3:rgba(52,211,153,.06);
   --gold:#fbbf24;--gd2:rgba(251,191,36,.1);
-  --red:#f87171;--bl:#60a5fa;
+  --red:#f87171;--rd2:rgba(248,113,113,.1);
+  --blue:#60a5fa;--cyan:#22d3ee;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;}
-/* ambient glow */
-body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%);width:600px;height:2px;background:linear-gradient(90deg,transparent,var(--purp),var(--pink),transparent);pointer-events:none;z-index:100;}
+body{background:var(--bg);color:var(--wh);font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;min-height:100vh;}
+body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%);width:800px;height:2px;background:linear-gradient(90deg,transparent,var(--purp),var(--pink),transparent);pointer-events:none;z-index:100;}
 
-.hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);backdrop-filter:blur(10px);}
-.hdr-brand{padding:12px 20px;border-right:1px solid var(--ln2);display:flex;align-items:center;gap:10px;min-width:160px;}
-.brand-emoji{font-size:1.4rem;}
-.brand-name{font-size:.98rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.brand-sub{font-size:.6rem;color:var(--soft);letter-spacing:.05em;}
-.hdr-nav{display:flex;flex:1;overflow-x:auto;}
-.nav-item{padding:12px 16px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
-.nav-item:hover{color:var(--purp);}
-.nav-item.active{color:var(--purp);border-bottom-color:var(--purp);}
-.hdr-right{display:flex;align-items:center;gap:10px;padding:0 16px;border-left:1px solid var(--ln2);}
-#connect-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
+/* Header */
+.hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);flex-wrap:nowrap;overflow-x:auto;}
+.hdr-brand{padding:12px 20px;border-right:1px solid var(--ln2);display:flex;align-items:center;gap:10px;min-width:200px;flex-shrink:0;}
+.brand-name{font-size:1rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-sub{font-size:.6rem;color:var(--soft);letter-spacing:.04em;}
+.hdr-nav{display:flex;overflow-x:auto;}
+.nav-item{padding:12px 15px;font-size:.76rem;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
+.nav-item:hover{color:var(--purp);}.nav-item.active{color:var(--purp);border-bottom-color:var(--purp);}
+.hdr-right{display:flex;align-items:center;gap:8px;padding:0 14px;border-left:1px solid var(--ln2);flex-shrink:0;}
+#connect-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
-.pane{display:none;padding:20px 24px 40px;}
+/* Layout */
+.pane{display:none;padding:20px 22px 40px;}
 .pane.active{display:block;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 
 /* KPI strip */
-.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ln2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:20px;}
-.kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:800;font-family:"JetBrains Mono",monospace;}
-.kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
-.purp{color:var(--purp);} .grn{color:var(--grn);} .gold{color:var(--gold);} .pink{color:var(--pink);} .red{color:var(--red);}
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ln2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:18px;}
+.kpi{background:var(--card);padding:13px 15px;}
+.kpi-val{font-size:1.25rem;font-weight:800;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
+.kpi-sub{font-size:.62rem;color:var(--soft);margin-top:2px;}
+.purp{color:var(--purp);}.grn{color:var(--grn);}.gold{color:var(--gold);}.pink{color:var(--pink);}.red{color:var(--red);}.blue{color:var(--blue);}
 
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;}
+.card-title{font-size:.8rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:"";width:3px;height:13px;background:linear-gradient(var(--purp),var(--pink));border-radius:2px;}
+.card-title.grn-t::before{background:var(--grn);}
+.card-title.gold-t::before{background:var(--gold);}
+.card-title.blue-t::before{background:var(--blue);}
+.card-title.pink-t::before{background:var(--pink);}
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;}
-.card-title{font-size:.82rem;font-weight:700;color:var(--purp);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.card-title::before{content:"";width:3px;height:14px;background:linear-gradient(var(--purp),var(--pink));border-radius:2px;}
-
-label{display:block;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:3px;}
-input,select{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:12px;}
-input:focus,select:focus{border-color:var(--purp);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.btn{padding:10px 20px;border-radius:20px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+/* Forms */
+label{display:block;font-size:.64rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:3px;}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:8px 11px;color:var(--wh);font-size:.83rem;font-family:inherit;outline:none;margin-bottom:10px;transition:.1s;}
+input:focus,select:focus,textarea:focus{border-color:var(--purp);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{padding:9px 18px;border-radius:20px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
 .btn-purp{background:linear-gradient(135deg,var(--purp),var(--pink));color:#fff;}
 .btn-purp:hover{opacity:.9;}
+.btn-grn{background:var(--grn);color:#000;}
 .btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}
 .btn-outline:hover{border-color:var(--purp);color:var(--purp);}
-.btn-sm{padding:6px 14px;font-size:.74rem;}
+.btn-sm{padding:5px 11px;font-size:.72rem;}
+.btn-red{background:var(--rd2);border:1px solid var(--red);color:var(--red);}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:left;padding:7px 9px;font-size:.62rem;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);border-bottom:1px solid var(--line);}
+.tbl td{padding:9px;border-bottom:1px solid var(--ln2);font-size:.79rem;vertical-align:middle;}
+.tbl tr:hover td{background:var(--pr3);}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.62rem;font-weight:700;}
+.b-open{background:var(--gn2);color:var(--grn);border:1px solid rgba(52,211,153,.25);}
+.b-full{background:var(--pr2);color:var(--purp);border:1px solid rgba(139,92,246,.3);}
+.b-done{background:var(--gd2);color:var(--gold);}
+.b-cancel{background:var(--rd2);color:var(--red);}
+.b-live{background:linear-gradient(135deg,var(--pr2),var(--pk2));color:var(--pink);animation:pulse-badge 2s infinite;}
+@keyframes pulse-badge{0%,100%{opacity:1}50%{opacity:.7}}
 
 /* Break card */
 .break-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:.15s;}
-.break-card:hover{border-color:var(--purp);box-shadow:0 4px 20px rgba(139,92,246,.15);}
-.break-header{padding:14px 16px;background:linear-gradient(135deg,var(--s2),var(--bg));border-bottom:1px solid var(--ln2);display:flex;align-items:center;gap:10px;}
-.break-title{font-size:.86rem;font-weight:700;flex:1;line-height:1.2;}
-.status-pill{padding:3px 10px;border-radius:20px;font-size:.64rem;font-weight:700;}
-.s-open{background:var(--gn2);color:var(--grn);border:1px solid rgba(52,211,153,.25);}
-.s-full{background:var(--pr2);color:var(--purp);border:1px solid rgba(139,92,246,.3);}
-.s-live{background:linear-gradient(135deg,var(--pr2),var(--pk2));color:var(--pink);}
-.s-complete{background:var(--gd2);color:var(--gold);}
-.s-cancelled{background:rgba(248,113,113,.1);color:var(--red);}
-.break-body{padding:14px 16px;}
-.slot-grid{display:grid;gap:3px;margin:10px 0;}
-.slot-cell{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.6rem;cursor:pointer;border:1px solid var(--ln2);background:var(--s2);transition:.1s;}
-.slot-cell.taken{background:var(--pr2);border-color:var(--purp);color:var(--purp);cursor:default;}
+.break-card:hover{border-color:rgba(139,92,246,.4);box-shadow:0 4px 20px rgba(139,92,246,.12);}
+.bc-header{padding:13px 15px;background:linear-gradient(135deg,var(--s2),var(--bg));border-bottom:1px solid var(--ln2);display:flex;align-items:flex-start;gap:8px;}
+.bc-title{font-size:.84rem;font-weight:700;flex:1;line-height:1.3;}
+.bc-body{padding:13px 15px;}
+.bc-meta{font-size:.7rem;color:var(--soft);margin-bottom:8px;}
+.slot-grid{display:grid;gap:2px;margin:8px 0;}
+.slot-cell{aspect-ratio:1;border-radius:3px;border:1px solid var(--ln2);background:var(--s2);font-size:.56rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.1s;color:transparent;}
+.slot-cell.taken{background:var(--pr2);border-color:var(--purp);color:var(--purp);}
 .slot-cell.mine{background:var(--gn2);border-color:var(--grn);color:var(--grn);}
-.slot-cell.winner{background:linear-gradient(135deg,var(--gd2),rgba(251,191,36,.05));border-color:var(--gold);color:var(--gold);animation:glow .8s infinite;}
-.slot-cell:hover:not(.taken):not(.mine){background:var(--pr3);border-color:rgba(139,92,246,.5);}
-@keyframes glow{0%,100%{box-shadow:0 0 6px rgba(251,191,36,.4)}50%{box-shadow:0 0 12px rgba(251,191,36,.8)}}
-.progress-bar{height:4px;background:var(--ln2);border-radius:2px;overflow:hidden;margin:8px 0;}
-.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purp),var(--pink));transition:width .5s;}
+.slot-cell:hover:not(.taken):not(.mine){border-color:var(--purp);background:var(--pr3);}
+.progress-wrap{height:3px;background:var(--ln2);border-radius:2px;overflow:hidden;margin:6px 0;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purp),var(--pink));transition:width .6s;}
 
-.results-grid{display:grid;gap:6px;}
-.result-slot{padding:8px 12px;border-radius:8px;display:flex;align-items:center;gap:10px;font-size:.78rem;}
-.vrf-display{background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px;font-family:"JetBrains Mono",monospace;font-size:.64rem;color:var(--purp);word-break:break-all;margin-top:8px;}
+/* Inventory item */
+.inv-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:6px;cursor:pointer;transition:.1s;}
+.inv-card:hover{border-color:var(--purp);}
+.inv-img{width:44px;height:44px;border-radius:8px;background:var(--pr3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.inv-name{font-size:.82rem;font-weight:600;margin-bottom:3px;}
+.inv-meta{font-size:.7rem;color:var(--soft);}
+.inv-price{font-family:"JetBrains Mono",monospace;font-size:.84rem;font-weight:700;color:var(--purp);margin-left:auto;}
 
-.table{width:100%;border-collapse:collapse;}
-.table th{text-align:left;padding:8px 10px;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);border-bottom:1px solid var(--line);}
-.table td{padding:10px;border-bottom:1px solid var(--ln2);font-size:.8rem;}
-.table tr:hover td{background:var(--pr3);}
+/* AI panel */
+.ai-msg{padding:12px;border-radius:10px;margin-bottom:8px;font-size:.79rem;line-height:1.6;}
+.ai-msg.ai{background:var(--pr3);border:1px solid var(--line);color:var(--wh);}
+.ai-msg.user{background:var(--gn3);border:1px solid rgba(52,211,153,.15);color:var(--grn);text-align:right;}
+.ai-msg.loading{background:var(--pr3);border:1px solid var(--line);animation:pulse-card 1s infinite;}
+@keyframes pulse-card{0%,100%{opacity:.8}50%{opacity:.5}}
 
-.preview-box{padding:14px;background:var(--pr3);border:1px solid var(--line);border-radius:10px;margin:12px 0;font-size:.8rem;}
-.preview-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2);}
-.preview-row:last-child{border:none;font-weight:700;}
+/* Analytics chart */
+.bar-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--ln2);}
+.bar-label{font-size:.7rem;color:var(--soft);width:80px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:6px;background:var(--ln2);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .8s;}
+.bar-val{font-size:.7rem;font-family:"JetBrains Mono",monospace;width:55px;text-align:right;color:var(--purp);}
+
+/* Preview box */
+.preview-box{padding:12px;background:var(--pr3);border:1px solid var(--line);border-radius:8px;margin:8px 0;font-size:.78rem;}
+.prow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2);}
+.prow:last-child{border:none;font-weight:700;}
 .pval{font-family:"JetBrains Mono",monospace;color:var(--purp);}
 
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;background:var(--card);border:1px solid var(--purp);border-radius:12px;font-size:.8rem;color:var(--purp);z-index:999;display:none;box-shadow:0 8px 30px rgba(139,92,246,.3);}
+/* Referral tree */
+.ref-node{padding:8px 12px;border-radius:8px;margin-bottom:4px;display:flex;align-items:center;gap:8px;font-size:.78rem;}
+.ref-l1{background:var(--pr2);border:1px solid rgba(139,92,246,.3);}
+.ref-l2{background:var(--pr3);border:1px solid var(--ln2);margin-left:20px;}
+
+/* Social clip */
+.clip-card{background:linear-gradient(135deg,var(--s2),var(--bg));border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:.15s;}
+.clip-card:hover{border-color:var(--pink);}
+.clip-thumb{aspect-ratio:9/16;max-height:160px;background:linear-gradient(135deg,var(--pr2),var(--pk2));display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.clip-body{padding:10px 12px;}
+
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;padding:11px 16px;background:var(--card);border:1px solid var(--purp);border-radius:12px;font-size:.79rem;color:var(--purp);z-index:999;display:none;box-shadow:0 8px 30px rgba(139,92,246,.25);max-width:300px;}
 </style>
 </head>
 <body>
+
 <div class="hdr">
   <div class="hdr-brand">
-    <div class="brand-emoji">🎴</div>
-    <div><div class="brand-name">Droppa</div><div class="brand-sub">Live Commerce Breaks</div></div>
+    <span style="font-size:1.4rem">🎴</span>
+    <div>
+      <div class="brand-name">Droppa™</div>
+      <div class="brand-sub">Seller Operating System · Live Commerce</div>
+    </div>
   </div>
   <div class="hdr-nav">
-    <div class="nav-item active" onclick="show('live')">Live Breaks</div>
-    <div class="nav-item" onclick="show('create')">Create Break</div>
-    <div class="nav-item" onclick="show('mybreaks')">My Breaks</div>
-    <div class="nav-item" onclick="show('results')">VRF Results</div>
-    <div class="nav-item" onclick="show('earnings')">Earnings</div>
-    <div class="nav-item" onclick="show('compare')">vs Whatnot</div>
+    <div class="nav-item active" onclick="show('dashboard')">Dashboard</div>
+    <div class="nav-item" onclick="show('breaks')">Break Engine</div>
+    <div class="nav-item" onclick="show('inventory')">Inventory</div>
+    <div class="nav-item" onclick="show('pricing')">AI Pricing</div>
+    <div class="nav-item" onclick="show('analytics')">Analytics</div>
+    <div class="nav-item" onclick="show('clips')">Social Clips</div>
+    <div class="nav-item" onclick="show('referrals')">Referrals</div>
+    <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
 
-<!-- LIVE BREAKS -->
-<div class="pane active" id="pane-live">
+<!-- DASHBOARD -->
+<div class="pane active" id="pane-dashboard">
   <div class="kpi-strip">
-    <div class="kpi"><div class="kpi-val purp" id="kpi-open">0</div><div class="kpi-lbl">Open Breaks</div></div>
-    <div class="kpi"><div class="kpi-val gold" id="kpi-gmv">$0</div><div class="kpi-lbl">Total GMV</div></div>
-    <div class="kpi"><div class="kpi-val grn">1%</div><div class="kpi-lbl">Fee Rate</div></div>
-    <div class="kpi"><div class="kpi-val purp">0.001 LTN</div><div class="kpi-lbl">Burned/slot</div></div>
-    <div class="kpi"><div class="kpi-val grn">Instant</div><div class="kpi-lbl">Settlement</div></div>
+    <div class="kpi"><div class="kpi-val purp" id="d-gmv">$0</div><div class="kpi-lbl">Total GMV</div><div class="kpi-sub" id="d-gmv-sub">on-chain</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="d-net">$0</div><div class="kpi-lbl">Net Earned</div><div class="kpi-sub">after 1% fee</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="d-breaks">0</div><div class="kpi-lbl">Breaks Run</div><div class="kpi-sub">on RAWNet</div></div>
+    <div class="kpi"><div class="kpi-val pink" id="d-inv">0</div><div class="kpi-lbl">Inventory</div><div class="kpi-sub">items tracked</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="d-refs">0</div><div class="kpi-lbl">Referrals</div><div class="kpi-sub">active sellers</div></div>
   </div>
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-    <div style="font-size:.88rem;font-weight:700">Live Breaks</div>
-    <select id="filter-cat" onchange="renderBreaks()" style="width:auto;margin:0;padding:6px 10px;font-size:.76rem;">
-      <option value="">All Categories</option>
-      <option>Sports Cards</option><option>Trading Cards (TCG)</option>
-      <option>Collectibles</option><option>Coins</option><option>Memorabilia</option>
-    </select>
-    <button class="btn btn-outline btn-sm" onclick="loadOnChainBreaks()">↻ On-chain</button>
-    <div style="margin-left:auto;font-size:.76rem;color:var(--soft)" id="break-count"></div>
-  </div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" id="breaks-grid"></div>
-</div>
-
-<!-- CREATE -->
-<div class="pane" id="pane-create">
   <div class="g2">
-    <div class="card">
-      <div class="card-title">New Break</div>
-      <label>Break Title</label>
-      <input id="c-title" placeholder="2024 Topps Chrome Hobby Box Break">
-      <div class="form-row">
-        <div>
-          <label>Category</label>
-          <select id="c-cat"><option>Sports Cards</option><option>Trading Cards (TCG)</option><option>Collectibles</option><option>Coins</option><option>Memorabilia</option></select>
-        </div>
-        <div>
-          <label>Format</label>
-          <select id="c-fmt"><option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option><option>Division</option></select>
-        </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Recent Breaks</div>
+        <div id="recent-breaks-list"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:16px">Connect wallet to load</div></div>
       </div>
-      <div class="form-row">
-        <div>
-          <label>Number of Slots</label>
-          <input type="number" id="c-slots" value="20" min="2" max="100" oninput="previewBreak()">
-        </div>
-        <div>
-          <label>Price per Slot (USDC)</label>
-          <input type="number" id="c-price" value="65" oninput="previewBreak()">
-        </div>
+      <div class="card">
+        <div class="card-title grn-t">Revenue by Category (on-chain)</div>
+        <div id="revenue-bars"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:12px">No data yet</div></div>
       </div>
-      <label>Break Description</label>
-      <input id="c-desc" placeholder="1x Hobby Box · Factory Sealed · Random Team Assignment">
-      <div class="preview-box" id="create-preview">
-        <div class="preview-row"><span style="color:var(--soft)">Gross (full sell)</span><span class="pval" id="cp-gross">$1,300</span></div>
-        <div class="preview-row"><span style="color:var(--soft)">Droppa fee (1%)</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)" id="cp-fee">-$13.00</span></div>
-        <div class="preview-row"><span style="color:var(--soft)">Gas (~20 slots)</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">~$0.00016</span></div>
-        <div class="preview-row"><span>You receive</span><span class="pval" style="color:var(--grn);font-size:.88rem" id="cp-net">$1,287.00</span></div>
-      </div>
-      <button class="btn btn-purp" style="width:100%" onclick="createBreak()">Create Break On-Chain</button>
-      <div id="create-status" style="margin-top:10px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
     </div>
     <div>
-      <div class="card" style="margin-bottom:18px;">
-        <div class="card-title">Droppa vs Competitors</div>
-        <div style="display:flex;flex-direction:column;gap:5px;font-size:.8rem;">
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Droppa</span><span class="grn" style="font-family:JetBrains Mono,monospace">1.00%</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Whatnot</span><span class="red" style="font-family:JetBrains Mono,monospace">8.00% + payment</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">eBay</span><span class="red" style="font-family:JetBrains Mono,monospace">12.9%</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">PayPal G&S</span><span class="red" style="font-family:JetBrains Mono,monospace">3.49% + $0.49</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Chargeback risk</span><span class="grn">Zero (crypto)</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">Settlement</span><span class="grn">Instant AllCard</span></div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title gold-t">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-purp" style="width:100%" onclick="show('breaks')">🎴 New Break</button>
+          <button class="btn btn-outline" style="width:100%" onclick="show('inventory')">📦 Add Inventory</button>
+          <button class="btn btn-outline" style="width:100%" onclick="show('pricing')">🤖 AI Price Item</button>
+          <button class="btn btn-outline" style="width:100%" onclick="show('clips')">📱 Generate Clip</button>
+          <button class="btn btn-grn btn-sm" style="width:100%" onclick="getTestUSDC()">Get Test USDC</button>
         </div>
       </div>
       <div class="card">
-        <div class="card-title">VRF Randomization</div>
-        <div style="font-size:.76rem;color:var(--soft);line-height:1.8;">
-          <div>1. All slots sold → break locked on-chain</div>
-          <div>2. VRF seed = keccak256(blockHash + breakId + ts)</div>
-          <div>3. Fisher-Yates shuffle with VRF seed</div>
-          <div>4. Result verifiable by anyone on RAWNet</div>
-          <div>5. Host cannot manipulate after slots sell</div>
-        </div>
-        <div style="margin-top:10px;padding:8px 12px;background:var(--gn2);border-radius:8px;font-size:.72rem;color:var(--grn);">
-          ✓ Provably fair · On-chain verifiable · No oracle dependency
+        <div class="card-title blue-t">Platform Status</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">BreakFactory.sol</span><span class="grn">● Live</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">RAWNet chainId</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">720701</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Block</span><span id="d-block" style="font-family:JetBrains Mono,monospace;color:var(--dim)">—</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Break fee</span><span class="grn">1.0%</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Settlement</span><span class="grn">Instant · AllCard</span></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MY BREAKS -->
-<div class="pane" id="pane-mybreaks">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-    <div style="font-size:.88rem;font-weight:700;">My Breaks</div>
-    <button class="btn btn-outline btn-sm" onclick="loadMyBreaks()">↻ Refresh</button>
-    <div style="margin-left:auto;font-size:.76rem;color:var(--soft)" id="mybreaks-count"></div>
+<!-- BREAK ENGINE -->
+<div class="pane" id="pane-breaks">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <div style="font-size:.88rem;font-weight:700">Break Engine</div>
+    <button class="btn btn-purp btn-sm" onclick="showCreateBreak()">+ New Break</button>
+    <select id="break-filter" onchange="filterBreaks()" style="width:auto;margin:0;padding:5px 9px;font-size:.74rem;">
+      <option value="all">All</option><option value="open">Open</option><option value="full">Full</option><option value="complete">Complete</option>
+    </select>
+    <button class="btn btn-outline btn-sm" onclick="loadBreaks()">↻ Chain</button>
+    <div style="margin-left:auto;font-size:.74rem;color:var(--soft)" id="breaks-meta"></div>
   </div>
-  <table class="table">
-    <thead><tr><th>Break ID</th><th>Title</th><th>Slots</th><th>Price</th><th>Filled</th><th>Gross</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody id="mybreaks-tbody"><tr><td colspan="8" style="text-align:center;padding:30px;color:var(--soft)">Connect wallet to view breaks</td></tr></tbody>
-  </table>
+
+  <!-- Create break panel (hidden by default) -->
+  <div id="create-break-panel" style="display:none;margin-bottom:16px;">
+    <div class="card" style="border-left:3px solid var(--purp);">
+      <div class="card-title">Create New Break</div>
+      <div class="form-row">
+        <div><label>Title</label><input id="cb-title" placeholder="2024 Topps Chrome Hobby Break"></div>
+        <div><label>Category</label><select id="cb-cat"><option>Sports Cards</option><option>Trading Cards (TCG)</option><option>Collectibles</option><option>Coins</option><option>Memorabilia</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div><label>Format</label><select id="cb-fmt"><option>Random Teams</option><option>Pick Your Team</option><option>Random Slot</option><option>Division</option><option>Tier</option></select></div>
+        <div><label>Number of Slots</label><input type="number" id="cb-slots" value="30" min="2" max="100" oninput="previewBreak()"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Price per Slot (USDC)</label><input type="number" id="cb-price" value="65" oninput="previewBreak()"></div>
+        <div><label>Description</label><input id="cb-desc" placeholder="1x Hobby Box · Sealed · Random Teams"></div>
+      </div>
+      <div class="preview-box" id="create-preview">
+        <div class="prow"><span style="color:var(--soft)">Gross (full)</span><span class="pval" id="cp-gross">$1,950</span></div>
+        <div class="prow"><span style="color:var(--soft)">Droppa fee (1%)</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)" id="cp-fee">-$19.50</span></div>
+        <div class="prow"><span>You receive</span><span class="pval" style="color:var(--grn);font-size:.88rem" id="cp-net">$1,930.50</span></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-purp" onclick="createBreak()">Create On-Chain</button>
+        <button class="btn btn-outline" onclick="document.getElementById('create-break-panel').style.display='none'">Cancel</button>
+      </div>
+      <div id="cb-status" style="margin-top:8px;font-size:.74rem;color:var(--soft);min-height:16px;"></div>
+    </div>
+  </div>
+
+  <!-- Breaks grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;" id="breaks-grid">
+    <div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1">Connect wallet to load breaks, or create your first one</div>
+  </div>
+
+  <!-- My Breaks table -->
+  <div style="margin-top:20px;">
+    <div class="card-title" style="margin-bottom:10px;">My Breaks — All Time</div>
+    <table class="tbl" id="my-breaks-table">
+      <thead><tr><th>ID</th><th>Slots</th><th>Price</th><th>Filled</th><th>Gross</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="my-breaks-tbody"><tr><td colspan="7" style="text-align:center;padding:18px;color:var(--soft)">Connect wallet</td></tr></tbody>
+    </table>
+  </div>
 </div>
 
-<!-- VRF RESULTS -->
-<div class="pane" id="pane-results">
+<!-- INVENTORY -->
+<div class="pane" id="pane-inventory">
   <div class="g2">
     <div>
-      <div class="card" style="margin-bottom:18px;">
-        <div class="card-title">Break Results Lookup</div>
-        <label>Break ID (from My Breaks)</label>
-        <div style="display:flex;gap:8px;margin-bottom:12px;">
-          <input id="r-breakid" placeholder="0x..." style="margin:0;flex:1">
-          <button class="btn btn-purp btn-sm" onclick="loadResult()">Load</button>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Add Item</div>
+        <label>Item Name</label>
+        <input id="inv-name" placeholder="2024 Topps Chrome #1 Juan Soto PSA 10">
+        <div class="form-row">
+          <div><label>Category</label>
+            <select id="inv-cat"><option>Sports Cards</option><option>Trading Cards</option><option>Coins</option><option>Collectibles</option><option>Memorabilia</option><option>Electronics</option><option>Other</option></select>
+          </div>
+          <div><label>Condition</label>
+            <select id="inv-cond"><option>PSA 10</option><option>PSA 9</option><option>Raw NM+</option><option>Raw NM</option><option>Played</option><option>Sealed</option></select>
+          </div>
         </div>
-        <div id="result-display"></div>
+        <div class="form-row">
+          <div><label>Cost Basis ($)</label><input type="number" id="inv-cost" placeholder="45.00" step="0.01"></div>
+          <div><label>Asking Price ($)</label><input type="number" id="inv-ask" placeholder="85.00" step="0.01"></div>
+        </div>
+        <label>SKU / Ref #</label>
+        <input id="inv-sku" placeholder="YC-2024-001">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-purp" onclick="addInventoryItem()">Add to Inventory</button>
+          <button class="btn btn-outline btn-sm" onclick="show('pricing')">🤖 AI Price</button>
+        </div>
       </div>
-      <div id="completed-breaks-list"></div>
+      <div class="card">
+        <div class="card-title grn-t">Inventory Summary</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total items</span><span id="inv-total" class="purp" style="font-family:JetBrains Mono,monospace">0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total cost basis</span><span id="inv-cost-total" class="purp" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total ask value</span><span class="grn" id="inv-ask-total" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Unrealized profit</span><span id="inv-profit" class="gold" style="font-family:JetBrains Mono,monospace">$0</span></div>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title">VRF Verification</div>
-      <div style="font-size:.76rem;color:var(--soft);line-height:1.8;margin-bottom:14px;">
-        Anyone can verify break results on-chain. The VRF seed is derived from block data available to all nodes.
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="font-size:.82rem;font-weight:700">Inventory</div>
+        <input id="inv-search" placeholder="Search..." style="width:auto;flex:1;margin:0;padding:5px 9px;font-size:.74rem;" oninput="renderInventory()">
+        <select id="inv-filter-cat" onchange="renderInventory()" style="width:auto;margin:0;padding:5px 9px;font-size:.74rem;">
+          <option value="">All Categories</option>
+          <option>Sports Cards</option><option>Trading Cards</option><option>Coins</option>
+          <option>Collectibles</option><option>Other</option>
+        </select>
       </div>
-      <label>VRF Seed</label>
-      <input id="v-seed" placeholder="0x...">
-      <label>Break ID</label>
-      <input id="v-breakid" placeholder="0x...">
-      <label>Number of Slots</label>
-      <input type="number" id="v-slots" placeholder="20">
-      <button class="btn btn-outline" style="width:100%" onclick="verifyVRF()">Verify Locally</button>
-      <div id="vrf-verify-result" style="margin-top:12px;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- EARNINGS -->
-<div class="pane" id="pane-earnings">
-  <div class="kpi-strip" style="margin-bottom:20px;">
-    <div class="kpi"><div class="kpi-val purp" id="e-gross">$0</div><div class="kpi-lbl">Lifetime Gross</div></div>
-    <div class="kpi"><div class="kpi-val grn" id="e-net">$0</div><div class="kpi-lbl">Net Earned</div></div>
-    <div class="kpi"><div class="kpi-val gold" id="e-ltn">0 LTN</div><div class="kpi-lbl">LTN Earned</div></div>
-    <div class="kpi"><div class="kpi-val purp" id="e-breaks">0</div><div class="kpi-lbl">Breaks Created</div></div>
-    <div class="kpi"><div class="kpi-val grn" id="e-slots">0</div><div class="kpi-lbl">Slots Sold</div></div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="card-title">Break History</div>
-      <div id="earnings-table"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Fee Structure</div>
-      <div style="font-size:.8rem;display:flex;flex-direction:column;gap:6px;">
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Droppa fee</span><span class="purp" style="font-family:JetBrains Mono,monospace">1.0% of gross</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Seller receives</span><span class="grn" style="font-family:JetBrains Mono,monospace">99.0%</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">0.1% of fee → LTN stakers</span><span class="purp" style="font-family:JetBrains Mono,monospace">FeeDistributor</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned/slot</span><span class="gold" style="font-family:JetBrains Mono,monospace">0.001 LTN</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">Gas/slot (~65K)</span><span class="grn" style="font-family:JetBrains Mono,monospace">$0.0000082</span></div>
-      </div>
-      <div style="margin-top:16px;padding:12px;background:var(--pr3);border-radius:8px;font-size:.76rem;color:var(--soft);line-height:1.7;">
-        On $1,300 break: seller keeps $1,287. Droppa earns $13. LTN stakers earn $0.013. 20 × 0.001 = 0.02 LTN burned.
-      </div>
+      <div id="inventory-list"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:24px">No items yet</div></div>
     </div>
   </div>
 </div>
 
-<!-- COMPARE -->
-<div class="pane" id="pane-compare">
+<!-- AI PRICING -->
+<div class="pane" id="pane-pricing">
   <div class="g2">
-    <div class="card">
-      <div class="card-title">Droppa vs Whatnot — $1,300 Break</div>
-      <table class="table">
-        <thead><tr><th>Platform</th><th>Fee</th><th>Seller Gets</th><th>Settlement</th><th>Chargeback</th></tr></thead>
-        <tbody>
-          <tr><td class="purp" style="font-weight:700">Droppa</td><td>1%</td><td class="grn" style="font-family:JetBrains Mono,monospace">$1,287</td><td class="grn">Instant</td><td class="grn">Zero</td></tr>
-          <tr><td>Whatnot</td><td>8% + CC</td><td class="red" style="font-family:JetBrains Mono,monospace">$1,172</td><td>2-5 days</td><td class="red">Yes</td></tr>
-          <tr><td>eBay</td><td>12.9%</td><td class="red" style="font-family:JetBrains Mono,monospace">$1,132</td><td>3-7 days</td><td class="red">Yes</td></tr>
-          <tr><td>PWCC</td><td>15%+</td><td class="red" style="font-family:JetBrains Mono,monospace">$1,105</td><td>30-60 days</td><td class="red">Partial</td></tr>
-        </tbody>
-      </table>
-      <div style="margin-top:14px;padding:12px;background:var(--gn2);border-radius:8px;font-size:.76rem;color:var(--grn);">
-        On a $1,300 break, Droppa pays you $115 more than Whatnot and $155 more than eBay.
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title pink-t">🤖 AI Pricing Engine</div>
+        <label>Describe the item</label>
+        <textarea id="ai-item-desc" placeholder="2024 Topps Chrome Refractor #234 Shohei Ohtani, PSA 10, pulled from hobby box" style="height:90px;resize:none;margin-bottom:10px;"></textarea>
+        <label>Additional context (optional)</label>
+        <input id="ai-item-ctx" placeholder="I paid $40. Looking to sell quickly. Recent comps around $120-150">
+        <button class="btn btn-purp" style="width:100%" onclick="getAIPrice()" id="ai-price-btn">Get AI Price Recommendation</button>
+        <div id="ai-price-status" style="margin-top:8px;font-size:.74rem;color:var(--soft);min-height:16px;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title pink-t">AI Sales Coach</div>
+        <label>Ask the live stream coach</label>
+        <textarea id="coach-q" placeholder="How do I hype up a slot for my break tonight? I have 8 slots left at $65..." style="height:80px;resize:none;margin-bottom:10px;"></textarea>
+        <button class="btn btn-purp" style="width:100%" onclick="askCoach()" id="coach-btn">Ask Coach</button>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Annual Savings (100 breaks/yr × $1,300)</div>
-      <div style="font-size:.8rem;display:flex;flex-direction:column;gap:6px;">
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">vs Whatnot</span><span class="grn" style="font-family:JetBrains Mono,monospace;font-weight:700">+$11,500/yr</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">vs eBay</span><span class="grn" style="font-family:JetBrains Mono,monospace;font-weight:700">+$15,500/yr</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN earned (100 breaks × 20 slots)</span><span class="gold" style="font-family:JetBrains Mono,monospace">2 LTN</span></div>
-        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">Chargeback exposure</span><span class="grn">$0</span></div>
+    <div>
+      <div class="card" style="min-height:300px;">
+        <div class="card-title pink-t">AI Recommendations</div>
+        <div id="ai-output"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:24px">Enter an item above to get AI pricing and sales advice</div></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="pane" id="pane-analytics">
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val purp" id="an-gmv">$0</div><div class="kpi-lbl">Lifetime GMV</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="an-net">$0</div><div class="kpi-lbl">Net Earned</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="an-breaks">0</div><div class="kpi-lbl">Breaks</div></div>
+    <div class="kpi"><div class="kpi-val purp" id="an-slots">0</div><div class="kpi-lbl">Slots Sold</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="an-ltn">0 LTN</div><div class="kpi-lbl">LTN Burned</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Break Performance (on-chain)</div>
+      <div id="analytics-bars"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:16px">Connect wallet to load analytics</div></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title grn-t">Fee Breakdown</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Droppa (1%)</span><span id="an-fee-droppa" class="purp" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">→ LTN stakers (0.1%)</span><span id="an-fee-ltn" class="gold" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">→ Droppa ops (0.9%)</span><span id="an-fee-ops" class="purp" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">vs Whatnot (8%)</span><span id="an-savings" class="grn" style="font-family:JetBrains Mono,monospace">$0 saved</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title gold-t">Inventory P&L</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Items in stock</span><span id="an-inv-count" class="purp" style="font-family:JetBrains Mono,monospace">0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Cost basis</span><span id="an-cost" style="font-family:JetBrains Mono,monospace;color:var(--soft)">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Ask value</span><span id="an-ask" class="purp" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Unrealized profit</span><span id="an-profit" class="gold" style="font-family:JetBrains Mono,monospace">$0</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="refreshAnalytics()">↻ Refresh All Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL CLIPS -->
+<div class="pane" id="pane-clips">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title pink-t">📱 AI Clip Generator</div>
+        <label>Break or item to clip</label>
+        <textarea id="clip-context" placeholder="Just pulled a 2024 Topps Chrome PSA 10 Shohei Ohtani refractor from my 30-slot team break. $65/slot, 12 left open." style="height:90px;resize:none;margin-bottom:10px;"></textarea>
+        <label>Platform</label>
+        <select id="clip-platform">
+          <option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option><option>Twitter/X</option><option>Discord</option>
+        </select>
+        <label>Tone</label>
+        <select id="clip-tone">
+          <option>Hype / Excitement</option><option>Professional</option><option>Educational</option><option>FOMO / Urgency</option><option>Community / Casual</option>
+        </select>
+        <button class="btn btn-purp" style="width:100%" onclick="generateClip()" id="clip-btn">Generate Script + Hook</button>
+      </div>
+      <div class="card">
+        <div class="card-title pink-t">Clip Templates</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${["💥 Big Pull Announcement","🎴 Break Hype — Slots Available","📦 Box Opening Teaser","🏆 PSA Submission Reveal","🔥 Flash Sale / Last Slots"].map(t=>`<button class="btn btn-outline btn-sm" style="text-align:left;border-radius:6px" onclick="useTemplate('${t}')">${t}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title pink-t">Generated Content</div>
+        <div id="clip-output"><div style="color:var(--soft);font-size:.78rem;text-align:center;padding:24px">Enter a break or item description to generate platform-optimized scripts and hooks</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REFERRALS -->
+<div class="pane" id="pane-referrals">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title grn-t">Your Referral Link</div>
+        <div style="font-size:.78rem;color:var(--soft);margin-bottom:10px;line-height:1.6;">Earn 25% of subscription revenue from direct referrals. Earn 10% from their referrals (tier 2).</div>
+        <div style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--purp);margin-bottom:10px;word-break:break-all;" id="ref-link">Connect wallet to get your referral link</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-purp" onclick="copyRefLink()">Copy Link</button>
+          <button class="btn btn-outline" onclick="shareRefLink()">Share</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title grn-t">Add Referral</div>
+        <label>Referred Seller Wallet / Username</label>
+        <input id="ref-new" placeholder="0x... or droppa username">
+        <button class="btn btn-purp" style="width:100%" onclick="addReferral()">Record Referral</button>
+        <div id="ref-status" style="margin-top:6px;font-size:.74rem;color:var(--soft);"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title grn-t">Earnings Summary</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Tier 1 referrals</span><span id="ref-t1-count" class="purp" style="font-family:JetBrains Mono,monospace">0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Tier 2 referrals</span><span id="ref-t2-count" class="purp" style="font-family:JetBrains Mono,monospace">0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Est. monthly earnings</span><span id="ref-monthly" class="grn" style="font-family:JetBrains Mono,monospace">$0</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Est. annual earnings</span><span id="ref-annual" class="grn" style="font-family:JetBrains Mono,monospace">$0</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title grn-t">Referral Network</div>
+        <div id="ref-tree"><div style="color:var(--soft);font-size:.78rem">No referrals yet</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="pane" id="pane-settings">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Seller Profile</div>
+      <label>Shop Name</label>
+      <input id="set-name" value="">
+      <label>Default Category</label>
+      <select id="set-cat"><option>Sports Cards</option><option>Trading Cards</option><option>Collectibles</option><option>Other</option></select>
+      <label>Default Slot Price ($)</label>
+      <input type="number" id="set-price" value="65">
+      <label>Droppa Referral Code (if applicable)</label>
+      <input id="set-refcode" placeholder="seller123">
+      <label>ANTHROPIC_API_KEY (for AI features)</label>
+      <input id="set-apikey" type="password" placeholder="sk-ant-..." oninput="localStorage.setItem('droppa-apikey',this.value)">
+      <button class="btn btn-purp" onclick="saveSettings()">Save Settings</button>
+      <div id="set-status" style="margin-top:8px;font-size:.74rem;color:var(--soft);"></div>
+    </div>
+    <div class="card">
+      <div class="card-title blue-t">Network Config</div>
+      <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Network</span><span class="purp">RAWNet Testnet (720701)</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">RPC</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">10.117.122.142:8545</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">BreakFactory</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--purp)">0xaf5C4C6C...Cf68</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">MockUSDC</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">0xFC628dd7...4882</span></div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="testConnection()">Test Connection</button>
+      <div id="conn-status" style="margin-top:6px;font-size:.74rem;text-align:center;"></div>
     </div>
   </div>
 </div>
@@ -317,269 +497,516 @@ input:focus,select:focus{border-color:var(--purp);}
 <div class="toast" id="toast"></div>
 
 <script>
-const ADDRS = {
-  BreakFactory: "0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68",
-  MockUSDC:     "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
-};
-const BF_ABI = [
-  "function createBreak(string calldata title,uint256 slotCount,uint256 slotPrice) returns (bytes32)",
-  "function purchaseSlot(bytes32 breakId,bytes32 buyerCommit) returns (uint256)",
-  "function completeBreak(bytes32 breakId,bytes32 vrfSeed)",
-  "function cancelBreak(bytes32 breakId)",
-  "function getSellerBreaks(address seller) view returns (bytes32[])",
-  "function breaks(bytes32) view returns (address,uint256,uint256,uint256,uint8,uint256,uint256,bytes32)",
-  "function getSlots(bytes32 id) view returns (tuple(address buyer,bytes32 buyerCommit)[])",
-  "function totalGMV() view returns (uint256)",
-  "event BreakCreated(bytes32 indexed id,address indexed seller,uint256 slotCount,uint256 price)",
-  "event SlotPurchased(bytes32 indexed id,address indexed buyer,uint256 idx)",
-  "event BreakCompleted(bytes32 indexed id,uint256 gross,uint256 fee,uint256 net)",
-];
-const USDC_ABI = [
-  "function balanceOf(address) view returns (uint256)",
-  "function approve(address,uint256) returns (bool)",
-  "function faucet()",
-];
+// ── Contracts ──────────────────────────────────────────────────────
+const ADDRS={BreakFactory:"0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68",MockUSDC:"0xFC628dd79137395F3C9744e33b1c5DE554D94882"};
+const BF_ABI=["function createBreak(string calldata title,uint256 slotCount,uint256 slotPrice) returns (bytes32)","function purchaseSlot(bytes32 breakId,bytes32 buyerCommit) returns (uint256)","function completeBreak(bytes32 breakId,bytes32 vrfSeed)","function cancelBreak(bytes32 breakId)","function getSellerBreaks(address seller) view returns (bytes32[])","function breaks(bytes32) view returns (address,uint256,uint256,uint256,uint8,uint256,uint256,bytes32)","function getSlots(bytes32 id) view returns (tuple(address buyer,bytes32 buyerCommit)[])","function totalGMV() view returns (uint256)","event BreakCreated(bytes32 indexed id,address indexed seller,uint256 slotCount,uint256 price)"];
+const USDC_ABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function faucet()"];
 
-let provider, signer, addr, bfContract, usdcContract;
-let myBreakIds = [];
-let sampleBreaks = [
-  {id:"DR-001",title:"2024 Bowman Chrome Hobby",cat:"Sports Cards",fmt:"Random Teams",slots:30,price:85,filled:22,status:"Open",host:"CardKing.eth"},
-  {id:"DR-002",title:"Pokemon 151 ETB Break",cat:"Trading Cards (TCG)",fmt:"Random Slot",slots:12,price:45,filled:12,status:"Full",host:"PokeVault.eth"},
-  {id:"DR-003",title:"2024 Topps Chrome HTA",cat:"Sports Cards",fmt:"Pick Your Team",slots:30,price:120,filled:8,status:"Open",host:"ToppsBreaks.eth"},
-  {id:"DR-004",title:"Morgan Silver Dollar Roll",cat:"Coins",fmt:"Random Slot",slots:20,price:75,filled:7,status:"Open",host:"CoinVault.eth"},
-  {id:"DR-005",title:"2024 Prizm Basketball",cat:"Sports Cards",fmt:"Random Teams",slots:30,price:95,filled:30,status:"Complete",host:"BBallBreaks.eth",vrfSeed:"0x7f3a2b...",gross:2850},
-];
+let provider,signer,addr,bfContract,usdcContract;
 
-async function connectWallet() {
-  if (!window.ethereum){alert("Open in MetaMask browser");return;}
-  await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
-    nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
-    rpcUrls:["http://10.117.122.142:8545"]
-  }]}).catch(()=>{});
-  const accs = await ethereum.request({method:"eth_requestAccounts"});
-  addr = accs[0];
-  provider = new ethers.BrowserProvider(window.ethereum);
-  signer = await provider.getSigner();
-  bfContract  = new ethers.Contract(ADDRS.BreakFactory, BF_ABI, signer);
-  usdcContract = new ethers.Contract(ADDRS.MockUSDC, USDC_ABI, signer);
-  const btn = document.getElementById("connect-btn");
-  btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-  btn.className = "on";
+// ── State ──────────────────────────────────────────────────────────
+let inventory = JSON.parse(localStorage.getItem('droppa-inv')||'[]');
+let referrals = JSON.parse(localStorage.getItem('droppa-refs')||'[]');
+let settings = JSON.parse(localStorage.getItem('droppa-settings')||'{"name":"My Break Shop","cat":"Sports Cards","price":65}');
+let breakIds = [];
+
+// ── Wallet ──────────────────────────────────────────────────────────
+async function connectWallet(){
+  if(!window.ethereum){alert("Open in MetaMask browser");return;}
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"RAWNet Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
+  const accs=await ethereum.request({method:"eth_requestAccounts"});
+  addr=accs[0];
+  provider=new ethers.BrowserProvider(window.ethereum);
+  signer=await provider.getSigner();
+  bfContract=new ethers.Contract(ADDRS.BreakFactory,BF_ABI,signer);
+  usdcContract=new ethers.Contract(ADDRS.MockUSDC,USDC_ABI,signer);
+  const btn=document.getElementById("connect-btn");
+  btn.textContent=addr.slice(0,6)+"..."+addr.slice(-4);
+  btn.className="on";
+  document.getElementById("ref-link").textContent=`https://droppa.io/join?ref=${addr.slice(2,10)}`;
   toast("Wallet connected ✓");
-  loadOnChainBreaks();
-  loadMyBreaks();
+  loadDashboard();
+  loadBreaks();
 }
 
-async function loadOnChainBreaks() {
-  if (!bfContract) { renderBreaks(); return; }
-  try {
-    const gmv = await bfContract.totalGMV();
-    document.getElementById("kpi-gmv").textContent = "$"+parseFloat(ethers.formatUnits(gmv,6)).toFixed(0);
-    if (addr) {
-      myBreakIds = await bfContract.getSellerBreaks(addr);
-      document.getElementById("kpi-open").textContent = myBreakIds.length;
+// ── Dashboard ──────────────────────────────────────────────────────
+async function loadDashboard(){
+  if(!bfContract||!addr)return;
+  try{
+    const [gmvRaw,block]=await Promise.all([bfContract.totalGMV(),provider.getBlockNumber()]);
+    const gmv=parseFloat(ethers.formatUnits(gmvRaw,6));
+    breakIds=await bfContract.getSellerBreaks(addr);
+    // Compute per-seller stats from on-chain breaks
+    let myGMV=0,mySlots=0;
+    for(const id of breakIds.slice(-10)){
+      try{const b=await bfContract.breaks(id);myGMV+=parseFloat(ethers.formatUnits(b[6],6));mySlots+=Number(b[3]);}catch(e){}
     }
-  } catch(e) {}
-  renderBreaks();
-}
-
-function renderBreaks() {
-  const cat = document.getElementById("filter-cat").value;
-  const filtered = sampleBreaks.filter(b=>!cat||b.cat===cat);
-  document.getElementById("break-count").textContent = filtered.filter(b=>b.status==="Open"||b.status==="Full").length+" active";
-  document.getElementById("breaks-grid").innerHTML = filtered.map(b=>{
-    const pct = Math.round((b.filled/b.slots)*100);
-    const maxCols = Math.min(b.slots, 10);
-    const slots = Array.from({length:b.slots},(_, i)=>{
-      const cls = i<b.filled?"taken":"";
-      return `<div class="slot-cell ${cls}" onclick="buySlot('${b.id}',${b.price})">${cls?"●":""}</div>`;
-    }).join("");
-    const sc = {Open:"s-open",Full:"s-full",Complete:"s-complete",Cancelled:"s-cancelled"}[b.status]||"s-open";
-    return `<div class="break-card">
-      <div class="break-header">
-        <div class="break-title">${b.title}</div>
-        <span class="status-pill ${sc}">${b.status}</span>
-      </div>
-      <div class="break-body">
-        <div style="font-size:.72rem;color:var(--soft);margin-bottom:8px">${b.fmt} · ${b.cat} · ${b.host}</div>
-        <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:4px">
-          <span style="color:var(--soft)">${b.filled}/${b.slots} slots</span>
-          <span class="purp" style="font-family:JetBrains Mono,monospace">$${(b.slots*b.price).toLocaleString()}</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-        <div class="slot-grid" style="grid-template-columns:repeat(${maxCols},1fr)">${slots}${b.slots>10?`<div class="slot-cell" style="cursor:default;color:var(--dim)">+${b.slots-maxCols}</div>`:""}</div>
-        ${b.status==="Open"?`<button class="btn btn-purp" style="width:100%;margin-top:8px;font-size:.76px" onclick="buySlot('${b.id}',${b.price})">Join · $${b.price}/slot</button>`:""}
-        ${b.status==="Complete"?`<div style="margin-top:8px;padding:6px 10px;background:var(--gd2);border-radius:6px;font-size:.7rem;color:var(--gold)">✓ Complete · VRF: ${b.vrfSeed}</div>`:""}
-      </div>
-    </div>`;
-  }).join("") || "<div style='color:var(--soft);text-align:center;padding:40px;grid-column:1/-1'>No breaks matching filter</div>";
-}
-
-function buySlot(id, price) {
-  if (!addr) { alert("Connect wallet to purchase slots"); return; }
-  toast(`Slot reserved · $${price} USDC · Confirm in MetaMask`);
-}
-
-function previewBreak() {
-  const slots = parseInt(document.getElementById("c-slots").value)||20;
-  const price = parseFloat(document.getElementById("c-price").value)||65;
-  const gross = slots*price, fee=gross*.01, net=gross-fee;
-  document.getElementById("cp-gross").textContent = "$"+gross.toLocaleString();
-  document.getElementById("cp-fee").textContent = "-$"+fee.toFixed(2);
-  document.getElementById("cp-net").textContent = "$"+net.toFixed(2);
-}
-
-async function createBreak() {
-  if (!signer){alert("Connect wallet");return;}
-  const title = document.getElementById("c-title").value;
-  const slots = parseInt(document.getElementById("c-slots").value)||20;
-  const price = parseFloat(document.getElementById("c-price").value)||65;
-  if (!title){toast("Enter a title",true);return;}
-  const status = document.getElementById("create-status");
-  status.textContent = "Creating on-chain..."; status.style.color="var(--soft)";
-  try {
-    const priceWei = ethers.parseUnits(price.toString(),6);
-    const tx = await bfContract.createBreak(title, slots, priceWei);
-    status.textContent = "Waiting for confirmation...";
-    const receipt = await tx.wait();
-    const breakId = receipt.logs[0]?.topics[1];
-    status.textContent = "✓ Break created! ID: "+breakId?.slice(0,18)+"...";
-    status.style.color = "var(--grn)";
-    toast("Break created on-chain ✓");
-    myBreakIds.push(breakId);
-    loadMyBreaks();
-    show("mybreaks");
-  } catch(e){status.textContent="Error: "+e.message.split("(")[0];status.style.color="var(--red)";toast(e.message.split("(")[0],true);}
-}
-
-async function loadMyBreaks() {
-  if (!bfContract||!addr) return;
-  try {
-    const ids = await bfContract.getSellerBreaks(addr);
-    myBreakIds = ids;
-    document.getElementById("mybreaks-count").textContent = ids.length+" breaks";
-    if (!ids.length){
-      document.getElementById("mybreaks-tbody").innerHTML = "<tr><td colspan='8' style='text-align:center;padding:20px;color:var(--soft)'>No breaks created yet</td></tr>";
-      return;
-    }
-    const rows = await Promise.all(ids.map(async id=>{
-      try{
-        const b = await bfContract.breaks(id);
-        const slotCount=Number(b[1]),price=parseFloat(ethers.formatUnits(b[2],6)),filled=Number(b[3]);
-        const status=["Open","Full","Complete","Cancelled"][Number(b[4])];
-        const gross=parseFloat(ethers.formatUnits(b[6],6));
-        const sc={Open:"s-open",Full:"s-full",Complete:"s-complete",Cancelled:"s-cancelled"}[status]||"s-open";
-        return `<tr>
-          <td style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">${id.slice(0,14)}...</td>
-          <td style="font-size:.8rem">Break ${id.slice(2,8)}</td>
-          <td>${slotCount}</td>
-          <td class="purp" style="font-family:JetBrains Mono,monospace">$${price.toFixed(0)}</td>
-          <td>${filled}/${slotCount}</td>
-          <td class="purp" style="font-family:JetBrains Mono,monospace">$${gross.toFixed(0)}</td>
-          <td><span class="status-pill ${sc}">${status}</span></td>
-          <td>
-            ${status==="Open"||status==="Full"?`<button class="btn btn-purp btn-sm" onclick="completeBreak('${id}')">Complete</button>`:""}
-            ${status==="Open"?`<button class="btn btn-outline btn-sm" style="margin-left:4px" onclick="cancelBreak('${id}')">Cancel</button>`:""}
-            <button class="btn btn-outline btn-sm" style="margin-left:4px" onclick="document.getElementById('r-breakid').value='${id}';show('results');loadResult()">Results</button>
-          </td>
-        </tr>`;
-      }catch(e){return "";}
+    document.getElementById("d-gmv").textContent="$"+myGMV.toFixed(0);
+    document.getElementById("d-net").textContent="$"+(myGMV*.99).toFixed(0);
+    document.getElementById("d-breaks").textContent=breakIds.length;
+    document.getElementById("d-inv").textContent=inventory.length;
+    document.getElementById("d-refs").textContent=referrals.length;
+    document.getElementById("d-block").textContent=block.toLocaleString();
+    document.getElementById("d-gmv-sub").textContent=`network: $${(gmv/1000).toFixed(1)}K`;
+    // Recent breaks
+    const recentEl=document.getElementById("recent-breaks-list");
+    if(!breakIds.length){recentEl.innerHTML="<div style='color:var(--soft);font-size:.78rem;text-align:center;padding:12px'>No breaks yet</div>";return;}
+    const rows=await Promise.all(breakIds.slice(-5).reverse().map(async id=>{
+      const b=await bfContract.breaks(id).catch(()=>null);
+      if(!b)return "";
+      const status=["Open","Full","Complete","Cancelled"][Number(b[4])];
+      const sc={Open:"b-open",Full:"b-full",Complete:"b-done",Cancelled:"b-cancel"}[status];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln2)"><span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">${id.slice(0,12)}...</span><span style="flex:1;font-size:.78rem">Break</span><span class="badge ${sc}">${status}</span><span class="purp" style="font-family:JetBrains Mono,monospace;font-size:.76rem">$${parseFloat(ethers.formatUnits(b[6],6)).toFixed(0)}</span></div>`;
     }));
-    document.getElementById("mybreaks-tbody").innerHTML = rows.join("");
-    loadEarnings(ids);
-  } catch(e){}
+    recentEl.innerHTML=rows.join("");
+    // Inventory bars
+    const cats={};
+    inventory.forEach(i=>{cats[i.cat]=(cats[i.cat]||0)+(parseFloat(i.ask)||0);});
+    const maxCat=Math.max(...Object.values(cats),1);
+    document.getElementById("revenue-bars").innerHTML=Object.entries(cats).length?Object.entries(cats).map(([cat,val])=>`<div class="bar-row"><div class="bar-label">${cat}</div><div class="bar-track"><div class="bar-fill" style="width:${(val/maxCat*100).toFixed(0)}%;background:var(--purp)"></div></div><div class="bar-val">$${val.toFixed(0)}</div></div>`).join(""):"<div style='color:var(--soft);font-size:.78rem'>Add inventory to see breakdown</div>";
+    refreshAnalytics();
+  }catch(e){console.error(e);}
+}
+
+// ── Break Engine ──────────────────────────────────────────────────
+function showCreateBreak(){
+  const p=document.getElementById("create-break-panel");
+  p.style.display=p.style.display==="none"?"block":"none";
+}
+
+function previewBreak(){
+  const slots=parseInt(document.getElementById("cb-slots").value)||30;
+  const price=parseFloat(document.getElementById("cb-price").value)||65;
+  const gross=slots*price,fee=gross*.01,net=gross-fee;
+  document.getElementById("cp-gross").textContent="$"+gross.toLocaleString();
+  document.getElementById("cp-fee").textContent="-$"+fee.toFixed(2);
+  document.getElementById("cp-net").textContent="$"+net.toFixed(2);
+}
+
+async function createBreak(){
+  if(!signer){alert("Connect wallet");return;}
+  const title=document.getElementById("cb-title").value;
+  const slots=parseInt(document.getElementById("cb-slots").value)||30;
+  const price=parseFloat(document.getElementById("cb-price").value)||65;
+  if(!title){toast("Enter a title",true);return;}
+  const s=document.getElementById("cb-status");
+  s.textContent="Creating on-chain...";s.style.color="var(--soft)";
+  try{
+    const priceWei=ethers.parseUnits(price.toString(),6);
+    const tx=await bfContract.createBreak(title,slots,priceWei);
+    s.textContent="Waiting for confirmation...";
+    const receipt=await tx.wait();
+    const id=receipt.logs[0]?.topics[1];
+    s.textContent="✓ Break created! "+id?.slice(0,16)+"...";s.style.color="var(--grn)";
+    toast("Break created on-chain ✓");
+    document.getElementById("create-break-panel").style.display="none";
+    loadBreaks();loadDashboard();
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
+}
+
+async function loadBreaks(){
+  if(!bfContract||!addr){renderSampleBreaks();return;}
+  try{
+    breakIds=await bfContract.getSellerBreaks(addr);
+    document.getElementById("breaks-meta").textContent=breakIds.length+" breaks";
+    if(!breakIds.length){document.getElementById("breaks-grid").innerHTML="<div style='color:var(--soft);font-size:.78rem;text-align:center;padding:30px;grid-column:1/-1'>No breaks yet — create one above</div>";return;}
+    renderBreakGrid(breakIds);
+    renderBreakTable(breakIds);
+  }catch(e){renderSampleBreaks();}
+}
+
+async function renderBreakGrid(ids){
+  const el=document.getElementById("breaks-grid");
+  const filter=document.getElementById("break-filter").value;
+  const cards=await Promise.all(ids.map(async id=>{
+    try{
+      const b=await bfContract.breaks(id);
+      const slotCount=Number(b[1]),price=parseFloat(ethers.formatUnits(b[2],6)),filled=Number(b[3]);
+      const status=["Open","Full","Complete","Cancelled"][Number(b[4])];
+      if(filter!=="all"&&status.toLowerCase()!==filter)return "";
+      const pct=Math.round(filled/slotCount*100);
+      const sc={Open:"b-open",Full:"b-full",Complete:"b-done",Cancelled:"b-cancel"}[status];
+      const maxSlots=Math.min(slotCount,12);
+      const slotCells=Array.from({length:slotCount},(_, i)=>`<div class="slot-cell ${i<filled?"taken":""}" onclick="buySlot('${id}',${price})">●</div>`).slice(0,maxSlots).join("")+(slotCount>12?`<div class="slot-cell" style="cursor:default;color:var(--dim)">+${slotCount-12}</div>`:"");
+      return `<div class="break-card">
+        <div class="bc-header">
+          <div class="bc-title">${id.slice(0,10)}... Break</div>
+          <span class="badge ${sc}">${status}</span>
+        </div>
+        <div class="bc-body">
+          <div class="bc-meta">${slotCount} slots · $${price.toFixed(0)}/slot · Gross: $${(slotCount*price).toFixed(0)}</div>
+          <div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px">
+            <span style="color:var(--soft)">${filled}/${slotCount} filled</span>
+            <span class="purp" style="font-family:JetBrains Mono,monospace">${pct}%</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="slot-grid" style="grid-template-columns:repeat(${Math.min(maxSlots+1,12)},1fr)">${slotCells}</div>
+          ${status==="Open"?`<button class="btn btn-purp btn-sm" style="width:100%;margin-top:8px" onclick="buySlot('${id}',${price})">Buy Slot · $${price.toFixed(0)}</button>`:""}
+          ${status==="Open"||status==="Full"?`<button class="btn btn-outline btn-sm" style="width:100%;margin-top:4px" onclick="completeBreak('${id}')">Complete + VRF</button>`:""}
+        </div>
+      </div>`;
+    }catch(e){return "";}
+  }));
+  el.innerHTML=cards.filter(Boolean).join("")||"<div style='color:var(--soft);text-align:center;padding:30px;grid-column:1/-1'>No breaks match filter</div>";
+}
+
+async function renderBreakTable(ids){
+  const rows=await Promise.all(ids.map(async id=>{
+    try{
+      const b=await bfContract.breaks(id);
+      const slotCount=Number(b[1]),price=parseFloat(ethers.formatUnits(b[2],6)),filled=Number(b[3]);
+      const status=["Open","Full","Complete","Cancelled"][Number(b[4])];
+      const gross=parseFloat(ethers.formatUnits(b[6],6));
+      const sc={Open:"b-open",Full:"b-full",Complete:"b-done",Cancelled:"b-cancel"}[status];
+      return `<tr>
+        <td style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">${id.slice(0,14)}...</td>
+        <td>${slotCount}</td>
+        <td class="purp" style="font-family:JetBrains Mono,monospace">$${price.toFixed(0)}</td>
+        <td>${filled}/${slotCount}</td>
+        <td class="purp" style="font-family:JetBrains Mono,monospace">$${gross.toFixed(0)}</td>
+        <td><span class="badge ${sc}">${status}</span></td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap;">
+          ${status==="Open"||status==="Full"?`<button class="btn btn-outline btn-sm" onclick="completeBreak('${id}')">Complete</button>`:""}
+          ${status==="Open"?`<button class="btn btn-red btn-sm" onclick="cancelBreak('${id}')">Cancel</button>`:""}
+        </td>
+      </tr>`;
+    }catch(e){return "";}
+  }));
+  document.getElementById("my-breaks-tbody").innerHTML=rows.filter(Boolean).join("")||"<tr><td colspan='7' style='text-align:center;padding:16px;color:var(--soft)'>No breaks</td></tr>";
+}
+
+function renderSampleBreaks(){
+  // Show empty state with prompt to create
+  document.getElementById("breaks-grid").innerHTML=`<div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1">
+    <div style="font-size:2rem;margin-bottom:10px">🎴</div>
+    <div style="font-size:.9rem;font-weight:600;color:var(--wh);margin-bottom:6px">No breaks yet</div>
+    <div>Connect wallet and create your first break</div>
+  </div>`;
+}
+
+async function buySlot(breakId,price){
+  if(!signer){alert("Connect wallet to buy slots");return;}
+  const commit=ethers.keccak256(ethers.randomBytes(32));
+  try{
+    const tx=await bfContract.purchaseSlot(breakId,commit);
+    await tx.wait();
+    toast("Slot purchased ✓");
+    loadBreaks();
+  }catch(e){toast(e.message.split("(")[0],true);}
 }
 
 async function completeBreak(id){
+  if(!signer)return;
+  const vrfSeed=ethers.keccak256(ethers.randomBytes(32));
   try{
-    const vrfSeed = ethers.keccak256(ethers.randomBytes(32));
-    await (await bfContract.completeBreak(id,vrfSeed)).wait();
-    toast("Break completed ✓ VRF: "+vrfSeed.slice(0,18)+"...");
-    loadMyBreaks();
+    await(await bfContract.completeBreak(id,vrfSeed)).wait();
+    toast("Break completed ✓ VRF: "+vrfSeed.slice(0,16)+"...");
+    loadBreaks();loadDashboard();
   }catch(e){toast(e.message.split("(")[0],true);}
 }
+
 async function cancelBreak(id){
   if(!confirm("Cancel this break?"))return;
-  try{await (await bfContract.cancelBreak(id)).wait();toast("Break cancelled");loadMyBreaks();}
+  try{await(await bfContract.cancelBreak(id)).wait();toast("Cancelled");loadBreaks();}
   catch(e){toast(e.message.split("(")[0],true);}
 }
 
-async function loadResult(){
-  const id = document.getElementById("r-breakid").value.trim();
-  if(!id)return;
-  const el = document.getElementById("result-display");
-  if(bfContract){
-    try{
-      const b = await bfContract.breaks(id);
-      const slots = await bfContract.getSlots(id);
-      const vrfSeed = b[7];
-      if(vrfSeed==="0x"+"0".repeat(64)){el.innerHTML="<div style='color:var(--soft)'>Break not complete yet</div>";return;}
-      // Recreate shuffle with VRF seed
-      const n = Number(b[1]);
-      const arr = Array.from({length:n},(_,i)=>i+1);
-      const seedInt = BigInt(vrfSeed);
-      for(let i=n-1;i>0;i--){const j=Number((seedInt+BigInt(i))%BigInt(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-      el.innerHTML = `<div style="margin-bottom:8px;font-size:.76rem;color:var(--soft)">VRF Seed:</div>
-        <div class="vrf-display">${vrfSeed}</div>
-        <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;">
-          ${arr.map((team,i)=>`<div style="padding:8px;border-radius:6px;background:${i===0?"var(--gd2)":"var(--pr3)"};border:1px solid ${i===0?"var(--gold)":"var(--line)"};text-align:center;font-size:.72rem;">
-            <div style="color:var(--soft)">Slot ${i+1}</div>
-            <div style="font-weight:700;color:${i===0?"var(--gold)":"var(--purp)"}">Pick ${team}</div>
-          </div>`).join("")}
-        </div>`;
-    }catch(e){el.innerHTML="<div style='color:var(--red)'>"+e.message.split("(")[0]+"</div>";}
-  } else {
-    el.innerHTML = `<div style="padding:10px;background:var(--gd2);border-radius:8px;font-size:.78rem;color:var(--gold)">Sample: VRF seed verified · 20 slots assigned · Provably fair</div>`;
-  }
+function filterBreaks(){if(breakIds.length)renderBreakGrid(breakIds);}
+
+// ── Inventory ──────────────────────────────────────────────────────
+function addInventoryItem(){
+  const name=document.getElementById("inv-name").value.trim();
+  if(!name){toast("Enter item name",true);return;}
+  const item={
+    id:Date.now().toString(),
+    name,cat:document.getElementById("inv-cat").value,
+    cond:document.getElementById("inv-cond").value,
+    cost:parseFloat(document.getElementById("inv-cost").value)||0,
+    ask:parseFloat(document.getElementById("inv-ask").value)||0,
+    sku:document.getElementById("inv-sku").value,
+    ts:Date.now()
+  };
+  inventory.unshift(item);
+  localStorage.setItem("droppa-inv",JSON.stringify(inventory));
+  document.getElementById("inv-name").value="";
+  document.getElementById("inv-sku").value="";
+  renderInventory();
+  updateInvStats();
+  toast("Item added ✓");
 }
 
-function verifyVRF(){
-  const seed = document.getElementById("v-seed").value.trim();
-  const n = parseInt(document.getElementById("v-slots").value)||20;
-  if(!seed){toast("Enter VRF seed",true);return;}
+function renderInventory(){
+  const search=document.getElementById("inv-search")?.value?.toLowerCase()||"";
+  const cat=document.getElementById("inv-filter-cat")?.value||"";
+  const filtered=inventory.filter(i=>
+    (!search||i.name.toLowerCase().includes(search)||i.sku?.toLowerCase().includes(search))&&
+    (!cat||i.cat===cat)
+  );
+  const el=document.getElementById("inventory-list");
+  if(!filtered.length){el.innerHTML="<div style='color:var(--soft);font-size:.78rem;text-align:center;padding:20px'>No items</div>";return;}
+  const icons={"Sports Cards":"🎴","Trading Cards":"🃏","Coins":"🪙","Collectibles":"🏆","Memorabilia":"🎖","Electronics":"📱","Other":"📦"};
+  el.innerHTML=filtered.map(item=>`
+    <div class="inv-card" id="inv-${item.id}">
+      <div class="inv-img">${icons[item.cat]||"📦"}</div>
+      <div style="flex:1;min-width:0">
+        <div class="inv-name">${item.name}</div>
+        <div class="inv-meta">${item.cat} · ${item.cond}${item.sku?` · ${item.sku}`:""}</div>
+        <div style="font-size:.7rem;color:var(--dim);margin-top:2px">Cost: $${item.cost.toFixed(2)}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="inv-price">$${item.ask.toFixed(2)}</div>
+        <div style="font-size:.66rem;color:${item.ask>item.cost?"var(--grn)":"var(--red)"}">
+          ${item.ask>item.cost?"+":""}$${(item.ask-item.cost).toFixed(2)}
+        </div>
+        <button class="btn btn-red btn-sm" style="margin-top:4px" onclick="removeItem('${item.id}')">✕</button>
+      </div>
+    </div>`).join("");
+}
+
+function removeItem(id){
+  inventory=inventory.filter(i=>i.id!==id);
+  localStorage.setItem("droppa-inv",JSON.stringify(inventory));
+  renderInventory();updateInvStats();
+}
+
+function updateInvStats(){
+  const total=inventory.length;
+  const costTotal=inventory.reduce((s,i)=>s+i.cost,0);
+  const askTotal=inventory.reduce((s,i)=>s+i.ask,0);
+  const profit=askTotal-costTotal;
+  ["inv-total"].forEach(id=>document.getElementById(id)&&(document.getElementById(id).textContent=total));
+  ["inv-cost-total"].forEach(id=>document.getElementById(id)&&(document.getElementById(id).textContent="$"+costTotal.toFixed(2)));
+  ["inv-ask-total"].forEach(id=>document.getElementById(id)&&(document.getElementById(id).textContent="$"+askTotal.toFixed(2)));
+  ["inv-profit"].forEach(id=>document.getElementById(id)&&(document.getElementById(id).textContent="$"+profit.toFixed(2)));
+}
+
+// ── AI Pricing (Claude API) ──────────────────────────────────────
+async function getAIPrice(){
+  const desc=document.getElementById("ai-item-desc").value.trim();
+  if(!desc){toast("Describe the item",true);return;}
+  const ctx=document.getElementById("ai-item-ctx").value.trim();
+  const apiKey=localStorage.getItem("droppa-apikey");
+  const btn=document.getElementById("ai-price-btn");
+  btn.disabled=true;btn.textContent="Analyzing...";
+  document.getElementById("ai-price-status").textContent="Querying AI pricing engine...";
+  const output=document.getElementById("ai-output");
+  output.innerHTML=`<div class="ai-msg loading">Analyzing market data...</div>`;
   try{
-    const arr = Array.from({length:n},(_,i)=>i+1);
-    const seedInt = BigInt(seed);
-    for(let i=n-1;i>0;i--){const j=Number((seedInt+BigInt(i))%BigInt(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-    document.getElementById("vrf-verify-result").innerHTML = `
-      <div style="padding:10px;background:var(--gn2);border-radius:8px;font-size:.76rem;color:var(--grn);margin-bottom:8px;">✓ VRF verified locally — matches on-chain result</div>
-      <div style="font-size:.72rem;color:var(--soft)">Assignment: ${arr.slice(0,10).join(" → ")}...</div>`;
-  }catch(e){document.getElementById("vrf-verify-result").innerHTML="<div style='color:var(--red)'>Invalid seed</div>";}
+    const prompt=`You are a trading card and collectibles pricing expert for the Droppa live commerce platform. A seller needs pricing advice.\n\nItem: ${desc}\n${ctx?`Context: ${ctx}`:""}\n\nProvide:\n1. **Recommended price range** (low / target / high)\n2. **Suggested break slot price** if putting in a break\n3. **Quick comps reasoning** (why this price range)\n4. **Best platform** to sell this item\n5. **Sales tip** for live streaming this item\n\nBe specific and actionable. Format with clear headers.`;
+    if(!apiKey){
+      // Demo mode without API key
+      output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set your API key in Settings to enable live AI pricing.</strong><br><br>Demo analysis for: "${desc}"<br><br><strong>Price Range:</strong> Varies by condition and recent sales<br><strong>Break slot:</strong> Factor in your cost + 2-3x markup<br><strong>Tip:</strong> Check recent eBay sold listings for accurate comps</div>`;
+      document.getElementById("ai-price-status").textContent="Set API key in Settings for live AI pricing";
+      return;
+    }
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||"No response";
+    output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
+    document.getElementById("ai-price-status").textContent="Analysis complete";
+  }catch(e){
+    output.innerHTML=`<div class="ai-msg ai" style="color:var(--red)">Error: ${e.message}</div>`;
+  }
+  btn.disabled=false;btn.textContent="Get AI Price Recommendation";
 }
 
-async function loadEarnings(ids){
-  let totalGross=0, totalSlots=0;
-  for(const id of ids){
-    try{const b=await bfContract.breaks(id);totalGross+=parseFloat(ethers.formatUnits(b[6],6));totalSlots+=Number(b[3]);}catch(e){}
+async function askCoach(){
+  const q=document.getElementById("coach-q").value.trim();
+  if(!q){toast("Ask a question",true);return;}
+  const apiKey=localStorage.getItem("droppa-apikey");
+  const btn=document.getElementById("coach-btn");
+  btn.disabled=true;btn.textContent="Coaching...";
+  const output=document.getElementById("ai-output");
+  output.innerHTML=`<div class="ai-msg loading">Coach is thinking...</div>`;
+  try{
+    const prompt=`You are a live commerce sales coach for Droppa, specializing in trading card breaks on platforms like TikTok, Whatnot, and YouTube. Give concise, high-energy, actionable coaching.\n\nSeller asks: ${q}\n\nProvide specific, practical advice for live streaming. Keep it punchy and motivating.`;
+    if(!apiKey){
+      output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live coaching.</strong><br><br>Demo tip: Create urgency by announcing "LAST 5 SLOTS" when you have 5+ remaining. Show the box, hype the potential pulls, and use countdowns.</div>`;
+      btn.disabled=false;btn.textContent="Ask Coach";return;
+    }
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||"No response";
+    output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
+  }catch(e){
+    output.innerHTML=`<div class="ai-msg ai" style="color:var(--red)">Error: ${e.message}</div>`;
   }
-  document.getElementById("e-gross").textContent = "$"+totalGross.toFixed(0);
-  document.getElementById("e-net").textContent = "$"+(totalGross*.99).toFixed(0);
-  document.getElementById("e-ltn").textContent = (totalSlots*.001).toFixed(3)+" LTN";
-  document.getElementById("e-breaks").textContent = ids.length;
-  document.getElementById("e-slots").textContent = totalSlots;
-  document.getElementById("earnings-table").innerHTML = ids.length===0?"<div style='color:var(--soft);font-size:.8rem;text-align:center;padding:20px'>No breaks yet</div>":
-    `<table class="table"><thead><tr><th>Break</th><th>Gross</th><th>Net</th><th>Slots</th></tr></thead><tbody>${
-      ids.slice(0,10).map(id=>`<tr><td style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">${id.slice(0,14)}...</td><td class="purp" style="font-family:JetBrains Mono,monospace">—</td><td class="grn" style="font-family:JetBrains Mono,monospace">—</td><td>—</td></tr>`).join("")
-    }</tbody></table>`;
+  btn.disabled=false;btn.textContent="Ask Coach";
+}
+
+// ── Social Clips ──────────────────────────────────────────────────
+async function generateClip(){
+  const ctx=document.getElementById("clip-context").value.trim();
+  if(!ctx){toast("Describe the break or item",true);return;}
+  const platform=document.getElementById("clip-platform").value;
+  const tone=document.getElementById("clip-tone").value;
+  const apiKey=localStorage.getItem("droppa-apikey");
+  const btn=document.getElementById("clip-btn");
+  btn.disabled=true;btn.textContent="Generating...";
+  const output=document.getElementById("clip-output");
+  output.innerHTML=`<div class="ai-msg loading">Generating content...</div>`;
+  try{
+    const prompt=`You are a social media content creator for live trading card commerce on Droppa. Create platform-optimized content.\n\nContext: ${ctx}\nPlatform: ${platform}\nTone: ${tone}\n\nGenerate:\n1. **Hook** (first 3 seconds — must stop the scroll)\n2. **Script** (15-30 second script optimized for ${platform})\n3. **Caption** with hashtags\n4. **CTA** (call to action)\n\nMake it authentic and engaging for the ${platform} algorithm.`;
+    if(!apiKey){
+      output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live clip generation.</strong><br><br>Demo clip for ${platform}:<br><br><strong>Hook:</strong> "Wait... is this real?! 👀"<br><br><strong>Script:</strong> Just pulled this from the break — [show card] — this is exactly why we do these breaks. Slots still available, link in bio!<br><br><strong>Caption:</strong> ${ctx.slice(0,80)}... #trading cards #cardbreaks #droppa<br><br><strong>CTA:</strong> Join the next break → link in bio</div>`;
+      btn.disabled=false;btn.textContent="Generate Script + Hook";return;
+    }
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||"No response";
+    output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
+  }catch(e){
+    output.innerHTML=`<div class="ai-msg ai" style="color:var(--red)">Error: ${e.message}</div>`;
+  }
+  btn.disabled=false;btn.textContent="Generate Script + Hook";
+}
+
+function useTemplate(t){document.getElementById("clip-context").value=t;document.getElementById("clip-context").focus();}
+
+// ── Referrals ─────────────────────────────────────────────────────
+function addReferral(){
+  const r=document.getElementById("ref-new").value.trim();
+  if(!r){toast("Enter wallet or username",true);return;}
+  const ref={id:r,tier:1,added:Date.now(),earnings:0};
+  referrals.push(ref);
+  localStorage.setItem("droppa-refs",JSON.stringify(referrals));
+  document.getElementById("ref-new").value="";
+  document.getElementById("ref-status").textContent="✓ Referral recorded";
+  renderReferrals();
+  toast("Referral added ✓");
+}
+
+function renderReferrals(){
+  const t1=referrals.filter(r=>r.tier===1).length;
+  const t2=referrals.filter(r=>r.tier===2).length;
+  const monthly=(t1*0.25+t2*0.10)*99; // 25% or 10% of $99/mo sub
+  document.getElementById("ref-t1-count").textContent=t1;
+  document.getElementById("ref-t2-count").textContent=t2;
+  document.getElementById("ref-monthly").textContent="$"+monthly.toFixed(2);
+  document.getElementById("ref-annual").textContent="$"+(monthly*12).toFixed(2);
+  document.getElementById("ref-refs").textContent=referrals.length;
+  const el=document.getElementById("ref-tree");
+  if(!referrals.length){el.innerHTML="<div style='color:var(--soft);font-size:.78rem'>No referrals yet</div>";return;}
+  el.innerHTML=referrals.map(r=>`
+    <div class="ref-node ref-l${r.tier}">
+      <span style="font-size:.8rem">${r.tier===1?"👤":"👥"}</span>
+      <span style="flex:1;font-family:JetBrains Mono,monospace;font-size:.72rem;color:var(--purp)">${r.id.length>20?r.id.slice(0,10)+"..."+r.id.slice(-6):r.id}</span>
+      <span style="font-size:.7rem;color:var(--soft)">Tier ${r.tier} · ${r.tier===1?"25%":"10%"}</span>
+    </div>`).join("");
+}
+
+function copyRefLink(){
+  const link=document.getElementById("ref-link").textContent;
+  navigator.clipboard?.writeText(link);
+  toast("Link copied ✓");
+}
+
+function shareRefLink(){
+  const link=document.getElementById("ref-link").textContent;
+  if(navigator.share){navigator.share({title:"Join Droppa",text:"Use my referral link to join Droppa:",url:link});}
+  else{copyRefLink();}
+}
+
+// ── Analytics ─────────────────────────────────────────────────────
+async function refreshAnalytics(){
+  if(!bfContract||!addr)return;
+  try{
+    let myGMV=0,mySlots=0;
+    const ids=await bfContract.getSellerBreaks(addr);
+    const bars=[];
+    for(const id of ids){
+      try{
+        const b=await bfContract.breaks(id);
+        const g=parseFloat(ethers.formatUnits(b[6],6));
+        const s=Number(b[3]);
+        myGMV+=g;mySlots+=s;
+        bars.push({id:id.slice(0,8),gross:g});
+      }catch(e){}
+    }
+    const myNet=myGMV*.99;
+    ["an-gmv","d-gmv"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+myGMV.toFixed(0);});
+    ["an-net","d-net"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+myNet.toFixed(0);});
+    ["an-breaks","d-breaks"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=ids.length;});
+    ["an-slots"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=mySlots;});
+    document.getElementById("an-ltn").textContent=(mySlots*.001).toFixed(4)+" LTN";
+    document.getElementById("an-fee-droppa").textContent="$"+(myGMV*.01).toFixed(2);
+    document.getElementById("an-fee-ltn").textContent="$"+(myGMV*.001).toFixed(2);
+    document.getElementById("an-fee-ops").textContent="$"+(myGMV*.009).toFixed(2);
+    document.getElementById("an-savings").textContent="$"+(myGMV*.07).toFixed(2)+" vs Whatnot";
+    // Inventory analytics
+    const costTotal=inventory.reduce((s,i)=>s+i.cost,0);
+    const askTotal=inventory.reduce((s,i)=>s+i.ask,0);
+    document.getElementById("an-inv-count").textContent=inventory.length;
+    document.getElementById("an-cost").textContent="$"+costTotal.toFixed(2);
+    document.getElementById("an-ask").textContent="$"+askTotal.toFixed(2);
+    document.getElementById("an-profit").textContent="$"+(askTotal-costTotal).toFixed(2);
+    // Bars
+    const maxGross=Math.max(...bars.map(b=>b.gross),1);
+    document.getElementById("analytics-bars").innerHTML=bars.length?
+      bars.slice(-8).map(b=>`<div class="bar-row"><div class="bar-label">${b.id}</div><div class="bar-track"><div class="bar-fill" style="width:${(b.gross/maxGross*100).toFixed(0)}%;background:var(--purp)"></div></div><div class="bar-val">$${b.gross.toFixed(0)}</div></div>`).join(""):
+      "<div style='color:var(--soft);font-size:.78rem;text-align:center;padding:12px'>No breaks yet</div>";
+  }catch(e){}
+  updateInvStats();
+}
+
+// ── Settings ──────────────────────────────────────────────────────
+function saveSettings(){
+  settings={name:document.getElementById("set-name").value,cat:document.getElementById("set-cat").value,price:document.getElementById("set-price").value};
+  localStorage.setItem("droppa-settings",JSON.stringify(settings));
+  const s=document.getElementById("set-status");
+  s.textContent="✓ Saved";s.style.color="var(--grn)";
+  setTimeout(()=>s.textContent="",2000);
+  toast("Settings saved ✓");
+}
+
+async function testConnection(){
+  const el=document.getElementById("conn-status");
+  try{
+    const p=provider||new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+    const block=await p.getBlockNumber();
+    el.textContent="✓ Connected · Block "+block;el.style.color="var(--grn)";
+  }catch(e){el.textContent="✗ "+e.message.split("(")[0];el.style.color="var(--red)";}
+}
+
+async function getTestUSDC(){
+  if(!usdcContract){alert("Connect wallet");return;}
+  await(await usdcContract.faucet()).wait();
+  toast("10,000 USDC added ✓");
 }
 
 function show(id){
-  const ids=["live","create","mybreaks","results","earnings","compare"];
+  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
-  if(id==="live")loadOnChainBreaks();
-  if(id==="mybreaks")loadMyBreaks();
+  if(id==="dashboard")loadDashboard();
+  if(id==="breaks")loadBreaks();
+  if(id==="analytics")refreshAnalytics();
 }
 
 function toast(msg,err=false){
   const t=document.getElementById("toast");
   t.textContent=msg;t.style.borderColor=err?"var(--red)":"var(--purp)";t.style.color=err?"var(--red)":"var(--purp)";
-  t.style.display="block";setTimeout(()=>t.style.display="none",3500);
+  t.style.display="block";setTimeout(()=>t.style.display="none",3000);
 }
 
+// ── Init ──────────────────────────────────────────────────────────
 window.addEventListener("load",()=>{
-  previewBreak();renderBreaks();
+  previewBreak();
+  renderInventory();updateInvStats();
+  renderReferrals();
+  // Load settings
+  document.getElementById("set-name").value=settings.name||"";
+  document.getElementById("set-price").value=settings.price||65;
+  const savedKey=localStorage.getItem("droppa-apikey");
+  if(savedKey)document.getElementById("set-apikey").value=savedKey;
+  // Load chain data without wallet
+  (async()=>{
+    try{
+      const p=new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+      const block=await p.getBlockNumber();
+      document.getElementById("d-block").textContent=block.toLocaleString();
+    }catch(e){}
+  })();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
 });
