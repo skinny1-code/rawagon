@@ -2,375 +2,604 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>GoldSnap — GTX/STX Tokens</title>
+<title>GoldSnap — GTX/STX Token OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root{--bg:#06060e;--surf:#0c0c1a;--card:#111122;--line:rgba(255,255,255,.07);--wh:#e8e8ff;--soft:#7880a0;--dim:#303060;--gold:#f59e0b;--silver:#9ca3af;--grn:#10b981;--red:#ef4444;--wagon:#00d4ff;}
+:root{
+  --bg:#080600;--s1:#0f0c00;--s2:#151200;--card:#1a1600;
+  --line:rgba(251,191,36,.18);--ln2:rgba(251,191,36,.07);
+  --wh:#fffbea;--soft:#7a6a20;--dim:#3a3000;
+  --gold:#fbbf24;--gd2:rgba(251,191,36,.18);--gd3:rgba(251,191,36,.06);
+  --silver:#d1d5db;--sl2:rgba(209,213,219,.12);--sl3:rgba(209,213,219,.06);
+  --grn:#34d399;--gn2:rgba(52,211,153,.1);
+  --red:#f87171;--blue:#60a5fa;--purp:#a78bfa;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
-.bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:var(--surf);border-bottom:1px solid var(--line);}
-.logo{font-weight:800;color:var(--gold);}
-#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);color:var(--gold);font-size:.78rem;font-weight:700;cursor:pointer;margin-left:auto;}
-#connect-btn.connected{border-color:rgba(16,185,129,.3);color:var(--grn);background:rgba(16,185,129,.08);}
-.tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--line);padding:0 20px;}
-.tab{padding:10px 14px;font-size:.8rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
-.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
-.pane{display:none;padding:18px 20px;max-width:900px;}
+body{background:var(--bg);color:var(--wh);font-family:"Barlow",sans-serif;font-size:14px;min-height:100vh;}
+body::before{content:"";position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),#b45309,var(--gold),transparent);pointer-events:none;z-index:100;}
+
+.hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);}
+.hdr-brand{padding:12px 20px;border-right:1px solid var(--line);display:flex;align-items:center;gap:10px;min-width:180px;}
+.brand-coin{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#fde68a,var(--gold),#b45309);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;color:#000;border:2px solid #f59e0b;}
+.brand-name{font-size:.96rem;font-weight:800;color:var(--gold);}
+.brand-sub{font-size:.6rem;color:var(--soft);letter-spacing:.05em;}
+.hdr-nav{display:flex;flex:1;overflow-x:auto;}
+.nav-item{padding:12px 16px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;}
+.nav-item:hover{color:var(--gold);}
+.nav-item.active{color:var(--gold);border-bottom-color:var(--gold);}
+.hdr-right{display:flex;align-items:center;gap:10px;padding:0 16px;border-left:1px solid var(--line);}
+#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--gold);background:var(--gd2);color:var(--gold);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
+#connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
+
+.pane{display:none;padding:20px 24px 40px;}
 .pane.active{display:block;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
-label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
-input{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
-.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
-.btn-gold{background:var(--gold);color:#000;}
-.btn-silver{background:var(--silver);color:#000;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--card);padding:14px 16px;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;}
+.kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
+.kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
+.gold{color:var(--gold);}.silver{color:var(--silver);}.grn{color:var(--grn);}.red{color:var(--red);}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
+.card-title{font-size:.82rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title.gold-t{color:var(--gold);}.card-title.gold-t::before{content:"";width:3px;height:14px;background:linear-gradient(#fbbf24,#b45309);border-radius:2px;}
+.card-title.silver-t{color:var(--silver);}.card-title.silver-t::before{content:"";width:3px;height:14px;background:linear-gradient(var(--silver),#6b7280);border-radius:2px;}
+.card-title.grn-t{color:var(--grn);}.card-title.grn-t::before{content:"";width:3px;height:14px;background:var(--grn);border-radius:2px;}
+
+label{display:block;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:3px;}
+input,select{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:12px;}
+input:focus{border-color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#d97706);color:#000;}
+.btn-silver{background:linear-gradient(135deg,var(--silver),#9ca3af);color:#000;}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:6px 12px;font-size:.74rem;}
 .btn-grn{background:var(--grn);color:#000;}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:.82rem;}
-.row:last-child{border:none;}
-.val{font-family:monospace;}
-.price-big{font-size:1.8rem;font-weight:700;font-family:monospace;}
-.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;background:var(--card);border:1px solid var(--grn);border-radius:8px;font-size:.8rem;color:var(--grn);z-index:999;display:none;}
+
+/* Live price cards */
+.price-card{border-radius:12px;padding:20px;text-align:center;position:relative;overflow:hidden;}
+.price-card-gold{background:linear-gradient(135deg,#1a1000,#2a1e00,#1a1000);border:1px solid var(--gold);}
+.price-card-silver{background:linear-gradient(135deg,#0e0e10,#181820,#0e0e10);border:1px solid var(--silver);}
+.price-card::before{content:"";position:absolute;top:-40px;left:-40px;width:160px;height:160px;border-radius:50%;opacity:.1;pointer-events:none;}
+.price-card-gold::before{background:radial-gradient(circle,var(--gold),transparent);}
+.price-card-silver::before{background:radial-gradient(circle,var(--silver),transparent);}
+.price-big{font-size:2rem;font-weight:800;font-family:"JetBrains Mono",monospace;line-height:1;}
+.price-change{font-size:.76rem;margin-top:6px;}
+.token-price{font-size:.9rem;font-weight:700;margin-top:10px;}
+
+/* preview */
+.preview-box{padding:14px;background:var(--gd3);border:1px solid var(--line);border-radius:10px;margin:10px 0;font-size:.8rem;}
+.preview-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2);}
+.preview-row:last-child{border:none;font-weight:700;}
+.pval{font-family:"JetBrains Mono",monospace;color:var(--gold);}
+.pval-s{font-family:"JetBrains Mono",monospace;color:var(--silver);}
+
+/* portfolio bar */
+.portfolio-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln2);}
+.portfolio-bar-track{flex:1;height:6px;background:var(--ln2);border-radius:3px;overflow:hidden;}
+.portfolio-bar-fill{height:100%;border-radius:3px;}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:left;padding:8px 10px;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);border-bottom:1px solid var(--line);}
+.tbl td{padding:10px;border-bottom:1px solid var(--ln2);font-size:.8rem;}
+.tbl tr:hover td{background:var(--gd3);}
+
+/* history item */
+.tx-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(--s2);border:1px solid var(--ln2);border-radius:8px;margin-bottom:6px;}
+.tx-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+.tx-mint{background:var(--gd2);}
+.tx-redeem{background:var(--sl2);}
+
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;background:var(--card);border:1px solid var(--gold);border-radius:10px;font-size:.8rem;color:var(--gold);z-index:999;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6);}
 </style>
 </head>
 <body>
-<div class="bar">
-  <span style="font-size:1.1rem">🥇</span>
-  <span class="logo">GoldSnap GTX/STX</span>
-  <span style="font-size:.72rem;color:var(--dim)">GoldMint.sol · RAWNet 720701</span>
-  <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="brand-coin">Au</div>
+    <div><div class="brand-name">GoldSnap</div><div class="brand-sub">GTX/STX Token OS · RAWNet</div></div>
+  </div>
+  <div class="hdr-nav">
+    <div class="nav-item active" onclick="show('prices')">Live Prices</div>
+    <div class="nav-item" onclick="show('mint')">Mint</div>
+    <div class="nav-item" onclick="show('redeem')">Redeem</div>
+    <div class="nav-item" onclick="show('portfolio')">Portfolio</div>
+    <div class="nav-item" onclick="show('reserves')">Reserves</div>
+    <div class="nav-item" onclick="show('history')">History</div>
+    <div class="nav-item" onclick="show('about')">About GTX</div>
+  </div>
+  <div class="hdr-right">
+    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+  </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="showTab('prices')">Live Prices</div>
-  <div class="tab" onclick="showTab('mint')">Mint</div>
-  <div class="tab" onclick="showTab('redeem')">Redeem</div>
-  <div class="tab" onclick="showTab('portfolio')">Portfolio</div>
-  <div class="tab" onclick="showTab('reserves')">Reserves</div>
-</div>
-
-<!-- PRICES TAB -->
+<!-- PRICES -->
 <div class="pane active" id="pane-prices">
-  <div class="g2" style="margin-bottom:14px;">
-    <div class="card" style="text-align:center;border-top:3px solid var(--gold);">
-      <div style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Gold XAU/USD</div>
-      <div class="price-big" style="color:var(--gold)" id="gold-price">Loading...</div>
-      <div style="font-size:.72rem;color:var(--soft);margin-top:4px;">per troy oz</div>
-      <div style="font-size:.82rem;font-weight:600;color:var(--gold);margin-top:8px;" id="gtx-price">GTX = $—</div>
-      <div style="font-size:.7rem;color:var(--soft);">1 GTX = 1/100 oz gold</div>
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val gold" id="kpi-xau">$4,133.80</div><div class="kpi-lbl">Gold XAU/USD</div><div class="kpi-sub">per troy oz</div></div>
+    <div class="kpi"><div class="kpi-val silver" id="kpi-xag">$32.50</div><div class="kpi-lbl">Silver XAG/USD</div><div class="kpi-sub">per troy oz</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="kpi-gtx">$41.34</div><div class="kpi-lbl">GTX Price</div><div class="kpi-sub">1/100 oz gold</div></div>
+    <div class="kpi"><div class="kpi-val silver" id="kpi-stx">$32.50</div><div class="kpi-lbl">STX Price</div><div class="kpi-sub">1 oz silver</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="kpi-block">—</div><div class="kpi-lbl">RAWNet Block</div></div>
+  </div>
+  <div class="g2">
+    <div class="price-card price-card-gold">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--soft);margin-bottom:8px">Gold XAU/USD · Oracle Price</div>
+      <div class="price-big gold" id="p-xau">$4,133.80</div>
+      <div class="price-change"><span class="grn">+0.82%</span> today</div>
+      <div style="margin:12px 0;height:1px;background:var(--line);"></div>
+      <div class="token-price gold">GTX = <span id="p-gtx" style="font-family:JetBrains Mono,monospace">$41.338</span></div>
+      <div style="font-size:.7rem;color:var(--soft);margin-top:3px">1 GTX = 1/100 oz gold</div>
+      <div style="font-size:.7rem;color:var(--soft)">1 GTX = 1g pure gold equiv.</div>
     </div>
-    <div class="card" style="text-align:center;border-top:3px solid var(--silver);">
-      <div style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Silver XAG/USD</div>
-      <div class="price-big" style="color:var(--silver)" id="silver-price">Loading...</div>
-      <div style="font-size:.72rem;color:var(--soft);margin-top:4px;">per troy oz</div>
-      <div style="font-size:.82rem;font-weight:600;color:var(--silver);margin-top:8px;" id="stx-price">STX = $—</div>
-      <div style="font-size:.7rem;color:var(--soft);">1 STX = 1 oz silver</div>
+    <div class="price-card price-card-silver">
+      <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--soft);margin-bottom:8px">Silver XAG/USD · Oracle Price</div>
+      <div class="price-big silver" id="p-xag">$32.50</div>
+      <div class="price-change"><span class="grn">+0.31%</span> today</div>
+      <div style="margin:12px 0;height:1px;background:rgba(209,213,219,.1);"></div>
+      <div class="token-price silver">STX = <span id="p-stx" style="font-family:JetBrains Mono,monospace">$32.50</span></div>
+      <div style="font-size:.7rem;color:var(--soft);margin-top:3px">1 STX = 1 troy oz silver</div>
+      <div style="font-size:.7rem;color:var(--soft)">Backed by USDC reserve</div>
     </div>
   </div>
-  <div class="card">
-    <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">Oracle Source</div>
-    <div class="row"><span style="color:var(--soft)">Testnet</span><span style="font-family:monospace;font-size:.76rem;color:var(--gold)">MockOracle.sol (setPrice by deployer)</span></div>
-    <div class="row"><span style="color:var(--soft)">Mainnet</span><span style="font-family:monospace;font-size:.76rem;color:var(--soft)">Chainlink XAU/USD + XAG/USD</span></div>
-    <div class="row"><span style="color:var(--soft)">Update frequency</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">On-chain pull, every block</span></div>
-    <div class="row"><span style="color:var(--soft)">Decimals</span><span style="font-family:monospace;font-size:.76rem;color:var(--soft)">8 (Chainlink standard)</span></div>
-    <button onclick="loadPrices()" style="margin-top:10px;padding:6px 14px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--soft);font-size:.74rem;cursor:pointer;">Refresh Prices</button>
+  <div class="g2" style="margin-top:18px;">
+    <div class="card">
+      <div class="card-title gold-t">Historical Context</div>
+      <table class="tbl">
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--soft)">Gold ATH</td><td class="gold" style="font-family:JetBrains Mono,monospace">$3,500+ (2025)</td></tr>
+          <tr><td style="color:var(--soft)">Gold 5yr return</td><td class="grn" style="font-family:JetBrains Mono,monospace">+87%</td></tr>
+          <tr><td style="color:var(--soft)">Silver 5yr return</td><td class="grn" style="font-family:JetBrains Mono,monospace">+54%</td></tr>
+          <tr><td style="color:var(--soft)">Gold:Silver ratio</td><td style="font-family:JetBrains Mono,monospace" id="gs-ratio">127:1</td></tr>
+          <tr><td style="color:var(--soft)">GTX mint fee</td><td class="gold" style="font-family:JetBrains Mono,monospace">0.25%</td></tr>
+          <tr><td style="color:var(--soft)">Oracle source</td><td style="font-family:JetBrains Mono,monospace;color:var(--soft)">MockOracle.sol</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title gold-t">Oracle Status</div>
+      <div style="font-size:.78rem;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">XAU Oracle</span><span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">0x5b1869D9...26b24</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">XAG Oracle</span><span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">0xD86C8F03...D5610</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">GoldMint contract</span><span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--gold)">0xFF6049B8...B1cA</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">Decimals</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)">8 (Chainlink std)</span></div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="margin-top:12px;width:100%" onclick="fetchPrices()">↻ Refresh from Oracle</button>
+    </div>
   </div>
 </div>
 
-<!-- MINT TAB -->
+<!-- MINT -->
 <div class="pane" id="pane-mint">
   <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--gold)">Mint GTX (Gold Token)</div>
-      <label>USDC Amount</label>
-      <input type="number" id="mint-gtx-usdc" placeholder="100" oninput="previewMint('gtx')">
-      <div id="gtx-preview" style="display:none;padding:10px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
-        <div class="row"><span style="color:var(--soft)">You pay</span><span class="val" style="color:var(--gold)" id="gtx-pay">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Mint fee (0.25%)</span><span class="val" id="gtx-fee">—</span></div>
-        <div class="row"><span style="color:var(--soft)">You receive</span><span class="val" style="color:var(--gold)" id="gtx-receive">—</span></div>
+    <div>
+      <div class="card" style="margin-bottom:18px;border-top:3px solid var(--gold);">
+        <div class="card-title gold-t">Mint GTX (Gold Token)</div>
+        <label>USDC Amount</label>
+        <input type="number" id="mint-gtx-usdc" placeholder="100.00" step="0.01" oninput="previewMint('gtx')">
+        <div class="preview-box" id="gtx-preview" style="display:none;">
+          <div class="preview-row"><span style="color:var(--soft)">You pay</span><span class="pval" id="gp-pay">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">Mint fee (0.25%)</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)" id="gp-fee">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">GTX price</span><span class="pval" id="gp-price">—</span></div>
+          <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval" style="font-size:.9rem" id="gp-recv">—</span></div>
+        </div>
+        <button class="btn btn-gold" style="width:100%" onclick="mintGTX()">Mint GTX</button>
+        <div id="mint-gtx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
       </div>
-      <button class="btn btn-gold" onclick="mintGTX()">Mint GTX</button>
+      <div class="card" style="border-top:3px solid var(--silver);">
+        <div class="card-title silver-t">Mint STX (Silver Token)</div>
+        <label>USDC Amount</label>
+        <input type="number" id="mint-stx-usdc" placeholder="50.00" step="0.01" oninput="previewMint('stx')">
+        <div class="preview-box" id="stx-preview" style="display:none;background:var(--sl3);border-color:rgba(209,213,219,.15);">
+          <div class="preview-row"><span style="color:var(--soft)">You pay</span><span class="pval-s" id="sp-pay">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">Mint fee (0.25%)</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)" id="sp-fee">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">STX price</span><span class="pval-s" id="sp-price">—</span></div>
+          <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval-s" style="font-size:.9rem" id="sp-recv">—</span></div>
+        </div>
+        <button class="btn btn-silver" style="width:100%" onclick="mintSTX()">Mint STX</button>
+        <div id="mint-stx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
+      </div>
     </div>
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--silver)">Mint STX (Silver Token)</div>
-      <label>USDC Amount</label>
-      <input type="number" id="mint-stx-usdc" placeholder="50" oninput="previewMint('stx')">
-      <div id="stx-preview" style="display:none;padding:10px;background:rgba(156,163,175,.06);border:1px solid rgba(156,163,175,.15);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
-        <div class="row"><span style="color:var(--soft)">You pay</span><span class="val" style="color:var(--silver)" id="stx-pay">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Mint fee (0.25%)</span><span class="val" id="stx-fee">—</span></div>
-        <div class="row"><span style="color:var(--soft)">You receive</span><span class="val" style="color:var(--silver)" id="stx-receive">—</span></div>
+    <div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title gold-t">Your Balances</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="padding:12px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;display:flex;justify-content:space-between;">
+            <span style="color:var(--soft)">USDC</span>
+            <span class="grn" style="font-family:JetBrains Mono,monospace" id="bal-usdc">—</span>
+          </div>
+          <div style="padding:12px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;display:flex;justify-content:space-between;">
+            <span style="color:var(--soft)">GTX Balance</span>
+            <span class="gold" style="font-family:JetBrains Mono,monospace" id="bal-gtx">—</span>
+          </div>
+          <div style="padding:12px;background:var(--sl3);border:1px solid rgba(209,213,219,.1);border-radius:8px;display:flex;justify-content:space-between;">
+            <span style="color:var(--soft)">STX Balance</span>
+            <span class="silver" style="font-family:JetBrains Mono,monospace" id="bal-stx">—</span>
+          </div>
+          <div style="padding:12px;background:var(--s2);border:1px solid var(--ln2);border-radius:8px;display:flex;justify-content:space-between;">
+            <span style="color:var(--soft)">rETH Balance</span>
+            <span style="font-family:JetBrains Mono,monospace;color:var(--wh)" id="bal-eth">—</span>
+          </div>
+        </div>
+        <button class="btn btn-grn btn-sm" style="margin-top:12px;width:100%" onclick="getTestUSDC()">Get 10,000 Test USDC</button>
       </div>
-      <button class="btn btn-silver" onclick="mintSTX()">Mint STX</button>
+      <div class="card">
+        <div class="card-title gold-t">Mint Economics</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Mint fee</span><span class="gold" style="font-family:JetBrains Mono,monospace">0.25%</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fee route</span><span style="font-size:.72rem;color:var(--soft)">→ LTN Treasury (20%)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Collateral ratio</span><span class="grn" style="font-family:JetBrains Mono,monospace">100%</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Price oracle</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)">MockOracle.sol</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Gas per mint</span><span class="grn" style="font-family:JetBrains Mono,monospace">~$0.0000082</span></div>
+        </div>
+      </div>
     </div>
   </div>
-  <div style="margin-top:10px;font-size:.76rem;color:var(--dim);text-align:center;" id="mint-status"></div>
 </div>
 
-<!-- REDEEM TAB -->
+<!-- REDEEM -->
 <div class="pane" id="pane-redeem">
   <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--gold)">Redeem GTX → USDC</div>
-      <div style="font-size:.78rem;color:var(--soft);margin-bottom:10px;">Balance: <span id="gtx-bal" style="color:var(--gold);font-family:monospace">0 GTX</span></div>
+    <div class="card" style="border-top:3px solid var(--gold);">
+      <div class="card-title gold-t">Redeem GTX → USDC</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-bottom:12px;">Balance: <span id="red-gtx-bal" class="gold" style="font-family:JetBrains Mono,monospace">0.000000 GTX</span></div>
       <label>GTX Amount</label>
-      <input type="number" id="redeem-gtx" placeholder="1.0" step="0.001" oninput="previewRedeem('gtx')">
-      <div id="redeem-gtx-preview" style="display:none;font-size:.78rem;padding:8px;background:rgba(245,158,11,.06);border-radius:6px;margin-bottom:10px;">
-        You receive: <span id="redeem-gtx-out" style="color:var(--gold);font-family:monospace">—</span> USDC
+      <input type="number" id="red-gtx-amt" placeholder="1.000000" step="0.000001" oninput="previewRedeem('gtx')">
+      <div class="preview-box" id="red-gtx-preview" style="display:none;">
+        <div class="preview-row"><span style="color:var(--soft)">You burn</span><span class="pval" id="rg-burn">—</span></div>
+        <div class="preview-row"><span style="color:var(--soft)">GTX price</span><span class="pval" id="rg-price">—</span></div>
+        <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval" style="font-size:.9rem" id="rg-recv">—</span></div>
       </div>
-      <button class="btn btn-gold" onclick="redeemGTX()">Redeem GTX</button>
+      <button class="btn btn-gold" style="width:100%" onclick="redeemGTX()">Redeem GTX</button>
+      <div id="red-gtx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
     </div>
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--silver)">Redeem STX → USDC</div>
-      <div style="font-size:.78rem;color:var(--soft);margin-bottom:10px;">Balance: <span id="stx-bal" style="color:var(--silver);font-family:monospace">0 STX</span></div>
+    <div class="card" style="border-top:3px solid var(--silver);">
+      <div class="card-title silver-t">Redeem STX → USDC</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-bottom:12px;">Balance: <span id="red-stx-bal" class="silver" style="font-family:JetBrains Mono,monospace">0.000000 STX</span></div>
       <label>STX Amount</label>
-      <input type="number" id="redeem-stx" placeholder="1.0" step="0.001" oninput="previewRedeem('stx')">
-      <div id="redeem-stx-preview" style="display:none;font-size:.78rem;padding:8px;background:rgba(156,163,175,.06);border-radius:6px;margin-bottom:10px;">
-        You receive: <span id="redeem-stx-out" style="color:var(--silver);font-family:monospace">—</span> USDC
+      <input type="number" id="red-stx-amt" placeholder="1.000000" step="0.000001" oninput="previewRedeem('stx')">
+      <div class="preview-box" id="red-stx-preview" style="display:none;background:var(--sl3);border-color:rgba(209,213,219,.15);">
+        <div class="preview-row"><span style="color:var(--soft)">You burn</span><span class="pval-s" id="rs-burn">—</span></div>
+        <div class="preview-row"><span style="color:var(--soft)">STX price</span><span class="pval-s" id="rs-price">—</span></div>
+        <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval-s" style="font-size:.9rem" id="rs-recv">—</span></div>
       </div>
-      <button class="btn btn-silver" onclick="redeemSTX()">Redeem STX</button>
+      <button class="btn btn-silver" style="width:100%" onclick="redeemSTX()">Redeem STX</button>
+      <div id="red-stx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
     </div>
   </div>
-  <div style="margin-top:10px;font-size:.76rem;color:var(--dim);text-align:center;" id="redeem-status"></div>
 </div>
 
-<!-- PORTFOLIO TAB -->
+<!-- PORTFOLIO -->
 <div class="pane" id="pane-portfolio">
-  <div class="g2">
+  <div class="g3" style="margin-bottom:18px;">
     <div class="card" style="text-align:center;border-top:3px solid var(--gold);">
-      <div style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">GTX Balance</div>
-      <div class="price-big" style="color:var(--gold);font-size:1.4rem;" id="port-gtx">0.000000</div>
-      <div style="font-size:.76rem;color:var(--soft);margin-top:4px;" id="port-gtx-usd">≈ $0.00</div>
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px">GTX Holdings</div>
+      <div style="font-size:1.6rem;font-weight:700;font-family:JetBrains Mono,monospace;color:var(--gold)" id="port-gtx-bal">0.000000</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-top:4px;" id="port-gtx-usd">≈ $0.00</div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:2px" id="port-gtx-oz">0.0000 oz gold equiv.</div>
     </div>
     <div class="card" style="text-align:center;border-top:3px solid var(--silver);">
-      <div style="font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">STX Balance</div>
-      <div class="price-big" style="color:var(--silver);font-size:1.4rem;" id="port-stx">0.000000</div>
-      <div style="font-size:.76rem;color:var(--soft);margin-top:4px;" id="port-stx-usd">≈ $0.00</div>
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px">STX Holdings</div>
+      <div style="font-size:1.6rem;font-weight:700;font-family:JetBrains Mono,monospace;color:var(--silver)" id="port-stx-bal">0.000000</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-top:4px;" id="port-stx-usd">≈ $0.00</div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:2px" id="port-stx-oz">0.0000 oz silver equiv.</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px">Total Portfolio</div>
+      <div style="font-size:1.6rem;font-weight:700;font-family:JetBrains Mono,monospace;color:var(--grn)" id="port-total">$0.00</div>
+      <div style="font-size:.78rem;color:var(--soft);margin-top:4px;">USDC: <span id="port-usdc">—</span></div>
+      <div style="font-size:.7rem;color:var(--dim);margin-top:2px">rETH: <span id="port-eth">—</span></div>
     </div>
   </div>
-  <div class="card" style="margin-top:14px;">
-    <div class="row"><span style="color:var(--soft)">USDC Balance</span><span class="val" style="color:var(--grn)" id="port-usdc">—</span></div>
-    <div class="row"><span style="color:var(--soft)">rETH Balance</span><span class="val" id="port-eth">—</span></div>
-    <button onclick="loadPortfolio()" style="margin-top:10px;padding:6px 14px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--soft);font-size:.74rem;cursor:pointer;">Refresh</button>
-    <button onclick="getTestUSDC()" style="margin-top:10px;margin-left:8px;padding:6px 14px;border-radius:6px;border:1px solid rgba(16,185,129,.3);background:rgba(16,185,129,.08);color:var(--grn);font-size:.74rem;cursor:pointer;">Get 10K Test USDC</button>
+  <div class="card">
+    <div class="card-title grn-t">Allocation</div>
+    <div id="portfolio-alloc"></div>
+    <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="loadPortfolio()">↻ Refresh</button>
+    <button class="btn btn-grn btn-sm" style="margin-top:12px;margin-left:8px" onclick="getTestUSDC()">Get Test USDC</button>
   </div>
 </div>
 
-<!-- RESERVES TAB -->
+<!-- RESERVES -->
 <div class="pane" id="pane-reserves">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title gold-t">Collateral Audit</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        <div style="padding:14px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px">GTX Supply</div>
+          <div class="gold" style="font-size:1.2rem;font-weight:700;font-family:JetBrains Mono,monospace" id="res-gtx">—</div>
+        </div>
+        <div style="padding:14px;background:var(--sl3);border:1px solid rgba(209,213,219,.12);border-radius:8px;">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px">STX Supply</div>
+          <div class="silver" style="font-size:1.2rem;font-weight:700;font-family:JetBrains Mono,monospace" id="res-stx">—</div>
+        </div>
+        <div style="padding:14px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);border-radius:8px;">
+          <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-bottom:4px">USDC Reserve</div>
+          <div class="grn" style="font-size:1.2rem;font-weight:700;font-family:JetBrains Mono,monospace" id="res-usdc">—</div>
+        </div>
+        <div style="padding:14px;background:rgba(52,211,153,.05);border:1px solid var(--grn);border-radius:8px;text-align:center;">
+          <div class="grn" style="font-size:.9rem;font-weight:700;">✓ 100% Fully Collateralized</div>
+          <div style="font-size:.7rem;color:var(--soft);margin-top:3px">Every token backed 1:1 by USDC reserve</div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="width:100%" onclick="loadReserves()">↻ Refresh Audit</button>
+    </div>
+    <div class="card">
+      <div class="card-title gold-t">Reserve Architecture</div>
+      <div style="font-size:.76rem;color:var(--soft);line-height:1.9;">
+        <div><strong style="color:var(--gold)">GTX mint:</strong> USDC locked in contract → GTX issued at spot/100</div>
+        <div><strong style="color:var(--gold)">GTX redeem:</strong> GTX burned → USDC released at current spot/100</div>
+        <div><strong style="color:var(--silver)">STX mint:</strong> USDC locked → STX issued at silver spot</div>
+        <div><strong style="color:var(--silver)">STX redeem:</strong> STX burned → USDC at current silver spot</div>
+        <div><strong style="color:var(--grn)">Collateral:</strong> 100% USDC — no leverage, no fractional reserve</div>
+        <div><strong style="color:var(--grn)">Audit:</strong> On-chain at any time — usdcReserve() public view</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="pane" id="pane-history">
   <div class="card">
-    <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;">Collateral Audit</div>
-    <div class="row"><span style="color:var(--soft)">GTX Supply</span><span class="val" style="color:var(--gold)" id="res-gtx-supply">—</span></div>
-    <div class="row"><span style="color:var(--soft)">STX Supply</span><span class="val" style="color:var(--silver)" id="res-stx-supply">—</span></div>
-    <div class="row"><span style="color:var(--soft)">USDC Reserve</span><span class="val" style="color:var(--grn)" id="res-usdc">—</span></div>
-    <div class="row"><span style="color:var(--soft)">Collateral Ratio</span><span style="color:var(--grn);font-family:monospace;font-size:.82rem;font-weight:700">100% Fully Backed</span></div>
-    <button onclick="loadReserves()" style="margin-top:12px;padding:6px 14px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--soft);font-size:.74rem;cursor:pointer;">Refresh Audit</button>
+    <div class="card-title gold-t">Transaction History</div>
+    <div id="tx-history">
+      <div style="color:var(--soft);font-size:.8rem;text-align:center;padding:20px">Connect wallet to view transaction history</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="pane" id="pane-about">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title gold-t">GTX — Gold Snap Token</div>
+      <div style="font-size:.8rem;color:var(--soft);line-height:1.9;margin-bottom:14px;">
+        GTX is a gold-backed ERC-20 token deployed on RAWNet. Each GTX represents 1/100 troy oz of gold. Price tracks the XAU/USD oracle. 100% USDC collateralized.
+      </div>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="color:var(--soft)">Token</td><td class="gold" style="font-family:JetBrains Mono,monospace">GTX</td></tr>
+          <tr><td style="color:var(--soft)">Backing</td><td style="font-family:JetBrains Mono,monospace">1/100 oz gold (USDC proxy)</td></tr>
+          <tr><td style="color:var(--soft)">Oracle</td><td style="font-family:JetBrains Mono,monospace;color:var(--soft)">MockOracle → Chainlink XAU</td></tr>
+          <tr><td style="color:var(--soft)">Mint fee</td><td class="gold" style="font-family:JetBrains Mono,monospace">0.25%</td></tr>
+          <tr><td style="color:var(--soft)">Redeem</td><td class="grn" style="font-family:JetBrains Mono,monospace">Free (gas only)</td></tr>
+          <tr><td style="color:var(--soft)">Min mint</td><td style="font-family:JetBrains Mono,monospace">$1 USDC</td></tr>
+          <tr><td style="color:var(--soft)">Contract</td><td style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">0xFF6049B8...B1cA</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title silver-t">STX — Silver Snap Token</div>
+      <div style="font-size:.8rem;color:var(--soft);line-height:1.9;margin-bottom:14px;">
+        STX tracks XAG/USD silver price. 1 STX = 1 troy oz silver. Same collateral model as GTX — fully backed by USDC, redeemable anytime.
+      </div>
+      <table class="tbl">
+        <tbody>
+          <tr><td style="color:var(--soft)">Token</td><td class="silver" style="font-family:JetBrains Mono,monospace">STX</td></tr>
+          <tr><td style="color:var(--soft)">Backing</td><td style="font-family:JetBrains Mono,monospace">1 oz silver (USDC proxy)</td></div></tr>
+          <tr><td style="color:var(--soft)">Oracle</td><td style="font-family:JetBrains Mono,monospace;color:var(--soft)">MockOracle → Chainlink XAG</td></tr>
+          <tr><td style="color:var(--soft)">Mint fee</td><td class="silver" style="font-family:JetBrains Mono,monospace">0.25%</td></tr>
+          <tr><td style="color:var(--soft)">Use case</td><td style="font-family:JetBrains Mono,monospace;color:var(--soft)">BitPawn collateral, savings</td></tr>
+          <tr><td style="color:var(--soft)">Gold:Silver</td><td style="font-family:JetBrains Mono,monospace" id="ab-ratio">127:1</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const ADDRS = {
-  GoldMint:  "0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",
-  MockUSDC:  "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
-};
-const GOLDMINT_ABI = [
-  "function mintGTX(uint256 usdc) returns (uint256)",
-  "function mintSTX(uint256 usdc) returns (uint256)",
-  "function redeemGTX(uint256 amt)",
-  "function redeemSTX(uint256 amt)",
-  "function goldPriceUSD() view returns (uint256)",
-  "function silverPriceUSD() view returns (uint256)",
-  "function gtxPrice() view returns (uint256)",
-  "function stxPrice() view returns (uint256)",
-  "function gtxBalance(address) view returns (uint256)",
-  "function stxBalance(address) view returns (uint256)",
-  "function gtxSupply() view returns (uint256)",
-  "function stxSupply() view returns (uint256)",
-  "function usdcReserve() view returns (uint256)",
-];
-const ERC20_ABI = [
-  "function balanceOf(address) view returns (uint256)",
-  "function approve(address,uint256) returns (bool)",
-  "function faucet()",
-];
+const ADDRS={GoldMint:"0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",MockUSDC:"0xFC628dd79137395F3C9744e33b1c5DE554D94882",MockOracleXAU:"0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",MockOracleXAG:"0xD86C8F0327494034F60e25074420BcCF560D5610"};
+const GM_ABI=["function mintGTX(uint256 usdc) returns (uint256)","function mintSTX(uint256 usdc) returns (uint256)","function redeemGTX(uint256 amt)","function redeemSTX(uint256 amt)","function goldPriceUSD() view returns (uint256)","function silverPriceUSD() view returns (uint256)","function gtxPrice() view returns (uint256)","function stxPrice() view returns (uint256)","function gtxBalance(address) view returns (uint256)","function stxBalance(address) view returns (uint256)","function gtxSupply() view returns (uint256)","function stxSupply() view returns (uint256)","function usdcReserve() view returns (uint256)"];
+const ORC_ABI=["function latestAnswer() view returns (int256)"];
+const ERC20_ABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function faucet()"];
 
-let provider, signer, addr, goldContract, usdcContract;
-let prices = { gold: 4133.80, silver: 32.50, gtx: 41.338, stx: 32.50 };
+let provider,signer,addr,gmContract,usdcContract,xauOracle,xagOracle;
+let prices={gold:4133.80,silver:32.50,gtx:41.338,stx:32.50};
+let txHistory=[];
 
-async function connectWallet() {
-  if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
-  await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
-    nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
-    rpcUrls:["http://10.117.122.142:8545"]
-  }]}).catch(()=>{});
-  const accounts = await ethereum.request({method:"eth_requestAccounts"});
-  addr = accounts[0];
-  provider = new ethers.BrowserProvider(window.ethereum);
-  signer = await provider.getSigner();
-  goldContract = new ethers.Contract(ADDRS.GoldMint, GOLDMINT_ABI, signer);
-  usdcContract = new ethers.Contract(ADDRS.MockUSDC, ERC20_ABI, signer);
-  const btn = document.getElementById("connect-btn");
-  btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-  btn.className = "connected";
-  loadPrices();
-  loadPortfolio();
-  showToast("Wallet connected ✓");
+async function connectWallet(){
+  if(!window.ethereum){alert("Open in MetaMask browser");return;}
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"RAWNet Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
+  const accs=await ethereum.request({method:"eth_requestAccounts"});
+  addr=accs[0];
+  provider=new ethers.BrowserProvider(window.ethereum);
+  signer=await provider.getSigner();
+  gmContract=new ethers.Contract(ADDRS.GoldMint,GM_ABI,signer);
+  usdcContract=new ethers.Contract(ADDRS.MockUSDC,ERC20_ABI,signer);
+  xauOracle=new ethers.Contract(ADDRS.MockOracleXAU,ORC_ABI,provider);
+  xagOracle=new ethers.Contract(ADDRS.MockOracleXAG,ORC_ABI,provider);
+  document.getElementById("connect-btn").textContent=addr.slice(0,6)+"..."+addr.slice(-4);
+  document.getElementById("connect-btn").className="on";
+  toast("Wallet connected ✓");
+  fetchPrices();loadPortfolio();loadReserves();
 }
 
-async function loadPrices() {
-  try {
-    if (goldContract) {
-      const gp = await goldContract.goldPriceUSD();
-      const sp = await goldContract.silverPriceUSD();
-      const gtxp = await goldContract.gtxPrice();
-      const stxp = await goldContract.stxPrice();
-      prices.gold = parseFloat(ethers.formatUnits(gp, 8));
-      prices.silver = parseFloat(ethers.formatUnits(sp, 8));
-      prices.gtx = parseFloat(ethers.formatUnits(gtxp, 6));
-      prices.stx = parseFloat(ethers.formatUnits(stxp, 6));
-    }
-  } catch(e) {}
-  document.getElementById("gold-price").textContent = "$"+prices.gold.toFixed(2);
-  document.getElementById("silver-price").textContent = "$"+prices.silver.toFixed(2);
-  document.getElementById("gtx-price").textContent = "GTX = $"+prices.gtx.toFixed(4);
-  document.getElementById("stx-price").textContent = "STX = $"+prices.stx.toFixed(4);
+async function fetchPrices(){
+  const p=provider||new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+  try{
+    const block=await p.getBlockNumber();
+    document.getElementById("kpi-block").textContent=block.toLocaleString();
+  }catch(e){}
+  if(xauOracle){
+    try{
+      const [gp,sp,gtxp,stxp]=await Promise.all([xauOracle.latestAnswer(),xagOracle.latestAnswer(),gmContract.gtxPrice(),gmContract.stxPrice()]);
+      prices.gold=parseFloat(ethers.formatUnits(gp,8));
+      prices.silver=parseFloat(ethers.formatUnits(sp,8));
+      prices.gtx=parseFloat(ethers.formatUnits(gtxp,6));
+      prices.stx=parseFloat(ethers.formatUnits(stxp,6));
+    }catch(e){}
+  }
+  const ratio=(prices.gold/prices.silver).toFixed(0);
+  ["kpi-xau","p-xau"].forEach(id=>document.getElementById(id).textContent="$"+prices.gold.toFixed(2));
+  ["kpi-xag","p-xag"].forEach(id=>document.getElementById(id).textContent="$"+prices.silver.toFixed(2));
+  ["kpi-gtx","p-gtx"].forEach(id=>document.getElementById(id).textContent="$"+prices.gtx.toFixed(4));
+  ["kpi-stx","p-stx"].forEach(id=>document.getElementById(id).textContent="$"+prices.stx.toFixed(4));
+  ["gs-ratio","ab-ratio"].forEach(id=>document.getElementById(id).textContent=ratio+":1");
 }
 
-function previewMint(token) {
-  const usdc = parseFloat(document.getElementById(`mint-${token}-usdc`).value)||0;
-  if (!usdc) { document.getElementById(`${token}-preview`).style.display="none"; return; }
-  const fee = usdc*0.0025;
-  const net = usdc-fee;
-  const receive = token==="gtx" ? (net/prices.gtx).toFixed(6)+" GTX" : (net/prices.stx).toFixed(6)+" STX";
-  document.getElementById(`${token}-pay`).textContent = "$"+usdc.toFixed(2)+" USDC";
-  document.getElementById(`${token}-fee`).textContent = "-$"+fee.toFixed(4);
-  document.getElementById(`${token}-receive`).textContent = receive;
-  document.getElementById(`${token}-preview`).style.display="block";
+function previewMint(t){
+  const usdc=parseFloat(document.getElementById("mint-"+t+"-usdc").value)||0;
+  if(!usdc){document.getElementById(t+"-preview").style.display="none";return;}
+  const fee=usdc*.0025,net=usdc-fee,price=t==="gtx"?prices.gtx:prices.stx,recv=(net/price).toFixed(6);
+  const id=t==="gtx"?"g":"s";
+  document.getElementById(id+"p-pay").textContent="$"+usdc.toFixed(2)+" USDC";
+  document.getElementById(id+"p-fee").textContent="-$"+fee.toFixed(4);
+  document.getElementById(id+"p-price").textContent="$"+price.toFixed(4)+"/"+t.toUpperCase();
+  document.getElementById(id+"p-recv").textContent=recv+" "+t.toUpperCase();
+  document.getElementById(t+"-preview").style.display="block";
 }
 
-function previewRedeem(token) {
-  const amt = parseFloat(document.getElementById(`redeem-${token}`).value)||0;
-  if (!amt) { document.getElementById(`redeem-${token}-preview`).style.display="none"; return; }
-  const price = token==="gtx" ? prices.gtx : prices.stx;
-  document.getElementById(`redeem-${token}-out`).textContent = "$"+(amt*price).toFixed(2);
-  document.getElementById(`redeem-${token}-preview`).style.display="block";
+function previewRedeem(t){
+  const amt=parseFloat(document.getElementById("red-"+t+"-amt").value)||0;
+  if(!amt){document.getElementById("red-"+t+"-preview").style.display="none";return;}
+  const price=t==="gtx"?prices.gtx:prices.stx,recv=(amt*price).toFixed(2);
+  const id=t==="gtx"?"r":"r";const pre=t==="gtx"?"rg":"rs";
+  document.getElementById(pre+"-burn").textContent=amt.toFixed(6)+" "+t.toUpperCase();
+  document.getElementById(pre+"-price").textContent="$"+price.toFixed(4)+"/"+t.toUpperCase();
+  document.getElementById(pre+"-recv").textContent="$"+recv+" USDC";
+  document.getElementById("red-"+t+"-preview").style.display="block";
 }
 
-async function mintGTX() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const usdc = parseFloat(document.getElementById("mint-gtx-usdc").value);
-  if (!usdc) return;
-  document.getElementById("mint-status").textContent = "Approving USDC...";
-  try {
-    const amt = ethers.parseUnits(usdc.toString(),6);
-    await (await usdcContract.approve(ADDRS.GoldMint, amt)).wait();
-    document.getElementById("mint-status").textContent = "Minting GTX...";
-    await (await goldContract.mintGTX(amt)).wait();
-    showToast("GTX minted ✓");
-    document.getElementById("mint-status").textContent = "✓ GTX minted!";
-    loadPortfolio();
-  } catch(e) { document.getElementById("mint-status").textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+async function mintGTX(){
+  if(!signer){alert("Connect wallet");return;}
+  const usdc=parseFloat(document.getElementById("mint-gtx-usdc").value);
+  if(!usdc)return;
+  const s=document.getElementById("mint-gtx-status");
+  s.textContent="Approving USDC...";s.style.color="var(--soft)";
+  try{
+    const amt=ethers.parseUnits(usdc.toString(),6);
+    await(await usdcContract.approve(ADDRS.GoldMint,amt)).wait();
+    s.textContent="Minting GTX...";
+    await(await gmContract.mintGTX(amt)).wait();
+    s.textContent="✓ GTX minted!";s.style.color="var(--grn)";
+    toast("GTX minted ✓");
+    txHistory.unshift({type:"MINT",token:"GTX",usdc,ts:Date.now()});
+    loadPortfolio();loadReserves();
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function mintSTX() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const usdc = parseFloat(document.getElementById("mint-stx-usdc").value);
-  if (!usdc) return;
-  document.getElementById("mint-status").textContent = "Approving USDC...";
-  try {
-    const amt = ethers.parseUnits(usdc.toString(),6);
-    await (await usdcContract.approve(ADDRS.GoldMint, amt)).wait();
-    document.getElementById("mint-status").textContent = "Minting STX...";
-    await (await goldContract.mintSTX(amt)).wait();
-    showToast("STX minted ✓");
-    document.getElementById("mint-status").textContent = "✓ STX minted!";
-    loadPortfolio();
-  } catch(e) { document.getElementById("mint-status").textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+async function mintSTX(){
+  if(!signer){alert("Connect wallet");return;}
+  const usdc=parseFloat(document.getElementById("mint-stx-usdc").value);
+  if(!usdc)return;
+  const s=document.getElementById("mint-stx-status");
+  s.textContent="Approving USDC...";s.style.color="var(--soft)";
+  try{
+    const amt=ethers.parseUnits(usdc.toString(),6);
+    await(await usdcContract.approve(ADDRS.GoldMint,amt)).wait();
+    s.textContent="Minting STX...";
+    await(await gmContract.mintSTX(amt)).wait();
+    s.textContent="✓ STX minted!";s.style.color="var(--grn)";
+    toast("STX minted ✓");
+    txHistory.unshift({type:"MINT",token:"STX",usdc,ts:Date.now()});
+    loadPortfolio();loadReserves();
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function redeemGTX() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const amt = parseFloat(document.getElementById("redeem-gtx").value);
-  if (!amt) return;
-  try {
-    await (await goldContract.redeemGTX(ethers.parseEther(amt.toString()))).wait();
-    showToast("GTX redeemed ✓"); loadPortfolio();
-  } catch(e) { showToast(e.message,true); }
+async function redeemGTX(){
+  if(!signer){alert("Connect wallet");return;}
+  const amt=parseFloat(document.getElementById("red-gtx-amt").value);if(!amt)return;
+  const s=document.getElementById("red-gtx-status");s.textContent="Redeeming...";
+  try{
+    await(await gmContract.redeemGTX(ethers.parseEther(amt.toString()))).wait();
+    s.textContent="✓ GTX redeemed!";s.style.color="var(--grn)";toast("GTX redeemed ✓");
+    loadPortfolio();loadReserves();
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function redeemSTX() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const amt = parseFloat(document.getElementById("redeem-stx").value);
-  if (!amt) return;
-  try {
-    await (await goldContract.redeemSTX(ethers.parseEther(amt.toString()))).wait();
-    showToast("STX redeemed ✓"); loadPortfolio();
-  } catch(e) { showToast(e.message,true); }
+async function redeemSTX(){
+  if(!signer){alert("Connect wallet");return;}
+  const amt=parseFloat(document.getElementById("red-stx-amt").value);if(!amt)return;
+  const s=document.getElementById("red-stx-status");s.textContent="Redeeming...";
+  try{
+    await(await gmContract.redeemSTX(ethers.parseEther(amt.toString()))).wait();
+    s.textContent="✓ STX redeemed!";s.style.color="var(--grn)";toast("STX redeemed ✓");
+    loadPortfolio();loadReserves();
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function loadPortfolio() {
-  if (!goldContract || !addr) return;
-  try {
-    const [gtxBal, stxBal, usdcBal, ethBal] = await Promise.all([
-      goldContract.gtxBalance(addr),
-      goldContract.stxBalance(addr),
-      usdcContract.balanceOf(addr),
-      provider.getBalance(addr),
-    ]);
-    const gtx = parseFloat(ethers.formatEther(gtxBal));
-    const stx = parseFloat(ethers.formatEther(stxBal));
-    document.getElementById("port-gtx").textContent = gtx.toFixed(6);
-    document.getElementById("port-stx").textContent = stx.toFixed(6);
-    document.getElementById("port-gtx-usd").textContent = "≈ $"+(gtx*prices.gtx).toFixed(2);
-    document.getElementById("port-stx-usd").textContent = "≈ $"+(stx*prices.stx).toFixed(2);
-    document.getElementById("port-usdc").textContent = parseFloat(ethers.formatUnits(usdcBal,6)).toFixed(2)+" USDC";
-    document.getElementById("port-eth").textContent = parseFloat(ethers.formatEther(ethBal)).toFixed(4)+" rETH";
-    document.getElementById("gtx-bal").textContent = gtx.toFixed(6)+" GTX";
-    document.getElementById("stx-bal").textContent = stx.toFixed(6)+" STX";
-  } catch(e) {}
+async function loadPortfolio(){
+  if(!gmContract||!addr)return;
+  try{
+    const[gtxB,stxB,usdcB,ethB]=await Promise.all([gmContract.gtxBalance(addr),gmContract.stxBalance(addr),usdcContract.balanceOf(addr),provider.getBalance(addr)]);
+    const gtx=parseFloat(ethers.formatEther(gtxB)),stx=parseFloat(ethers.formatEther(stxB));
+    const usdcVal=parseFloat(ethers.formatUnits(usdcB,6)),ethVal=parseFloat(ethers.formatEther(ethB));
+    const gtxUSD=gtx*prices.gtx,stxUSD=stx*prices.stx,total=gtxUSD+stxUSD;
+    document.getElementById("port-gtx-bal").textContent=gtx.toFixed(6);
+    document.getElementById("port-stx-bal").textContent=stx.toFixed(6);
+    document.getElementById("port-gtx-usd").textContent="≈ $"+gtxUSD.toFixed(2);
+    document.getElementById("port-stx-usd").textContent="≈ $"+stxUSD.toFixed(2);
+    document.getElementById("port-gtx-oz").textContent=(gtx/100).toFixed(4)+" oz gold equiv.";
+    document.getElementById("port-stx-oz").textContent=stx.toFixed(4)+" oz silver equiv.";
+    document.getElementById("port-total").textContent="$"+total.toFixed(2);
+    document.getElementById("port-usdc").textContent=usdcVal.toFixed(2)+" USDC";
+    document.getElementById("port-eth").textContent=ethVal.toFixed(4)+" rETH";
+    ["bal-gtx","red-gtx-bal"].forEach(id=>document.getElementById(id).textContent=gtx.toFixed(6)+" GTX");
+    ["bal-stx","red-stx-bal"].forEach(id=>document.getElementById(id).textContent=stx.toFixed(6)+" STX");
+    document.getElementById("bal-usdc").textContent=usdcVal.toFixed(2)+" USDC";
+    document.getElementById("bal-eth").textContent=ethVal.toFixed(4)+" rETH";
+    const maxUSD=Math.max(gtxUSD,stxUSD,1);
+    document.getElementById("portfolio-alloc").innerHTML=[
+      {label:"GTX",usd:gtxUSD,color:"var(--gold)"},
+      {label:"STX",usd:stxUSD,color:"var(--silver)"},
+    ].map(i=>`<div class="portfolio-row">
+      <div style="width:40px;font-size:.72rem;color:var(--soft)">${i.label}</div>
+      <div class="portfolio-bar-track"><div class="portfolio-bar-fill" style="width:${(i.usd/maxUSD*100).toFixed(0)}%;background:${i.color}"></div></div>
+      <div style="width:80px;text-align:right;font-family:JetBrains Mono,monospace;font-size:.76rem;color:${i.color}">$${i.usd.toFixed(2)}</div>
+    </div>`).join("");
+  }catch(e){}
 }
 
-async function loadReserves() {
-  if (!goldContract) return;
-  try {
-    const [gs, ss, res] = await Promise.all([
-      goldContract.gtxSupply(),
-      goldContract.stxSupply(),
-      goldContract.usdcReserve(),
-    ]);
-    document.getElementById("res-gtx-supply").textContent = parseFloat(ethers.formatEther(gs)).toFixed(6)+" GTX";
-    document.getElementById("res-stx-supply").textContent = parseFloat(ethers.formatEther(ss)).toFixed(6)+" STX";
-    document.getElementById("res-usdc").textContent = "$"+parseFloat(ethers.formatUnits(res,6)).toFixed(2)+" USDC";
-  } catch(e) {}
+async function loadReserves(){
+  if(!gmContract)return;
+  try{
+    const[gs,ss,res]=await Promise.all([gmContract.gtxSupply(),gmContract.stxSupply(),gmContract.usdcReserve()]);
+    document.getElementById("res-gtx").textContent=parseFloat(ethers.formatEther(gs)).toFixed(6)+" GTX";
+    document.getElementById("res-stx").textContent=parseFloat(ethers.formatEther(ss)).toFixed(6)+" STX";
+    document.getElementById("res-usdc").textContent="$"+parseFloat(ethers.formatUnits(res,6)).toFixed(2)+" USDC";
+  }catch(e){}
 }
 
-async function getTestUSDC() {
-  if (!usdcContract) { alert("Connect wallet"); return; }
-  try {
-    await (await usdcContract.faucet()).wait();
-    showToast("10,000 USDC added ✓"); loadPortfolio();
-  } catch(e) { showToast("Error: "+e.message,true); }
+async function getTestUSDC(){
+  if(!usdcContract){alert("Connect wallet");return;}
+  await(await usdcContract.faucet()).wait();
+  toast("10,000 USDC added ✓");loadPortfolio();
 }
 
-function showTab(id) {
-  const ids=["prices","mint","redeem","portfolio","reserves"];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
+function show(id){
+  const ids=["prices","mint","redeem","portfolio","reserves","history","about"];
+  document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
-  if(id==="prices") loadPrices();
-  if(id==="portfolio") loadPortfolio();
-  if(id==="reserves") loadReserves();
+  if(id==="prices")fetchPrices();
+  if(id==="portfolio")loadPortfolio();
+  if(id==="reserves")loadReserves();
+  if(id==="history"){
+    const el=document.getElementById("tx-history");
+    if(!txHistory.length){el.innerHTML="<div style='color:var(--soft);text-align:center;padding:20px'>No transactions yet</div>";return;}
+    el.innerHTML=txHistory.map(t=>`<div class="tx-item"><div class="tx-icon ${t.type==='MINT'?'tx-mint':'tx-redeem'}">${t.type==="MINT"?"↑":"↓"}</div><div style="flex:1"><div style="font-size:.82rem;font-weight:600">${t.type} ${t.token}</div><div style="font-size:.7rem;color:var(--soft)">${new Date(t.ts).toLocaleString()}</div></div><div class="gold" style="font-family:JetBrains Mono,monospace">$${t.usdc?.toFixed(2)||"—"}</div></div>`).join("");
+  }
 }
 
-function showToast(msg,err=false){
+function toast(msg,err=false){
   const t=document.getElementById("toast");
-  t.textContent=msg;t.style.borderColor=err?"#ef4444":"#10b981";t.style.color=err?"#ef4444":"#10b981";
+  t.textContent=msg;t.style.borderColor=err?"var(--red)":"var(--gold)";t.style.color=err?"var(--red)":"var(--gold)";
   t.style.display="block";setTimeout(()=>t.style.display="none",3000);
 }
 
 window.addEventListener("load",()=>{
-  loadPrices();
+  fetchPrices();setInterval(fetchPrices,30000);
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+  ethereum?.on("accountsChanged",()=>location.reload());
 });
 </script>
 </body></html>

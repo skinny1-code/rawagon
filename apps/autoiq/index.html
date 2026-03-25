@@ -3,314 +3,716 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AutoIQ — Vehicle Title OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root{--bg:#06060e;--surf:#0c0c1a;--card:#111122;--line:rgba(255,255,255,.07);--wh:#e8e8ff;--soft:#7880a0;--dim:#303060;--blue:#3b82f6;--grn:#10b981;--gold:#f59e0b;--red:#ef4444;--wagon:#00d4ff;}
+:root{
+  --bg:#030609;--s1:#050b10;--s2:#080f18;--card:#0c1520;
+  --line:rgba(96,165,250,.15);--ln2:rgba(96,165,250,.06);
+  --wh:#e8f4ff;--soft:#4a7090;--dim:#1e3a50;
+  --blue:#60a5fa;--bl2:rgba(96,165,250,.15);--bl3:rgba(96,165,250,.06);
+  --cyan:#22d3ee;--cy2:rgba(34,211,238,.1);
+  --grn:#34d399;--gn2:rgba(52,211,153,.1);
+  --gold:#fbbf24;--red:#f87171;--purp:#a78bfa;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;}
-.bar{display:flex;align-items:center;gap:10px;padding:8px 20px;background:var(--surf);border-bottom:1px solid var(--line);}
-#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.1);color:var(--blue);font-size:.78rem;font-weight:700;cursor:pointer;margin-left:auto;}
-#connect-btn.connected{border-color:rgba(16,185,129,.3);color:var(--grn);background:rgba(16,185,129,.08);}
-.tabs{display:flex;background:var(--surf);border-bottom:1px solid var(--line);padding:0 20px;}
-.tab{padding:10px 14px;font-size:.8rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--soft);}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
-.pane{display:none;padding:18px 20px;max-width:900px;}
+body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;}
+/* road line */
+body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);pointer-events:none;z-index:100;}
+
+.hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);}
+.hdr-brand{padding:12px 20px;border-right:1px solid var(--line);display:flex;align-items:center;gap:10px;min-width:180px;}
+.brand-plate{padding:4px 8px;background:var(--wh);color:#000;font-weight:800;font-size:.7rem;border-radius:3px;letter-spacing:.1em;border:1px solid #888;}
+.brand-name{font-size:.96rem;font-weight:800;color:var(--blue);}
+.brand-sub{font-size:.6rem;color:var(--soft);letter-spacing:.05em;}
+.hdr-nav{display:flex;flex:1;overflow-x:auto;}
+.nav-item{padding:12px 16px;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
+.nav-item:hover{color:var(--blue);}
+.nav-item.active{color:var(--blue);border-bottom-color:var(--blue);}
+.hdr-right{display:flex;align-items:center;gap:10px;padding:0 16px;border-left:1px solid var(--line);}
+#connect-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--blue);background:var(--bl2);color:var(--blue);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
+#connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+.pane{display:none;padding:20px 24px 40px;}
 .pane.active{display:block;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;}
-label{display:block;font-size:.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;text-transform:uppercase;}
-input{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:8px 10px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:10px;}
-.btn{padding:9px 18px;border-radius:6px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;width:100%;margin-top:4px;}
-.btn-blue{background:var(--blue);color:#fff;}
-.btn-grn{background:var(--grn);color:#000;}
-.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:.82rem;}
-.row:last-child{border:none;}
-.val{font-family:monospace;color:var(--blue);}
-.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.kpi{background:var(--card);padding:14px 16px;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
+.kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
+.blue{color:var(--blue);}.cyan{color:var(--cyan);}.grn{color:var(--grn);}.gold{color:var(--gold);}.red{color:var(--red);}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;}
+.card-title{font-size:.82rem;font-weight:700;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:"";width:3px;height:14px;background:linear-gradient(var(--blue),var(--cyan));border-radius:2px;}
+
+label{display:block;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:3px;}
+input,select{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.84rem;font-family:inherit;outline:none;margin-bottom:12px;transition:.1s;}
+input:focus,select:focus{border-color:var(--blue);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn{padding:10px 20px;border-radius:8px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;}
+.btn-blue{background:var(--blue);color:#000;}.btn-blue:hover{background:#3b82f6;}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--soft);}.btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+.btn-sm{padding:6px 12px;font-size:.74rem;}
+
+/* VIN decode card */
+.vin-result{background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:12px;}
+.vin-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.vin-make{font-size:1.1rem;font-weight:800;color:var(--blue);}
+.vin-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.vin-field{padding:6px 8px;background:var(--card);border-radius:6px;display:flex;flex-direction:column;}
+.vin-label{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;}
+.vin-value{font-size:.8rem;font-weight:600;margin-top:1px;}
+
+/* NFT card visual */
+.nft-card{background:linear-gradient(135deg,#0a1525 0%,#051020 50%,#030a18 100%);border:1px solid var(--blue);border-radius:16px;padding:20px;position:relative;overflow:hidden;min-height:160px;}
+.nft-card::before{content:"";position:absolute;top:-30px;right:-30px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(96,165,250,.08),transparent 70%);pointer-events:none;}
+.nft-plate{padding:6px 12px;background:var(--wh);border-radius:4px;display:inline-block;color:#000;font-weight:800;font-size:.8rem;letter-spacing:.12em;border:2px solid #888;margin-bottom:8px;}
+.nft-vin{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--soft);letter-spacing:.08em;margin-bottom:6px;}
+.nft-id{font-family:"JetBrains Mono",monospace;font-size:.6rem;color:var(--dim);}
+
+/* Recall card */
+.recall-card{padding:12px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.2);border-radius:10px;margin-bottom:8px;}
+.recall-title{font-size:.82rem;font-weight:700;color:var(--red);margin-bottom:6px;}
+.recall-desc{font-size:.74rem;color:var(--soft);line-height:1.5;}
+.recall-remedy{font-size:.72rem;color:var(--gold);margin-top:6px;}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:left;padding:8px 10px;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);border-bottom:1px solid var(--line);}
+.tbl td{padding:10px;border-bottom:1px solid var(--ln2);font-size:.8rem;vertical-align:middle;}
+.tbl tr:hover td{background:var(--bl3);}
+
+.badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:.64rem;font-weight:700;}
+.badge-live{background:var(--gn2);color:var(--grn);border:1px solid rgba(52,211,153,.25);}
+.badge-nft{background:var(--bl2);color:var(--blue);border:1px solid rgba(96,165,250,.25);}
+
+.preview-box{padding:14px;background:var(--bl3);border:1px solid var(--line);border-radius:10px;margin:12px 0;font-size:.8rem;}
+.preview-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2);}
+.preview-row:last-child{border:none;}
+.pval{font-family:"JetBrains Mono",monospace;color:var(--blue);}
+
+/* History timeline */
+.history-item{padding:10px 0 10px 16px;border-left:2px solid var(--line);position:relative;margin-left:8px;}
+.history-item::before{content:"";position:absolute;left:-5px;top:14px;width:8px;height:8px;border-radius:50%;background:var(--blue);}
+.history-date{font-size:.68rem;color:var(--dim);margin-bottom:2px;}
+.history-event{font-size:.8rem;font-weight:600;}
+.history-sub{font-size:.72rem;color:var(--soft);}
+
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;background:var(--card);border:1px solid var(--blue);border-radius:10px;font-size:.8rem;color:var(--blue);z-index:999;display:none;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--ln2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;background:var(--card);border:1px solid var(--grn);border-radius:8px;font-size:.8rem;color:var(--grn);z-index:999;display:none;}
 </style>
 </head>
 <body>
-<div class="bar">
-  <span style="font-size:1.1rem">🚗</span>
-  <span style="font-weight:800;color:var(--blue)">AutoIQ</span>
-  <span style="font-size:.72rem;color:var(--dim)">IQTitle.sol · IQCAR ERC-721 · RAWNet 720701</span>
-  <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
-</div>
-<div class="tabs">
-  <div class="tab active" onclick="showTab('decode')">VIN Decode</div>
-  <div class="tab" onclick="showTab('mint')">Mint IQCAR</div>
-  <div class="tab" onclick="showTab('mytitles')">My Titles</div>
-  <div class="tab" onclick="showTab('transfer')">Transfer</div>
-  <div class="tab" onclick="showTab('recalls')">Recalls</div>
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="brand-plate">IQCAR</div>
+    <div><div class="brand-name">AutoIQ</div><div class="brand-sub">Vehicle Title OS · RAWNet</div></div>
+  </div>
+  <div class="hdr-nav">
+    <div class="nav-item active" onclick="show('decode')">VIN Decode</div>
+    <div class="nav-item" onclick="show('mint')">Mint IQCAR</div>
+    <div class="nav-item" onclick="show('mytitles')">My Titles</div>
+    <div class="nav-item" onclick="show('transfer')">Transfer</div>
+    <div class="nav-item" onclick="show('history')">History</div>
+    <div class="nav-item" onclick="show('recalls')">Recalls</div>
+    <div class="nav-item" onclick="show('compare')">vs DMV</div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-dot"></div>
+    <span id="nhtsa-status" style="font-size:.68rem;color:var(--soft)">NHTSA Live</span>
+    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+  </div>
 </div>
 
+<!-- VIN DECODE -->
 <div class="pane active" id="pane-decode">
+  <div class="kpi-strip">
+    <div class="kpi"><div class="kpi-val blue" id="k-minted">0</div><div class="kpi-lbl">Titles Minted</div><div class="kpi-sub">on-chain</div></div>
+    <div class="kpi"><div class="kpi-val grn">$0.001</div><div class="kpi-lbl">Transfer Cost</div><div class="kpi-sub">vs $75-150 DMV</div></div>
+    <div class="kpi"><div class="kpi-val cyan">500ms</div><div class="kpi-lbl">Settlement</div><div class="kpi-sub">vs 4-8 wks DMV</div></div>
+    <div class="kpi"><div class="kpi-val gold">0.3%</div><div class="kpi-lbl">Mint Fee</div><div class="kpi-sub">of sale price</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="k-block">—</div><div class="kpi-lbl">RAWNet Block</div></div>
+  </div>
   <div class="g2">
     <div>
       <div class="card">
-        <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--blue)">VIN Lookup</div>
-        <label>VIN (17 characters)</label>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <input id="vin-input" placeholder="5YJSA1DG9DFP14947" maxlength="17" style="margin:0;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-          <button onclick="decodeVIN()" id="decode-btn" style="padding:8px 14px;border-radius:6px;border:none;background:var(--blue);color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;">Decode</button>
+        <div class="card-title">VIN Lookup — NHTSA Live API</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input id="vin-input" placeholder="5YJSA1DG9DFP14947" maxlength="17" style="margin:0;flex:1;text-transform:uppercase;font-family:JetBrains Mono,monospace;letter-spacing:.1em;" oninput="this.value=this.value.toUpperCase()">
+          <button class="btn btn-blue" id="decode-btn" onclick="decodeVIN()" style="white-space:nowrap">Decode</button>
+        </div>
+        <!-- VIN anatomy -->
+        <div id="vin-anatomy" style="margin-bottom:12px;display:none">
+          <div style="font-size:.66rem;color:var(--soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">VIN Structure</div>
+          <div style="display:flex;gap:2px;font-family:JetBrains Mono,monospace;font-size:.72rem;">
+            <div style="background:rgba(96,165,250,.2);border:1px solid var(--blue);padding:4px 6px;border-radius:3px;" id="v-wmi" title="World Manufacturer ID">WMI</div>
+            <div style="background:rgba(34,211,238,.15);border:1px solid var(--cyan);padding:4px 6px;border-radius:3px;" id="v-vds" title="Vehicle Descriptor Section">VDS</div>
+            <div style="background:rgba(52,211,153,.1);border:1px solid var(--grn);padding:4px 6px;border-radius:3px;" id="v-vis" title="Vehicle Identifier Section">VIS</div>
+          </div>
         </div>
         <div id="decode-result"></div>
       </div>
     </div>
     <div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">Sample VINs to Try</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          ${[
+            ["5YJSA1DG9DFP14947","2013 Tesla Model S"],
+            ["1HGBH41JXMN109186","1991 Honda Accord"],
+            ["2T1BURHE0JC043821","2018 Toyota Corolla"],
+            ["1FTFW1ET5DKE32792","2013 Ford F-150"],
+          ].map(([vin,label])=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--s2);border:1px solid var(--ln2);border-radius:8px;cursor:pointer;" onclick="useVIN('${vin}')">
+            <span style="font-family:JetBrains Mono,monospace;font-size:.72rem;color:var(--blue)">${vin}</span>
+            <span style="font-size:.72rem;color:var(--soft);margin-left:auto">${label}</span>
+            <span style="font-size:.7rem;color:var(--dim)">→</span>
+          </div>`).join("")}
+        </div>
+      </div>
       <div class="card">
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">IQCAR vs Paper Title</div>
-        <div class="row"><span style="color:var(--soft)">Transfer cost</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">~$0.001</span></div>
-        <div class="row"><span style="color:var(--soft)">DMV cost</span><span style="font-family:monospace;font-size:.76rem;color:var(--red)">$75–$150</span></div>
-        <div class="row"><span style="color:var(--soft)">Settlement time</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">500ms</span></div>
-        <div class="row"><span style="color:var(--soft)">DMV time</span><span style="font-family:monospace;font-size:.76rem;color:var(--red)">4–8 weeks</span></div>
-        <div class="row"><span style="color:var(--soft)">Lost title</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">Impossible</span></div>
-        <div class="row"><span style="color:var(--soft)">Fraud prevention</span><span style="font-family:monospace;font-size:.76rem;color:var(--grn)">Cryptographic</span></div>
-        <div class="row"><span style="color:var(--soft)">Titles minted</span><span class="val" id="total-minted">Loading...</span></div>
+        <div class="card-title">IQCAR Benefits</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Lost title risk</span><span class="grn">Impossible</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fraud prevention</span><span class="grn">Cryptographic</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">History immutable</span><span class="grn">On-chain forever</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Works across borders</span><span class="grn">Global EVM</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="cyan">On-chain (Q3 2026)</span></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- MINT -->
 <div class="pane" id="pane-mint">
   <div class="g2">
-    <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;color:var(--blue)">Mint IQCAR Title NFT</div>
-      <label>VIN</label>
-      <input id="mint-vin" placeholder="5YJSA1DG9DFP14947" maxlength="17" oninput="this.value=this.value.toUpperCase();calcFee()">
-      <label>Sale Price ($)</label>
-      <input type="number" id="mint-price" placeholder="18000" oninput="calcFee()">
-      <label>Buyer Wallet Address</label>
-      <input id="mint-buyer" placeholder="0x... (or leave blank to mint to yourself)">
-      <div id="mint-fee-preview" style="display:none;padding:10px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:7px;margin-bottom:10px;font-size:.78rem;">
-        <div class="row"><span style="color:var(--soft)">Sale price</span><span class="val" id="mfp-price">—</span></div>
-        <div class="row"><span style="color:var(--soft)">IQTitle fee (0.3%)</span><span style="font-family:monospace;color:var(--red)" id="mfp-fee">—</span></div>
-        <div class="row"><span style="color:var(--soft)">Gas</span><span style="font-family:monospace;color:var(--grn)">~$0.001</span></div>
-        <div class="row"><span style="font-weight:700">Token ID</span><span class="val" style="font-size:.68rem" id="mfp-tokenid">—</span></div>
+    <div>
+      <div class="card">
+        <div class="card-title">Mint IQCAR Title NFT</div>
+        <div class="form-row">
+          <div>
+            <label>VIN (17 characters)</label>
+            <input id="m-vin" placeholder="5YJSA1DG9DFP14947" maxlength="17" style="text-transform:uppercase;font-family:JetBrains Mono,monospace;letter-spacing:.08em" oninput="this.value=this.value.toUpperCase();previewMint()">
+          </div>
+          <div>
+            <label>Sale Price ($)</label>
+            <input type="number" id="m-price" placeholder="18000" oninput="previewMint()">
+          </div>
+        </div>
+        <label>Buyer Wallet Address</label>
+        <input id="m-buyer" placeholder="0x... (leave blank for your wallet)">
+        <div class="preview-box" id="mint-preview" style="display:none;">
+          <div class="preview-row"><span style="color:var(--soft)">Sale price</span><span class="pval" id="mp-price">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">Mint fee (0.3%)</span><span style="font-family:JetBrains Mono,monospace;color:var(--soft)" id="mp-fee">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">Token ID (keccak256)</span><span class="pval" id="mp-tid" style="font-size:.64rem">—</span></div>
+          <div class="preview-row"><span style="color:var(--soft)">Gas</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">~$0.001</span></div>
+          <div class="preview-row" style="font-weight:700"><span>IQCAR minted to</span><span class="pval" id="mp-buyer" style="font-size:.7rem">—</span></div>
+        </div>
+        <button class="btn btn-blue" style="width:100%" onclick="mintTitle()">Mint IQCAR NFT On-Chain</button>
+        <div id="mint-status" style="margin-top:10px;font-size:.76rem;text-align:center;color:var(--soft);min-height:20px;"></div>
       </div>
-      <button class="btn btn-blue" onclick="mintTitle()">Mint IQCAR NFT</button>
-      <div id="mint-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);"></div>
     </div>
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;">How It Works</div>
-      <div style="font-size:.78rem;color:var(--soft);line-height:1.8;">
-        <div>1. Enter VIN + sale price</div>
-        <div>2. Token ID = keccak256(VIN) — deterministic</div>
-        <div>3. NFT minted to buyer wallet on RAWNet</div>
-        <div>4. Transfer = legal title transfer (0.3% fee)</div>
-        <div>5. On-chain ownership history forever</div>
-        <div>6. DMV integration via oracle (Q3 2026)</div>
+    <div>
+      <!-- NFT Preview -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:.7rem;color:var(--soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Preview</div>
+        <div class="nft-card">
+          <div style="font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">IQCAR · ERC-721 · RAWNet</div>
+          <div class="nft-plate" id="preview-plate">•••• ••••• •••••••</div>
+          <div class="nft-vin" id="preview-vin">VIN: not entered</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
+            <div>
+              <div style="font-size:.62rem;color:var(--dim)">Token ID</div>
+              <div class="nft-id" id="preview-tid">—</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:.62rem;color:var(--dim)">Network</div>
+              <div style="font-size:.72rem;color:var(--blue);font-weight:700">RAWNet 720701</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">How Minting Works</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.9;">
+          <div>1. Enter VIN → Token ID = keccak256(VIN)</div>
+          <div>2. Each VIN can only be minted once</div>
+          <div>3. NFT minted to buyer wallet on RAWNet</div>
+          <div>4. 0.3% fee on sale price → LTN stakers</div>
+          <div>5. On-chain history: permanent + immutable</div>
+          <div>6. DMV oracle integration: Q3 2026</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- MY TITLES -->
 <div class="pane" id="pane-mytitles">
-  <div style="margin-bottom:14px;display:flex;gap:10px;align-items:center;">
-    <div style="font-size:.86rem;font-weight:700;">My IQCAR Titles</div>
-    <button onclick="loadMyTitles()" style="padding:5px 12px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--soft);font-size:.74rem;cursor:pointer;">Refresh</button>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+    <div style="font-size:.9rem;font-weight:700">My IQCAR Titles</div>
+    <button class="btn btn-outline btn-sm" onclick="loadMyTitles()">↻ Refresh</button>
+    <div style="margin-left:auto;font-size:.76rem;color:var(--soft)" id="titles-count"></div>
   </div>
-  <div id="my-titles-list"><div style="color:var(--soft);text-align:center;padding:30px;">Connect wallet to view titles</div></div>
+  <div id="titles-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
 </div>
 
+<!-- TRANSFER -->
 <div class="pane" id="pane-transfer">
   <div class="g2">
     <div class="card">
-      <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">Transfer Vehicle Title</div>
-      <label>Token ID (from My Titles)</label>
-      <input id="tx-tokenid" placeholder="0x1234...">
-      <label>New Owner Wallet</label>
-      <input id="tx-to" placeholder="0x...">
-      <button class="btn btn-blue" onclick="transferTitle()">Transfer Title On-Chain</button>
-      <div id="tx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);"></div>
+      <div class="card-title">Transfer Vehicle Title</div>
+      <label>Token ID</label>
+      <input id="t-tokenid" placeholder="0x1234... (from My Titles)" style="font-family:JetBrains Mono,monospace;font-size:.78rem">
+      <label>New Owner Address</label>
+      <input id="t-to" placeholder="0x...">
+      <div class="preview-box">
+        <div class="preview-row"><span style="color:var(--soft)">Transfer fee</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">Free (no fee)</span></div>
+        <div class="preview-row"><span style="color:var(--soft)">Gas</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">~$0.001</span></div>
+        <div class="preview-row"><span style="color:var(--soft)">Settlement</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">~500ms</span></div>
+        <div class="preview-row"><span style="color:var(--soft)">vs DMV</span><span style="font-family:JetBrains Mono,monospace;color:var(--red)">$75-150 + weeks</span></div>
+      </div>
+      <button class="btn btn-blue" style="width:100%" onclick="transferTitle()">Transfer On-Chain</button>
+      <div id="tx-status" style="margin-top:10px;font-size:.76rem;text-align:center;color:var(--soft);min-height:20px;"></div>
     </div>
-    <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:8px;">Transfer Cost</div>
-      <div class="row"><span style="color:var(--soft)">IQCAR transfer fee</span><span style="font-family:monospace;color:var(--grn)">Free (no fee)</span></div>
-      <div class="row"><span style="color:var(--soft)">Gas (RAWNet)</span><span style="font-family:monospace;color:var(--grn)">~$0.001</span></div>
-      <div class="row"><span style="color:var(--soft)">DMV transfer</span><span style="font-family:monospace;color:var(--red)">$75–$150 + weeks</span></div>
-      <div class="row"><span style="color:var(--soft)">Settlement</span><span style="font-family:monospace;color:var(--grn)">500ms on RAWNet</span></div>
+    <div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">Batch Transfer</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:10px;">Transfer multiple titles to one buyer (dealership use)</div>
+        <textarea id="batch-ids" placeholder="Token IDs, one per line&#10;0x1234...&#10;0x5678..." style="height:80px;resize:none;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--wh);font-size:.78rem;font-family:JetBrains Mono,monospace;width:100%;outline:none;margin-bottom:8px;"></textarea>
+        <input id="batch-to" placeholder="Buyer address 0x...">
+        <button class="btn btn-outline" style="width:100%" onclick="batchTransfer()">Batch Transfer</button>
+        <div id="batch-status" style="margin-top:8px;font-size:.74rem;color:var(--soft);"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ownership Lookup</div>
+        <div style="display:flex;gap:8px;">
+          <input id="lookup-tid" placeholder="Token ID 0x..." style="margin:0;flex:1;font-family:JetBrains Mono,monospace;font-size:.76rem">
+          <button class="btn btn-outline btn-sm" onclick="lookupOwner()">Lookup</button>
+        </div>
+        <div id="lookup-result" style="margin-top:10px;font-size:.78rem;"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="pane" id="pane-recalls">
-  <div class="card" style="max-width:600px;margin-bottom:14px;">
-    <div style="font-size:.86rem;font-weight:700;margin-bottom:12px;">NHTSA Recall Lookup (Live API)</div>
-    <label>Make</label>
-    <input id="recall-make" placeholder="Tesla">
-    <label>Model (optional)</label>
-    <input id="recall-model" placeholder="Model 3">
-    <label>Year (optional)</label>
-    <input id="recall-year" type="number" placeholder="2023">
-    <button class="btn btn-blue" style="width:auto;padding:8px 18px;" onclick="searchRecalls()">Search NHTSA</button>
+<!-- HISTORY -->
+<div class="pane" id="pane-history">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">VIN History Lookup</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input id="h-vin" placeholder="Enter VIN" style="flex:1;margin:0;text-transform:uppercase;font-family:JetBrains Mono,monospace;letter-spacing:.08em" oninput="this.value=this.value.toUpperCase()">
+        <button class="btn btn-blue btn-sm" onclick="loadHistory()">Search</button>
+      </div>
+      <div id="history-display">
+        <div style="color:var(--soft);font-size:.8rem;text-align:center;padding:20px">Enter a VIN to view on-chain history</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Network Stats</div>
+      <div style="font-size:.8rem;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">IQTitle contract</span><span><span class="badge badge-live">LIVE</span></span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total minted</span><span class="pval" id="h-minted">—</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total volume</span><span class="pval" id="h-volume">—</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned</span><span style="font-family:JetBrains Mono,monospace;color:var(--gold)" id="h-ltn">—</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">Address</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">0xA586074F...1fE</span></div>
+      </div>
+    </div>
   </div>
-  <div id="recalls-list"></div>
+</div>
+
+<!-- RECALLS -->
+<div class="pane" id="pane-recalls">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">NHTSA Safety Recall Lookup</div>
+        <div class="form-row">
+          <div><label>Make</label><input id="rec-make" placeholder="Tesla"></div>
+          <div><label>Model (optional)</label><input id="rec-model" placeholder="Model 3"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Year (optional)</label><input type="number" id="rec-year" placeholder="2023"></div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:12px;">
+            <button class="btn btn-blue" style="width:100%" onclick="searchRecalls()">Search NHTSA</button>
+          </div>
+        </div>
+        <div id="recalls-results"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">VIN-Specific Recall Check</div>
+        <div style="display:flex;gap:8px;">
+          <input id="recall-vin" placeholder="Full VIN" style="flex:1;margin:0;font-family:JetBrains Mono,monospace;letter-spacing:.06em">
+          <button class="btn btn-outline btn-sm" onclick="vinRecallCheck()">Check</button>
+        </div>
+        <div id="vin-recalls" style="margin-top:10px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent NHTSA Campaigns</div>
+      <div id="recent-recalls">
+        <div style="color:var(--soft);font-size:.8rem;text-align:center;padding:20px">Loading recent recalls...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div class="pane" id="pane-compare">
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">IQCAR vs Paper Title</div>
+      <table class="tbl">
+        <thead><tr><th>Feature</th><th>IQCAR</th><th>DMV Paper</th></tr></thead>
+        <tbody>
+          <tr><td>Transfer cost</td><td class="grn" style="font-family:JetBrains Mono,monospace">~$0.001</td><td class="red">$75-$150</td></tr>
+          <tr><td>Transfer time</td><td class="grn">~500ms</td><td class="red">4-8 weeks</td></tr>
+          <tr><td>Lost title</td><td class="grn">Impossible</td><td class="red">$50-100 + wait</td></tr>
+          <tr><td>Fraud risk</td><td class="grn">Cryptographic</td><td class="red">High (forgery)</td></tr>
+          <tr><td>Cross-state</td><td class="grn">Works globally</td><td class="red">Re-register required</td></tr>
+          <tr><td>History</td><td class="grn">On-chain immutable</td><td class="red">Varies by state</td></tr>
+          <tr><td>Lien recording</td><td class="cyan">Q3 2026</td><td>County recorder</td></tr>
+          <tr><td>Integration</td><td class="grn">Any EVM dApp</td><td class="red">State-only silo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">Market Opportunity</div>
+        <div style="font-size:.8rem;display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">US car sales/yr</span><span class="pval">~15M</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Avg title fee (0.3% of $35K)</span><span class="pval">$105/title</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">TAM (1% penetration)</span><span class="grn">$157.5M/yr</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned @ 1% pen.</span><span class="gold">15,000 LTN/yr</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Roadmap</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.9;">
+          <div><span style="color:var(--grn)">✓</span> IQCAR NFT minting + transfer</div>
+          <div><span style="color:var(--grn)">✓</span> NHTSA VIN decode + recall lookup</div>
+          <div><span style="color:var(--grn)">✓</span> On-chain ownership history</div>
+          <div><span style="color:var(--gold)">Q2 2026</span> Lien recording oracle</div>
+          <div><span style="color:var(--gold)">Q3 2026</span> DMV state integration (pilot)</div>
+          <div><span style="color:var(--gold)">Q4 2026</span> Insurance hook (AllCard mode 5)</div>
+          <div><span style="color:var(--blue)">2027</span> Cross-chain title bridge (Solana)</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const ADDRS = { IQTitle: "0xA586074FA4Fe3E546A132a16238abe37951D41fE" };
-const IQTITLE_ABI = [
-  "function mintTitle(address to, string calldata vin, uint256 salePrice) returns (uint256 tokenId)",
-  "function transferTitle(uint256 tokenId, address newOwner)",
+const ADDRS = {
+  IQTitle:  "0xA586074FA4Fe3E546A132a16238abe37951D41fE",
+  MockUSDC: "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
+};
+const IQ_ABI = [
+  "function mintTitle(address to,string calldata vin,uint256 salePrice) returns (uint256)",
+  "function transferTitle(uint256 tokenId,address newOwner)",
   "function ownerOf(uint256 tokenId) view returns (address)",
-  "function getVehicle(uint256 tokenId) view returns (string, address, uint256, uint256)",
+  "function getVehicle(uint256 tokenId) view returns (string,address,uint256,uint256)",
   "function totalMinted() view returns (uint256)",
   "function totalVolume() view returns (uint256)",
-  "event TitleMinted(uint256 indexed tokenId, string vin, address indexed owner, uint256 salePrice)",
+  "function vinToTokenId(string) view returns (uint256)",
+  "event TitleMinted(uint256 indexed tokenId,string vin,address indexed owner,uint256 salePrice)",
+  "event TitleTransferred(uint256 indexed tokenId,address indexed from,address indexed to)",
 ];
 
 let provider, signer, addr, iqContract;
+let myTokenIds = JSON.parse(localStorage.getItem('iq-tokens')||'[]');
 
 async function connectWallet() {
-  if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
+  if (!window.ethereum){alert("Open in MetaMask browser");return;}
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
     chainId:"0xAFD3D",chainName:"RAWNet Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
   }]}).catch(()=>{});
-  const accounts = await ethereum.request({method:"eth_requestAccounts"});
-  addr = accounts[0];
+  const accs = await ethereum.request({method:"eth_requestAccounts"});
+  addr = accs[0];
   provider = new ethers.BrowserProvider(window.ethereum);
   signer = await provider.getSigner();
-  iqContract = new ethers.Contract(ADDRS.IQTitle, IQTITLE_ABI, signer);
-  document.getElementById("connect-btn").textContent = addr.slice(0,6)+"..."+addr.slice(-4);
-  document.getElementById("connect-btn").className = "connected";
-  document.getElementById("mint-buyer").placeholder = addr;
-  loadStats(); showToast("Wallet connected ✓");
+  iqContract = new ethers.Contract(ADDRS.IQTitle, IQ_ABI, signer);
+  const btn = document.getElementById("connect-btn");
+  btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
+  btn.className = "on";
+  document.getElementById("m-buyer").placeholder = addr;
+  loadStats();
+  toast("Wallet connected ✓");
 }
 
 async function loadStats() {
-  if (!iqContract) return;
-  try {
-    const minted = await iqContract.totalMinted();
-    document.getElementById("total-minted").textContent = minted.toString();
-  } catch(e) {}
+  const p = provider||new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+  try{
+    const [block] = await Promise.all([p.getBlockNumber()]);
+    document.getElementById("k-block").textContent = block.toLocaleString();
+    if (iqContract){
+      const [minted, vol] = await Promise.all([
+        iqContract.totalMinted(),
+        iqContract.totalVolume(),
+      ]);
+      const m = minted.toString(), v = parseFloat(ethers.formatUnits(vol,6)).toFixed(0);
+      document.getElementById("k-minted").textContent = m;
+      document.getElementById("h-minted").textContent = m+" IQCAR";
+      document.getElementById("h-volume").textContent = "$"+v;
+      document.getElementById("h-ltn").textContent = (parseFloat(m)*0.001).toFixed(3)+" LTN";
+    }
+  }catch(e){}
 }
 
+// VIN decode via NHTSA
 async function decodeVIN() {
-  const vin = document.getElementById("vin-input").value.trim();
-  if (vin.length !== 17) { showToast("VIN must be 17 characters", true); return; }
+  const vin = document.getElementById("vin-input").value.trim().toUpperCase();
+  if (vin.length!==17){toast("VIN must be exactly 17 characters",true);return;}
   const btn = document.getElementById("decode-btn");
-  btn.innerHTML = '<span class="spinner"></span>';
-  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Decoding...'; btn.disabled=true;
   const el = document.getElementById("decode-result");
+  el.innerHTML = "<div style='color:var(--soft);font-size:.8rem'>Querying NHTSA API...</div>";
+  // Show anatomy
+  document.getElementById("v-wmi").textContent = vin.slice(0,3);
+  document.getElementById("v-vds").textContent = vin.slice(3,9);
+  document.getElementById("v-vis").textContent = vin.slice(9,17);
+  document.getElementById("vin-anatomy").style.display = "block";
   try {
     const r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/${vin}?format=json`);
     const d = await r.json();
     const v = d.Results[0];
-    el.innerHTML = `<div style="margin-top:10px;padding:12px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:8px;">
-      <div style="font-weight:700;margin-bottom:8px;color:var(--blue)">${v.ModelYear} ${v.Make} ${v.Model}</div>
-      ${[["Body",v.BodyClass],["Engine",v.DisplacementL+"L "+v.EngineCylinders+"-cyl"],["Drive",v.DriveType],["Fuel",v.FuelTypePrimary],["GVWR",v.GVWR]].map(([k,val])=>`
-      <div class="row"><span style="color:var(--soft);font-size:.76rem">${k}</span><span style="font-family:monospace;font-size:.76rem">${val||"—"}</span></div>`).join("")}
-      <button onclick="document.getElementById('mint-vin').value='${vin}';showTab('mint')" style="margin-top:10px;padding:6px 14px;border-radius:6px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.1);color:var(--blue);font-size:.74rem;cursor:pointer;">Mint Title for this VIN →</button>
+    if(!v.Make||v.Make===""){el.innerHTML="<div style='color:var(--red);font-size:.8rem'>VIN not found in NHTSA database</div>";return;}
+    const fields = [
+      ["Year",v.ModelYear],["Make",v.Make],["Model",v.Model],["Trim",v.Trim||"—"],
+      ["Body",v.BodyClass||"—"],["Drive",v.DriveType||"—"],["Engine",`${v.DisplacementL||"?"}L ${v.EngineCylinders||"?"}cyl`],
+      ["Fuel",v.FuelTypePrimary||"—"],["Plant",v.PlantCity+", "+v.PlantCountry||"—"],["GVWR",v.GVWR||"—"],
+    ];
+    el.innerHTML = `<div class="vin-result">
+      <div class="vin-header">
+        <div>
+          <div class="vin-make">${v.ModelYear} ${v.Make} ${v.Model}</div>
+          <div style="font-size:.72rem;color:var(--soft)">${v.BodyClass||""} · ${v.DriveType||""}</div>
+        </div>
+        <button class="btn btn-blue btn-sm" style="margin-left:auto" onclick="prefillMint('${vin}','${v.ModelYear} ${v.Make} ${v.Model}')">Mint Title →</button>
+      </div>
+      <div class="vin-grid">${fields.map(([l,val])=>`<div class="vin-field"><span class="vin-label">${l}</span><span class="vin-value">${val}</span></div>`).join("")}</div>
     </div>`;
-  } catch(e) { el.innerHTML = "<div style='color:var(--red);font-size:.8rem;margin-top:8px'>Error: "+e.message+"</div>"; }
-  btn.innerHTML = "Decode"; btn.disabled = false;
+    document.getElementById("nhtsa-status").textContent = "NHTSA ✓";
+    document.getElementById("nhtsa-status").style.color = "var(--grn)";
+  } catch(e){
+    el.innerHTML = "<div style='color:var(--red);font-size:.8rem'>NHTSA API error: "+e.message+"</div>";
+  }
+  btn.innerHTML = "Decode"; btn.disabled=false;
 }
 
-function calcFee() {
-  const vin = document.getElementById("mint-vin").value;
-  const price = parseFloat(document.getElementById("mint-price").value)||0;
-  if (!price) { document.getElementById("mint-fee-preview").style.display="none"; return; }
-  const tokenId = vin.length===17 ? "0x"+Array.from(vin).reduce((h,c)=>((h<<5)-h+c.charCodeAt(0))|0,0).toString(16).padStart(8,"0")+"..." : "Enter 17-char VIN";
-  document.getElementById("mfp-price").textContent = "$"+price.toLocaleString();
-  document.getElementById("mfp-fee").textContent = "-$"+(price*0.003).toFixed(2);
-  document.getElementById("mfp-tokenid").textContent = tokenId;
-  document.getElementById("mint-fee-preview").style.display = "block";
+function useVIN(vin){document.getElementById("vin-input").value=vin;decodeVIN();}
+function prefillMint(vin,desc){
+  show("mint");
+  document.getElementById("m-vin").value=vin;
+  previewMint();
+  toast("VIN prefilled: "+vin);
 }
 
-async function mintTitle() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const vin = document.getElementById("mint-vin").value.trim();
-  const price = parseFloat(document.getElementById("mint-price").value)||0;
-  const buyer = document.getElementById("mint-buyer").value.trim() || addr;
-  if (vin.length !== 17) { showToast("Enter valid 17-char VIN", true); return; }
-  if (!price) { showToast("Enter sale price", true); return; }
+function previewMint(){
+  const vin = document.getElementById("m-vin").value.trim();
+  const price = parseFloat(document.getElementById("m-price").value)||0;
+  if(vin.length===17){
+    // compute token ID preview
+    let h = 0;
+    for(let i=0;i<vin.length;i++){h=Math.imul(31,h)+vin.charCodeAt(i)|0;}
+    const tid = "0x"+Math.abs(h).toString(16).padStart(8,"0")+"...";
+    document.getElementById("preview-plate").textContent = vin.slice(0,4)+" "+vin.slice(4,8)+" "+vin.slice(8,12)+" "+vin.slice(12,17);
+    document.getElementById("preview-vin").textContent = "VIN: "+vin;
+    document.getElementById("preview-tid").textContent = tid;
+    document.getElementById("mp-tid").textContent = tid;
+  }
+  if(!price){document.getElementById("mint-preview").style.display="none";return;}
+  document.getElementById("mp-price").textContent = "$"+price.toLocaleString();
+  document.getElementById("mp-fee").textContent = "-$"+(price*.003).toFixed(2);
+  document.getElementById("mp-buyer").textContent = document.getElementById("m-buyer").value||addr||"Your wallet";
+  document.getElementById("mint-preview").style.display="block";
+}
+
+async function mintTitle(){
+  if(!signer){alert("Connect wallet");return;}
+  const vin = document.getElementById("m-vin").value.trim().toUpperCase();
+  const price = parseFloat(document.getElementById("m-price").value);
+  const buyer = document.getElementById("m-buyer").value.trim()||addr;
+  if(vin.length!==17){toast("Enter valid 17-char VIN",true);return;}
+  if(!price){toast("Enter sale price",true);return;}
   const status = document.getElementById("mint-status");
-  status.textContent = "Minting on-chain..."; status.style.color = "#8080aa";
-  try {
-    const priceWei = ethers.parseUnits(price.toString(), 6);
+  status.textContent = "Minting IQCAR on-chain..."; status.style.color="var(--soft)";
+  try{
+    const priceWei = ethers.parseUnits(price.toString(),6);
     const tx = await iqContract.mintTitle(buyer, vin, priceWei);
     status.textContent = "Waiting for confirmation...";
     const receipt = await tx.wait();
-    status.textContent = "✓ IQCAR NFT minted! View in My Titles tab.";
-    status.style.color = "#10b981";
-    showToast("IQCAR minted ✓");
-    loadStats();
-  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; status.style.color="#ef4444"; showToast(e.message,true); }
-}
-
-async function loadMyTitles() {
-  if (!iqContract || !addr) return;
-  const el = document.getElementById("my-titles-list");
-  el.innerHTML = "<div style='color:var(--soft);font-size:.8rem'>Loading...</div>";
-  try {
-    const total = await iqContract.totalMinted();
-    if (Number(total) === 0) {
-      el.innerHTML = "<div style='color:var(--soft);text-align:center;padding:30px;'>No titles minted yet</div>";
-      return;
+    const tokenId = receipt.logs[0]?.topics[1];
+    if(tokenId){
+      myTokenIds.push({tokenId, vin, price, owner:buyer, ts:Date.now()});
+      localStorage.setItem("iq-tokens", JSON.stringify(myTokenIds));
     }
-    el.innerHTML = `<div style="color:var(--soft);font-size:.8rem;text-align:center;padding:20px;">Total minted: ${total}. Use Transfer tab to move titles.<br>On-chain query by address coming in v2.</div>`;
-  } catch(e) { el.innerHTML = "<div style='color:var(--red);font-size:.8rem'>"+e.message+"</div>"; }
+    status.textContent = "✓ IQCAR minted! Token: "+tokenId?.slice(0,18)+"...";
+    status.style.color="var(--grn)";
+    toast("IQCAR NFT minted ✓");
+    loadStats();
+  }catch(e){status.textContent="Error: "+e.message.split("(")[0];status.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function transferTitle() {
-  if (!signer) { alert("Connect wallet"); return; }
-  const tokenId = document.getElementById("tx-tokenid").value.trim();
-  const to = document.getElementById("tx-to").value.trim();
-  if (!tokenId || !to) { showToast("Fill all fields", true); return; }
+async function loadMyTitles(){
+  const el = document.getElementById("titles-grid");
+  if(!myTokenIds.length){el.innerHTML="<div style='color:var(--soft);text-align:center;padding:40px;grid-column:1/-1'>No IQCAR titles minted yet.<br>Mint one from the VIN Decode or Mint tabs.</div>";return;}
+  document.getElementById("titles-count").textContent = myTokenIds.length+" titles";
+  el.innerHTML = myTokenIds.map(t=>`
+    <div class="nft-card" style="cursor:pointer" onclick="prefillTransfer('${t.tokenId}')">
+      <div style="font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">IQCAR · ERC-721</div>
+      <div class="nft-plate">${(t.vin||"").slice(0,4)} ${(t.vin||"").slice(4,9)} ${(t.vin||"").slice(9)}</div>
+      <div class="nft-vin">VIN: ${t.vin||"Unknown"}</div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:.72rem;">
+        <span style="color:var(--soft)">Sale: <span class="pval">$${(t.price||0).toLocaleString()}</span></span>
+        <span style="color:var(--dim)">${new Date(t.ts||0).toLocaleDateString()}</span>
+      </div>
+      <div style="margin-top:8px;font-size:.66rem;font-family:JetBrains Mono,monospace;color:var(--dim)">${(t.tokenId||"").slice(0,20)}...</div>
+    </div>`).join("");
+}
+
+function prefillTransfer(tokenId){show("transfer");document.getElementById("t-tokenid").value=tokenId;}
+
+async function transferTitle(){
+  if(!signer){alert("Connect wallet");return;}
+  const tokenId = document.getElementById("t-tokenid").value.trim();
+  const to = document.getElementById("t-to").value.trim();
+  if(!tokenId||!to){toast("Fill all fields",true);return;}
   const status = document.getElementById("tx-status");
-  status.textContent = "Transferring...";
-  try {
-    const tx = await iqContract.transferTitle(BigInt(tokenId), to);
-    await tx.wait();
-    status.textContent = "✓ Title transferred!"; status.style.color = "#10b981";
-    showToast("Title transferred ✓");
-  } catch(e) { status.textContent = "Error: "+e.message.split("(")[0]; showToast(e.message,true); }
+  status.textContent = "Transferring..."; status.style.color="var(--soft)";
+  try{
+    await (await iqContract.transferTitle(BigInt(tokenId),to)).wait();
+    status.textContent = "✓ Title transferred!"; status.style.color="var(--grn)";
+    toast("Title transferred ✓");
+    // update local cache
+    const idx = myTokenIds.findIndex(t=>t.tokenId===tokenId);
+    if(idx>=0){myTokenIds[idx].owner=to;localStorage.setItem("iq-tokens",JSON.stringify(myTokenIds));}
+  }catch(e){status.textContent="Error: "+e.message.split("(")[0];status.style.color="var(--red)";toast(e.message.split("(")[0],true);}
 }
 
-async function searchRecalls() {
-  const make = document.getElementById("recall-make").value.trim();
-  if (!make) return;
-  const el = document.getElementById("recalls-list");
+async function batchTransfer(){
+  const ids = document.getElementById("batch-ids").value.trim().split("\n").filter(Boolean);
+  const to = document.getElementById("batch-to").value.trim();
+  if(!ids.length||!to){toast("Fill all fields",true);return;}
+  const status = document.getElementById("batch-status");
+  status.textContent = "Transferring "+ids.length+" titles...";
+  let success=0;
+  for(const id of ids){
+    try{await (await iqContract.transferTitle(BigInt(id.trim()),to)).wait();success++;}catch(e){}
+  }
+  status.textContent = "✓ "+success+"/"+ids.length+" transferred";
+  status.style.color = "var(--grn)";
+  toast("Batch transfer complete: "+success+"/"+ids.length+" ✓");
+}
+
+async function lookupOwner(){
+  const tid = document.getElementById("lookup-tid").value.trim();
+  if(!tid)return;
+  const el = document.getElementById("lookup-result");
+  try{
+    const owner = iqContract ? await iqContract.ownerOf(BigInt(tid)) : "Connect wallet";
+    el.innerHTML = `<div style="padding:8px 12px;background:var(--bl3);border-radius:8px;"><span style="color:var(--soft)">Owner: </span><span class="pval" style="font-size:.78rem">${owner}</span></div>`;
+  }catch(e){el.innerHTML="<div style='color:var(--red);font-size:.78rem'>"+e.message.split("(")[0]+"</div>";}
+}
+
+async function loadHistory(){
+  const vin = document.getElementById("h-vin").value.trim().toUpperCase();
+  if(!vin)return;
+  const el = document.getElementById("history-display");
+  el.innerHTML = "<div style='color:var(--soft);font-size:.8rem'>Loading history...</div>";
+  try{
+    const tokenId = iqContract ? await iqContract.vinToTokenId(vin) : null;
+    if(!tokenId||tokenId===0n){el.innerHTML="<div style='color:var(--soft);font-size:.8rem'>No on-chain record for this VIN</div>";return;}
+    const v = await iqContract.getVehicle(tokenId);
+    el.innerHTML = `<div class="history-item">
+      <div class="history-date">${new Date(Number(v[3])*1000).toLocaleString()}</div>
+      <div class="history-event">IQCAR Minted</div>
+      <div class="history-sub">Owner: ${v[1].slice(0,10)}... · Sale: $${parseFloat(ethers.formatUnits(v[2],6)).toFixed(0)}</div>
+    </div>`;
+  }catch(e){el.innerHTML="<div style='color:var(--red);font-size:.78rem'>"+e.message.split("(")[0]+"</div>";}
+}
+
+async function searchRecalls(){
+  const make = document.getElementById("rec-make").value.trim();
+  if(!make)return;
+  const model = document.getElementById("rec-model").value.trim();
+  const year = document.getElementById("rec-year").value.trim();
+  const el = document.getElementById("recalls-results");
   el.innerHTML = "<div style='color:var(--soft);font-size:.8rem'>Searching NHTSA...</div>";
-  try {
-    const model = document.getElementById("recall-model").value;
-    const year = document.getElementById("recall-year").value;
-    const r = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&modelYear=${year}&format=json`);
+  try{
+    const r = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&modelYear=${year}`);
     const d = await r.json();
-    const recalls = (d.results||[]).slice(0,15);
-    if (!recalls.length) { el.innerHTML = "<div style='color:var(--grn);padding:14px;'>✓ No open recalls for "+make+"</div>"; return; }
-    el.innerHTML = `<div style="font-size:.78rem;color:var(--soft);margin-bottom:8px;">${recalls.length} recall(s) found</div>`+
-      recalls.map(r=>`<div style="padding:12px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:8px;margin-bottom:6px;">
-        <div style="font-weight:700;font-size:.82rem;margin-bottom:4px;">${r.Component||"Unknown"}</div>
-        <div style="font-size:.76rem;color:var(--soft);line-height:1.5;">${(r.Summary||"").slice(0,200)}</div>
-        <div style="font-size:.7rem;color:var(--red);margin-top:4px;">Remedy: ${(r.Remedy||"See NHTSA").slice(0,100)}</div>
-      </div>`).join("");
-  } catch(e) { el.innerHTML = "<div style='color:var(--red);font-size:.8rem'>Error: "+e.message+"</div>"; }
+    const recalls = (d.results||[]).slice(0,8);
+    if(!recalls.length){el.innerHTML="<div style='color:var(--grn);padding:12px;background:var(--gn2);border-radius:8px;font-size:.8rem'>✓ No open recalls found for "+make+"</div>";return;}
+    el.innerHTML = recalls.map(rc=>`<div class="recall-card">
+      <div class="recall-title">⚠ ${rc.Component||"Unknown Component"}</div>
+      <div class="recall-desc">${(rc.Summary||"").slice(0,200)}${rc.Summary?.length>200?"...":""}</div>
+      <div class="recall-remedy">Remedy: ${(rc.Remedy||"See NHTSA").slice(0,150)}</div>
+      <div style="font-size:.68rem;color:var(--dim);margin-top:4px">Campaign: ${rc.NHTSACampaignNumber||"—"}</div>
+    </div>`).join("");
+  }catch(e){el.innerHTML="<div style='color:var(--red);font-size:.8rem'>"+e.message+"</div>";}
 }
 
-function showTab(id) {
-  const ids=["decode","mint","mytitles","transfer","recalls"];
-  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
+async function vinRecallCheck(){
+  const vin = document.getElementById("recall-vin").value.trim().toUpperCase();
+  if(vin.length<5)return;
+  const el = document.getElementById("vin-recalls");
+  el.innerHTML = "<div style='color:var(--soft);font-size:.8rem'>Checking VIN...</div>";
+  try{
+    const r = await fetch(`https://api.nhtsa.gov/recalls/recallsByVin?vin=${vin}`);
+    const d = await r.json();
+    const recalls = d.results||[];
+    if(!recalls.length){el.innerHTML="<div style='color:var(--grn);font-size:.8rem;padding:8px'>✓ No recalls on record for this VIN</div>";return;}
+    el.innerHTML = `<div style='color:var(--red);font-size:.8rem;margin-bottom:6px'>${recalls.length} recall(s) found:</div>`+
+      recalls.slice(0,5).map(rc=>`<div class="recall-card" style="margin-bottom:6px"><div class="recall-title">${rc.Component||"Unknown"}</div><div class="recall-desc">${(rc.Summary||"").slice(0,120)}</div></div>`).join("");
+  }catch(e){el.innerHTML="<div style='color:var(--red);font-size:.8rem'>"+e.message+"</div>";}
+}
+
+async function loadRecentRecalls(){
+  const el = document.getElementById("recent-recalls");
+  try{
+    const r = await fetch("https://api.nhtsa.gov/recalls/recallsByVehicle?make=Tesla&model=Model+3&modelYear=2023");
+    const d = await r.json();
+    const recalls = (d.results||[]).slice(0,5);
+    if(!recalls.length){el.innerHTML="<div style='color:var(--soft);font-size:.8rem'>No recent records</div>";return;}
+    el.innerHTML = recalls.map(rc=>`<div class="recall-card"><div class="recall-title">${rc.Component||"—"}</div><div class="recall-desc">${(rc.Summary||"").slice(0,100)}...</div></div>`).join("");
+  }catch(e){el.innerHTML="<div style='color:var(--soft);font-size:.8rem'>NHTSA API unavailable</div>";}
+}
+
+function show(id){
+  const ids=["decode","mint","mytitles","transfer","history","recalls","compare"];
+  document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
-  if(id==="mytitles") loadMyTitles();
+  if(id==="mytitles")loadMyTitles();
+  if(id==="history")loadStats();
 }
 
-function showToast(msg,err=false){
+function toast(msg,err=false){
   const t=document.getElementById("toast");
-  t.textContent=msg;t.style.borderColor=err?"#ef4444":"#10b981";t.style.color=err?"#ef4444":"#10b981";
+  t.textContent=msg;t.style.borderColor=err?"var(--red)":"var(--blue)";t.style.color=err?"var(--red)":"var(--blue)";
   t.style.display="block";setTimeout(()=>t.style.display="none",3000);
 }
 
 window.addEventListener("load",()=>{
-  loadStats();
+  loadStats();loadRecentRecalls();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+  ethereum?.on("accountsChanged",()=>location.reload());
 });
 </script>
 </body></html>
