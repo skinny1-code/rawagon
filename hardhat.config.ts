@@ -1,4 +1,5 @@
 import type { HardhatUserConfig } from 'hardhat/config';
+import { fileURLToPath } from 'url';
 import 'dotenv/config';
 
 const BASE_RPC_URL = process.env['BASE_RPC_URL'] ?? 'https://mainnet.base.org';
@@ -11,6 +12,7 @@ const config: HardhatUserConfig = {
       optimizer: { enabled: true, runs: 200 },
       viaIR: true,
     },
+    path: fileURLToPath(new URL('node_modules/solc/soljson.js', import.meta.url)),
   },
   networks: {
     base: {

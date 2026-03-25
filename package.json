@@ -17,6 +17,7 @@
     "lint:fix": "eslint . --ext .ts,.tsx,.js --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/seed-compiler-cache.mjs",
     "compile": "hardhat compile",
     "clean": "rimraf dist packages/*/dist apps/*/dist artifacts cache"
   },
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^7.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
@@ -34,6 +36,7 @@
     "hardhat": "^3.2.0",
     "prettier": "^3.2.0",
     "rimraf": "^5.0.0",
+    "solc": "^0.8.24",
     "typescript": "^5.4.0",
     "vitest": "^4.1.0"
   }
