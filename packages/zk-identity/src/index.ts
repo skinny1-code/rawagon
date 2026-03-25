@@ -20,7 +20,7 @@ export interface BioKey {
 }
 
 export function derivePAN(keyHex: string, nonce: number): PanResult {
-  const path = `m/44'/60'/0'/0/${nonce}`;
+  const path = `m/44'/60'/0'/0/${String(nonce)}`;
   const h = createHmac('sha256', Buffer.from(keyHex, 'hex')).update(path).digest();
   const raw = BigInt('0x' + h.slice(0, 8).toString('hex'));
   const d = String((raw % 9000000000000000n) + 1000000000000000n);
@@ -33,9 +33,7 @@ export function derivePAN(keyHex: string, nonce: number): PanResult {
 export function commit(creds: unknown, keyHex: string): string {
   return (
     '0x' +
-    createHmac('sha256', Buffer.from(keyHex, 'hex'))
-      .update(JSON.stringify(creds))
-      .digest('hex')
+    createHmac('sha256', Buffer.from(keyHex, 'hex')).update(JSON.stringify(creds)).digest('hex')
   );
 }
 

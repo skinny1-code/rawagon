@@ -1,1 +1,9 @@
-{"name":"@rawagon/1nce-allcard","version":"0.1.0","private":true,"scripts":{"dev":"echo dev","test":"echo ok"}}
+{
+  "name": "@rawagon/1nce-allcard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo dev",
+    "test": "echo ok"
+  }
+}

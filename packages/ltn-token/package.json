@@ -1,1 +1,5 @@
-{"name":"@rawagon/ltn-token","version":"0.1.0","main":"index.js"}
+{
+  "name": "@rawagon/ltn-token",
+  "version": "0.1.0",
+  "main": "index.js"
+}

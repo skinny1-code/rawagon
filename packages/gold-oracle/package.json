@@ -1,1 +1,5 @@
-{"name":"@rawagon/gold-oracle","version":"0.1.0","main":"index.js"}
+{
+  "name": "@rawagon/gold-oracle",
+  "version": "0.1.0",
+  "main": "index.js"
+}

@@ -3,11 +3,6 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "references": [
-    { "path": "./packages/zk-identity" }
-  ],
-  "include": [
-    "hardhat.config.ts",
-    "vitest.config.ts"
-  ]
+  "references": [{ "path": "./packages/zk-identity" }],
+  "include": ["hardhat.config.ts", "vitest.config.ts"]
 }

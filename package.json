@@ -2,6 +2,7 @@
   "name": "rawagon",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "RAWagon Network — blockchain-native payment and identity infrastructure on Base L2",
   "workspaces": [
     "apps/*",
@@ -27,6 +28,7 @@
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "dotenv": "^17.3.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "hardhat": "^3.2.0",
