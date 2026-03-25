@@ -376,13 +376,17 @@ let provider, signer, addr;
 
 // ── Static data ─────────────────────────────────────────────────
 const ENTITIES = [
-  { name:"QWKS Protocol", revenue:9344267, icon:"⛓", desc:"Payment processing 0.01% fee" },
-  { name:"BitPawn",       revenue:5280000, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
-  { name:"Droppa",        revenue:4200000, icon:"🎴", desc:"1% of break GMV" },
-  { name:"AutoIQ",        revenue:3780000, icon:"🚗", desc:"0.3% of vehicle sale value" },
-  { name:"1.nce AllCard", revenue:3240000, icon:"🪪", desc:"$49/mo identity subscription" },
-  { name:"GoldSnap GTX",  revenue:2162000, icon:"🥇", desc:"0.25% mint + custody" },
-  { name:"ProfitPilot",   revenue:1120000, icon:"📊", desc:"$29/mo analytics SaaS" },
+  { name:"QWKS Protocol",       revenue:9344267, icon:"⛓", desc:"Payment processing 0.01% fee" },
+  { name:"BitPawn",              revenue:5280000, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
+  { name:"Droppa",               revenue:4200000, icon:"🎴", desc:"1% of break GMV + vault fees" },
+  { name:"AutoIQ / IQTitle",     revenue:3780000, icon:"🚗", desc:"0.3% of vehicle sale value" },
+  { name:"1.nce AllCard",        revenue:3240000, icon:"🪪", desc:"$49/mo identity subscription" },
+  { name:"GoldSnap / BWG / sBTC",revenue:2162000, icon:"🥇", desc:"0.25% mint + BWG vault custody" },
+  { name:"ProfitPilot",          revenue:1120000, icon:"📊", desc:"$29/mo analytics SaaS" },
+  { name:"Drop The Reel",        revenue:480000,  icon:"🎬", desc:"AI film review subscriptions — Claude + ElevenLabs" },
+  { name:"PawnVault",            revenue:360000,  icon:"💎", desc:"$99/mo pawn shop SaaS (Postgres)" },
+  { name:"AI Orchestrator",      revenue:240000,  icon:"🤖", desc:"Multi-model SaaS — Vercel Edge" },
+  { name:"NeuroWave HUD",        revenue:0,       icon:"🥽", desc:"Hardware — prototype phase" },
 ];
 
 const ALLOC = [
@@ -723,6 +727,10 @@ function renderIPVault() {
     {n:8,title:"Master Compensation Agreement",desc:"Profit-sharing · Founder 15% across all entities",status:"Active"},
     {n:9,title:"Patent Fortress Kit",desc:"Multi-layer protection: provisional + continuation + international",status:"Phase 1"},
     {n:10,title:"IP Vault Summary",desc:"Investor/legal-ready one-pager for due diligence",status:"Ready"},
+    {n:11,title:"Drop The Reel + Cinema Review Vault",desc:"AI film review SaaS — Claude critic reviews, ElevenLabs voiceover, Remotion video, Stripe subscriptions",status:"Building"},
+    {n:12,title:"PawnVault",desc:"Pawn shop management SaaS — Node.js + PostgreSQL + Drizzle ORM, Termux-compatible",status:"Building"},
+    {n:13,title:"AI Orchestrator 4m",desc:"Multi-model SaaS — Vercel Edge, streaming SSE, GPT-5 + Claude + Gemini + Perplexity",status:"Deployed"},
+    {n:14,title:"NeuroWave HUD",desc:"FDA Class I/II wearable HUD — retinal projection + EEG. Regulatory pre-notification filed.",status:"Pre-reg"},
   ];
   const statusColors={Filed:"var(--grn)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
   document.getElementById("ip-vault-list").innerHTML=items.map(i=>`
@@ -741,6 +749,8 @@ function renderIPVault() {
 // ── Hardware Products ─────────────────────────────────────────────────────
 function renderHardware() {
   const products=[
+    {emoji:"🥽",name:"NeuroWave HUD",status:"Prototype Ready",desc:"AI HUD with retinal-safe microprojection, adaptive metasurface optics, noninvasive EEG/neural sensors. FDA Class I/II wearable. Regulatory pre-notification filed. IEC 60825-1 (laser), ISO 10993 (biocompatibility), FCC Part 15.",specs:["Retinal-safe microprojection","Adaptive metasurface optics","Noninvasive EEG sensors","BLE + WiFi","FDA/IEC/FCC compliance path"],bom_qty:"3-5 working prototypes",color:"#a78bfa"},
+    {emoji:"🤖",name:"Gold-Seeking Robot",status:"BOM Complete",desc:"Autonomous gold detection device. AS7341 11-channel spectrometer identifies spectral signature of gold. ATECC608A signs verified detections on-chain. Triggers GTX mint via GoldSnap API.",specs:["ESP32-WROOM-32E MCU","AS7341 spectrometer 340-1000nm","HX711 load cell ±0.5%","ATECC608A secure signing","PN532 NFC + ADS1115 ADC"],bom_qty:"Pilot qty TBD",color:"#fbbf24"},
     {emoji:"🎧",name:"WaV⁵ Stealth Node",status:"Pilot Build",desc:"Wearable open-ear audio device. Cartilage-coupled piezo transducer, ESP32-S3, real-time psychoacoustic DSP, binaural spatialization. SnapMod dock for accessory expansion.",specs:["ESP32-S3-WROOM-1-N8R2 MCU","TLV320AIC3206 audio codec","Piezo transducer 12–15mm","USB-C · 3.3V TPS62177","Control: USB CDC JSON API"],bom_qty:"20 boards pilot",color:"#8b5cf6"},
     {emoji:"👁️",name:"PaperThin™ Display",status:"5-Unit Pilot",desc:"0.35–0.60mm transparent waveguide lens with micro-LED display layer. MIPI input compatible. Optical clarity >95%, haze <1%. AR/HUD integration target.",specs:["Flexible polymer waveguide","Micro-LED tile array","MIPI input (external driver)","60–80mm arc radius","Scratch-resistant coating"],bom_qty:"5 pilot units",color:"#06b6d4"},
     {emoji:"🔑",name:"TeloKey™ Housing",status:"3-5 First Articles",desc:"6061-T6 aluminum enclosure for Telo key device. Bead-blast anodized finish, ±0.05mm tolerances, button and LED cutouts. 1m drop tested.",specs:["6061-T6 aluminum","Bead-blast + anodize","±0.05mm mating faces","Button/LED cutouts","1m drop test"],bom_qty:"3–5 first articles",color:"#10b981"},

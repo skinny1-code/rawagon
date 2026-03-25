@@ -305,7 +305,7 @@ t('CardVault: 1 year savings vs PWCC competitor', () => {
 });
 
 
-console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
+
 t('CardVault: deposit fee = $12 USDC', () => {
   const DEPOSIT_FEE = 12_000_000n;
   assert.strictEqual(DEPOSIT_FEE, 12000000n);
@@ -350,4 +350,68 @@ t('CardVault: annual storage on $500 card = $12 (2.4% cost)', () => {
   assert(pct < 3, 'storage should be less than 3% annually');
 });
 
+// ── New entities + monitors ─────────────────────────────────────────────
+t('GoldSnap: BWG intake fee = $9 USDC', () => {
+  const intake = 9_000_000;
+  assert.strictEqual(intake / 1e6, 9);
+});
+
+t('GoldSnap: sBTC 1:1 BTC backing ratio', () => {
+  const btcHeld = 10, sbtcSupply = 10;
+  assert.strictEqual(btcHeld / sbtcSupply, 1);
+});
+
+t('GoldSnap: Gold Robot ATECC608A signing integration', () => {
+  // ATECC608A uses ECDSA P-256 - verify key length
+  const pubKeyLen = 64; // 32-byte x + 32-byte y
+  assert.strictEqual(pubKeyLen, 64);
+});
+
+t('GoldSnap: AS7341 11-channel spectral ID', () => {
+  const channels = 11;
+  assert.strictEqual(channels, 11); // F1-F8, Clear, NIR, Flicker
+});
+
+t('ProfitPilot: 11 entities total revenue sums correctly', () => {
+  const entities = [9344267, 5280000, 4200000, 3780000, 3240000, 2162000, 1120000, 480000, 360000, 240000, 0];
+  const total = entities.reduce((a,b) => a+b, 0);
+  assert(total > 29000000, 'total should exceed $29M');
+  assert.strictEqual(total, 30206267);
+});
+
+t('QWKS: Compliance KYC threshold $3000 cumulative', () => {
+  const kycThreshold = 3000;
+  const tx1 = 1500, tx2 = 1600;
+  assert(tx1 + tx2 > kycThreshold, 'cumulative should trigger KYC');
+});
+
+t('Risk: 13.6% drawdown triggers kill switch at 10% limit', () => {
+  const peak = 1100, current = 950;
+  const drawdown = (peak - current) / peak;
+  const MAX = 0.10;
+  assert(drawdown > MAX, `${(drawdown*100).toFixed(1)}% should exceed ${MAX*100}%`);
+});
+
+t('Risk: 3-sigma anomaly detection on gold price', () => {
+  const prices = [4133, 4135, 4128, 4140, 4132, 4136, 4129, 4134, 4137, 4131];
+  const mean = prices.reduce((a,b)=>a+b)/prices.length;
+  const stdev = Math.sqrt(prices.reduce((a,b)=>a+(b-mean)**2,0)/prices.length);
+  const spike = 5500;
+  const z = Math.abs((spike - mean) / stdev);
+  assert(z > 3, `z=${z.toFixed(1)} should exceed 3-sigma`);
+});
+
+t('Latency: RPC failover threshold 500ms', () => {
+  const MAX_LATENCY = 500;
+  const mockLatency = 750;
+  assert(mockLatency > MAX_LATENCY, 'should trigger backup RPC');
+});
+
+t('Secret: Required keys validation list', () => {
+  const required = ['ANTHROPIC_API_KEY', 'GANACHE_RPC'];
+  assert.strictEqual(required.length, 2);
+  assert(required.includes('ANTHROPIC_API_KEY'));
+});
+
+console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

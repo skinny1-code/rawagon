@@ -65,6 +65,7 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="tab" onclick="showTab('savings')">Savings Calc</div>
     <div class="tab" onclick="showTab('migrate')">Migrate</div>
     <div class="tab" onclick="showTab('airouter')">AI Router</div>
+    <div class="tab" onclick="showTab('compliance')">Compliance</div>
     <div class="tab" onclick="showTab('network')">Network</div>
   </div>
   <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
@@ -341,6 +342,51 @@ input:focus,select:focus{border-color:var(--indigo);}
     </div>
   </div>
 </div>
+
+<!-- COMPLIANCE -->
+<div class="pane" id="pane-compliance">
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Working Compliance Checklist</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:7px;" id="compliance-list"></div>
+        <div style="margin-top:14px;font-size:.7rem;color:var(--dim)">Source: Compliance_Checklist.md · For counsel review</div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">Geo-Fence Rules</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">New York</span><span style="color:var(--red)">🚫 Blocked until licensed</span></div>
+          <div class="row"><span style="color:var(--soft)">US (other states)</span><span class="grn">✓ Available</span></div>
+          <div class="row"><span style="color:var(--soft)">EU</span><span class="grn">✓ Available (MiCA review Q3)</span></div>
+          <div class="row"><span style="color:var(--soft)">OFAC sanctions list</span><span style="color:var(--red)">🚫 Auto-blocked</span></div>
+          <div class="row"><span style="color:var(--soft)">KYC threshold</span><span style="color:var(--indigo)">$3,000+ cumulative</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">KYC / AML Requirements</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Identity verification</span><span style="color:var(--indigo)">AllCard ZK proof</span></div>
+          <div class="row"><span style="color:var(--soft)">PII stored</span><span class="grn">Zero (ZK commitment only)</span></div>
+          <div class="row"><span style="color:var(--soft)">Sanctions screening</span><span style="color:var(--indigo)">OFAC check on enroll</span></div>
+          <div class="row"><span style="color:var(--soft)">SAR obligation</span><span style="color:var(--soft)">Triggered at thresholds</span></div>
+          <div class="row"><span style="color:var(--soft)">Record retention</span><span style="color:var(--soft)">5 years (US BSA)</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Smart Contract Security</div>
+        <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Audit status</span><span style="color:var(--gold)">Pre-launch required</span></div>
+          <div class="row"><span style="color:var(--soft)">Emergency pause</span><span class="grn">✓ All contracts</span></div>
+          <div class="row"><span style="color:var(--soft)">Upgrade mechanism</span><span style="color:var(--soft)">Owner-only + timelock</span></div>
+          <div class="row"><span style="color:var(--soft)">Oracle failure</span><span class="grn">✓ Fallback + freeze</span></div>
+          <div class="row"><span style="color:var(--soft)">Key compromise plan</span><span style="color:var(--gold)">Incident response doc</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -601,7 +647,7 @@ function setRate() {
 }
 
 function showTab(id) {
-  const ids=["overview","payment","staking","savings","migrate","airouter","network"];
+  const ids=["overview","payment","staking","savings","migrate","airouter","compliance","network"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="network") loadNetworkStats();
@@ -637,9 +683,32 @@ async function simulateRoute() {
     </div>
   </div>`;
 }
+
+function renderComplianceList() {
+  const items = [
+    {done:false,text:"Entity formation (non-NY for launch), board resolutions, policies"},
+    {done:false,text:"Vault agreement (allocated bars + serial-level monthly reporting)"},
+    {done:false,text:"MSB registration (if applicable), comprehensive KYC/AML program, sanctions screening"},
+    {done:false,text:"Consumer disclosures, website T&Cs, privacy policy"},
+    {done:true, text:"Geo-fencing for restricted jurisdictions (NY until licensed)"},
+    {done:false,text:"Smart contract audits + pause/upgrade procedures"},
+    {done:false,text:"Chainlink PoR + public dashboards + monthly attestations"},
+    {done:false,text:"Incident response plan (key compromise, oracle failure, vault event)"},
+    {done:true, text:"ZK identity — no PII stored on-chain (AllCard + EmployeeVault)"},
+    {done:true, text:"Emergency pause on all contracts"},
+    {done:true, text:"Anti-replay proofs on all ZK operations"},
+  ];
+  document.getElementById('compliance-list').innerHTML = items.map(i=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid rgba(99,102,241,.08)">
+      <span style="color:${i.done?'var(--grn)':'var(--gold)'};flex-shrink:0;margin-top:1px">${i.done?'✓':'○'}</span>
+      <span style="color:${i.done?'var(--soft)':'var(--wh)'}">${i.text}</span>
+    </div>`).join('');
+}
+
 window.addEventListener("load",()=>{
   calcSavings();
   loadNetworkStats();
+  renderComplianceList();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
 });
 </script>

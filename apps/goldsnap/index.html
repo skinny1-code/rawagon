@@ -113,6 +113,9 @@ input:focus{border-color:var(--gold);}
     <div class="nav-item" onclick="show('portfolio')">Portfolio</div>
     <div class="nav-item" onclick="show('reserves')">Reserves</div>
     <div class="nav-item" onclick="show('history')">History</div>
+    <div class="nav-item" onclick="show('bwg')">BWG</div>
+    <div class="nav-item" onclick="show('sbtc')">sBTC</div>
+    <div class="nav-item" onclick="show('robot')">Au Robot</div>
     <div class="nav-item" onclick="show('about')">About GTX</div>
   </div>
   <div class="hdr-right">
@@ -395,6 +398,185 @@ input:focus{border-color:var(--gold);}
   </div>
 </div>
 
+
+<!-- BWG — BITCOIN-WRAPPED GOLD -->
+<div class="pane" id="pane-bwg">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid var(--gold);margin-bottom:14px;">
+        <div class="card-title gold-t">BWG — Bitcoin-Wrapped Gold</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">
+          Each BWG unit = 1 fine troy oz LBMA-grade gold held in an <strong style="color:var(--wh)">allocated</strong> vault with registered bar serial numbers. Inscribed on Bitcoin Ordinals for immutable provenance. Redeemable for physical delivery.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;">
+          <div class="row"><span style="color:var(--soft)">Backing</span><span class="gold">1 troy oz allocated LBMA gold</span></div>
+          <div class="row"><span style="color:var(--soft)">Custodian</span><span style="color:var(--soft)">Vault (allocated, serial-registered)</span></div>
+          <div class="row"><span style="color:var(--soft)">Inscription</span><span class="gold">Bitcoin Ordinals (bar metadata)</span></div>
+          <div class="row"><span style="color:var(--soft)">PoR</span><span class="grn">Monthly bar list + attestation</span></div>
+          <div class="row"><span style="color:var(--soft)">Redemption</span><span class="grn">KYC + $19-50 shipping fee</span></div>
+          <div class="row"><span style="color:var(--soft)">Geo-fence</span><span style="color:var(--gold)">No NY until licensed</span></div>
+          <div class="row"><span style="color:var(--soft)">Status</span><span style="color:var(--gold)">Draft terms — counsel review</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title gold-t">Bar Inscription Lookup</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;">Each physical gold bar is inscribed on Bitcoin Ordinals with serial, weight, vault, and fineness.</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="bwg-serial" placeholder="Bar serial e.g. BRINKS-UK-2025-000123" style="flex:1;margin:0;font-family:JetBrains Mono,monospace;font-size:.74rem">
+          <button class="btn btn-gold btn-sm" onclick="lookupBWGBar()">Lookup</button>
+        </div>
+        <div id="bwg-bar-result"><div style="color:var(--soft);font-size:.76rem">Enter bar serial to check inscription + custody status</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title gold-t">Proof of Reserve Dashboard</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Total bars inscribed</span><span id="bwg-total-bars" class="gold mono">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Total oz allocated</span><span id="bwg-total-oz" class="gold mono">—</span></div>
+          <div class="row"><span style="color:var(--soft)">BWG supply</span><span id="bwg-supply" class="gold mono">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Last attestation</span><span style="color:var(--soft);font-size:.72rem">Monthly</span></div>
+          <div class="row"><span style="color:var(--soft)">Claim portal</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">solidbtc.claimportal.testnet</span></div>
+          <div class="row"><span style="color:var(--soft)">Collateral ratio</span><span class="grn">100% allocated</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="loadBWGPoR()">↻ Refresh PoR</button>
+      </div>
+      <div class="card">
+        <div class="card-title gold-t">BWG Compliance Checklist</div>
+        <div style="font-size:.74rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">Entity formation (non-NY)</span><span style="color:var(--gold)">Pending</span></div>
+          <div class="row"><span style="color:var(--soft)">Vault agreement (allocated)</span><span style="color:var(--gold)">Pending</span></div>
+          <div class="row"><span style="color:var(--soft)">KYC/AML program</span><span style="color:var(--gold)">Drafting</span></div>
+          <div class="row"><span style="color:var(--soft)">Smart contract audit</span><span style="color:var(--gold)">Pre-launch</span></div>
+          <div class="row"><span style="color:var(--soft)">Chainlink PoR + dashboards</span><span style="color:var(--gold)">Q3 2026</span></div>
+          <div class="row"><span style="color:var(--soft)">Monthly bar attestation</span><span style="color:var(--gold)">On approval</span></div>
+          <div class="row"><span style="color:var(--soft)">NY geo-fence</span><span class="grn">✓ Planned</span></div>
+          <div class="row"><span style="color:var(--soft)">Ordinals inscription live</span><span style="color:var(--gold)">Testnet only</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- sBTC — GOLD-WRAPPED BITCOIN -->
+<div class="pane" id="pane-sbtc">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid #f7931a;margin-bottom:14px;">
+        <div class="card-title" style="color:#f7931a;">sBTC — Gold-Wrapped Bitcoin</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.7;">
+          Each sBTC = 1 BTC held in a 3-of-5 multisig custodian wallet. Optional gold fallback redemption at spot. Mint by sending BTC with PSBT proof; burn to redeem BTC back.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;">
+          <div class="row"><span style="color:var(--soft)">Backing</span><span style="color:#f7931a;">1 BTC (segregated multisig)</span></div>
+          <div class="row"><span style="color:var(--soft)">Custodian</span><span style="color:var(--soft)">3-of-5 hardware wallet multisig</span></div>
+          <div class="row"><span style="color:var(--soft)">Mint</span><span class="grn">Send BTC + PSBT proof → sBTC</span></div>
+          <div class="row"><span style="color:var(--soft)">Burn</span><span class="grn">requestBurn() → BTC returned</span></div>
+          <div class="row"><span style="color:var(--soft)">PoR</span><span class="grn">Real-time UTXO + monthly attestation</span></div>
+          <div class="row"><span style="color:var(--soft)">Gold fallback</span><span class="gold">Optional at spot price (v1.5)</span></div>
+          <div class="row"><span style="color:var(--soft)">Status</span><span style="color:var(--gold)">Draft terms — counsel review</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#f7931a;">sBTC Mint / Burn Flow</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.85;">
+          <div><strong style="color:#f7931a;">Mint:</strong> Send BTC to custodian → wait N confirmations → PSBT proof generated → call requestMint() → ops verify → mint() issued</div>
+          <br>
+          <div><strong style="color:#f7931a;">Burn:</strong> Call requestBurn(amount, btcAddress) → ops build PSBT → 3-of-5 sign + broadcast → PoR updated</div>
+          <br>
+          <div><strong style="color:var(--gold);">Security:</strong> 4-eyes on all withdrawals · Daily PoR reconciliation · Freeze on mismatch</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title" style="color:#f7931a;">PoR Dashboard</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">BTC held</span><span id="sbtc-btc" style="color:#f7931a;font-family:JetBrains Mono,monospace">— BTC</span></div>
+          <div class="row"><span style="color:var(--soft)">sBTC supply</span><span id="sbtc-supply" style="color:#f7931a;font-family:JetBrains Mono,monospace">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Backing ratio</span><span class="grn">100% (1:1)</span></div>
+          <div class="row"><span style="color:var(--soft)">BTC price</span><span id="sbtc-btc-price" style="color:#f7931a;font-family:JetBrains Mono,monospace">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Collateral value</span><span id="sbtc-collateral" style="color:#f7931a;font-family:JetBrains Mono,monospace">—</span></div>
+          <div class="row"><span style="color:var(--soft)">Last UTXO check</span><span style="color:var(--soft);font-size:.7rem">On-chain real-time</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="loadSBTCPoR()">↻ Fetch BTC Price</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#f7931a;">Multisig Custody</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.7;">
+          <div>• 3-of-5 signers using hardware wallets (Ledger + Coldcard)</div>
+          <div>• Unique operators per signer</div>
+          <div>• Descriptor + xpubs in cold vault</div>
+          <div>• All withdrawals require 4-eye sign-off</div>
+          <div>• Daily reconcile PoR vs wallets</div>
+          <div>• Freeze contract on PoR mismatch</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GOLD-SEEKING ROBOT / HARDWARE -->
+<div class="pane" id="pane-robot">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid var(--gold);margin-bottom:14px;">
+        <div class="card-title gold-t">🤖 Gold-Seeking Robot — GoldSnap Integration</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.6;">
+          Autonomous mineral detection robot with AS7341 11-channel spectrometer and HX711 load cell. Physical gold detection confirmed via AI spectral analysis → triggers GTX mint on GoldSnap. ATECC608A signs each detection report on-chain.
+        </div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
+          <div class="row"><span style="color:var(--soft)">MCU</span><span class="gold mono">ESP32-WROOM-32E</span></div>
+          <div class="row"><span style="color:var(--soft)">Spectrometer</span><span class="gold mono">AS7341 (11-ch, 340-1000nm)</span></div>
+          <div class="row"><span style="color:var(--soft)">Weight sensor</span><span class="gold mono">HX711 + load cell (±0.5%)</span></div>
+          <div class="row"><span style="color:var(--soft)">Conductivity</span><span class="gold mono">ADS1115 ADC (±0.2%)</span></div>
+          <div class="row"><span style="color:var(--soft)">NFC</span><span class="gold mono">PN532 — on-chain signing</span></div>
+          <div class="row"><span style="color:var(--soft)">Secure element</span><span class="grn">ATECC608A — ECDSA signing</span></div>
+          <div class="row"><span style="color:var(--soft)">Connectivity</span><span class="gold mono">WiFi + BLE (ESP32)</span></div>
+          <div class="row"><span style="color:var(--soft)">Power</span><span class="gold mono">Li-ion + MCP73831 charger</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title gold-t">Calibration Procedure</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.9;">
+          <div><strong style="color:var(--wh)">Weight</strong> — ±0.5% accuracy · Tare before each run</div>
+          <div><strong style="color:var(--wh)">Conductivity</strong> — ±0.2% · ADS1115 dual-ref calibration</div>
+          <div><strong style="color:var(--wh)">Spectrometer</strong> — AS7341 dark + white reference · 11 channels validated</div>
+          <div><strong style="color:var(--wh)">Signing</strong> — ATECC608A ECC508 ECDSA P-256</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title gold-t">Pin Map (I2C Bus)</div>
+        <table class="tbl">
+          <thead><tr><th>Net</th><th>ESP32 Pin</th><th>Component</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="color:var(--gold)">I2C_SDA</td><td>GPIO21</td><td>ADS1115 / AS7341 / OLED</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">I2C_SCL</td><td>GPIO22</td><td>ADS1115 / AS7341 / OLED</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">HX_DOUT</td><td>GPIO19</td><td>HX711 load cell data</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">HX_SCK</td><td>GPIO18</td><td>HX711 clock</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">US_TRIG</td><td>GPIO23</td><td>Ultrasonic sensor</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">NFC_SDA</td><td>GPIO21</td><td>PN532 (I2C)</td></tr>
+            <tr><td class="mono" style="color:var(--gold)">USB_5V</td><td>—</td><td>USB-C input power</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title gold-t">Detection → GTX Flow</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.85;">
+          <div>1. AS7341 scans spectral signature of sample</div>
+          <div>2. ADS1115 measures electrical conductivity</div>
+          <div>3. HX711 weighs sample (troy oz)</div>
+          <div>4. AI model classifies: gold confirmed / rejected</div>
+          <div>5. ATECC608A signs detection report (ECDSA)</div>
+          <div>6. Report pushed via WiFi → GoldSnap API</div>
+          <div>7. GoldMint.sol mints GTX = verified weight × purity</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -580,7 +762,7 @@ async function getTestUSDC(){
 }
 
 function show(id){
-  const ids=["prices","mint","redeem","portfolio","reserves","history","about"];
+  const ids=["prices","mint","redeem","portfolio","reserves","history","bwg","sbtc","robot","about"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="prices")fetchPrices();
@@ -597,6 +779,55 @@ function toast(msg,err=false){
   const t=document.getElementById("toast");
   t.textContent=msg;t.style.borderColor=err?"var(--red)":"var(--gold)";t.style.color=err?"var(--red)":"var(--gold)";
   t.style.display="block";setTimeout(()=>t.style.display="none",3000);
+}
+
+
+// ── BWG / sBTC ────────────────────────────────────────────────────────────
+async function lookupBWGBar() {
+  const serial = document.getElementById('bwg-serial').value.trim();
+  if (!serial) return;
+  const el = document.getElementById('bwg-bar-result');
+  // Simulated registry lookup (real: ord indexer query)
+  const mockRegistry = {
+    'BRINKS-UK-2025-000123': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'available',inscription:'abc123:0'},
+    'BRINKS-UK-2025-000124': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'redeemed',inscription:'def456:0'},
+  };
+  const bar = mockRegistry[serial];
+  if (bar) {
+    const sc = bar.status==='available'?'var(--grn)':'var(--gold)';
+    el.innerHTML = `<div style="padding:10px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;font-size:.76rem;">
+      <div style="font-weight:700;color:var(--gold);margin-bottom:6px">✓ Bar found in registry</div>
+      <div>Weight: <span class="gold mono">${bar.weight}</span></div>
+      <div>Fineness: <span class="gold mono">${bar.fineness}</span></div>
+      <div>Vault: <span style="color:var(--soft)">${bar.vault}</span></div>
+      <div>Inscription: <span class="mono" style="color:var(--dim);font-size:.68rem">${bar.inscription}</span></div>
+      <div>Status: <span style="color:${sc};font-weight:700">${bar.status.toUpperCase()}</span></div>
+    </div>`;
+  } else {
+    el.innerHTML = `<div style="padding:8px 10px;background:var(--rd2);border-radius:6px;font-size:.76rem;color:var(--red)">Bar serial not found in inscription registry</div>`;
+  }
+}
+
+function loadBWGPoR() {
+  // Placeholder — real: query Ordinals indexer + vault API
+  document.getElementById('bwg-total-bars').textContent = '— (testnet)';
+  document.getElementById('bwg-total-oz').textContent = '— oz';
+  document.getElementById('bwg-supply').textContent = '— BWG';
+  toast('BWG PoR: solidbtc.claimportal.testnet (testnet only)');
+}
+
+async function loadSBTCPoR() {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const d = await r.json();
+    const btcPrice = d?.bitcoin?.usd || 0;
+    document.getElementById('sbtc-btc-price').textContent = '$' + btcPrice.toLocaleString();
+    document.getElementById('sbtc-btc').textContent = '— BTC (testnet)';
+    document.getElementById('sbtc-supply').textContent = '— sBTC';
+    document.getElementById('sbtc-collateral').textContent = btcPrice > 0 ? '$' + btcPrice.toLocaleString() + ' per BTC' : '—';
+  } catch(e) {
+    document.getElementById('sbtc-btc-price').textContent = '— (API unavailable)';
+  }
 }
 
 window.addEventListener("load",()=>{
