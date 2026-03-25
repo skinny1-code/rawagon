@@ -68,6 +68,12 @@ async function main() {
     JSON.stringify(out, null, 2)
   );
 
+  // Check if CardVault is deployed (it won't be on fresh Ganache — needs manual deploy)
+  const cvCode = await provider.getCode('0x0000000000000000000000000000000000000000');
+  if(cvCode === '0x') {
+    console.log('  ⚠  CardVault.sol not yet deployed — run: node scripts/deploy-card-vault.js');
+  }
+
   console.log('\n  ✓ All contracts live · deployed-addresses.json updated\n');
   console.log('  Next: node server.js\n');
 }

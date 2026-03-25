@@ -23,6 +23,23 @@ export ANTHROPIC_API_KEY=sk-ant-...
 node agents/agent-system.js
 ```
 
+## CardVault Deployment
+```bash
+# After deploying Ganache contracts:
+node scripts/deploy-card-vault.js
+# Copy the address → update VAULT_ADDR in apps/droppa/index.html
+```
+
+## Monitoring
+```bash
+# Start all background monitors
+python3 packages/monitors/run_monitors.py
+
+# Or individual monitors:
+python3 packages/monitors/latency_monitor.py
+python3 packages/monitors/risk_gatekeeper.py
+```
+
 ## Apps
 | App | URL | Contract |
 |-----|-----|----------|

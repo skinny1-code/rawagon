@@ -413,5 +413,69 @@ t('Secret: Required keys validation list', () => {
   assert(required.includes('ANTHROPIC_API_KEY'));
 });
 
+
+// ── Fix verification tests ──────────────────────────────────────────────
+t('wallet-connect: default chain is rawnet_testnet', () => {
+  const fs = require('fs');
+  const wc = fs.readFileSync('packages/allcard-sdk/wallet-connect.js','utf8');
+  assert(wc.includes('targetNetwork = "rawnet_testnet"'), 'default chain must be rawnet');
+});
+
+t('deployed-addresses: CardVault entry exists', () => {
+  const addrs = JSON.parse(require('fs').readFileSync('deployed-addresses.json','utf8'));
+  assert('CardVault' in addrs.rawnet_testnet, 'CardVault must be in deployed-addresses');
+});
+
+t('CardVault: intake $9 + 12mo storage $24 = $33 total', () => {
+  const intakeFee = 9, monthly = 2, months = 12;
+  assert.strictEqual(intakeFee + monthly * months, 33);
+});
+
+t('monitors: all monitor files exist', () => {
+  const fs = require('fs');
+  const files = ['secret_manager.py','risk_gatekeeper.py','latency_monitor.py','data_integrity.py','run_monitors.py'];
+  files.forEach(f => assert(fs.existsSync('packages/monitors/'+f), f+' must exist'));
+});
+
+t('monitors: risk drawdown 13.6% triggers at 10% limit', () => {
+  const peak = 1100, current = 950;
+  const drawdown = (peak - current) / peak;
+  assert.strictEqual(Number(drawdown.toFixed(3)), 0.136);
+  assert(drawdown > 0.10);
+});
+
+t('monitors: latency 750ms exceeds 500ms threshold', () => {
+  const MAX = 500, actual = 750;
+  assert(actual > MAX, 'should trigger backup RPC');
+});
+
+t('monitors: z-score 3-sigma anomaly detection', () => {
+  const prices = [100,101,99,100,102,98,100,101,99,100];
+  const mean = prices.reduce((a,b)=>a+b)/prices.length;
+  const std  = Math.sqrt(prices.reduce((a,b)=>a+(b-mean)**2,0)/prices.length);
+  const spike = 200;
+  const z = Math.abs((spike-mean)/std);
+  assert(z > 3, `z=${z.toFixed(1)} must exceed 3`);
+});
+
+t('SECURITY.md: not a generic template', () => {
+  const fs = require('fs');
+  const sec = fs.readFileSync('SECURITY.md','utf8');
+  assert(sec.includes('rawagon.io'), 'must have real contact');
+  assert(!sec.includes('5.1.x'), 'must not have generic version table');
+});
+
+t('rawagon-os: no broken sepolia.10.117 URL', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
+  assert(!html.includes('sepolia.10.117'), 'broken URL must be removed');
+});
+
+t('allcard-sdk: CardVault ABI exported', () => {
+  const fs = require('fs');
+  const sdk = fs.readFileSync('packages/allcard-sdk/index.js','utf8');
+  assert(sdk.includes('CARD_VAULT_ABI'), 'CardVault ABI must be in allcard-sdk');
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

@@ -1,12 +1,13 @@
 {
   "name": "@rawagon/contracts",
   "version": "0.1.0",
-  "description": "RAWagon smart contracts — fully standalone, no external imports",
+  "description": "RAWagon smart contracts \u2014 fully standalone, no external imports",
   "scripts": {
     "compile:ganache": "node ../scripts/compile-ganache.js",
-    "deploy:ganache":  "node ../scripts/deploy-ganache.js",
-    "deploy:base":     "npx hardhat run ../scripts/deploy.js --network base",
-    "deploy:sepolia":  "npx hardhat run ../scripts/deploy.js --network base_sepolia"
+    "deploy:ganache": "node ../scripts/deploy-ganache.js",
+    "deploy:base": "npx hardhat run ../scripts/deploy.js --network base",
+    "deploy:sepolia": "npx hardhat run ../scripts/deploy.js --network base_sepolia",
+    "deploy:card-vault": "node ../scripts/deploy-card-vault.js"
   },
   "note": "All contracts are standalone (no @openzeppelin). Safe for Ganache v7 deployment via solc direct compile.",
   "devDependencies": {

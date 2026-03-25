@@ -1,3 +1,18 @@
+
+// ── CardVault ABI (Droppa physical card digitization) ─────────────────────
+const CARD_VAULT_ABI = [
+  "function submitIntake(bytes32 cardHash, uint256 estimatedValue) returns (uint256)",
+  "function getIntakeRequests(address submitter) view returns (uint256[])",
+  "function intakeFee() view returns (uint256)",
+  "function monthlyFee() view returns (uint256)",
+  "function redemptionFee() view returns (uint256)",
+  "function getOwnerTokens(address) view returns (uint256[])",
+  "function cards(uint256) view returns (uint256,address,bytes32,string,uint8,uint16,uint256,uint256,uint256,uint256,uint8,string,bytes32)",
+  "function requestRedemption(uint256 tokenId, bytes32 shippingAddrHash)",
+  "function totalVaulted() view returns (uint256)",
+  "function totalRedeemed() view returns (uint256)",
+];
+
 'use strict';
 /**
  * @rawagon/allcard-sdk
@@ -129,4 +144,4 @@ function createWAGONPayment(wagonfromAddress, toAddress, amount, token = 'USDC')
   };
 }
 
-module.exports = { AllCard, MODES, createWAGONPayment };
+module.exports = { AllCard, MODES, CARD_VAULT_ABI, createWAGONPayment };

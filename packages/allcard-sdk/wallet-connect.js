@@ -37,7 +37,7 @@ const CHAINS = {
 };
 
 class RAWagonWallet {
-  constructor(targetNetwork = "base_sepolia") {
+  constructor(targetNetwork = "rawnet_testnet") {
     this.targetNetwork = targetNetwork;
     this.address     = null;
     this.chainId     = null;

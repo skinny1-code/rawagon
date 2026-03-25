@@ -246,7 +246,7 @@ select.fi option{background:var(--deep);}
   <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
     <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="https://sepolia.10.117.122.142:8545" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
+    <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
     <span style="font-size:11px;color:#333360;">chainId 720701</span>
   </div>
 </div>
@@ -262,7 +262,7 @@ select.fi option{background:var(--deep);}
     chainId:"0x14A34",chainName:"RAWNet Testnet",
     nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
     rpcUrls:["https://sepolia.base.org"],
-    blockExplorerUrls:["https://sepolia.10.117.122.142:8545"]
+    blockExplorerUrls:["http://10.117.122.142:3000"]
   };
   const wrap = document.getElementById("rwc-btn-wrap");
   const btn  = document.createElement("button");
@@ -1531,6 +1531,20 @@ const SIDEBARS = {
 };
 
 function switchApp(app) {
+  // Map app IDs to server routes
+  const APP_URLS = {
+    'identity':   '/apps/1nce-allcard/',
+    'pawnsnap':   '/apps/bitpawn/',
+    'droppa':     '/apps/droppa/',
+    'autoiq':     '/apps/autoiq/',
+    'goldsnap':   '/apps/goldsnap/',
+    'tokens':     '/apps/qwks-protocol/',
+    'profitpilot':'/apps/profitpilot/',
+  };
+  if(app !== 'os' && APP_URLS[app]) {
+    window.open(APP_URLS[app], '_blank');
+    return;
+  }
   document.querySelectorAll('.gnav-app').forEach(a=>a.classList.remove('on'));
   const navApps = ['os','identity','pawnsnap','droppa','autoiq','goldsnap','tokens','profitpilot'];
   const idx = navApps.indexOf(app);

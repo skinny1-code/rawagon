@@ -1020,7 +1020,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total deposits</span><span id="vs-deposits" style="font-family:JetBrains Mono,monospace;color:var(--purp)">—</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total redemptions</span><span id="vs-redemptions" style="font-family:JetBrains Mono,monospace;color:var(--grn)">—</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fees collected</span><span id="vs-fees" style="font-family:JetBrains Mono,monospace;color:var(--gold)">—</span></div>
-            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">CardVault.sol</span><span style="background:var(--gn2);color:var(--grn);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px">LIVE</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">CardVault.sol</span><span id="vault-contract-status" style="background:var(--gd2);color:var(--gold);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px">PENDING DEPLOY</span></div>
           </div>
           <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="loadVaultStats()">↻ Load Stats</button>
         </div>
@@ -1053,6 +1053,10 @@ async function connectWallet(){
   provider=new ethers.BrowserProvider(window.ethereum);
   signer=await provider.getSigner();
   bfContract=new ethers.Contract(ADDRS.BreakFactory,BF_ABI,signer);
+  const vcStatusEl=document.getElementById("vault-contract-status");
+  if(VAULT_ADDR!=="0x0000000000000000000000000000000000000000"){
+    if(vcStatusEl){vcStatusEl.textContent="LIVE";vcStatusEl.style.background="var(--gn2)";vcStatusEl.style.color="var(--grn)";}
+  }
   if(VAULT_ADDR!=='0x0000000000000000000000000000000000000000')vaultContract=new ethers.Contract(VAULT_ADDR,VAULT_ABI,signer);
   usdcContract=new ethers.Contract(ADDRS.MockUSDC,USDC_ABI,signer);
   const btn=document.getElementById("connect-btn");
@@ -1420,7 +1424,7 @@ function renderReferrals(){
   document.getElementById("ref-t2-count").textContent=t2;
   document.getElementById("ref-monthly").textContent="$"+monthly.toFixed(2);
   document.getElementById("ref-annual").textContent="$"+(monthly*12).toFixed(2);
-  document.getElementById("ref-refs").textContent=referrals.length;
+  const refEl=document.getElementById("d-refs");if(refEl)refEl.textContent=referrals.length;
   const el=document.getElementById("ref-tree");
   if(!referrals.length){el.innerHTML="<div style='color:var(--soft);font-size:.78rem'>No referrals yet</div>";return;}
   el.innerHTML=referrals.map(r=>`

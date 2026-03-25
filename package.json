@@ -17,7 +17,10 @@
     "start": "node server.js",
     "start:dev": "node server.js 3001",
     "deploy:ganache": "node scripts/deploy-ganache.js",
-    "agents": "node agents/agent-system.js"
+    "agents": "node agents/agent-system.js",
+    "monitors": "python3 packages/monitors/run_monitors.py",
+    "deploy:card-vault": "node scripts/deploy-card-vault.js",
+    "test:monitors": "python3 -c \"import packages.monitors.risk_gatekeeper; print('ok')\""
   },
   "workspaces": [
     "packages/*",

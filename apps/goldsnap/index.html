@@ -656,6 +656,8 @@ function previewRedeem(t){
 }
 
 async function mintGTX(){
+  const btn=document.getElementById("mint-gtx-btn");
+  if(btn){btn.disabled=true;btn.textContent="Minting...";}
   if(!signer){alert("Connect wallet");return;}
   const usdc=parseFloat(document.getElementById("mint-gtx-usdc").value);
   if(!usdc)return;
@@ -668,9 +670,10 @@ async function mintGTX(){
     await(await gmContract.mintGTX(amt)).wait();
     s.textContent="✓ GTX minted!";s.style.color="var(--grn)";
     toast("GTX minted ✓");
+    if(btn){btn.disabled=false;btn.textContent="Mint GTX";}
     txHistory.unshift({type:"MINT",token:"GTX",usdc,ts:Date.now()});
     loadPortfolio();loadReserves();
-  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}
+  }catch(e){s.textContent="Error: "+e.message.split("(")[0];s.style.color="var(--red)";toast(e.message.split("(")[0],true);}finally{if(btn){btn.disabled=false;btn.textContent=btn.id==="mint-gtx-btn"?"Mint GTX":"Mint STX";}}
 }
 
 async function mintSTX(){
