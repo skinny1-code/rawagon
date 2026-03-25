@@ -276,6 +276,11 @@ select.fi option{background:var(--deep);}
     addr = accounts && accounts[0] ? accounts[0] : null;
     if(addr){
       btn.textContent = addr.slice(0,6)+"..."+addr.slice(-4);
+      const shortAddr = addr.slice(0,6)+"..."+addr.slice(-4);
+      const el = document.getElementById("os-card-name");
+      if(el) el.textContent = shortAddr;
+      const chip = document.querySelector(".identity-chip-name");
+      if(chip) chip.textContent = shortAddr;
       btn.className = "connected";
       chainEl.textContent = "Base Sepolia";
       try{
@@ -330,7 +335,7 @@ select.fi option{background:var(--deep);}
     <div class="live-bar">LIVE</div>
     <div class="identity-chip" onclick="openModal('identity-modal')">
       <div class="identity-chip-av">AJ</div>
-      <span class="identity-chip-name">Alexandra J.</span>
+      <span class="identity-chip-name">Wallet</span>
       <span class="identity-chip-zk">⬡ ZK</span>
     </div>
     <div class="btn-icon" onclick="openModal('notifications')" title="Notifications">🔔</div>
@@ -374,7 +379,7 @@ select.fi option{background:var(--deep);}
           <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
             <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#000;">AJ</div>
             <div>
-              <div style="font-size:.88rem;font-weight:600;">Alexandra Johnson</div>
+              <div style="font-size:.88rem;font-weight:600;">Connected Wallet</div>
               <div style="font-family:'IBM Plex Mono',monospace;font-size:.64rem;color:var(--gold);margin-top:1px;">1NCE-7742-A · ZK verified</div>
             </div>
           </div>
@@ -398,7 +403,7 @@ select.fi option{background:var(--deep);}
             <div class="acm-mode" id="os-card-mode">ALLCARD</div>
             <div class="acm-chip"></div>
             <div class="acm-num" id="os-card-num">•••• •••• •••• ••••</div>
-            <div class="acm-name" id="os-card-name">Alexandra Johnson</div>
+            <div class="acm-name" id="os-card-name">Connected Wallet</div>
           </div>
           <div style="display:flex;gap:6px;">
             <button class="btn btn-ghost btn-sm" onclick="shiftOSCard()">⟳ Shift</button>
@@ -1572,7 +1577,7 @@ function setIDCardMode(mode, btn) {
 // ═══════════════════════════════════════════════
 function openModal(key) {
   const modals = {
-    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Name','Alexandra Johnson'],['Handle','@alex.once'],['ZK ID','1NCE-7742-A'],['AllCard','Active · 247 shifts'],['AuraMe','98/100 behavioral'],['Credit','847 · Equifax']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
+    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Wallet',addr?addr.slice(0,12)+'...':'Not connected'],['Handle','RAWNet'],['ZK ID','—'],['AllCard','Connect to load'],['AuraMe','Set in AllCard'],['Credit','Private — ZK only']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
     'notifications': {t:'🔔 Notifications',b:`<div style="display:flex;flex-direction:column;gap:0;">${[{dot:'var(--gold)',t:'LTN staking reward distributed',b:'$48.20 from PawnSnap + Droppa fees. Auto-compounding.',ts:'8m ago'},{dot:'var(--grn)',t:'IQCAR NFT minted — Tesla Model 3',b:'#0248 on Base L2. Title transferred. AllCard updated.',ts:'12m ago'},{dot:'var(--orng)',t:'Droppa break #0441 closed',b:'20/20 slots filled. $1,440 gross. Payout to AllCard.',ts:'5m ago'},{dot:'var(--blue)',t:'Gold spot update',b:L.gold?`Gold now $${L.gold.toFixed(2)}/oz. PawnSnap offers auto-recalculated.`:'Gold price updated.',ts:'Live'}].map(n=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;"><div style="width:7px;height:7px;border-radius:50%;background:${n.dot};margin-top:5px;flex-shrink:0;"></div><div><div style="font-size:.8rem;font-weight:500;margin-bottom:2px;">${n.t}</div><div style="font-size:.72rem;color:var(--dim);line-height:1.55;">${n.b}</div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;">${n.ts}</div></div></div>`).join('')}</div>`},
     'new-pawn': {t:'🥇 New Pawn Ticket',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:10px 12px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;font-size:.76rem;color:var(--grn);">✓ Customer identity via 1.nce AllCard tap · Gold spot: $${L.gold?.toFixed(2)||'—'}/oz</div><div><label class="fl">Item description</label><input class="fi" placeholder="e.g. 14K gold ring, approx 5g"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Metal</label><select class="fi"><option>Gold</option><option>Silver</option><option>Platinum</option></select></div><div><label class="fl">Karat</label><select class="fi"><option>24K</option><option>18K</option><option value="14" selected>14K</option><option>10K</option><option>925 Sterling</option></select></div></div><div><label class="fl">Weight (grams)</label><input class="fi" type="number" placeholder="0.0" step="0.1"></div><div style="padding:12px;background:var(--surf);border-radius:8px;"><div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">Live offer preview</div><div style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:1rem;">Enter weight above →</div></div><div><label class="fl">Payment method</label><select class="fi"><option>Cash</option><option>AllCard (instant)</option><option>GTX token</option><option>ACH transfer</option></select></div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Pawn ticket created — photo capture required next','ok')">Create ticket →</button></div>`},
     'new-break': {t:'🎴 New Droppa Break',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div><label class="fl">Break name</label><input class="fi" placeholder="e.g. 2024 Prizm Basketball Hobby"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Total slots</label><input class="fi" type="number" value="20"></div><div><label class="fl">Price per slot ($)</label><input class="fi" type="number" value="72"></div></div><div><label class="fl">Break type</label><select class="fi"><option>Random teams</option><option>Pick your team</option><option>Random hits</option><option>Case break</option></select></div><div><label class="fl">Stream platform</label><select class="fi"><option>TikTok Live</option><option>YouTube Live</option><option>Discord + WhatsApp</option><option>All platforms</option></select></div><div style="padding:10px 12px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;font-size:.73rem;color:var(--purp);">🪙 LTN rewards auto-distributed to top buyers. Seller payment to AllCard on close. ProfitPilot tracking enabled.</div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Break created — configure slots next','ok')">Create break →</button></div>`},
