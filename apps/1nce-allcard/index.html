@@ -503,6 +503,7 @@ const EV_ABI = [
 
 // ── State ──────────────────────────────────────────────────────────────────
 let provider, signer, addr, evContract;
+const FALLBACK_RPC = "http://10.117.122.142:8545";
 let masterKey = null;                               // hex string 64 chars
 let currentMode = 'identity';
 let panNonce = parseInt(localStorage.getItem('ac-nonce') || '0');

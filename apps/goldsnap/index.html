@@ -191,7 +191,7 @@ input:focus{border-color:var(--gold);}
           <div class="preview-row"><span style="color:var(--soft)">GTX price</span><span class="pval" id="gp-price">—</span></div>
           <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval" style="font-size:.9rem" id="gp-recv">—</span></div>
         </div>
-        <button class="btn btn-gold" style="width:100%" onclick="mintGTX()">Mint GTX</button>
+        <button class="btn btn-gold" style="width:100%" onclick="mintGTX()" id="mint-gtx-btn">Mint GTX</button>
         <div id="mint-gtx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
       </div>
       <div class="card" style="border-top:3px solid var(--silver);">
@@ -204,7 +204,7 @@ input:focus{border-color:var(--gold);}
           <div class="preview-row"><span style="color:var(--soft)">STX price</span><span class="pval-s" id="sp-price">—</span></div>
           <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval-s" style="font-size:.9rem" id="sp-recv">—</span></div>
         </div>
-        <button class="btn btn-silver" style="width:100%" onclick="mintSTX()">Mint STX</button>
+        <button class="btn btn-silver" style="width:100%" onclick="mintSTX()" id="mint-stx-btn">Mint STX</button>
         <div id="mint-stx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
       </div>
     </div>
@@ -258,7 +258,7 @@ input:focus{border-color:var(--gold);}
         <div class="preview-row"><span style="color:var(--soft)">GTX price</span><span class="pval" id="rg-price">—</span></div>
         <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval" style="font-size:.9rem" id="rg-recv">—</span></div>
       </div>
-      <button class="btn btn-gold" style="width:100%" onclick="redeemGTX()">Redeem GTX</button>
+      <button class="btn btn-gold" style="width:100%" onclick="redeemGTX()" id="redeem-gtx-btn">Redeem GTX</button>
       <div id="red-gtx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
     </div>
     <div class="card" style="border-top:3px solid var(--silver);">
@@ -271,7 +271,7 @@ input:focus{border-color:var(--gold);}
         <div class="preview-row"><span style="color:var(--soft)">STX price</span><span class="pval-s" id="rs-price">—</span></div>
         <div class="preview-row"><span style="font-weight:700">You receive</span><span class="pval-s" style="font-size:.9rem" id="rs-recv">—</span></div>
       </div>
-      <button class="btn btn-silver" style="width:100%" onclick="redeemSTX()">Redeem STX</button>
+      <button class="btn btn-silver" style="width:100%" onclick="redeemSTX()" id="redeem-stx-btn">Redeem STX</button>
       <div id="red-stx-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:18px;"></div>
     </div>
   </div>
@@ -404,6 +404,8 @@ const ORC_ABI=["function latestAnswer() view returns (int256)"];
 const ERC20_ABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function faucet()"];
 
 let provider,signer,addr,gmContract,usdcContract,xauOracle,xagOracle;
+const FALLBACK_RPC = "http://10.117.122.142:8545";
+const fallbackProvider = new ethers.JsonRpcProvider(FALLBACK_RPC);
 let prices={gold:4133.80,silver:32.50,gtx:41.338,stx:32.50};
 let txHistory=[];
 
@@ -430,7 +432,8 @@ async function fetchPrices(){
     const block=await p.getBlockNumber();
     document.getElementById("kpi-block").textContent=block.toLocaleString();
   }catch(e){}
-  if(xauOracle){
+  if(xauOracle||fallbackProvider){
+    const _oracle = xauOracle || new ethers.Contract(ADDRS.MockOracleXAU, ORC_ABI, fallbackProvider);
     try{
       const [gp,sp,gtxp,stxp]=await Promise.all([xauOracle.latestAnswer(),xagOracle.latestAnswer(),gmContract.gtxPrice(),gmContract.stxPrice()]);
       prices.gold=parseFloat(ethers.formatUnits(gp,8));

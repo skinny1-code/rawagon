@@ -849,12 +849,28 @@ async function fetchOraclePrices(){
 function updateReports(ids){
   const count = ids.length;
   document.getElementById("r-active").textContent = count;
-  const bars = ["Jan","Feb","Mar","Apr","May","Jun"].map((m,i)=>`
-    <div class="bar-row">
-      <div class="bar-label">${m}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.random()*80+10}%;background:var(--gold)"></div></div>
-      <div class="bar-val">$${Math.round(Math.random()*5000).toLocaleString()}</div>
-    </div>`).join("");
+  // Build monthly breakdown from actual on-chain ticket data (real data only)
+  const monthlyVol = {};
+  if (ids.length) {
+    for (const id of ids.slice(-50)) {
+      try {
+        const t = await prContract.tickets(id);
+        const loanVal = parseFloat(ethers.formatUnits(t[2],6));
+        const dt = new Date(Number(t[6])*1000);
+        const key = dt.toLocaleString('default',{month:'short'});
+        monthlyVol[key] = (monthlyVol[key]||0) + loanVal;
+      } catch(e) {}
+    }
+  }
+  const maxVol = Math.max(...Object.values(monthlyVol), 1);
+  const bars = Object.keys(monthlyVol).length > 0
+    ? Object.entries(monthlyVol).slice(-6).map(([m,v])=>`
+        <div class="bar-row">
+          <div class="bar-label">${m}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(v/maxVol*100).toFixed(0)}%;background:var(--gold)"></div></div>
+          <div class="bar-val">$${v.toFixed(0)}</div>
+        </div>`).join("")
+    : `<div style="color:var(--soft);font-size:.78rem;text-align:center;padding:12px">No ticket data yet — create tickets to see volume</div>`;
   document.getElementById("monthly-vol").innerHTML = bars;
 }
 

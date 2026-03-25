@@ -10,6 +10,20 @@
 
 // ── Addresses (filled by deploy.js) ─────────────────────────────
 const ADDR = {
+  // RAWNet Testnet (chainId 720701) — Ganache, live addresses
+  720701: {
+    MockUSDC:         "0xFC628dd79137395F3C9744e33b1c5DE554D94882",
+    MockOracleXAU:    "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
+    MockOracleXAG:    "0xD86C8F0327494034F60e25074420BcCF560D5610",
+    LivingToken:      "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D",
+    FeeDistributor:   "0x7C728214be9A0049e6a86f2137ec61030D0AA964",
+    EmployeeVault:    "0x86072CbFF48dA3C1F01824a6761A03F105BCC697",
+    GoldMint:         "0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",
+    IQTitle:          "0xA586074FA4Fe3E546A132a16238abe37951D41fE",
+    PawnRegistry:     "0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A",
+    BreakFactory:     "0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68",
+    CardVault:        "pending", // deployed after CardVault.sol compile
+  },
   // Base Sepolia testnet (chainId 84532)
   84532: {
     MockUSDC:         window.__DEPLOYED__?.MockUSDC        || "pending",

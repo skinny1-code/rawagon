@@ -142,6 +142,29 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
 
 /* Toast */
 .toast{position:fixed;bottom:22px;right:22px;padding:11px 16px;background:var(--card);border:1px solid var(--purp);border-radius:12px;font-size:.79rem;color:var(--purp);z-index:999;display:none;box-shadow:0 8px 30px rgba(139,92,246,.25);max-width:300px;}
+
+/* Vault styles */
+.vault-tab{padding:7px 14px;border-radius:8px;border:none;font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--soft);transition:.12s;white-space:nowrap;}
+.vault-tab.active{background:var(--pr2);color:var(--purp);}
+.vault-tab:hover:not(.active){color:var(--purp);}
+.vault-nft-card{background:linear-gradient(135deg,#1a0f2e,#0d0720);border:1px solid rgba(139,92,246,.3);border-radius:14px;overflow:hidden;transition:.15s;}
+.vault-nft-card:hover{border-color:var(--purp);box-shadow:0 4px 20px rgba(139,92,246,.15);}
+.vault-nft-img{aspect-ratio:.714;background:linear-gradient(135deg,var(--pr2),var(--pk2));display:flex;align-items:center;justify-content:center;font-size:3rem;border-bottom:1px solid var(--ln2);}
+.vault-nft-body{padding:12px 14px;}
+
+
+.vault-subtab{flex:1;padding:8px 12px;border-radius:6px;border:none;background:transparent;color:var(--soft);font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;}
+.vault-subtab.active{background:var(--purp);color:#fff;}
+.vault-subtab:hover:not(.active){color:var(--purp);}
+.card-nft{background:linear-gradient(135deg,#0d0716,#0a1a0d);border:1px solid rgba(139,92,246,.3);border-radius:14px;overflow:hidden;transition:.15s;}
+.card-nft:hover{border-color:var(--purp);box-shadow:0 4px 20px rgba(139,92,246,.2);}
+.card-nft-badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:.62rem;font-weight:700;}
+.cnb-dig{background:var(--gn2);color:var(--grn);border:1px solid rgba(52,211,153,.25);}
+.cnb-pend{background:var(--gd2);color:var(--gold);}
+.cnb-recv{background:var(--pr2);color:var(--purp);}
+.cnb-burn{background:rgba(251,191,36,.1);color:var(--gold);animation:pulse-badge 2s infinite;}
+.cnb-sold{background:var(--bl2);color:var(--blue);}
+.cnb-redeemed{background:rgba(209,213,219,.08);color:var(--soft);}
 </style>
 </head>
 <body>
@@ -162,6 +185,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
     <div class="nav-item" onclick="show('analytics')">Analytics</div>
     <div class="nav-item" onclick="show('clips')">Social Clips</div>
     <div class="nav-item" onclick="show('referrals')">Referrals</div>
+    <div class="nav-item" onclick="show('vault')">Card Vault</div>
+    <div class="nav-item" onclick="show('vault-tab')">🏦 Card Vault</div>
     <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
@@ -494,6 +519,515 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   </div>
 </div>
 
+
+<!-- CARD VAULT -->
+<div class="pane" id="pane-vault">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:.96rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Droppa Card Vault™</div>
+      <div style="font-size:.7rem;color:var(--soft);">Mail in your graded card → get an on-chain NFT → sell or redeem</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="padding:6px 14px;border-radius:20px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);font-size:.7rem;font-weight:700;color:var(--grn);">🔒 Secure Vault · Climate Controlled</div>
+      <div style="padding:6px 14px;border-radius:20px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);font-size:.7rem;font-weight:700;color:var(--purp);">📋 Patent Pending</div>
+    </div>
+  </div>
+
+  <!-- Fee strip -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ln2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:18px;">
+    <div style="background:var(--card);padding:14px 16px;text-align:center;">
+      <div style="font-size:1.4rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--purp);">$9</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">Intake Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px;">Processing + 1st month storage</div>
+    </div>
+    <div style="background:var(--card);padding:14px 16px;text-align:center;">
+      <div style="font-size:1.4rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--gold);">$2<span style="font-size:.8rem">/mo</span></div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">Storage Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px;">Per card · climate controlled</div>
+    </div>
+    <div style="background:var(--card);padding:14px 16px;text-align:center;">
+      <div style="font-size:1.4rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--pink);">$19</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:3px;">Redemption Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px;">Insured shipping + handling</div>
+    </div>
+  </div>
+
+  <!-- Tab switcher -->
+  <div style="display:flex;gap:2px;margin-bottom:16px;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:3px;overflow-x:auto;">
+    <button class="vault-tab active" id="vtab-intake" onclick="vaultTab('intake')">📦 Submit Card</button>
+    <button class="vault-tab" id="vtab-myvault" onclick="vaultTab('myvault')">🎴 My Vault</button>
+    <button class="vault-tab" id="vtab-marketplace" onclick="vaultTab('marketplace')">🛒 Marketplace</button>
+    <button class="vault-tab" id="vtab-redeem" onclick="vaultTab('redeem')">📮 Redeem</button>
+    <button class="vault-tab" id="vtab-howto" onclick="vaultTab('howto')">ℹ️ How It Works</button>
+  </div>
+
+  <!-- SUBMIT CARD -->
+  <div id="vtab-intake-content">
+    <div class="g2">
+      <div>
+        <div class="card">
+          <div class="card-title pink-t">Submit Card for Vault</div>
+          <div class="form-row">
+            <div><label>Player / Subject</label><input id="vi-player" placeholder="Mike Trout"></div>
+            <div><label>Year</label><input type="number" id="vi-year" placeholder="2011"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Set / Product</label><input id="vi-set" placeholder="Topps Update"></div>
+            <div><label>Card Number</label><input id="vi-cardnum" placeholder="US175"></div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Grading Service</label>
+              <select id="vi-service">
+                <option value="1">PSA</option>
+                <option value="2">BGS / Beckett</option>
+                <option value="3">SGC</option>
+                <option value="4">CSG</option>
+                <option value="5">HGA</option>
+                <option value="0">Raw (ungraded)</option>
+              </select>
+            </div>
+            <div>
+              <label>Grade</label>
+              <select id="vi-grade">
+                <option value="1000">PSA 10 / BGS 10</option>
+                <option value="950">BGS 9.5</option>
+                <option value="900">PSA 9 / BGS 9</option>
+                <option value="850">BGS 8.5</option>
+                <option value="800">PSA 8 / BGS 8</option>
+                <option value="700">PSA 7</option>
+                <option value="600">PSA 6</option>
+                <option value="500">PSA 5 or lower</option>
+                <option value="0">Raw / Ungraded</option>
+              </select>
+            </div>
+          </div>
+          <label>Certification / Pop Report Number</label>
+          <input id="vi-cert" placeholder="12345678">
+          <div class="form-row">
+            <div><label>Declared Value ($ USDC)</label><input type="number" id="vi-value" placeholder="150.00" step="0.01"></div>
+            <div><label>Pre-pay Storage Months</label>
+              <select id="vi-months">
+                <option value="0">1 month (included)</option>
+                <option value="1">+1 month ($2)</option>
+                <option value="3">+3 months ($6)</option>
+                <option value="6">+6 months ($12)</option>
+                <option value="12">+12 months ($24)</option>
+              </select>
+            </div>
+          </div>
+          <!-- Cost preview -->
+          <div id="vi-preview" style="padding:12px;background:var(--pr3);border:1px solid var(--line);border-radius:8px;margin-bottom:10px;font-size:.78rem;">
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Intake fee</span><span class="pval">$9.00 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Storage pre-pay</span><span id="vi-extra-cost" class="pval">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Insurance coverage</span><span style="color:var(--grn)" id="vi-insurance">$0</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;font-weight:700"><span>Total today</span><span id="vi-total" class="pval">$9.00</span></div>
+          </div>
+          <button class="btn btn-purp" style="width:100%" onclick="submitVaultIntake()" id="vault-submit-btn">Submit Intake Request</button>
+          <div id="vault-submit-status" style="margin-top:8px;font-size:.74rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title pink-t">Shipping Instructions</div>
+          <div style="font-size:.78rem;line-height:1.85;color:var(--soft);">
+            <div style="margin-bottom:6px;color:var(--wh);font-weight:700;">After submitting, mail your card to:</div>
+            <div style="padding:12px;background:var(--s2);border:1px solid var(--line);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:2;margin-bottom:10px;">
+              Droppa Card Vault<br>
+              c/o RAWagon Systems LLC<br>
+              [VAULT ADDRESS - TBD]<br>
+              <span style="color:var(--purp)">ATTN: VAULT-ID-{your intake ID}</span>
+            </div>
+            <div><strong style="color:var(--gold)">Required:</strong> Write your Vault ID on the package</div>
+            <div><strong style="color:var(--gold)">Required:</strong> Use rigid card saver or top loader</div>
+            <div><strong style="color:var(--gold)">Required:</strong> Use tracked/insured shipping</div>
+            <div><strong style="color:var(--gold)">Optional:</strong> Add signature confirmation for PSA 10s</div>
+            <div style="margin-top:8px;color:var(--grn)">⏱ Processing: 5-7 business days after receipt</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title pink-t">What Gets Minted</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">NFT standard</span><span style="color:var(--purp)">ERC-721 on RAWNet</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Token name</span><span style="color:var(--purp)">DCV (Droppa Card Vault)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Metadata</span><span style="color:var(--grn)">IPFS scan + cert data</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Transferable</span><span style="color:var(--grn)">Yes — sell like any NFT</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Redeemable</span><span style="color:var(--grn)">Yes — burn for physical card</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Contract</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--dim)">CardVault.sol · RAWNet</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY VAULT -->
+  <div id="vtab-myvault-content" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <button class="btn btn-outline btn-sm" onclick="loadMyVault()">↻ Refresh</button>
+      <div style="font-size:.76rem;color:var(--soft)" id="vault-count"></div>
+    </div>
+    <div id="my-vault-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      <div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1">Connect wallet to view your vault</div>
+    </div>
+    <!-- Pending intakes -->
+    <div style="margin-top:20px;">
+      <div style="font-size:.8rem;font-weight:700;margin-bottom:10px;color:var(--soft);">Pending Intake Requests</div>
+      <div id="pending-intakes"></div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE -->
+  <div id="vtab-marketplace-content" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+      <select id="vm-filter-service" onchange="loadVaultMarket()" style="width:auto;margin:0;padding:5px 9px;font-size:.74rem;">
+        <option value="">All Services</option>
+        <option>PSA</option><option>BGS</option><option>SGC</option><option>CSG</option>
+      </select>
+      <select id="vm-filter-grade" onchange="loadVaultMarket()" style="width:auto;margin:0;padding:5px 9px;font-size:.74rem;">
+        <option value="">All Grades</option>
+        <option value="1000">10</option><option value="950">9.5</option><option value="900">9</option>
+      </select>
+      <input id="vm-search" placeholder="Search player, set..." style="width:auto;flex:1;margin:0;padding:5px 9px;font-size:.74rem;" oninput="loadVaultMarket()">
+      <button class="btn btn-outline btn-sm" onclick="loadVaultMarket()">↻ Refresh</button>
+    </div>
+    <div id="vault-market-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      <div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1">Connect wallet to browse vault marketplace</div>
+    </div>
+  </div>
+
+  <!-- REDEEM -->
+  <div id="vtab-redeem-content" style="display:none;">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title pink-t">📮 Redeem Physical Card</div>
+        <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.6;">
+          Burning the NFT releases your physical card from the vault. We ship it to your address within 5-7 business days, fully insured.
+        </div>
+        <label>Token ID (from My Vault)</label>
+        <input id="vr-tokenid" placeholder="e.g. 7">
+        <label>Shipping Name</label>
+        <input id="vr-name" placeholder="Full name">
+        <label>Shipping Address Line 1</label>
+        <input id="vr-addr1" placeholder="123 Main St">
+        <div class="form-row">
+          <div><label>City</label><input id="vr-city" placeholder="City"></div>
+          <div><label>State</label><input id="vr-state" placeholder="CA"></div>
+        </div>
+        <div class="form-row">
+          <div><label>ZIP</label><input id="vr-zip" placeholder="90210"></div>
+          <div><label>Country</label><input id="vr-country" placeholder="US"></div>
+        </div>
+        <div style="padding:10px;background:var(--rd2);border:1px solid rgba(248,113,113,.15);border-radius:8px;margin-bottom:10px;font-size:.74rem;color:var(--soft);">
+          ⚠ Your shipping address is encrypted locally (AES-256). Only the keccak256 hash is stored on-chain. RAWagon staff sees the encrypted address via a separate secure channel.
+        </div>
+        <div style="padding:10px;background:var(--pr3);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font-size:.78rem;">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Redemption fee</span><span class="pval">$19.00 USDC</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="color:var(--soft)">Insured shipping</span><span style="color:var(--grn)">Included</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="color:var(--soft)">NFT burned on-chain</span><span style="color:var(--red)">Permanent</span></div>
+        </div>
+        <button class="btn btn-red" style="width:100%;border-radius:20px" onclick="requestRedemption()" id="redeem-btn">Burn NFT + Request Redemption ($19)</button>
+        <div id="redeem-status" style="margin-top:8px;font-size:.74rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Redemption Timeline</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:8px;color:var(--soft);line-height:1.7;">
+            <div style="display:flex;gap:10px;"><span style="color:var(--purp);font-weight:700;width:70px;flex-shrink:0">Day 0</span><span>Submit redemption + NFT burned on-chain</span></div>
+            <div style="display:flex;gap:10px;"><span style="color:var(--gold);font-weight:700;width:70px;flex-shrink:0">Day 1-2</span><span>Vault staff processes request, packages card</span></div>
+            <div style="display:flex;gap:10px;"><span style="color:var(--gold);font-weight:700;width:70px;flex-shrink:0">Day 3</span><span>Tracking number emailed to you</span></div>
+            <div style="display:flex;gap:10px;"><span style="color:var(--grn);font-weight:700;width:70px;flex-shrink:0">Day 5-7</span><span>Card delivered, insured</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Your Redemption History</div>
+          <div id="redemption-history"><div style="color:var(--soft);font-size:.76rem">No redemptions yet</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="vtab-howto-content" style="display:none;">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title pink-t">The Vault Process</div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purp);flex-shrink:0;font-size:.8rem;">1</div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">Submit intake form + pay $9</div><div style="font-size:.74rem;color:var(--soft);">Fill in card details, declare value, pre-pay optional extra storage. USDC approved on-chain. You receive a unique Vault ID.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purp);flex-shrink:0;font-size:.8rem;">2</div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">Mail your card with Vault ID</div><div style="font-size:.74rem;color:var(--soft);">Use rigid top loader + padded envelope. Write your Vault ID on the outside. Use tracked shipping — we recommend USPS Priority or UPS.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purp);flex-shrink:0;font-size:.8rem;">3</div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">We receive, verify, and digitize</div><div style="font-size:.74rem;color:var(--soft);">Card is inspected, photographed (front/back, high-res), cert number verified against grading service database. Physical card stored in climate-controlled vault.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purp);flex-shrink:0;font-size:.8rem;">4</div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">DCV NFT minted to your wallet</div><div style="font-size:.74rem;color:var(--soft);">ERC-721 NFT on RAWNet with scan metadata on IPFS. The NFT IS the card — sell it on Droppa marketplace, transfer to any wallet, or use as collateral.</div></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:28px;height:28px;border-radius:50%;background:var(--gn2);border:1px solid var(--grn);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--grn);flex-shrink:0;font-size:.8rem;">5</div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">Sell or redeem anytime</div><div style="font-size:.74rem;color:var(--soft);">Sell the NFT on Droppa — whoever holds it owns the physical card. Or burn the NFT ($19 fee) and we mail you the card, fully insured.</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Droppa Vault vs Competitors</div>
+          <table class="tbl">
+            <thead><tr><th>Feature</th><th>Droppa</th><th>PWCC Vault</th><th>PSA Vault</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--soft)">Intake fee</td><td class="grn">$9</td><td class="red">$15-25</td><td class="red">$20+</td></tr>
+              <tr><td style="color:var(--soft)">Storage/mo</td><td class="grn">$2</td><td class="red">$3-5</td><td class="red">$3+</td></tr>
+              <tr><td style="color:var(--soft)">On-chain NFT</td><td class="grn">✓</td><td class="red">✗</td><td class="red">✗</td></tr>
+              <tr><td style="color:var(--soft)">Sell without shipping</td><td class="grn">✓ NFT transfer</td><td style="color:var(--gold)">Partial</td><td class="red">✗</td></tr>
+              <tr><td style="color:var(--soft)">Redemption fee</td><td class="grn">$19</td><td class="red">$15-30</td><td class="red">$20+</td></tr>
+              <tr><td style="color:var(--soft)">Instant settlement</td><td class="grn">500ms RAWNet</td><td class="red">Days</td><td class="red">Days</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">Vault Security</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Storage</span><span style="color:var(--grn)">Climate controlled, 65-70°F</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Insurance</span><span style="color:var(--grn)">Declared value coverage</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Verification</span><span style="color:var(--grn)">Cert # cross-checked</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Photography</span><span style="color:var(--grn)">High-res front + back</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">On-chain proof</span><span style="color:var(--grn)">keccak256 card hash</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Privacy</span><span style="color:var(--grn)">Shipping addr encrypted</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD VAULT -->
+<div class="pane" id="pane-vault-tab">
+  <!-- Hero banner -->
+  <div style="background:linear-gradient(135deg,#0d0716 0%,#1a0a2e 50%,#0d1a0f 100%);border:1px solid rgba(139,92,246,.3);border-radius:14px;padding:20px 22px;margin-bottom:18px;display:flex;align-items:center;gap:18px;">
+    <div style="font-size:3rem;flex-shrink:0">🏛️</div>
+    <div>
+      <div style="font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--grn));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;">Droppa Card Vault</div>
+      <div style="font-size:.78rem;color:var(--soft);line-height:1.6;max-width:600px">Mail your physical graded cards to the RAWagon Vault. We digitize, photograph, and store them securely. Your card becomes an on-chain NFT you can sell instantly — or burn anytime to get the physical card shipped back.</div>
+    </div>
+    <div style="margin-left:auto;text-align:right;flex-shrink:0">
+      <div style="font-size:.68rem;color:var(--dim);margin-bottom:4px">Vault address</div>
+      <div style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--purp)" id="vault-contract-addr">Loading...</div>
+      <div style="font-size:.64rem;color:var(--dim);margin-top:4px">CardVault.sol · RAWNet</div>
+    </div>
+  </div>
+
+  <!-- Fee strip -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--ln2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:18px;">
+    <div style="background:var(--card);padding:14px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--purp)">$12</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-top:3px">Deposit Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px">Intake + photo + label</div>
+    </div>
+    <div style="background:var(--card);padding:14px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--grn)">$1/mo</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-top:3px">Storage Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px">Insured secure storage</div>
+    </div>
+    <div style="background:var(--card);padding:14px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--gold)">$18</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-top:3px">Redemption Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px">Return ship + insurance</div>
+    </div>
+    <div style="background:var(--card);padding:14px;text-align:center;">
+      <div style="font-size:1.2rem;font-weight:800;font-family:JetBrains Mono,monospace;color:var(--pink)">1%</div>
+      <div style="font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);margin-top:3px">Sale Fee</div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px">On digital card sales</div>
+    </div>
+  </div>
+
+  <!-- Tabs within vault -->
+  <div style="display:flex;gap:2px;margin-bottom:16px;background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:4px;">
+    <button class="vault-subtab active" id="vst-submit" onclick="showVaultSub('submit')">Submit Card</button>
+    <button class="vault-subtab" id="vst-my" onclick="showVaultSub('my')">My Vault</button>
+    <button class="vault-subtab" id="vst-market" onclick="showVaultSub('market')">Vault Market</button>
+    <button class="vault-subtab" id="vst-track" onclick="showVaultSub('track')">Track Request</button>
+  </div>
+
+  <!-- SUBMIT CARD -->
+  <div id="vsub-submit">
+    <div class="g2">
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Submit Card to Vault</div>
+          <label>Card Description</label>
+          <input id="vc-desc" placeholder="2024 Topps Chrome #234 Shohei Ohtani Refractor">
+          <div class="form-row">
+            <div>
+              <label>Grader</label>
+              <select id="vc-grader">
+                <option>PSA</option><option>BGS</option><option>CGC</option><option>SGC</option><option>CSG</option><option>HGA</option>
+              </select>
+            </div>
+            <div>
+              <label>Grade</label>
+              <select id="vc-grade">
+                <option value="100">10</option><option value="95">9.5</option><option value="90">9</option>
+                <option value="85">8.5</option><option value="80">8</option><option value="70">7</option>
+                <option value="60">6</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Cert / Pop # (optional)</label>
+              <input type="number" id="vc-cert" placeholder="12345678">
+            </div>
+            <div>
+              <label>Estimated Value ($)</label>
+              <input type="number" id="vc-value" placeholder="250.00" oninput="updateVaultPreview()">
+            </div>
+          </div>
+
+          <div id="vault-preview-box" style="background:var(--pr3);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.78rem;">
+            <div style="font-weight:700;color:var(--purp);margin-bottom:8px">Fee Preview</div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Deposit fee (one-time)</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">$12.00 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Storage (per month)</span><span style="font-family:JetBrains Mono,monospace;color:var(--grn)">$1.00 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Redemption (when you want it back)</span><span style="font-family:JetBrains Mono,monospace;color:var(--gold)">$18.00 USDC</span></div>
+            <div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned per action</span><span style="font-family:JetBrains Mono,monospace;color:var(--gold)">0.001 LTN</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:700"><span>Pay today</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">$12.00 USDC</span></div>
+          </div>
+
+          <button class="btn btn-purp" style="width:100%" onclick="submitCardToVault()" id="vault-submit-btn">Submit & Pay $12 USDC</button>
+          <div id="vault-submit-status" style="margin-top:8px;font-size:.76rem;text-align:center;color:var(--soft);min-height:16px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title grn-t">After You Submit</div>
+          <div style="font-size:.76rem;color:var(--soft);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--purp);flex-shrink:0">1</div><div>Pay $12 deposit fee on-chain → get a <strong style="color:var(--wh)">Request ID</strong></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--purp);flex-shrink:0">2</div><div>Mail card to vault address with your <strong style="color:var(--wh)">Request ID written on package</strong></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--purp);flex-shrink:0">3</div><div>Vault receives card → confirmed on-chain → <strong style="color:var(--wh)">status: Received</strong></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--purp);flex-shrink:0">4</div><div>Professional photography + metadata hash → <strong style="color:var(--wh)">ERC-721 NFT minted to your wallet</strong></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--gn2);border:1px solid var(--grn);display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700;color:var(--grn);flex-shrink:0">5</div><div><strong style="color:var(--grn)">Sell instantly</strong> on-chain or <strong style="color:var(--grn)">burn anytime</strong> to get your physical card shipped back</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Vault Mailing Address</div>
+          <div style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:.8rem;line-height:2;font-family:JetBrains Mono,monospace;">
+            <div style="color:var(--wh);font-weight:700">RAWagon Card Vault</div>
+            <div style="color:var(--soft)">[Physical address on file]</div>
+            <div style="color:var(--soft)">Attn: Vault Intake</div>
+            <div style="color:var(--soft)">REF: Your Request ID</div>
+          </div>
+          <div style="margin-top:10px;padding:8px 12px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);border-radius:6px;font-size:.72rem;color:var(--red);">
+            ⚠ Always write your Request ID on the package. Cards without an ID cannot be matched to your wallet.
+          </div>
+          <div style="margin-top:8px;font-size:.72rem;color:var(--soft);line-height:1.6;">
+            Recommended shipping: USPS Priority Mail with tracking. Insurance suggested for cards valued over $100. Vault accepts all major grading services.
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Accepted Graders</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.78rem;">
+            ${[["PSA","Professional Sports Authenticator"],["BGS","Beckett Grading Services"],["CGC","Certified Guaranty Company"],["SGC","Sportscard Guaranty"],["CSG","Certified Sports Guaranty"],["HGA","Hybrid Grading Approach"]].map(([g,n])=>`
+            <div style="padding:8px 10px;background:var(--s2);border:1px solid var(--ln2);border-radius:6px;display:flex;align-items:center;gap:8px;">
+              <div style="font-weight:700;color:var(--purp);width:32px;font-family:JetBrains Mono,monospace;font-size:.72rem">${g}</div>
+              <div style="font-size:.68rem;color:var(--soft)">${n}</div>
+            </div>`).join('')}
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title gold-t">Insurance Coverage</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">In-vault coverage</span><span class="grn">Full declared value</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Return shipping</span><span class="grn">Insured ($18 fee)</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Inbound shipping</span><span style="color:var(--gold)">Seller's responsibility</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Digital card loss</span><span class="grn">Impossible (on-chain)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY VAULT CARDS -->
+  <div id="vsub-my" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <div style="font-size:.88rem;font-weight:700">My Vaulted Cards</div>
+      <button class="btn btn-outline btn-sm" onclick="loadMyVaultCards()">↻ Refresh</button>
+      <div style="margin-left:auto;font-size:.74rem;color:var(--soft)" id="vault-card-count"></div>
+    </div>
+    <div id="vault-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;">
+      <div style="color:var(--soft);font-size:.78rem;text-align:center;padding:30px;grid-column:1/-1">Connect wallet to load vaulted cards</div>
+    </div>
+  </div>
+
+  <!-- VAULT MARKET -->
+  <div id="vsub-market" style="display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <div style="font-size:.88rem;font-weight:700">Vault Market — Digital Cards For Sale</div>
+      <select id="market-grader-filter" onchange="loadVaultMarket()" style="width:auto;margin:0;padding:5px 9px;font-size:.74rem;">
+        <option value="">All Graders</option>
+        <option>PSA</option><option>BGS</option><option>CGC</option><option>SGC</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="loadVaultMarket()">↻ Refresh</button>
+    </div>
+    <div id="vault-market-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;">
+      <div style="color:var(--soft);font-size:.78rem;text-align:center;padding:30px;grid-column:1/-1">No cards listed for sale yet</div>
+    </div>
+  </div>
+
+  <!-- TRACK REQUEST -->
+  <div id="vsub-track" style="display:none;">
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">Track Your Deposit Request</div>
+        <label>Request ID</label>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input id="track-req-id" placeholder="Enter request ID number" type="number" style="flex:1;margin:0">
+          <button class="btn btn-purp btn-sm" onclick="trackRequest()">Track</button>
+        </div>
+        <div id="track-result"></div>
+        <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px;">
+          <div style="font-size:.7rem;color:var(--dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Your Open Requests</div>
+          <div id="my-requests-list"><div style="color:var(--soft);font-size:.76rem">Connect wallet to see your requests</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">Status Guide</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:8px;">
+            ${[
+              ["Pending","Payment received, awaiting card in mail","var(--gold)"],
+              ["Received","Physical card received at vault","var(--grn)"],
+              ["Digitized","NFT minted to your wallet","var(--purp)"],
+              ["Sold","Card sold to new owner","var(--blue)"],
+              ["Burn Queued","Redemption paid, shipping in queue","var(--gold)"],
+              ["Redeemed","Physical card shipped back to you","var(--grn)"],
+            ].map(([s,d,c])=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--ln2)">
+              <span style="font-size:.62rem;font-weight:700;color:${c};padding:2px 8px;border-radius:10px;border:1px solid currentColor;white-space:nowrap">${s}</span>
+              <span style="color:var(--soft);font-size:.72rem">${d}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title grn-t">Vault Network Stats</div>
+          <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total deposits</span><span id="vs-deposits" style="font-family:JetBrains Mono,monospace;color:var(--purp)">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Total redemptions</span><span id="vs-redemptions" style="font-family:JetBrains Mono,monospace;color:var(--grn)">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fees collected</span><span id="vs-fees" style="font-family:JetBrains Mono,monospace;color:var(--gold)">—</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">CardVault.sol</span><span style="background:var(--gn2);color:var(--grn);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px">LIVE</span></div>
+          </div>
+          <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="loadVaultStats()">↻ Load Stats</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -519,6 +1053,7 @@ async function connectWallet(){
   provider=new ethers.BrowserProvider(window.ethereum);
   signer=await provider.getSigner();
   bfContract=new ethers.Contract(ADDRS.BreakFactory,BF_ABI,signer);
+  if(VAULT_ADDR!=='0x0000000000000000000000000000000000000000')vaultContract=new ethers.Contract(VAULT_ADDR,VAULT_ABI,signer);
   usdcContract=new ethers.Contract(ADDRS.MockUSDC,USDC_ABI,signer);
   const btn=document.getElementById("connect-btn");
   btn.textContent=addr.slice(0,6)+"..."+addr.slice(-4);
@@ -526,6 +1061,7 @@ async function connectWallet(){
   document.getElementById("ref-link").textContent=`https://droppa.io/join?ref=${addr.slice(2,10)}`;
   toast("Wallet connected ✓");
   loadDashboard();
+  initCardVault();
   loadBreaks();
 }
 
@@ -676,11 +1212,11 @@ async function renderBreakTable(ids){
 }
 
 function renderSampleBreaks(){
-  // Show empty state with prompt to create
-  document.getElementById("breaks-grid").innerHTML=`<div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1">
-    <div style="font-size:2rem;margin-bottom:10px">🎴</div>
-    <div style="font-size:.9rem;font-weight:600;color:var(--wh);margin-bottom:6px">No breaks yet</div>
-    <div>Connect wallet and create your first break</div>
+  document.getElementById("breaks-grid").innerHTML=`<div style="color:var(--soft);font-size:.78rem;text-align:center;padding:40px;grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:10px;">
+    <div style="font-size:2.5rem">🎴</div>
+    <div style="font-size:.92rem;font-weight:700;color:var(--wh)">No breaks on-chain yet</div>
+    <div style="color:var(--soft);max-width:280px;line-height:1.6">Connect your wallet and create your first break — slots will appear here live from the BreakFactory contract</div>
+    <button class="btn btn-purp btn-sm" style="margin-top:6px" onclick="showCreateBreak()">+ Create First Break</button>
   </div>`;
 }
 
@@ -975,12 +1511,13 @@ async function getTestUSDC(){
 }
 
 function show(id){
-  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","settings"];
+  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","vault","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="dashboard")loadDashboard();
   if(id==="breaks")loadBreaks();
   if(id==="analytics")refreshAnalytics();
+  if(id==="vault-tab"){initCardVault();showVaultSub("submit");}
 }
 
 function toast(msg,err=false){
@@ -990,10 +1527,550 @@ function toast(msg,err=false){
 }
 
 // ── Init ──────────────────────────────────────────────────────────
+
+// ── Card Vault ─────────────────────────────────────────────────────
+const VAULT_ADDR = '0x0000000000000000000000000000000000000000'; // deploy CardVault.sol
+const VAULT_ABI = [
+  "function submitIntake(bytes32 cardHash, uint256 estimatedValue) returns (uint256)",
+  "function getIntakeRequests(address submitter) view returns (uint256[])",
+  "function intakeRequests(uint256) view returns (address,bytes32,uint256,uint256,bool,string)",
+  "function intakeFee() view returns (uint256)",
+  "function monthlyFee() view returns (uint256)",
+  "function redemptionFee() view returns (uint256)",
+  "function getOwnerTokens(address) view returns (uint256[])",
+  "function cards(uint256) view returns (uint256,address,bytes32,string,uint8,uint16,uint256,uint256,uint256,uint256,uint8,string,bytes32)",
+  "function requestRedemption(uint256 tokenId, bytes32 shippingAddrHash)",
+  "function totalVaulted() view returns (uint256)",
+  "function totalRedeemed() view returns (uint256)",
+  "event IntakeSubmitted(uint256 indexed intakeId, address indexed submitter, bytes32 cardHash)",
+  "event CardMinted(uint256 indexed tokenId, address indexed owner, bytes32 cardHash, uint256 certNumber)",
+];
+let vaultContract = null;
+
+// Vault storage (localStorage until contract deployed)
+const vaultStore = {
+  get: () => JSON.parse(localStorage.getItem('droppa-vault') || '{"intakes":[],"cards":[]}'),
+  save: (d) => localStorage.setItem('droppa-vault', JSON.stringify(d)),
+};
+
+function vaultTab(tab) {
+  ['intake','myvault','marketplace','redeem','howto'].forEach(t => {
+    document.getElementById('vtab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('vtab-'+t+'-content').style.display = t===tab ? '' : 'none';
+  });
+  if (tab==='myvault') loadMyVault();
+  if (tab==='marketplace') loadVaultMarket();
+}
+
+function updateVaultPreview() {
+  const extraMonths = parseInt(document.getElementById('vi-months').value) || 0;
+  const value = parseFloat(document.getElementById('vi-value').value) || 0;
+  const extraCost = extraMonths * 2;
+  const total = 9 + extraCost;
+  document.getElementById('vi-extra-cost').textContent = '$' + extraCost.toFixed(2);
+  document.getElementById('vi-insurance').textContent = value > 0 ? 'Up to $' + value.toFixed(0) : '$0';
+  document.getElementById('vi-total').textContent = '$' + total.toFixed(2) + ' USDC';
+}
+
+async function submitVaultIntake() {
+  const player = document.getElementById('vi-player').value.trim();
+  const year   = document.getElementById('vi-year').value.trim();
+  const set    = document.getElementById('vi-set').value.trim();
+  const cardNum= document.getElementById('vi-cardnum').value.trim();
+  const service= parseInt(document.getElementById('vi-service').value);
+  const grade  = parseInt(document.getElementById('vi-grade').value);
+  const cert   = document.getElementById('vi-cert').value.trim();
+  const value  = parseFloat(document.getElementById('vi-value').value) || 0;
+  const months = parseInt(document.getElementById('vi-months').value) || 0;
+
+  if (!player || !year) { toast('Enter player and year', true); return; }
+
+  const btn = document.getElementById('vault-submit-btn');
+  const status = document.getElementById('vault-submit-status');
+  btn.disabled = true; btn.textContent = 'Processing...';
+  status.textContent = 'Generating card hash...'; status.style.color = 'var(--soft)';
+
+  // Build card hash
+  const enc = new TextEncoder();
+  const hashInput = `${player}|${year}|${set}|${cardNum}|${service}|${grade}|${cert}`;
+  const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(hashInput));
+  const cardHash = '0x' + Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const valueUsdc = Math.round(value * 1e6);
+  const extraMonths = months;
+  const totalFee = 9 + (extraMonths * 2);
+
+  try {
+    if (usdcContract && addr && VAULT_ADDR !== '0x0000000000000000000000000000000000000000') {
+      // On-chain flow
+      const feeWei = ethers.parseUnits(totalFee.toString(), 6);
+      status.textContent = 'Approving USDC...';
+      await (await usdcContract.approve(VAULT_ADDR, feeWei)).wait();
+      status.textContent = 'Submitting intake on-chain...';
+      const tx = await vaultContract.submitIntake(cardHash, valueUsdc);
+      const receipt = await tx.wait();
+      const intakeId = receipt.logs[0]?.topics[1];
+      status.textContent = `✓ Intake #${parseInt(intakeId, 16)} submitted! Ship your card with this ID.`;
+      status.style.color = 'var(--grn)';
+      toast('Vault intake submitted on-chain ✓');
+    } else {
+      // Offline / localStorage flow
+      status.textContent = 'Saving intake locally (connect wallet for on-chain)...';
+      const d = vaultStore.get();
+      const intakeId = Date.now();
+      d.intakes.push({
+        intakeId, player, year, set, cardNum, service, grade, cert,
+        value, cardHash: cardHash.slice(0,18)+'...',
+        extraMonths, totalFee, status: 'Pending', submittedAt: new Date().toISOString(),
+        walletAddr: addr || 'not connected',
+      });
+      vaultStore.save(d);
+      status.textContent = `✓ Intake ID: ${intakeId} · Print this ID and write it on your package`;
+      status.style.color = 'var(--grn)';
+      toast(`Vault intake saved · ID: ${intakeId}`);
+    }
+    // Clear form
+    ['vi-player','vi-year','vi-set','vi-cardnum','vi-cert','vi-value'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message.split('(')[0];
+    status.style.color = 'var(--red)';
+    toast(e.message.split('(')[0], true);
+  }
+  btn.disabled = false; btn.textContent = 'Submit Intake Request';
+}
+
+async function loadMyVault() {
+  const el = document.getElementById('my-vault-grid');
+  const d = vaultStore.get();
+  const gradeServices = ['Raw','PSA','BGS','SGC','CSG','HGA'];
+
+  // On-chain cards
+  if (vaultContract && addr) {
+    try {
+      const tokenIds = await vaultContract.getOwnerTokens(addr);
+      if (!tokenIds.length && !d.intakes.length) {
+        el.innerHTML = "<div style='color:var(--soft);text-align:center;padding:30px;grid-column:1/-1'>No vault cards yet — submit your first card above</div>";
+        document.getElementById('vault-count').textContent = '0 cards';
+        return;
+      }
+      document.getElementById('vault-count').textContent = tokenIds.length + ' cards';
+      const cards = await Promise.all(tokenIds.map(async id => {
+        const c = await vaultContract.cards(id);
+        return { tokenId: id, grade: gradeServices[Number(c[4])], score: Number(c[5])/100, cert: Number(c[6]).toString(), value: parseFloat(ethers.formatUnits(c[7],6)), status: ['Active','Pending','RedemptionRequested','Redeemed','Burned'][Number(c[10])] };
+      }));
+      el.innerHTML = cards.map(c => renderVaultCard(c)).join('');
+    } catch(e) { console.error(e); }
+  } else {
+    // Show local intake requests
+    if (!d.intakes.length) {
+      el.innerHTML = "<div style='color:var(--soft);text-align:center;padding:30px;grid-column:1/-1'>No vault cards yet — submit your first card above</div>";
+    } else {
+      el.innerHTML = d.intakes.map(i => `
+        <div class="vault-nft-card">
+          <div class="vault-nft-img">🎴</div>
+          <div class="vault-nft-body">
+            <div style="font-size:.84rem;font-weight:700;margin-bottom:4px">${i.player} ${i.year}</div>
+            <div style="font-size:.72rem;color:var(--soft);margin-bottom:8px">${i.set||''} ${i.cardNum?'#'+i.cardNum:''}</div>
+            <div style="font-size:.7rem;display:flex;flex-direction:column;gap:3px;">
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Vault ID</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">${i.intakeId}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Status</span><span style="color:var(--gold)">${i.status}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Declared value</span><span style="color:var(--grn)">$${i.value?.toFixed(2)||'0'}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Submitted</span><span style="color:var(--dim);font-size:.66rem">${new Date(parseInt(i.intakeId)).toLocaleDateString()}</span></div>
+            </div>
+            <div style="margin-top:8px;padding:6px;background:var(--gd2);border-radius:6px;font-size:.7rem;color:var(--gold);text-align:center;">Write ID <strong>${i.intakeId}</strong> on your package</div>
+          </div>
+        </div>`).join('');
+    }
+  }
+
+  // Pending intakes
+  const pendingEl = document.getElementById('pending-intakes');
+  if (d.intakes.filter(i=>i.status==='Pending').length === 0 && (!vaultContract)) {
+    pendingEl.innerHTML = "<div style='color:var(--soft);font-size:.76rem'>No pending intakes</div>";
+  }
+}
+
+function renderVaultCard(c) {
+  const statusColor = {Active:'var(--grn)',Pending:'var(--gold)',RedemptionRequested:'var(--purp)',Redeemed:'var(--soft)',Burned:'var(--red)'}[c.status] || 'var(--soft)';
+  return `<div class="vault-nft-card">
+    <div class="vault-nft-img">🎴</div>
+    <div class="vault-nft-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-family:JetBrains Mono,monospace;font-size:.72rem;color:var(--dim)">Token #${c.tokenId}</div>
+        <span style="font-size:.62rem;font-weight:700;color:${statusColor};padding:2px 7px;border:1px solid currentColor;border-radius:10px">${c.status}</span>
+      </div>
+      <div style="font-size:.7rem;display:flex;flex-direction:column;gap:3px;">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Grade</span><span style="color:var(--gold);font-weight:700">${c.grade} ${c.score}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Cert #</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">${c.cert}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Value</span><span style="color:var(--grn)">$${c.value?.toFixed(2)||'0'}</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px">
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('vr-tokenid').value='${c.tokenId}';vaultTab('redeem')">Redeem</button>
+        <button class="btn btn-purp btn-sm" onclick="toast('List on Droppa — coming Q3 2026')">List</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function loadVaultMarket() {
+  const el = document.getElementById('vault-market-grid');
+  const search = document.getElementById('vm-search')?.value?.toLowerCase() || '';
+  // Sample vault market listings
+  const listings = [
+    {tokenId:1,player:'Mike Trout',year:2011,set:'Topps Update',grade:'PSA',score:10,cert:'12345678',askPrice:2800,owner:'0xA52B...4f3c'},
+    {tokenId:2,player:'Shohei Ohtani',year:2018,set:'Topps Chrome',grade:'BGS',score:9.5,cert:'87654321',askPrice:450,owner:'0xF14d...9a2b'},
+    {tokenId:3,player:'Wander Franco',year:2021,set:'Bowman Chrome',grade:'PSA',score:10,cert:'11223344',askPrice:180,owner:'0x3C8e...77dd'},
+    {tokenId:4,player:'Ronald Acuña Jr.',year:2020,set:'Topps Chrome Refractor',grade:'SGC',score:10,cert:'55443322',askPrice:320,owner:'0x9B2a...f3c1'},
+  ].filter(l => !search || l.player.toLowerCase().includes(search) || l.set.toLowerCase().includes(search));
+
+  el.innerHTML = listings.length ? listings.map(l => `
+    <div class="vault-nft-card">
+      <div class="vault-nft-img" style="font-size:1.4rem;text-align:center;padding:20px;flex-direction:column;gap:6px">
+        <div>🎴</div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--gold)">${l.grade} ${l.score}</div>
+      </div>
+      <div class="vault-nft-body">
+        <div style="font-size:.84rem;font-weight:700;margin-bottom:2px">${l.player}</div>
+        <div style="font-size:.7rem;color:var(--soft);margin-bottom:8px">${l.year} ${l.set}</div>
+        <div style="font-size:.7rem;display:flex;flex-direction:column;gap:3px;">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Cert #</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">${l.cert}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Token</span><span style="font-family:JetBrains Mono,monospace;color:var(--dim)">#${l.tokenId}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--ln2);margin-top:3px"><span style="color:var(--soft)">Ask price</span><span style="color:var(--grn);font-weight:700;font-family:JetBrains Mono,monospace">$${l.askPrice.toLocaleString()}</span></div>
+        </div>
+        <button class="btn btn-purp btn-sm" style="width:100%;margin-top:8px" onclick="toast('NFT purchase — deploying to RAWNet Q3 2026')">Buy NFT · $${l.askPrice.toLocaleString()}</button>
+      </div>
+    </div>`).join('') :
+    "<div style='color:var(--soft);text-align:center;padding:30px;grid-column:1/-1'>No listings match your search</div>";
+}
+
+async function requestRedemption() {
+  const tokenId = parseInt(document.getElementById('vr-tokenid').value);
+  const name  = document.getElementById('vr-name').value.trim();
+  const addr1 = document.getElementById('vr-addr1').value.trim();
+  const city  = document.getElementById('vr-city').value.trim();
+  const state = document.getElementById('vr-state').value.trim();
+  const zip   = document.getElementById('vr-zip').value.trim();
+  const country = document.getElementById('vr-country').value.trim() || 'US';
+
+  if (!tokenId || !name || !addr1 || !city || !zip) {
+    toast('Fill all shipping fields', true); return;
+  }
+  const btn = document.getElementById('redeem-btn');
+  const status = document.getElementById('redeem-status');
+  btn.disabled = true;
+  status.textContent = 'Encrypting shipping address...'; status.style.color = 'var(--soft)';
+
+  // Hash the shipping address for on-chain storage
+  const shippingStr = JSON.stringify({name,addr1,city,state,zip,country,ts:Date.now()});
+  const enc = new TextEncoder();
+  const hashBuf = await crypto.subtle.digest('SHA-256', enc.encode(shippingStr));
+  const addrHash = '0x' + Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+
+  try {
+    if (vaultContract && addr && VAULT_ADDR !== '0x0000000000000000000000000000000000000000') {
+      const fee = await vaultContract.redemptionFee();
+      await (await usdcContract.approve(VAULT_ADDR, fee)).wait();
+      status.textContent = 'Burning NFT on-chain...';
+      await (await vaultContract.requestRedemption(tokenId, addrHash)).wait();
+      status.textContent = '✓ Redemption submitted! Card ships in 5-7 business days.';
+      status.style.color = 'var(--grn)';
+      toast('Redemption requested ✓ Card ships within 7 days');
+    } else {
+      // Offline mode - save redemption request locally
+      const d = vaultStore.get();
+      d.redemptions = d.redemptions || [];
+      d.redemptions.push({ tokenId, addrHash: addrHash.slice(0,20)+'...', ts: Date.now(), status: 'Pending' });
+      vaultStore.save(d);
+      status.textContent = `✓ Redemption saved · ID: ${tokenId} · Await vault confirmation email`;
+      status.style.color = 'var(--grn)';
+      toast('Redemption request submitted ✓');
+    }
+    // Render history
+    const hist = document.getElementById('redemption-history');
+    hist.innerHTML = `<div style="padding:8px;background:var(--gn2);border-radius:8px;font-size:.76rem;color:var(--grn)">✓ Token #${tokenId} — redemption pending · ${new Date().toLocaleDateString()}</div>`;
+    // Clear form
+    ['vr-tokenid','vr-name','vr-addr1','vr-city','vr-state','vr-zip'].forEach(id => document.getElementById(id).value='');
+  } catch(e) {
+    status.textContent = 'Error: ' + e.message.split('(')[0];
+    status.style.color = 'var(--red)';
+    toast(e.message.split('(')[0], true);
+  }
+  btn.disabled = false;
+}
+
+
+// ── CardVault contract ─────────────────────────────────────────────────────
+const CV_ADDR_PLACEHOLDER = "pending"; // deployed after compile
+const CV_ABI = [
+  "function requestDeposit(string,string,uint16,uint256,uint256) returns (uint256)",
+  "function requestRedemption(uint256)",
+  "function transferCard(uint256,address,uint256)",
+  "function getOwnerCards(address) view returns (uint256[])",
+  "function getCard(uint256) view returns (tuple(uint256,address,bytes32,string,string,uint16,uint256,uint256,uint256,uint256,uint8,bool))",
+  "function getRequest(uint256) view returns (tuple(address,string,string,uint16,uint256,uint256,uint256,bool,bool,uint256))",
+  "function getStorageOwed(uint256) view returns (uint256)",
+  "function totalDeposits() view returns (uint256)",
+  "function totalRedemptions() view returns (uint256)",
+  "function totalFeesCollected() view returns (uint256)",
+  "function DEPOSIT_FEE() view returns (uint256)",
+  "function REDEMPTION_FEE() view returns (uint256)",
+  "event DepositRequested(uint256 indexed requestId, address indexed requester, string description, uint256 fee)",
+  "event CardDigitized(uint256 indexed tokenId, uint256 indexed requestId, address indexed owner, bytes32 metadataHash)",
+  "event RedemptionRequested(uint256 indexed tokenId, address indexed owner, uint256 fee)",
+];
+
+let cvContract = null;
+let myVaultRequests = JSON.parse(localStorage.getItem('droppa-vault-reqs') || '[]');
+
+// Initialize when wallet connects — called from connectWallet()
+async function initCardVault() {
+  const addr_raw = CV_ADDR_PLACEHOLDER;
+  document.getElementById("vault-contract-addr").textContent = addr_raw === "pending"
+    ? "Deploy CardVault.sol to activate" : addr_raw.slice(0,14)+"...";
+  if (addr_raw !== "pending" && signer) {
+    try { cvContract = new ethers.Contract(addr_raw, CV_ABI, signer); } catch(e) {}
+  }
+  loadVaultStats();
+}
+
+function showVaultSub(id) {
+  ['submit','my','market','track'].forEach(s => {
+    document.getElementById('vsub-'+s).style.display = s===id ? 'block' : 'none';
+    const btn = document.getElementById('vst-'+s);
+    if (btn) btn.classList.toggle('active', s===id);
+  });
+  if (id === 'my')     loadMyVaultCards();
+  if (id === 'market') loadVaultMarket();
+  if (id === 'track')  { loadMyRequests(); loadVaultStats(); }
+}
+
+function updateVaultPreview() {
+  const val = parseFloat(document.getElementById("vc-value").value)||0;
+  // Preview is static — fees are fixed per contract constants
+}
+
+async function submitCardToVault() {
+  if (!signer) { alert("Connect wallet first"); return; }
+  const desc  = document.getElementById("vc-desc").value.trim();
+  const grader = document.getElementById("vc-grader").value;
+  const grade  = parseInt(document.getElementById("vc-grade").value)||100;
+  const cert   = parseInt(document.getElementById("vc-cert").value)||0;
+  const value  = parseFloat(document.getElementById("vc-value").value)||0;
+  if (!desc) { toast("Enter a card description",true); return; }
+
+  const status = document.getElementById("vault-submit-status");
+  const btn    = document.getElementById("vault-submit-btn");
+  btn.disabled = true; btn.textContent = "Processing...";
+
+  if (!cvContract) {
+    // Store locally until contract deployed
+    const reqId = Date.now();
+    const req = { id: reqId, desc, grader, grade: grade/10, cert, value, status: "Pending (local)", ts: Date.now() };
+    myVaultRequests.push(req);
+    localStorage.setItem('droppa-vault-reqs', JSON.stringify(myVaultRequests));
+    status.textContent = "✓ Saved locally (Request #" + reqId + ") — CardVault.sol pending deployment";
+    status.style.color = "var(--gold)";
+    toast("Vault request saved locally ✓");
+    btn.disabled = false; btn.textContent = "Submit & Pay $12 USDC";
+    return;
+  }
+
+  status.textContent = "Approving $12 USDC..."; status.style.color = "var(--soft)";
+  try {
+    const depositFee = await cvContract.DEPOSIT_FEE();
+    await (await usdcContract.approve(cvContract.target || cvContract.address, depositFee)).wait();
+    status.textContent = "Submitting to vault...";
+    const valueWei = ethers.parseUnits(value.toString(), 6);
+    const tx = await cvContract.requestDeposit(desc, grader, grade, cert, valueWei);
+    const receipt = await tx.wait();
+    // Extract requestId from event
+    const event = receipt.logs.find(l => l.topics[0] === ethers.id("DepositRequested(uint256,address,string,uint256)"));
+    const reqId = event ? parseInt(event.topics[1], 16) : "?";
+    const req = { id: reqId, desc, grader, grade: grade/10, cert, value, status: "Pending", ts: Date.now() };
+    myVaultRequests.push(req);
+    localStorage.setItem('droppa-vault-reqs', JSON.stringify(myVaultRequests));
+    status.textContent = `✓ Request #${reqId} submitted! Mail card with ID #${reqId} on package.`;
+    status.style.color = "var(--grn)";
+    toast("Vault request #"+reqId+" submitted ✓");
+    showVaultSub('track');
+  } catch(e) {
+    status.textContent = "Error: " + e.message.split("(")[0];
+    status.style.color = "var(--red)";
+    toast(e.message.split("(")[0], true);
+  }
+  btn.disabled = false; btn.textContent = "Submit & Pay $12 USDC";
+}
+
+async function loadMyVaultCards() {
+  const el = document.getElementById("vault-cards-grid");
+  if (!cvContract || !addr) {
+    el.innerHTML = `<div style="color:var(--soft);text-align:center;padding:30px;grid-column:1/-1">Connect wallet to load your vaulted cards</div>`;
+    return;
+  }
+  try {
+    const tokenIds = await cvContract.getOwnerCards(addr);
+    document.getElementById("vault-card-count").textContent = tokenIds.length + " cards";
+    if (!tokenIds.length) {
+      el.innerHTML = `<div style="color:var(--soft);text-align:center;padding:30px;grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="font-size:2rem">🃏</div>
+        <div style="font-weight:600;color:var(--wh)">No cards in vault yet</div>
+        <div style="max-width:250px;line-height:1.6">Submit a graded card to get started</div>
+        <button class="btn btn-purp btn-sm" onclick="showVaultSub('submit')">Submit Card →</button>
+      </div>`;
+      return;
+    }
+    const STATUS_MAP = ["Pending","Received","Digitized","Sold","Burn Queued","Redeemed","Rejected"];
+    const STATUS_BADGE = ["cnb-pend","cnb-recv","cnb-dig","cnb-sold","cnb-burn","cnb-redeemed","cnb-pend"];
+    const cards = await Promise.all(tokenIds.map(id => cvContract.getCard(id).catch(()=>null)));
+    el.innerHTML = cards.filter(Boolean).map(c => {
+      const [tokenId,,, desc, grader, gradeRaw,,,,, statusN, transferable] = c;
+      const grade = Number(gradeRaw) / 10;
+      const status = STATUS_MAP[Number(statusN)] || "Unknown";
+      const badge  = STATUS_BADGE[Number(statusN)] || "cnb-pend";
+      const isActive = Number(statusN) === 2 || Number(statusN) === 3;
+      return `<div class="card-nft">
+        <div style="padding:14px 14px 10px;background:linear-gradient(135deg,var(--s2),var(--bg));border-bottom:1px solid var(--ln2);display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:.7rem;font-family:JetBrains Mono,monospace;color:var(--dim)">#${tokenId}</div>
+          <span class="card-nft-badge ${badge}">${status}</span>
+        </div>
+        <div style="padding:14px">
+          <div style="font-size:.84rem;font-weight:700;margin-bottom:6px;line-height:1.3">${desc || "Card #"+tokenId}</div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;font-size:.72rem">
+            <span style="padding:2px 8px;background:var(--pr2);color:var(--purp);border-radius:10px;font-weight:700">${grader}</span>
+            <span style="padding:2px 8px;background:var(--gd2);color:var(--gold);border-radius:10px;font-weight:700">${grade}</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${isActive && transferable ? `<button class="btn btn-purp btn-sm" onclick="sellCard(${tokenId})">Sell</button>` : ""}
+            ${Number(statusN) === 2 ? `<button class="btn btn-outline btn-sm" onclick="redeemCard(${tokenId})">Redeem Physical</button>` : ""}
+          </div>
+        </div>
+      </div>`;
+    }).join("") || `<div style="color:var(--soft);text-align:center;padding:20px;grid-column:1/-1">No cards found</div>`;
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);text-align:center;padding:20px;grid-column:1/-1">${e.message.split("(")[0]}</div>`;
+  }
+}
+
+async function sellCard(tokenId) {
+  const price = prompt("Sale price in USDC (e.g. 250 for $250):");
+  if (!price || isNaN(price)) return;
+  const buyer = prompt("Buyer wallet address:");
+  if (!buyer || !buyer.startsWith("0x")) return;
+  try {
+    const priceWei = ethers.parseUnits(price, 6);
+    await (await cvContract.transferCard(tokenId, buyer, priceWei)).wait();
+    toast("Card sold ✓");
+    loadMyVaultCards();
+  } catch(e) { toast(e.message.split("(")[0], true); }
+}
+
+async function redeemCard(tokenId) {
+  if (!confirm("Redeem physical card? You will pay $18 + any accrued storage fees. The digital NFT will be burned.")) return;
+  const status = document.getElementById("vault-submit-status");
+  try {
+    const owed = await cvContract.getStorageOwed(tokenId);
+    const totalOwed = 18_000_000n + BigInt(owed);
+    const totalUSD = (Number(totalOwed) / 1e6).toFixed(2);
+    if (!confirm(`Total fee: $${totalUSD} USDC (includes $18 shipping + $${(Number(owed)/1e6).toFixed(2)} accrued storage). Confirm?`)) return;
+    await (await usdcContract.approve(cvContract.target || cvContract.address, totalOwed)).wait();
+    await (await cvContract.requestRedemption(tokenId)).wait();
+    toast("Redemption requested ✓ — card will be shipped within 3-5 business days");
+    loadMyVaultCards();
+  } catch(e) { toast(e.message.split("(")[0], true); }
+}
+
+async function loadVaultMarket() {
+  const el = document.getElementById("vault-market-grid");
+  if (!cvContract) {
+    el.innerHTML = `<div style="color:var(--soft);text-align:center;padding:30px;grid-column:1/-1">CardVault.sol not yet deployed — market coming soon</div>`;
+    return;
+  }
+  // In production, query Transfer events to find all card owners and their listings
+  el.innerHTML = `<div style="color:var(--soft);text-align:center;padding:30px;grid-column:1/-1">
+    <div style="font-size:1.5rem;margin-bottom:8px">🏪</div>
+    <div style="font-weight:600;color:var(--wh);margin-bottom:4px">Vault Market</div>
+    <div style="max-width:260px;margin:0 auto;line-height:1.6">On-chain market for digitized vault cards. List your NFT, set price, sell in one transaction.</div>
+  </div>`;
+}
+
+async function trackRequest() {
+  const reqId = parseInt(document.getElementById("track-req-id").value);
+  if (!reqId) return;
+  const el = document.getElementById("track-result");
+  // Check local first
+  const local = myVaultRequests.find(r => r.id == reqId);
+  if (!cvContract) {
+    if (local) {
+      el.innerHTML = `<div style="padding:10px;background:var(--gd2);border-radius:8px;font-size:.78rem;">
+        <div style="font-weight:700;color:var(--gold);margin-bottom:6px">Request #${reqId} (local)</div>
+        <div style="color:var(--soft)">${local.desc}</div>
+        <div style="margin-top:4px;font-size:.72rem;color:var(--dim)">${local.grader} ${local.grade} · Submitted ${new Date(local.ts).toLocaleString()}</div>
+        <div style="margin-top:6px;font-weight:700;color:var(--gold)">Status: ${local.status}</div>
+      </div>`;
+    } else {
+      el.innerHTML = `<div style="color:var(--soft);font-size:.78rem">Request not found locally. Deploy CardVault.sol to query on-chain.</div>`;
+    }
+    return;
+  }
+  try {
+    const req = await cvContract.getRequest(reqId);
+    const STATUS = ["Pending","Received","Digitized","Sold","Burn Queued","Redeemed","Rejected"];
+    const status = req.cardReceived ? (req.mintedTokenId > 0 ? "Digitized — NFT #"+req.mintedTokenId+" in your wallet" : "Received — digitizing in progress") : "Pending — awaiting card";
+    el.innerHTML = `<div style="padding:12px;background:var(--pr3);border:1px solid var(--line);border-radius:8px;font-size:.78rem;">
+      <div style="font-weight:700;color:var(--purp);margin-bottom:8px">Request #${reqId}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Card</span><span>${req.description}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Grade</span><span style="color:var(--purp)">${req.grader} ${req.grade/10}</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Submitted</span><span style="color:var(--dim);font-size:.72rem">${new Date(Number(req.requestedAt)*1000).toLocaleString()}</span></div>
+        <div style="display:flex;justify-content:space-between;padding-top:4px;border-top:1px solid var(--line);font-weight:700"><span>Status</span><span style="color:var(--grn)">${status}</span></div>
+      </div>
+    </div>`;
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red);font-size:.78rem">${e.message.split("(")[0]}</div>`;
+  }
+}
+
+function loadMyRequests() {
+  const el = document.getElementById("my-requests-list");
+  if (!myVaultRequests.length) {
+    el.innerHTML = `<div style="color:var(--soft);font-size:.76rem">No requests yet</div>`;
+    return;
+  }
+  el.innerHTML = myVaultRequests.slice(-5).reverse().map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln2)">
+      <div style="font-size:.7rem;font-family:JetBrains Mono,monospace;color:var(--purp)">#${r.id}</div>
+      <div style="flex:1;font-size:.76rem">${r.desc.slice(0,40)}${r.desc.length>40?"...":""}</div>
+      <span style="font-size:.66rem;font-weight:700;color:var(--gold);padding:2px 6px;border:1px solid currentColor;border-radius:10px">${r.grader} ${r.grade}</span>
+    </div>`).join("");
+}
+
+async function loadVaultStats() {
+  if (!cvContract) {
+    ["vs-deposits","vs-redemptions","vs-fees"].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.textContent="—";
+    });
+    return;
+  }
+  try {
+    const [dep,red,fees] = await Promise.all([
+      cvContract.totalDeposits(),
+      cvContract.totalRedemptions(),
+      cvContract.totalFeesCollected(),
+    ]);
+    document.getElementById("vs-deposits").textContent    = dep.toString();
+    document.getElementById("vs-redemptions").textContent = red.toString();
+    document.getElementById("vs-fees").textContent        = "$"+(Number(fees)/1e6).toFixed(2);
+  } catch(e) {}
+}
+
 window.addEventListener("load",()=>{
   previewBreak();
   renderInventory();updateInvStats();
   renderReferrals();
+  loadVaultMarket();
+  document.getElementById("vi-months").addEventListener("change",updateVaultPreview);
+  document.getElementById("vi-value").addEventListener("input",updateVaultPreview);
   // Load settings
   document.getElementById("set-name").value=settings.name||"";
   document.getElementById("set-price").value=settings.price||65;

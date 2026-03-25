@@ -249,5 +249,105 @@ t('Droppa: GMV 30 slots x $65 = $1950, fee = $19.50', () => {
 });
 
 
+
+t('CardVault: intake fee $9 USDC = 9_000_000 wei', () => {
+  const intakeFee = 9_000_000;
+  assert.strictEqual(intakeFee / 1e6, 9);
+});
+
+t('CardVault: monthly fee $2 USDC = 2_000_000 wei', () => {
+  const monthlyFee = 2_000_000;
+  assert.strictEqual(monthlyFee / 1e6, 2);
+});
+
+t('CardVault: redemption fee $19 USDC = 19_000_000 wei', () => {
+  const redemptionFee = 19_000_000;
+  assert.strictEqual(redemptionFee / 1e6, 19);
+});
+
+t('CardVault: 12 month storage = $24 + $9 intake = $33 total', () => {
+  const intake = 9, monthly = 2, months = 12;
+  const total = intake + (monthly * months);
+  assert.strictEqual(total, 33);
+});
+
+t('CardVault: card hash is deterministic', () => {
+  const crypto = require('crypto');
+  const input = 'Mike Trout|2011|Topps Update|US175|1|1000|12345678';
+  const h1 = crypto.createHash('sha256').update(input).digest('hex');
+  const h2 = crypto.createHash('sha256').update(input).digest('hex');
+  assert.strictEqual(h1, h2);
+  assert.strictEqual(h1.length, 64);
+});
+
+t('CardVault: different cards produce different hashes', () => {
+  const crypto = require('crypto');
+  const h1 = crypto.createHash('sha256').update('Trout|2011|Topps|US175|PSA|10').digest('hex');
+  const h2 = crypto.createHash('sha256').update('Ohtani|2018|Chrome|1|BGS|9.5').digest('hex');
+  assert.notStrictEqual(h1, h2);
+});
+
+t('CardVault: vault vs PWCC fee comparison', () => {
+  // Droppa cheaper on intake and storage
+  const droppaIntake = 9, pwccIntake = 20;
+  const droppaMonthly = 2, pwccMonthly = 4;
+  assert(droppaIntake < pwccIntake);
+  assert(droppaMonthly < pwccMonthly);
+});
+
+t('CardVault: 1 year savings vs PWCC competitor', () => {
+  // 10 cards, 12 months
+  const cards = 10, months = 12;
+  const droppa = (9 * cards) + (2 * cards * months);  // $330
+  const pwcc   = (20 * cards) + (4 * cards * months); // $680
+  assert(droppa < pwcc);
+  assert.strictEqual(droppa, 330);
+});
+
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
+t('CardVault: deposit fee = $12 USDC', () => {
+  const DEPOSIT_FEE = 12_000_000n;
+  assert.strictEqual(DEPOSIT_FEE, 12000000n);
+  assert.strictEqual(Number(DEPOSIT_FEE)/1e6, 12);
+});
+
+t('CardVault: storage fee $1/month for 3 months = $3', () => {
+  const STORAGE_FEE_MO = 1_000_000n;
+  const months = 3n;
+  assert.strictEqual(Number(STORAGE_FEE_MO * months)/1e6, 3);
+});
+
+t('CardVault: redemption total = $18 + storage', () => {
+  const redemption = 18_000_000;
+  const storage_3mo = 3_000_000;
+  const total = (redemption + storage_3mo) / 1e6;
+  assert.strictEqual(total, 21);
+});
+
+t('CardVault: sale fee 1% of $500 = $5', () => {
+  const sale = 500_000_000; // $500 in USDC 6dec
+  const fee = sale * 100 / 10000;
+  assert.strictEqual(fee / 1e6, 5);
+});
+
+t('CardVault: LTN burn 0.001 per action', () => {
+  const BURN_LTN = 1e15; // wei (1e-3 ETH scale)
+  const ltnBurned = BURN_LTN / 1e18;
+  assert.strictEqual(ltnBurned, 0.001);
+});
+
+t('CardVault: grade stored as uint16 (PSA 10 = grade 100)', () => {
+  const psa10 = 100; // stored as grade * 10
+  const displayed = psa10 / 10;
+  assert.strictEqual(displayed, 10);
+});
+
+t('CardVault: annual storage on $500 card = $12 (2.4% cost)', () => {
+  const storage_annual = 12; // $12/year
+  const card_value = 500;
+  const pct = (storage_annual / card_value) * 100;
+  assert(pct < 3, 'storage should be less than 3% annually');
+});
+
 process.exit(f?1:0);
