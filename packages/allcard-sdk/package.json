@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test",
-    "build": "echo 'Build allcard-sdk'"
-  }
+    "test": "vitest run",
+    "build": "echo 'Build allcard-sdk'",
+    "test:watch": "vitest"
+  },
+  "types": "index.ts"
 }

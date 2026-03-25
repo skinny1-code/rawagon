@@ -79,7 +79,7 @@ await migrationReceiver.registerMigration(
 ## Processor Migration Checklist
 
 - [ ] Create QWKS business account (3 min)
-- [ ] Get RAWNet testnet faucet funds: https://faucet.testnet.rawnet.io
+- [ ] Get RAWNet testnet faucet funds: call MockUSDC.faucet() or use get-test-usdc button in any app
 - [ ] Install payment widget in checkout (15 min)
 - [ ] Run 3 test transactions on testnet (5 min)
 - [ ] Set up AllCard employee access (optional, 30 min)

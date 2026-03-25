@@ -211,3 +211,14 @@ else
   log "Setup complete. When ready, run:"
   echo -e "  ${YELLOW}cd ~/rawagon && claude${NC}"
 fi
+
+
+log "Quick start:"
+echo "  pkill node; sleep 1"
+echo "  ganache --port 8545 --host 0.0.0.0 --deterministic --chain.chainId 720701 --quiet &"
+echo "  sleep 3 && node scripts/deploy-ganache.js"
+echo "  node server.js"
+echo ""
+echo "Tests: node scripts/run-all-tests.js"
+echo "Agents: export ANTHROPIC_API_KEY=sk-ant-... && node agents/agent-system.js"
+echo "Monitors: python3 packages/monitors/run_monitors.py"

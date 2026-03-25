@@ -1,0 +1,13 @@
+{
+  "name": "RAWagon OS",
+  "short_name": "RAWagon",
+  "description": "RAWagon Ecosystem — Patent Pending RAW-2026-PROV-001",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07040f",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

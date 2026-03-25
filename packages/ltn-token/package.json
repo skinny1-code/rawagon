@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test",
-    "build": "echo 'Build ltn-token'"
-  }
+    "test": "vitest run",
+    "build": "echo 'Build ltn-token'",
+    "test:watch": "vitest"
+  },
+  "types": "index.ts"
 }

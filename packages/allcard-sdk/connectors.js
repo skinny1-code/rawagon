@@ -17,8 +17,19 @@
  *   IDENTITY     → CLEAR, TSA PreCheck, background checks
  */
 
-const { v4: uuidv4 } = require('uuid');
-const { OnceCredential, CredentialType } = require('../core/identity');
+// Self-contained — no external dependencies
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+// Minimal credential types
+const CredentialType = { GOVERNMENT:'GOVERNMENT', FINANCIAL:'FINANCIAL', INSURANCE:'INSURANCE',
+  AUTOMOTIVE:'AUTOMOTIVE', HEALTHCARE:'HEALTHCARE', UTILITIES:'UTILITIES', COMMERCE:'COMMERCE', IDENTITY:'IDENTITY' };
+class OnceCredential {
+  constructor(opts) { Object.assign(this, opts); this.id = uuidv4(); this.createdAt = new Date().toISOString(); }
+}
 
 // ─────────────────────────────────────────────
 // BASE CONNECTOR

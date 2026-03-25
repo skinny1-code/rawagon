@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>QWKS Protocol — Payment OS</title>
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>QWKS Protocol — RAWNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
@@ -68,7 +73,8 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="tab" onclick="showTab('compliance')">Compliance</div>
     <div class="tab" onclick="showTab('network')">Network</div>
   </div>
-  <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
+  <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
 </div>
 
 <!-- OVERVIEW -->
@@ -405,6 +411,8 @@ const FD_ABI = [
   "function staked(address) view returns (uint256)",
   "function approveProduct(address)",
   "function inflow(uint256 volume, address initiator)",
+  "function registerBusiness(address,uint256,uint256)",
+  "function accRewardPerShare() view returns (uint256)",
 ];
 const LTN_ABI = [
   "function balanceOf(address) view returns (uint256)",
@@ -467,6 +475,7 @@ async function loadContractStats() {
     const [inflow, staked, ltnSupply, ltnBurned] = await Promise.all([
       fdContract.totalInflow(),
       fdContract.totalStaked(),
+      fdContract.totalInflow(),
       ltnContract.totalSupply(),
       ltnContract.totalBurned(),
     ]);

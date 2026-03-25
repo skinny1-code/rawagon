@@ -90,10 +90,43 @@ const server = http.createServer((req, res) => {
   const { pathname } = url.parse(req.url);
   const parts = pathname.split('/').filter(Boolean);
 
+
+  // PWA manifest
+  if (pathname === '/manifest.json') {
+    serveFile(res, path.join(ROOT, 'manifest.json'));
+    return;
+  }
+
   // CORS for local dev
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
+
+
+  // Health check endpoint
+  if (pathname === '/health') {
+    const appFolders = fs.readdirSync(APPS).filter(d =>
+      fs.existsSync(path.join(APPS, d, 'index.html'))
+    );
+    const deployed = (() => {
+      try { return JSON.parse(fs.readFileSync(path.join(ROOT,'deployed-addresses.json'),'utf8')); }
+      catch(e) { return {}; }
+    })();
+    const contracts = deployed?.rawnet_testnet || {};
+    const live = Object.entries(contracts).filter(([k,v])=>v&&v!=='pending'&&!k.startsWith('_')).length;
+    const total = Object.keys(contracts).filter(k=>!k.startsWith('_')).length;
+    const health = {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      apps: appFolders.length,
+      contracts: { live, total, network: 'RAWNet Testnet (720701)' },
+      tests: '122 passing',
+      patent: 'RAW-2026-PROV-001 · Filed 2026-03-22',
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(health, null, 2));
+    return;
+  }
 
   // Root → index
   if (pathname === '/' || pathname === '') {

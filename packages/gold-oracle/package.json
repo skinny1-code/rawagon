@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test",
-    "build": "echo 'Build gold-oracle'"
-  }
+    "test": "vitest run",
+    "build": "echo 'Build gold-oracle'",
+    "test:watch": "vitest"
+  },
+  "types": "index.ts"
 }

@@ -36,11 +36,20 @@ async function allMetals() {
   return { gold: g, silver: s, timestamp: new Date().toISOString() };
 }
 
-function meltValue(metalType, grams, karatOrPurity) {
+function meltValue(metalType, grams, karatOrPurity, spotPrice) {
   // karatOrPurity: 24, 22, 18, 14, 10, or 0.925 for sterling
+  // spotPrice: USD per troy oz (from goldSpot() or silverSpot())
   const purity = karatOrPurity > 1 ? karatOrPurity / 24 : karatOrPurity;
   const troyGrams = 31.1035;
-  return _cache; // placeholder until fetchPrice resolves
+  const pureOz = (grams / troyGrams) * purity;
+  return {
+    meltValue: pureOz * spotPrice,
+    pureOz,
+    purity,
+    grams,
+    spotPrice,
+    metalType,
+  };
 }
 
 async function pawnCalc(metalType, grams, karat, ltvPct = 0.60, buyPct = 0.85) {
@@ -58,4 +67,4 @@ async function pawnCalc(metalType, grams, karat, ltvPct = 0.60, buyPct = 0.85) {
   };
 }
 
-module.exports = { goldSpot, silverSpot, allMetals, pawnCalc };
+module.exports = { goldSpot, silverSpot, allMetals, pawnCalc, meltValue };

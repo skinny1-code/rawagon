@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>GoldSnap — GTX/STX Token OS</title>
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+  <meta name="theme-color" content="#f59e0b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GoldSnap — GTX/STX · RAWNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
@@ -119,6 +124,7 @@ input:focus{border-color:var(--gold);}
     <div class="nav-item" onclick="show('about')">About GTX</div>
   </div>
   <div class="hdr-right">
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
@@ -606,6 +612,22 @@ async function connectWallet(){
   document.getElementById("connect-btn").className="on";
   toast("Wallet connected ✓");
   fetchPrices();loadPortfolio();loadReserves();
+}
+
+async function fetchYahooGold() {
+  // Fallback price feed — Yahoo Finance GLD ETF proxy
+  try {
+    const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/GLD?interval=1d&range=1d');
+    const d = await r.json();
+    const gld = d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if (gld) {
+      const goldPriceYahoo = gld * 10; // GLD = 1/10 troy oz
+      prices.gold = goldPriceYahoo;
+      document.getElementById("gold-spot-display") && (document.getElementById("gold-spot-display").textContent = "$"+goldPriceYahoo.toFixed(2));
+      document.getElementById("d-gold") && (document.getElementById("d-gold").textContent = "$"+goldPriceYahoo.toFixed(2));
+      ["kpi-xau","p-xau"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+goldPriceYahoo.toFixed(2);});
+    }
+  } catch(e) { console.log("Yahoo finance fallback failed:", e.message); }
 }
 
 async function fetchPrices(){

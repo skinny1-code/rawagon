@@ -20,7 +20,10 @@
     "agents": "node agents/agent-system.js",
     "monitors": "python3 packages/monitors/run_monitors.py",
     "deploy:card-vault": "node scripts/deploy-card-vault.js",
-    "test:monitors": "python3 -c \"import packages.monitors.risk_gatekeeper; print('ok')\""
+    "test:monitors": "python3 -c \"import packages.monitors.risk_gatekeeper; print('ok')\"",
+    "test:ts": "vitest run",
+    "test:ts:watch": "vitest",
+    "test:all": "node scripts/run-all-tests.js && vitest run"
   },
   "workspaces": [
     "packages/*",
@@ -31,7 +34,9 @@
     "@types/node": "^20.0.0",
     "eslint": "^8.57.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0"
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
   },
   "dependencies": {
     "ethers": "^6.16.0",

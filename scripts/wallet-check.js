@@ -17,7 +17,7 @@ const WALLETS = [
 
 async function main() {
   const provider = new ethers.JsonRpcProvider(
-    process.env.BASE_RPC_URL || 'https://mainnet.base.org'
+    process.env.GANACHE_RPC || process.env.BASE_RPC_URL || 'http://10.117.122.142:8545'
   );
   const [block, gas] = await Promise.all([
     provider.getBlockNumber(),
@@ -26,7 +26,7 @@ async function main() {
   const gasGwei = parseFloat(ethers.formatUnits(gas.gasPrice || 0n, 'gwei')).toFixed(4);
 
   console.log('\n══════════════════════════════════════════════');
-  console.log('  WAGON + FOUNDER Wallet Balances (Base L2)');
+  console.log('  WAGON + FOUNDER Wallet Balances (RAWNet Testnet)');
   console.log(`  Block: ${block.toLocaleString()} · Gas: ${gasGwei} Gwei`);
   console.log('══════════════════════════════════════════════\n');
 

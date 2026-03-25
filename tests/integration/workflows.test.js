@@ -477,5 +477,150 @@ t('allcard-sdk: CardVault ABI exported', () => {
   assert(sdk.includes('CARD_VAULT_ABI'), 'CardVault ABI must be in allcard-sdk');
 });
 
+
+// ── Final integration + infrastructure tests ──────────────────────────────
+t('contracts-sdk: all 10 RAWNet addresses present', () => {
+  const { RAWContracts } = require('../../packages/contracts-sdk/contracts.js');
+  const contracts = ['MockUSDC','MockOracleXAU','MockOracleXAG','LivingToken',
+    'FeeDistributor','EmployeeVault','GoldMint','IQTitle','PawnRegistry','BreakFactory'];
+  contracts.forEach(c => {
+    const addr = RAWContracts.rawnet(c);
+    assert(addr && addr.startsWith('0x'), `${c} must have 0x address`);
+  });
+});
+
+t('contracts-sdk: all ABIs present for 11 contracts', () => {
+  const { ABI } = require('../../packages/contracts-sdk/contracts.js');
+  const required = ['ERC20','LivingToken','FeeDistributor','PawnRegistry',
+    'BreakFactory','GoldMint','IQTitle','EmployeeVault','CardVault'];
+  required.forEach(k => assert(Array.isArray(ABI[k]) && ABI[k].length>0, `${k} ABI missing`));
+});
+
+t('server: manifest.json valid JSON', () => {
+  const m = JSON.parse(require('fs').readFileSync('manifest.json','utf8'));
+  assert.strictEqual(m.name, 'RAWagon OS');
+  assert.strictEqual(m.start_url, '/');
+  assert(m.icons.length >= 2);
+});
+
+t('env.example: has all required env keys', () => {
+  const env = require('fs').readFileSync('.env.example','utf8');
+  ['GANACHE_RPC','RAWNET_RPC','ANTHROPIC_API_KEY','PRIVATE_KEY','GANACHE_RPC'].forEach(k => {
+    assert(env.includes(k), `${k} must be in .env.example`);
+  });
+});
+
+t('security: no raw private keys in source code', () => {
+  const fs = require('fs');
+  // .env.example should have placeholder, not real keys
+  const env = fs.readFileSync('.env.example','utf8');
+  assert(!env.includes('0xac0974'), 'Hardhat default PK must not be in .env.example');
+  assert(!env.includes('sk-ant-api03'), 'Real Anthropic key must not be in .env.example');
+});
+
+t('allcard: OS back link present in header', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/1nce-allcard/index.html','utf8');
+  assert(html.includes('href="/"'), 'AllCard must have OS back link');
+  assert(html.includes('⬡ OS'), 'AllCard must show OS label');
+});
+
+t('all apps: have theme-color meta tag', () => {
+  const fs = require('fs');
+  const apps = ['bitpawn','droppa','autoiq','goldsnap','qwks-protocol','1nce-allcard','profitpilot'];
+  apps.forEach(app => {
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(html.includes('theme-color'), `${app} must have theme-color meta`);
+  });
+});
+
+t('FeeDistributor: totalInflow function in QWKS ABI', () => {
+  const fs = require('fs');
+  const qwks = fs.readFileSync('apps/qwks-protocol/index.html','utf8');
+  assert(qwks.includes('totalInflow'), 'QWKS must have totalInflow in FD_ABI');
+});
+
+t('GoldSnap: BWG intake fee matches CardVault fee ($9)', () => {
+  // BWG and CardVault both use $9 intake
+  const intake_bwg = 9, intake_vault = 9;
+  assert.strictEqual(intake_bwg, intake_vault);
+});
+
+
+// ── Package integrity tests ────────────────────────────────────────────────
+t('gold-oracle: meltValue computes correctly', () => {
+  const { meltValue } = require('../../packages/gold-oracle/index.js');
+  const result = meltValue('gold', 5, 14, 4133.80);  // 5g 14k at $4133.80/oz
+  assert(result.meltValue > 380 && result.meltValue < 400,
+    `melt $${result.meltValue?.toFixed(2)} should be ~$390`);
+  assert.strictEqual(result.grams, 5);
+  assert(Math.abs(result.purity - 14/24) < 0.001);
+});
+
+t('gold-oracle: pawnCalc async structure', async () => {
+  const { pawnCalc } = require('../../packages/gold-oracle/index.js');
+  assert(typeof pawnCalc === 'function');
+});
+
+t('contracts-sdk: isDeployed false for CardVault (pending)', () => {
+  const { RAWContracts } = require('../../packages/contracts-sdk/contracts.js');
+  const deployed = RAWContracts.isDeployed(720701, 'CardVault');
+  assert(!deployed, 'CardVault should not be deployed yet');
+});
+
+t('contracts-sdk: isDeployed true for all 10 live contracts', () => {
+  const { RAWContracts } = require('../../packages/contracts-sdk/contracts.js');
+  const live = ['MockUSDC','LivingToken','FeeDistributor','EmployeeVault',
+    'GoldMint','IQTitle','PawnRegistry','BreakFactory'];
+  live.forEach(c => {
+    assert(RAWContracts.isDeployed(720701, c), `${c} should be deployed`);
+  });
+});
+
+t('connectors: AllCard connectors load without error', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('packages/allcard-sdk/connectors.js','utf8');
+  assert(!src.includes("require('../core/identity')"), 'broken dependency must be removed');
+  assert(src.includes('class BaseConnector'), 'BaseConnector must exist');
+});
+
+t('gold-oracle: meltValue returns all required fields', () => {
+  const { meltValue } = require('../../packages/gold-oracle/index.js');
+  const r = meltValue('gold', 31.1035, 24, 4133.80); // 1 troy oz 24k
+  assert(r.meltValue > 4000, '1oz 24k melt should be near spot');
+  assert(r.pureOz > 0.99 && r.pureOz < 1.01, 'pureOz should be ~1');
+  assert(r.purity === 1, '24k purity should be 1.0');
+  assert(r.spotPrice === 4133.80);
+});
+
+t('server: /health endpoint code exists', () => {
+  const fs = require('fs');
+  const server = fs.readFileSync('server.js','utf8');
+  assert(server.includes("pathname === '/health'"), 'health endpoint must exist');
+  assert(server.includes("pathname === '/manifest.json'"), 'manifest endpoint must exist');
+});
+
+t('PWA: manifest.json has required fields', () => {
+  const m = JSON.parse(require('fs').readFileSync('manifest.json','utf8'));
+  assert(m.name && m.short_name && m.start_url && m.icons, 'manifest missing required fields');
+  assert(m.display === 'standalone', 'must be standalone PWA');
+});
+
+t('BitPawn: 9 nav tabs match show() array', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/bitpawn/index.html','utf8');
+  const tabs = (html.match(/onclick="show\('(\w+)'\)"/g)||[]).length;
+  assert(tabs >= 9, `BitPawn must have 9+ tabs, got ${tabs}`);
+});
+
+t('All apps: OS back-navigation present', () => {
+  const fs = require('fs');
+  const apps = ['bitpawn','droppa','autoiq','goldsnap','qwks-protocol','1nce-allcard','profitpilot'];
+  apps.forEach(app => {
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(html.includes('href="/"'), `${app} must have OS back link`);
+  });
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

@@ -1,0 +1,12 @@
+{
+  "name": "@rawagon/contracts-sdk",
+  "version": "1.0.0",
+  "description": "RAWagon shared contract addresses + ABIs — single source of truth",
+  "main": "contracts.js",
+  "browser": "contracts.js",
+  "scripts": {
+    "test": "node -e \"const {RAWContracts}=require('./contracts.js');console.log('contracts-sdk OK:',Object.keys(RAWContracts.addr[720701]).length,'addresses')\""
+  },
+  "keywords": ["rawagon","contracts","abi","blockchain"],
+  "license": "MIT"
+}
