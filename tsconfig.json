@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "ignoreDeprecations": "6.0",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": false,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@rawagon/zk-identity": ["packages/zk-identity/index.js"],
+      "@rawagon/fee-distributor": ["packages/fee-distributor/index.js"],
+      "@rawagon/gold-oracle": ["packages/gold-oracle/index.js"],
+      "@rawagon/allcard-sdk": ["packages/allcard-sdk/index.js"],
+      "@rawagon/ltn-token": ["packages/ltn-token/index.js"]
+    }
+  },
+  "include": ["packages/**/*.js", "scripts/**/*.js"],
+  "exclude": ["node_modules", "contracts", "**/test/**"]
+}

@@ -61,14 +61,14 @@ rawagon/
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Smart contracts | Solidity ^0.8.24, OpenZeppelin v5, Chainlink v1.2 |
-| Contract tooling | Hardhat v2.22 |
-| JavaScript runtime | Node.js ≥18 (ESM fetch, native crypto) |
-| JavaScript style | CommonJS (`require()`), no TypeScript |
-| Blockchain target | Base L2 mainnet / Base Sepolia testnet |
-| CI | GitHub Actions (Node 20) |
+| Layer              | Technology                                        |
+| ------------------ | ------------------------------------------------- |
+| Smart contracts    | Solidity ^0.8.24, OpenZeppelin v5, Chainlink v1.2 |
+| Contract tooling   | Hardhat v2.22                                     |
+| JavaScript runtime | Node.js ≥18 (ESM fetch, native crypto)            |
+| JavaScript style   | CommonJS (`require()`), no TypeScript             |
+| Blockchain target  | Base L2 mainnet / Base Sepolia testnet            |
+| CI                 | GitHub Actions (Node 20)                          |
 
 **No frontend framework has been chosen yet** — `apps/` directories are stubs with placeholder `package.json` files only.
 
@@ -77,6 +77,7 @@ rawagon/
 ## Key Packages
 
 ### `packages/zk-identity`
+
 Core cryptographic primitives. **No external deps** — uses Node's built-in `crypto` module.
 
 ```js
@@ -90,15 +91,17 @@ const { derivePAN, commit, prove, bioDerive, genKey } = require('./packages/zk-i
 - `bioDerive(vec, salt)` — derives master key from behavioral biometric vector
 
 ### `packages/allcard-sdk`
+
 Thin wrapper around `zk-identity` with nonce management.
 
 ```js
 const card = AllCard.create();
-card.shift();    // new PAN with incremented nonce
+card.shift(); // new PAN with incremented nonce
 card.prove(creds);
 ```
 
 ### `packages/fee-distributor`
+
 Base L2 RPC helpers and fee/savings math.
 
 - `savings(volume, txMonth, visaRate=2.5%)` — calculates fee savings vs Visa. Fee split: 10% → LTN pool, 90% → customer.
@@ -106,6 +109,7 @@ Base L2 RPC helpers and fee/savings math.
 - Hardcoded Base mainnet RPC and $0.000825 tx fee constant
 
 ### `packages/gold-oracle`
+
 Fetches GLD/SLV ETF prices from Yahoo Finance. Results cached 5 minutes.
 
 - `pawn(karat, grams, ltv)` — returns pawn offer and buy offer in USD
@@ -117,28 +121,33 @@ Fetches GLD/SLV ETF prices from Yahoo Finance. Results cached 5 minutes.
 All contracts target **Solidity ^0.8.24** and are deployed on **Base L2**.
 
 ### `LivingToken.sol` (LTN) — `contracts/LTN/`
+
 - ERC20, max supply 1 billion
 - Burns 1e15 wei (0.001 LTN) per transaction via `BURNER_ROLE`
 - Admin mints up to cap; tracks total burned + tx count
 
 ### `FeeDistributor.sol` — `contracts/QWKS/`
+
 - Accumulates 0.1% (10 bps) of network volume
 - Distributes proportionally to LTN stakers
 - Interface: `stake()`, `unstake()`, `claim()`
 - Approved senders report volume; rewards tracked via RPT (reward-per-token)
 
 ### `EmployeeVault.sol` — `contracts/AllCard/`
+
 - Stores ZK credential commitments (`bytes32`) — **no PII on-chain**
 - Maps: `address → { employer, commitment, active }`
 - `enroll()`, `verify()` (TODO: real ZK verifier), `update()`, `deactivate()`
 
 ### `GoldMint.sol` (GTX) — `contracts/GoldSnap/`
+
 - ERC20 gold-backed token; 1 GTX = 1/100 troy oz
 - Chainlink oracle for live XAU/USD price
 - 0.25% minting fee; USDC-backed reserve
 - `mint(usdcAmount)` / `redeem(gtxAmount)`
 
 ### `IQTitle.sol` (IQCAR) — `contracts/AutoIQ/`
+
 - ERC721 vehicle title NFTs
 - `tokenId = keccak256(VIN)`
 - Immutable metadata: VIN, make, model, year, recalls, salvage flag, timestamp
@@ -168,23 +177,27 @@ NODE_ENV=development
 ## Development Workflows
 
 ### Install dependencies
+
 ```bash
 npm install           # root (installs all workspaces)
 cd contracts && npm install  # Hardhat + OpenZeppelin
 ```
 
 ### Compile contracts
+
 ```bash
 cd contracts && npm run compile   # hardhat compile
 ```
 
 ### Run tests
+
 ```bash
 cd contracts && npm test          # hardhat test
 npm test                          # root (currently placeholder scripts)
 ```
 
 ### Deploy contracts
+
 ```bash
 node scripts/deploy.js            # WIP — requires .env + Base Sepolia RPC
 ```
@@ -192,6 +205,7 @@ node scripts/deploy.js            # WIP — requires .env + Base Sepolia RPC
 The deploy script accepts a `NETWORK` env var (`base-sepolia` default, `base-mainnet` for prod).
 
 ### CI
+
 GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It executes test scripts for `fee-distributor`, `zk-identity`, and `gold-oracle` packages (currently non-blocking via `|| true`).
 
 ---
@@ -199,12 +213,14 @@ GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It execute
 ## Conventions & Patterns
 
 ### JavaScript
+
 - Use **CommonJS** (`require`/`module.exports`), not ES modules
 - Node.js built-in `crypto` module for all cryptographic operations — do not add external crypto deps
 - Use native `fetch` (Node 18+) for HTTP — no axios or node-fetch
 - No TypeScript — keep files as `.js`
 
 ### Solidity
+
 - Solidity pragma: `^0.8.24`
 - Import OpenZeppelin from `@openzeppelin/contracts` (v5 API)
 - Import Chainlink from `@chainlink/contracts`
@@ -213,11 +229,13 @@ GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It execute
 - Use `keccak256(abi.encodePacked(...))` for deterministic IDs
 
 ### File Organization
+
 - Each package lives in `packages/<name>/index.js` (flat, single-file)
 - Each app lives in `apps/<name>/` (stubs currently)
 - Each contract family gets its own subdirectory under `contracts/`
 
 ### Testing
+
 - Contract tests go in `contracts/test/` (Hardhat/Mocha/Chai)
 - Package tests run via the `test` npm script in each package
 - CI is currently non-blocking (`|| true`) — fix before shipping to production
@@ -237,9 +255,9 @@ GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It execute
 
 ## Important Addresses (Base Mainnet)
 
-| Contract | Address |
-|---|---|
-| USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Contract          | Address                                      |
+| ----------------- | -------------------------------------------- |
+| USDC              | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 | Chainlink XAU/USD | `0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6` |
 
 ---
@@ -256,6 +274,7 @@ GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It execute
 ## Patent Claims
 
 The system references provisional patent **RAW-2026-PROV-001** covering:
+
 1. Behavioral biometric master key derivation
 2. Shifting PAN with ZK commitment
 3. ZK commerce layer (off-chain proof, on-chain commitment)

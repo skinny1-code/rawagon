@@ -9,13 +9,24 @@
   ],
   "scripts": {
     "dev": "echo dev",
-    "build": "echo build",
-    "test": "echo ok"
+    "build": "npm run compile",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "compile": "npm run compile -w @rawagon/contracts"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "dotenv": "^17.3.1"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
+    "dotenv": "^17.3.1",
+    "eslint": "^10.1.0",
+    "prettier": "^3.8.1",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.1"
   }
 }
