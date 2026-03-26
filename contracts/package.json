@@ -2,7 +2,8 @@
   "name": "@rawagon/contracts",
   "version": "0.1.0",
   "scripts": {
-    "compile": "npx hardhat compile",
+    "compile": "node compile-local.js",
+    "compile:hardhat": "npx hardhat compile",
     "test": "npx hardhat test"
   },
   "devDependencies": {
