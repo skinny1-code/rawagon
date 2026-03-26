@@ -25,7 +25,7 @@ The core innovation is **deterministic PAN derivation + ZK proofs** that elimina
 
 ```
 rawagon/
-├── apps/                    # Frontend/application modules (currently stubs)
+├── apps/                         # Frontend/application modules (currently stubs)
 │   ├── 1nce-allcard/
 │   ├── autoiq/
 │   ├── bitpawn/
@@ -34,43 +34,120 @@ rawagon/
 │   ├── profitpilot/
 │   ├── qwks-protocol/
 │   └── rawagon-os/
-├── packages/                # Core JS/TS libraries (npm workspaces)
-│   ├── allcard-sdk/         # AllCard class wrapping zk-identity
-│   ├── fee-distributor/     # Fee calculation + Base RPC utilities
-│   ├── gold-oracle/         # Gold/silver spot price feed (Yahoo Finance ETFs)
-│   ├── ltn-token/           # LTN staking/governance client (placeholder)
-│   └── zk-identity/         # Core ZK proofs + biometric key derivation
-├── contracts/               # Solidity smart contracts (Hardhat project)
-│   ├── LTN/                 # LivingToken.sol (ERC20, LTN)
-│   ├── QWKS/                # FeeDistributor.sol
-│   ├── AllCard/             # EmployeeVault.sol (ZK credential storage)
-│   ├── GoldSnap/            # GoldMint.sol (GTX token)
-│   └── AutoIQ/              # IQTitle.sol (ERC721 vehicle titles)
+├── packages/                     # Core JS libraries (npm workspaces)
+│   ├── allcard-sdk/              # AllCard class wrapping zk-identity
+│   │   └── test/index.test.js
+│   ├── fee-distributor/          # Fee calculation + Base RPC utilities
+│   │   └── test/index.test.js
+│   ├── gold-oracle/              # Gold/silver spot price feed (Yahoo Finance ETFs)
+│   │   └── test/index.test.js
+│   ├── ltn-token/                # LTN staking/governance client (stub)
+│   │   └── test/index.test.js
+│   └── zk-identity/              # Core ZK proofs + biometric key derivation
+│       └── test/index.test.js
+├── contracts/                    # Solidity smart contracts (Hardhat project)
+│   ├── src/                      # Solidity source files (moved here to avoid node_modules glob)
+│   │   ├── LTN/LivingToken.sol
+│   │   ├── QWKS/FeeDistributor.sol
+│   │   ├── AllCard/EmployeeVault.sol
+│   │   ├── GoldSnap/GoldMint.sol
+│   │   └── AutoIQ/IQTitle.sol
+│   ├── hardhat.config.js         # Hardhat config (networks, etherscan, paths)
+│   └── package.json
 ├── docs/
 │   └── architecture/
 │       └── SYSTEM_OVERVIEW.md
 ├── scripts/
-│   └── deploy.js            # Contract deployment (WIP — mostly TODO)
+│   └── deploy.js                 # Contract deployment (WIP — TODO deploy logic)
 ├── .github/workflows/
-│   └── test.yml             # CI (Node 20, non-blocking)
-├── .env.example             # Required environment variables
-└── package.json             # Root monorepo config
+│   └── test.yml                  # CI: lint → format-check → typecheck → vitest → compile
+├── vitest.config.mjs             # Vitest config (globals: true, node env)
+├── eslint.config.mjs             # ESLint v10 flat config
+├── .prettierrc                   # Prettier config
+├── tsconfig.json                 # TypeScript config (allowJs, noEmit, paths)
+├── .env.example                  # Required environment variables
+└── package.json                  # Root monorepo config + all scripts
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer              | Technology                                        |
-| ------------------ | ------------------------------------------------- |
-| Smart contracts    | Solidity ^0.8.24, OpenZeppelin v5, Chainlink v1.2 |
-| Contract tooling   | Hardhat v2.22                                     |
-| JavaScript runtime | Node.js ≥18 (ESM fetch, native crypto)            |
-| JavaScript style   | CommonJS (`require()`), no TypeScript             |
-| Blockchain target  | Base L2 mainnet / Base Sepolia testnet            |
-| CI                 | GitHub Actions (Node 20)                          |
+| Layer              | Technology                                                  |
+| ------------------ | ----------------------------------------------------------- |
+| Smart contracts    | Solidity ^0.8.24, OpenZeppelin v5, Chainlink v1.2           |
+| Contract tooling   | Hardhat v2.22 + dotenv                                      |
+| JavaScript runtime | Node.js ≥18 (native fetch, native crypto)                   |
+| JavaScript style   | CommonJS (`require()`), no TypeScript                       |
+| Test framework     | Vitest v4 (`globals: true`, node environment)               |
+| Linter             | ESLint v10 (flat config, `eslint.config.mjs`)               |
+| Formatter          | Prettier v3 (`.prettierrc`)                                 |
+| Type checking      | TypeScript v6 (`tsc --noEmit`, `allowJs`, `checkJs: false`) |
+| Blockchain target  | Base L2 mainnet / Base Sepolia testnet                      |
+| CI                 | GitHub Actions (Node 20)                                    |
 
 **No frontend framework has been chosen yet** — `apps/` directories are stubs with placeholder `package.json` files only.
+
+---
+
+## Development Workflows
+
+### Install dependencies
+
+```bash
+npm install                   # root — installs all workspaces + links internal packages
+cd contracts && npm install   # Hardhat, OpenZeppelin, Chainlink, dotenv
+```
+
+### All root scripts
+
+```bash
+npm test               # vitest run — 42 tests across 5 packages
+npm run test:watch     # vitest watch mode
+npm run lint:fix       # eslint --fix .
+npm run format         # prettier --write .
+npm run typecheck      # tsc --noEmit
+npm run compile        # hardhat compile (delegates to @rawagon/contracts workspace)
+npm run build          # alias for compile
+```
+
+### Run tests
+
+```bash
+npm test               # all packages via vitest
+npm run test:watch     # interactive re-run on save
+```
+
+Test files live at `packages/<name>/test/index.test.js`. They are CJS files (use `require()`) — vitest globals (`describe`, `it`, `expect`, `vi`, etc.) are injected automatically via `globals: true` in `vitest.config.mjs`. Do **not** `require('vitest')` in test files.
+
+### Compile contracts
+
+```bash
+npm run compile           # from root — runs hardhat compile in contracts/
+cd contracts && npm run compile   # direct
+```
+
+Solidity sources are in `contracts/src/` (not `contracts/` root) to avoid Hardhat picking up `node_modules/**/*.sol`.
+
+### Deploy contracts
+
+```bash
+node scripts/deploy.js                      # base-sepolia (default)
+node scripts/deploy.js --network base       # mainnet
+```
+
+Deploy logic is currently TODO stubs. Requires `PRIVATE_KEY` and `BASE_RPC_URL` / `BASE_SEPOLIA_RPC_URL` in `.env`.
+
+### CI pipeline
+
+GitHub Actions runs on push to `main`/`develop` and PRs to `main`:
+
+1. `npm install` (root) + `npm install` (contracts)
+2. `npm run lint:fix` — ESLint
+3. `npx prettier --check .` — format check
+4. `npm run typecheck` — tsc
+5. `npm test` — vitest (42 tests, all blocking)
+6. `npm run compile` — hardhat compile
 
 ---
 
@@ -81,77 +158,107 @@ rawagon/
 Core cryptographic primitives. **No external deps** — uses Node's built-in `crypto` module.
 
 ```js
-const { derivePAN, commit, prove, bioDerive, genKey } = require('./packages/zk-identity');
+const { derivePAN, commit, prove, bioDerive, genKey } = require('@rawagon/zk-identity');
 ```
 
-- `genKey()` — generates 32-byte random hex key
-- `derivePAN(keyHex, nonce)` — deterministic 16-digit PAN via HMAC-SHA256 + BIP44 path. Returns formatted `XXXX XXXX XXXX XXXX` string.
-- `commit(creds, keyHex)` — ZK commitment hash (no PII on-chain)
-- `prove(creds, keyHex)` — returns `{ proof, commitment, timestamp }`
-- `bioDerive(vec, salt)` — derives master key from behavioral biometric vector
+| Function | Description |
+|---|---|
+| `genKey()` | Returns a 32-byte random hex key (64-char string) |
+| `derivePAN(keyHex, nonce)` | Deterministic 16-digit PAN via HMAC-SHA256 + BIP44 path. Returns `{ pan: "XXXX XXXX XXXX XXXX", nonce }` |
+| `commit(creds, keyHex)` | ZK commitment hash — returns `0x`-prefixed hex. No PII leaves the client |
+| `prove(creds, keyHex)` | Returns `{ proof, commitment, ts }` |
+| `bioDerive(vec, salt?)` | Derives master key from behavioral biometric vector. Returns `{ masterKey, salt }` |
+
+**Patent pending RAW-2026-PROV-001** — do not reproduce outside this repo.
 
 ### `packages/allcard-sdk`
 
-Thin wrapper around `zk-identity` with nonce management.
+Thin wrapper around `zk-identity` with nonce management. Depends on `@rawagon/zk-identity` (workspace link).
 
 ```js
-const card = AllCard.create();
-card.shift(); // new PAN with incremented nonce
-card.prove(creds);
+const { AllCard } = require('@rawagon/allcard-sdk');
+const card = AllCard.create();       // new card with generated key, nonce=0
+card.shift();                        // { pan, nonce } — increments nonce each call
+card.prove(creds);                   // { proof, commitment, ts }
+new AllCard(existingKeyHex);         // restore a card from a persisted key
 ```
 
 ### `packages/fee-distributor`
 
-Base L2 RPC helpers and fee/savings math.
+Base L2 RPC helpers and fee/savings math. No external deps.
 
-- `savings(volume, txMonth, visaRate=2.5%)` — calculates fee savings vs Visa. Fee split: 10% → LTN pool, 90% → customer.
-- `transition(fee, ltnMonthly, price, apy=0.12)` — months to LTN-pays-for-itself calculator
-- Hardcoded Base mainnet RPC and $0.000825 tx fee constant
+```js
+const { savings, transition, gasPrice, block } = require('@rawagon/fee-distributor');
+```
+
+| Function | Description |
+|---|---|
+| `savings(vol, txMo, visaRate=2.5)` | Fee savings vs Visa. `vol` = monthly USD volume. Returns `{ visaAnnual, qwksAnnual, netSaving, qwksFee, toCustomer, roiPct }`. Fee split: 10% → LTN pool, 90% → customer |
+| `transition(fee, ltnMo, price, apy=0.12)` | Months until LTN staking income covers fees. Returns `{ ltnNeeded, months, years }` |
+| `gasPrice()` | Live Base mainnet gas price in Gwei (async) |
+| `block()` | Latest Base mainnet block number (async) |
+
+Hardcoded constants: `RPC = 'https://mainnet.base.org'`, `TX = 0.000825` (USD per tx).
 
 ### `packages/gold-oracle`
 
-Fetches GLD/SLV ETF prices from Yahoo Finance. Results cached 5 minutes.
+Fetches GLD/SLV ETF prices from Yahoo Finance. Module-level cache, TTL = 5 minutes.
 
-- `pawn(karat, grams, ltv)` — returns pawn offer and buy offer in USD
+```js
+const { gold, silver, pawn } = require('@rawagon/gold-oracle');
+```
+
+| Function | Description |
+|---|---|
+| `gold()` | Returns `{ spot, etf }` — spot in USD/troy oz (etf × 10) |
+| `silver()` | Returns `{ spot, etf }` — spot in USD/troy oz (etf / 0.9395) |
+| `pawn(metal, grams, karat, ltv=0.6, buy=0.85)` | Returns `{ melt, pawnOffer, buyOffer, spot }`. `metal`: `'gold'` or `'silver'`. `karat`: 10/14/18/24 or 925 (sterling) |
+
+> **Note:** Uses Yahoo Finance unofficial API — suitable for development/demo, not production.
+
+### `packages/ltn-token`
+
+Placeholder stub. Exports `{}`. Will implement LTN staking/governance client once contracts are deployed.
 
 ---
 
 ## Smart Contracts
 
-All contracts target **Solidity ^0.8.24** and are deployed on **Base L2**.
+All contracts in `contracts/src/`, target **Solidity ^0.8.24**, deploy on **Base L2**.
 
-### `LivingToken.sol` (LTN) — `contracts/LTN/`
+### `LivingToken.sol` (LTN) — `contracts/src/LTN/`
 
-- ERC20, max supply 1 billion
-- Burns 1e15 wei (0.001 LTN) per transaction via `BURNER_ROLE`
-- Admin mints up to cap; tracks total burned + tx count
+- ERC20, max supply 1 billion LTN
+- Admin mints up to cap (`DEFAULT_ADMIN_ROLE`)
+- Burns 0.001 LTN per transaction via `burnOnTx()` (requires `BURNER_ROLE`)
+- Tracks `totalBurned` and `txCount`
 
-### `FeeDistributor.sol` — `contracts/QWKS/`
+### `FeeDistributor.sol` — `contracts/src/QWKS/`
 
-- Accumulates 0.1% (10 bps) of network volume
-- Distributes proportionally to LTN stakers
-- Interface: `stake()`, `unstake()`, `claim()`
-- Approved senders report volume; rewards tracked via RPT (reward-per-token)
+- Accumulates 0.1% (10 bps) of reported network volume via `inflow(vol)`
+- Distributes proportionally to LTN stakers via reward-per-token (RPT) accounting
+- Interface: `stake(amount)`, `unstake(amount)`, `claim()`
+- Approved senders report volume; approval via `approve(addr)` (owner only)
 
-### `EmployeeVault.sol` — `contracts/AllCard/`
+### `EmployeeVault.sol` — `contracts/src/AllCard/`
 
-- Stores ZK credential commitments (`bytes32`) — **no PII on-chain**
+- Stores ZK credential commitments (`bytes32`) — **zero PII on-chain**
 - Maps: `address → { employer, commitment, active }`
-- `enroll()`, `verify()` (TODO: real ZK verifier), `update()`, `deactivate()`
+- `enroll(emp, commitment)`, `verify(proof, scope)` (**TODO**: replace stub with real ZK verifier), `update(commitment)`, `deactivate(addr)`
 
-### `GoldMint.sol` (GTX) — `contracts/GoldSnap/`
+### `GoldMint.sol` (GTX) — `contracts/src/GoldSnap/`
 
-- ERC20 gold-backed token; 1 GTX = 1/100 troy oz
-- Chainlink oracle for live XAU/USD price
-- 0.25% minting fee; USDC-backed reserve
-- `mint(usdcAmount)` / `redeem(gtxAmount)`
+- ERC20 gold-backed token; 1 GTX = 1/100 troy oz gold
+- Chainlink XAU/USD oracle for live price; 0.25% minting fee
+- USDC-backed reserve
+- `mint(usdcAmount)` → mints GTX; `redeem(gtxAmount)` → returns USDC
 
-### `IQTitle.sol` (IQCAR) — `contracts/AutoIQ/`
+### `IQTitle.sol` (IQCAR) — `contracts/src/AutoIQ/`
 
-- ERC721 vehicle title NFTs
-- `tokenId = keccak256(VIN)`
+- ERC721 vehicle title NFTs; `tokenId = keccak256(VIN)`
 - Immutable metadata: VIN, make, model, year, recalls, salvage flag, timestamp
 - 0.001 ETH mint fee; 17-char VIN validation; no duplicate VINs
+- `vinToId(vin)`, `setFee(fee)` (owner), `withdraw()` (owner)
 
 ---
 
@@ -161,6 +268,7 @@ Copy `.env.example` to `.env` before running anything:
 
 ```env
 BASE_RPC_URL=https://mainnet.base.org
+BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
 ETH_RPC_URL=https://eth.llamarpc.com
 PRIVATE_KEY=0x_your_deployer_key
 BASESCAN_API_KEY=
@@ -174,91 +282,76 @@ NODE_ENV=development
 
 ---
 
-## Development Workflows
-
-### Install dependencies
-
-```bash
-npm install           # root (installs all workspaces)
-cd contracts && npm install  # Hardhat + OpenZeppelin
-```
-
-### Compile contracts
-
-```bash
-cd contracts && npm run compile   # hardhat compile
-```
-
-### Run tests
-
-```bash
-cd contracts && npm test          # hardhat test
-npm test                          # root (currently placeholder scripts)
-```
-
-### Deploy contracts
-
-```bash
-node scripts/deploy.js            # WIP — requires .env + Base Sepolia RPC
-```
-
-The deploy script accepts a `NETWORK` env var (`base-sepolia` default, `base-mainnet` for prod).
-
-### CI
-
-GitHub Actions runs on push to `main`/`develop` and on PRs to `main`. It executes test scripts for `fee-distributor`, `zk-identity`, and `gold-oracle` packages (currently non-blocking via `|| true`).
-
----
-
 ## Conventions & Patterns
 
 ### JavaScript
 
-- Use **CommonJS** (`require`/`module.exports`), not ES modules
+- Use **CommonJS** (`require`/`module.exports`), not ES modules — all source files are `.js`
 - Node.js built-in `crypto` module for all cryptographic operations — do not add external crypto deps
 - Use native `fetch` (Node 18+) for HTTP — no axios or node-fetch
-- No TypeScript — keep files as `.js`
+- No TypeScript in source files — keep as `.js`
+- Config files (`vitest.config.mjs`, `eslint.config.mjs`) use `.mjs` ESM format since tooling requires it
+
+### Testing
+
+- Test files live at `packages/<name>/test/index.test.js` — CJS, use `require()` for source modules
+- Vitest globals (`describe`, `it`, `expect`, `vi`, `beforeAll`, etc.) are injected automatically — **do not** `require('vitest')`
+- To mock `fetch` in tests, use `vi.stubGlobal('fetch', mockFn)` before calling the function under test
+- Gold-oracle has a module-level cache (`C = {}`); tests work because the cache is empty on first import and `fetch` is stubbed before any test runs
+- Contract tests go in `contracts/test/` (Hardhat/Mocha/Chai) — directory exists but no tests written yet
 
 ### Solidity
 
-- Solidity pragma: `^0.8.24`
+- Pragma: `^0.8.24`
 - Import OpenZeppelin from `@openzeppelin/contracts` (v5 API)
 - Import Chainlink from `@chainlink/contracts`
-- Access control: prefer `AccessControl` over `Ownable` for multi-role contracts; use `Ownable` only for simple single-owner cases
+- Access control: prefer `AccessControl` for multi-role contracts; `Ownable` for simple single-owner
 - 0-PII policy: never store personal data on-chain; use `bytes32` commitment hashes
 - Use `keccak256(abi.encodePacked(...))` for deterministic IDs
 
 ### File Organization
 
-- Each package lives in `packages/<name>/index.js` (flat, single-file)
-- Each app lives in `apps/<name>/` (stubs currently)
-- Each contract family gets its own subdirectory under `contracts/`
+- Each package: `packages/<name>/index.js` (flat, single-file) + `packages/<name>/test/index.test.js`
+- Each contract family: `contracts/src/<Family>/<Contract>.sol`
+- Apps: `apps/<name>/` (stubs — `package.json` only)
 
-### Testing
+### Tooling
 
-- Contract tests go in `contracts/test/` (Hardhat/Mocha/Chai)
-- Package tests run via the `test` npm script in each package
-- CI is currently non-blocking (`|| true`) — fix before shipping to production
+- **ESLint** (`eslint.config.mjs`): flat config v9+. CJS globals declared globally; vitest globals declared for `**/test/**/*.test.js` files only. Ignores `contracts/src/`, `contracts/artifacts/`, `contracts/cache/`
+- **Prettier** (`.prettierrc`): `singleQuote: true`, `semi: true`, `tabWidth: 2`, `printWidth: 100`, `trailingComma: "es5"`
+- **TypeScript** (`tsconfig.json`): `allowJs: true`, `checkJs: false`, `noEmit: true`. Paths map `@rawagon/*` to workspace `packages/*/index.js`. Excludes `contracts/` and `**/test/**`. Uses `ignoreDeprecations: "6.0"` for TS 6 compatibility
+- **Hardhat** (`contracts/hardhat.config.js`): sources path is `./src` (not `.`); supports `base` and `base-sepolia` networks; Basescan etherscan config included
 
 ---
 
 ## Known Incomplete Areas
 
-- `apps/` — all frontend apps are directory stubs only; no implementation exists
-- `scripts/deploy.js` — deployment logic is TODO comments; contracts cannot be deployed yet
-- `contracts/AllCard/EmployeeVault.sol` — `verify()` function has a TODO for real ZK verifier integration
-- `packages/ltn-token/index.js` — minimal placeholder (58 bytes), no real implementation
-- Root `package.json` scripts (`dev`, `build`, `test`) are placeholder `echo` commands
-- No unit tests exist for any package
+| Area | Status |
+|---|---|
+| `apps/` | All frontend apps are directory stubs — no implementation |
+| `scripts/deploy.js` | Deployment logic is `[todo]` comments — contracts cannot be deployed yet |
+| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier |
+| `packages/ltn-token/index.js` | Empty stub — exports `{}` |
+| `contracts/test/` | Directory does not exist — no Hardhat/contract tests written |
+| `npm run compile` | Requires Solidity 0.8.24 compiler download — blocked in network-restricted sandboxes but works in CI |
 
 ---
 
-## Important Addresses (Base Mainnet)
+## Important Addresses
+
+### Base Mainnet
 
 | Contract          | Address                                      |
 | ----------------- | -------------------------------------------- |
 | USDC              | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 | Chainlink XAU/USD | `0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6` |
+
+### Base Sepolia (testnet)
+
+| Contract | Address |
+|---|---|
+| USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
+| Chainlink XAU/USD | Not yet available — placeholder `0x000...000` in `deploy.js` |
 
 ---
 
