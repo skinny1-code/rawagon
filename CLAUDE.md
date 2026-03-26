@@ -161,13 +161,13 @@ Core cryptographic primitives. **No external deps** — uses Node's built-in `cr
 const { derivePAN, commit, prove, bioDerive, genKey } = require('@rawagon/zk-identity');
 ```
 
-| Function | Description |
-|---|---|
-| `genKey()` | Returns a 32-byte random hex key (64-char string) |
+| Function                   | Description                                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `genKey()`                 | Returns a 32-byte random hex key (64-char string)                                                        |
 | `derivePAN(keyHex, nonce)` | Deterministic 16-digit PAN via HMAC-SHA256 + BIP44 path. Returns `{ pan: "XXXX XXXX XXXX XXXX", nonce }` |
-| `commit(creds, keyHex)` | ZK commitment hash — returns `0x`-prefixed hex. No PII leaves the client |
-| `prove(creds, keyHex)` | Returns `{ proof, commitment, ts }` |
-| `bioDerive(vec, salt?)` | Derives master key from behavioral biometric vector. Returns `{ masterKey, salt }` |
+| `commit(creds, keyHex)`    | ZK commitment hash — returns `0x`-prefixed hex. No PII leaves the client                                 |
+| `prove(creds, keyHex)`     | Returns `{ proof, commitment, ts }`                                                                      |
+| `bioDerive(vec, salt?)`    | Derives master key from behavioral biometric vector. Returns `{ masterKey, salt }`                       |
 
 **Patent pending RAW-2026-PROV-001** — do not reproduce outside this repo.
 
@@ -177,10 +177,10 @@ Thin wrapper around `zk-identity` with nonce management. Depends on `@rawagon/zk
 
 ```js
 const { AllCard } = require('@rawagon/allcard-sdk');
-const card = AllCard.create();       // new card with generated key, nonce=0
-card.shift();                        // { pan, nonce } — increments nonce each call
-card.prove(creds);                   // { proof, commitment, ts }
-new AllCard(existingKeyHex);         // restore a card from a persisted key
+const card = AllCard.create(); // new card with generated key, nonce=0
+card.shift(); // { pan, nonce } — increments nonce each call
+card.prove(creds); // { proof, commitment, ts }
+new AllCard(existingKeyHex); // restore a card from a persisted key
 ```
 
 ### `packages/fee-distributor`
@@ -191,12 +191,12 @@ Base L2 RPC helpers and fee/savings math. No external deps.
 const { savings, transition, gasPrice, block } = require('@rawagon/fee-distributor');
 ```
 
-| Function | Description |
-|---|---|
-| `savings(vol, txMo, visaRate=2.5)` | Fee savings vs Visa. `vol` = monthly USD volume. Returns `{ visaAnnual, qwksAnnual, netSaving, qwksFee, toCustomer, roiPct }`. Fee split: 10% → LTN pool, 90% → customer |
-| `transition(fee, ltnMo, price, apy=0.12)` | Months until LTN staking income covers fees. Returns `{ ltnNeeded, months, years }` |
-| `gasPrice()` | Live Base mainnet gas price in Gwei (async) |
-| `block()` | Latest Base mainnet block number (async) |
+| Function                                  | Description                                                                                                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `savings(vol, txMo, visaRate=2.5)`        | Fee savings vs Visa. `vol` = monthly USD volume. Returns `{ visaAnnual, qwksAnnual, netSaving, qwksFee, toCustomer, roiPct }`. Fee split: 10% → LTN pool, 90% → customer |
+| `transition(fee, ltnMo, price, apy=0.12)` | Months until LTN staking income covers fees. Returns `{ ltnNeeded, months, years }`                                                                                      |
+| `gasPrice()`                              | Live Base mainnet gas price in Gwei (async)                                                                                                                              |
+| `block()`                                 | Latest Base mainnet block number (async)                                                                                                                                 |
 
 Hardcoded constants: `RPC = 'https://mainnet.base.org'`, `TX = 0.000825` (USD per tx).
 
@@ -208,10 +208,10 @@ Fetches GLD/SLV ETF prices from Yahoo Finance. Module-level cache, TTL = 5 minut
 const { gold, silver, pawn } = require('@rawagon/gold-oracle');
 ```
 
-| Function | Description |
-|---|---|
-| `gold()` | Returns `{ spot, etf }` — spot in USD/troy oz (etf × 10) |
-| `silver()` | Returns `{ spot, etf }` — spot in USD/troy oz (etf / 0.9395) |
+| Function                                       | Description                                                                                                            |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `gold()`                                       | Returns `{ spot, etf }` — spot in USD/troy oz (etf × 10)                                                               |
+| `silver()`                                     | Returns `{ spot, etf }` — spot in USD/troy oz (etf / 0.9395)                                                           |
 | `pawn(metal, grams, karat, ltv=0.6, buy=0.85)` | Returns `{ melt, pawnOffer, buyOffer, spot }`. `metal`: `'gold'` or `'silver'`. `karat`: 10/14/18/24 or 925 (sterling) |
 
 > **Note:** Uses Yahoo Finance unofficial API — suitable for development/demo, not production.
@@ -326,14 +326,14 @@ NODE_ENV=development
 
 ## Known Incomplete Areas
 
-| Area | Status |
-|---|---|
-| `apps/` | All frontend apps are directory stubs — no implementation |
-| `scripts/deploy.js` | Deployment logic is `[todo]` comments — contracts cannot be deployed yet |
-| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier |
-| `packages/ltn-token/index.js` | Empty stub — exports `{}` |
-| `contracts/test/` | Directory does not exist — no Hardhat/contract tests written |
-| `npm run compile` | Requires Solidity 0.8.24 compiler download — blocked in network-restricted sandboxes but works in CI |
+| Area                                                 | Status                                                                                               |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `apps/`                                              | All frontend apps are directory stubs — no implementation                                            |
+| `scripts/deploy.js`                                  | Deployment logic is `[todo]` comments — contracts cannot be deployed yet                             |
+| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier                                             |
+| `packages/ltn-token/index.js`                        | Empty stub — exports `{}`                                                                            |
+| `contracts/test/`                                    | Directory does not exist — no Hardhat/contract tests written                                         |
+| `npm run compile`                                    | Requires Solidity 0.8.24 compiler download — blocked in network-restricted sandboxes but works in CI |
 
 ---
 
@@ -348,9 +348,9 @@ NODE_ENV=development
 
 ### Base Sepolia (testnet)
 
-| Contract | Address |
-|---|---|
-| USDC | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` |
+| Contract          | Address                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| USDC              | `0x036CbD53842c5426634e7929541eC2318f3dCF7e`                 |
 | Chainlink XAU/USD | Not yet available — placeholder `0x000...000` in `deploy.js` |
 
 ---
