@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#F5C842">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Orchestrator 4m — RAWagon · Multi-Model AI</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070D;--bg2:#0D0D16;--bg3:#0E0E1A;
+  --surface:rgba(255,255,255,.03);--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --text:#C9D1D9;--muted:#484F58;--faint:#1C1C28;
+  --gpt:#00D4FF;--claude:#FF6B35;--gemini:#00FF87;--perp:#B388FF;
+  --gold:#F5C842;--synth:#FFD700;--red:#FF4D4D;--green:#00FF87;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:3px;background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#1E1E28;border-radius:99px}
+
+/* ── GATE MODAL ────────────────────────────────────────────────── */
+#gate{position:fixed;inset:0;z-index:500;background:rgba(6,6,12,.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:24px}
+.gate-box{width:100%;max-width:440px;background:var(--bg3);border:1px solid var(--border2);border-radius:16px;padding:40px;text-align:center}
+.gate-icon{font-size:36px;margin-bottom:20px}
+.gate-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:900;margin-bottom:8px;letter-spacing:-0.5px}
+.gate-sub{font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:28px}
+.gate-free{background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);border-radius:10px;padding:16px;margin-bottom:20px;cursor:pointer;transition:all .2s}
+.gate-free:hover{background:rgba(0,255,135,.1)}
+.gate-free-label{font-size:11px;font-weight:700;color:var(--green);letter-spacing:2px}
+.gate-free-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.gate-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:9px;letter-spacing:2px}
+.gate-divider::before,.gate-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.gate-input-wrap{display:flex;gap:8px;margin-bottom:12px}
+#tokenInput{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+#tokenInput:focus{border-color:rgba(245,200,66,.4)}
+#tokenInput::placeholder{color:var(--muted)}
+.btn-verify{padding:10px 18px;background:var(--gold);color:#06060C;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-verify:hover{background:#E8A020}
+.btn-verify:disabled{opacity:.4;cursor:not-allowed}
+.gate-error{font-size:10px;color:var(--red);margin-bottom:10px;display:none}
+.gate-buy{font-size:10px;color:var(--muted);margin-top:14px}
+.gate-buy a{color:var(--gold);text-decoration:none}
+.gate-buy a:hover{text-decoration:underline}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+#header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:10px 22px;background:rgba(7,7,13,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);display:flex;align-items:center;justify-content:center;font-size:13px}
+.logo-name{font-family:'Syne',sans-serif;font-size:10px;font-weight:800;letter-spacing:3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.tier-badge{font-size:8px;padding:3px 9px;border-radius:4px;letter-spacing:2px;font-weight:700}
+.tier-free{color:var(--green);background:rgba(0,255,135,.07);border:1px solid rgba(0,255,135,.25)}
+.tier-paid{color:var(--gold);background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.25)}
+.quota-pill{font-size:9px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 9px;display:none}
+.cost-pill{font-size:10px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 10px;cursor:pointer;position:relative;transition:color .2s}
+.cost-pill:hover{color:var(--text)}
+.cost-tooltip{display:none;position:absolute;right:0;top:calc(100%+6px);background:#0D0D18;border:1px solid var(--border2);border-radius:10px;padding:12px 14px;width:230px;font-size:10px;z-index:300;white-space:nowrap}
+.cost-pill:hover .cost-tooltip{display:block}
+.back-link{font-size:9px;color:var(--muted);text-decoration:none;letter-spacing:2px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+.key-badges{display:flex;gap:5px}
+.kb{font-size:8px;padding:3px 7px;border-radius:4px;letter-spacing:1px;font-weight:700;border:1px solid;cursor:default;transition:all .3s}
+.kb.ok{color:var(--green);border-color:rgba(0,255,135,.3);background:rgba(0,255,135,.05)}
+.kb.missing{color:var(--red);border-color:rgba(255,77,77,.3);background:rgba(255,77,77,.05)}
+.kb.checking{color:var(--muted);border-color:var(--border);animation:pulse 1.5s infinite}
+
+/* ── APP ─────────────────────────────────────────────────────────── */
+#app{max-width:1180px;margin:0 auto;padding:20px 18px 80px}
+
+/* ── UPSELL BANNER ──────────────────────────────────────────────── */
+#upsell{background:linear-gradient(90deg,rgba(245,200,66,.06),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.2);border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;display:none}
+.upsell-text{font-size:11px;color:var(--text);flex:1}
+.upsell-text strong{color:var(--gold)}
+.upsell-cta{padding:6px 16px;background:var(--gold);color:#06060C;border-radius:6px;font-size:9px;font-weight:700;letter-spacing:2px;text-decoration:none;white-space:nowrap;font-family:'JetBrains Mono',monospace;transition:all .2s}
+.upsell-cta:hover{background:#E8A020}
+
+/* ── CONTROLS ───────────────────────────────────────────────────── */
+#controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.model-toggle{padding:5px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;border:1px solid;transition:all .2s;user-select:none}
+.model-toggle.off{opacity:.25;filter:grayscale(1)}
+.divider-v{width:1px;height:20px;background:var(--border);margin:0 4px}
+.ctrl-label{font-size:9px;color:var(--muted);letter-spacing:2px}
+.ctrl-select{background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;-webkit-appearance:none}
+.temp-wrap{display:flex;align-items:center;gap:6px}
+.temp-slider{-webkit-appearance:none;width:70px;height:3px;background:linear-gradient(90deg,var(--gpt),var(--perp));border-radius:99px;outline:none;cursor:pointer}
+.temp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--text);cursor:pointer}
+.temp-val{font-size:9px;color:var(--muted);width:22px}
+
+/* ── INPUT ───────────────────────────────────────────────────────── */
+#input-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.section-tag{font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:10px}
+#q-input{width:100%;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;resize:vertical;min-height:72px;transition:border-color .2s,box-shadow .2s;outline:none}
+#q-input:focus{border-color:rgba(0,212,255,.3);box-shadow:0 0 18px rgba(0,212,255,.05)}
+#q-input:disabled{opacity:.35;cursor:not-allowed}
+#q-len{font-size:9px;color:var(--faint);text-align:right;margin-top:4px}
+.btn-row{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.btn{padding:7px 16px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;border:1px solid;transition:all .18s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;background:transparent}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.btn-run   {border-color:rgba(0,212,255,.35);color:var(--gpt)}
+.btn-run:hover:not(:disabled){background:rgba(0,212,255,.08)}
+.btn-debate{border-color:rgba(255,107,53,.3);color:var(--claude)}
+.btn-debate:hover{background:rgba(255,107,53,.07)}
+.btn-synth {border-color:rgba(255,215,0,.25);color:var(--synth)}
+.btn-synth:hover{background:rgba(255,215,0,.06)}
+.btn-share {border-color:rgba(179,136,255,.25);color:var(--perp)}
+.btn-share:hover{background:rgba(179,136,255,.07)}
+.btn-export{border-color:rgba(0,255,135,.25);color:var(--gemini)}
+.btn-export:hover{background:rgba(0,255,135,.06)}
+.btn-ghost {border-color:var(--border);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+.hint{font-size:9px;color:var(--faint);letter-spacing:1px;margin-left:auto}
+
+/* ── SYNTH MODES ─────────────────────────────────────────────────── */
+#synth-mode-wrap{display:none;flex-wrap:wrap;gap:6px;margin-bottom:14px;align-items:center}
+.mode-tab{padding:5px 14px;border-radius:6px;font-size:9px;letter-spacing:2px;font-weight:700;cursor:pointer;border:1px solid var(--border);color:var(--muted);transition:all .2s;background:transparent}
+.mode-tab.active{border-color:rgba(255,215,0,.4);color:var(--synth);background:rgba(255,215,0,.05)}
+
+/* ── CONSENSUS METER ─────────────────────────────────────────────── */
+#meter-wrap{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 17px;margin-bottom:14px;display:none}
+.meter-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.meter-lbl{font-size:9px;color:var(--muted);letter-spacing:3px}
+.meter-val{font-size:10px;letter-spacing:2px;font-weight:700}
+.meter-track{height:4px;background:rgba(255,255,255,.04);border-radius:99px;overflow:hidden}
+.meter-fill{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.meter-scale{display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--faint)}
+
+/* ── AI GRID ─────────────────────────────────────────────────────── */
+#ai-grid{display:none;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px}
+.ai-panel{border-radius:13px;padding:16px;min-height:150px;position:relative;overflow:hidden;transition:box-shadow .5s}
+.ai-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);opacity:.55}
+.panel-hdr{display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.panel-name{font-size:9px;letter-spacing:3px;font-weight:700}
+.panel-meta{margin-left:auto;display:flex;align-items:center;gap:8px}
+.panel-time{font-size:9px;color:var(--muted)}
+.panel-words{font-size:9px;color:var(--faint)}
+.panel-pulse{width:5px;height:5px;border-radius:50%;display:none}
+.copy-btn,.retry-btn{font-size:9px;cursor:pointer;padding:2px 6px;border:1px solid transparent;border-radius:4px;transition:all .2s;background:transparent;font-family:'JetBrains Mono',monospace}
+.copy-btn{color:var(--muted);display:none}
+.copy-btn:hover{border-color:var(--border2);color:var(--text)}
+.retry-btn{color:var(--red);border-color:rgba(255,77,77,.3);display:none}
+.retry-btn:hover{background:rgba(255,77,77,.08)}
+.panel-body{font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap}
+.panel-empty{font-size:11px;color:var(--faint)}
+.panel-err{font-size:11px;color:var(--red)}
+.dots{display:flex;gap:4px;align-items:center}
+.dot{width:4px;height:4px;border-radius:50%}
+.debate-block{margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.05)}
+.debate-tag{font-size:9px;letter-spacing:3px;margin-bottom:7px;font-weight:700}
+
+/* ── SYNTHESIS PANEL ─────────────────────────────────────────────── */
+#synth-panel{background:rgba(255,215,0,.025);border:1px solid rgba(255,215,0,.13);border-radius:13px;padding:20px;margin-bottom:14px;display:none}
+.synth-hdr{display:flex;align-items:center;gap:7px;margin-bottom:15px}
+.synth-icon{color:var(--synth);font-size:14px}
+.synth-title{color:var(--synth);font-size:9px;letter-spacing:3px;font-weight:700;flex:1}
+.synth-meta{font-size:9px;color:var(--muted)}
+.synth-block{margin-bottom:13px}
+.synth-blabel{font-size:9px;letter-spacing:3px;font-weight:700;margin-bottom:5px;opacity:.85}
+.synth-btext{font-size:12px;line-height:1.85;color:var(--text)}
+.key-insight{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:12px 15px;margin-top:13px;font-size:13px;color:var(--synth);line-height:1.6;font-weight:600}
+
+/* ── FOLLOW-UP ───────────────────────────────────────────────────── */
+#followup-wrap{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:14px;display:none}
+.followup-hdr{font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:10px}
+#followup-input{width:100%;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;resize:none;height:52px;outline:none;transition:border-color .2s}
+#followup-input:focus{border-color:rgba(179,136,255,.3)}
+#followup-responses{margin-top:12px;display:none;grid-template-columns:1fr 1fr;gap:10px}
+.fu-panel{border-radius:10px;padding:13px;font-size:12px;line-height:1.75}
+
+/* ── HISTORY ─────────────────────────────────────────────────────── */
+#history-section{margin-top:28px;display:none}
+.history-hdr{font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.history-clear{margin-left:auto;color:var(--faint);cursor:pointer;font-size:9px;letter-spacing:2px;background:none;border:none;font-family:'JetBrains Mono',monospace}
+.history-clear:hover{color:var(--muted)}
+.history-item{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 14px;margin-bottom:7px;cursor:pointer;transition:border-color .2s;display:flex;align-items:center;gap:10px}
+.history-item:hover{border-color:var(--border2)}
+.hi-q{font-size:11px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hi-cost{font-size:9px;color:rgba(0,255,135,.5);white-space:nowrap}
+.hi-time{font-size:9px;color:var(--muted);white-space:nowrap}
+
+/* ── EMPTY ───────────────────────────────────────────────────────── */
+#empty{text-align:center;padding:65px 20px}
+.empty-icon{font-size:32px;opacity:.08;margin-bottom:14px}
+.empty-title{font-size:10px;letter-spacing:4px;color:var(--faint);margin-bottom:5px}
+.empty-sub{font-size:9px;color:#141420;letter-spacing:3px}
+
+/* ── TOAST ───────────────────────────────────────────────────────── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#1A1A26;border:1px solid var(--border2);border-radius:8px;padding:10px 16px;font-size:11px;color:var(--text);transform:translateY(60px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;max-width:300px}
+#toast.show{transform:translateY(0);opacity:1}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .35s ease forwards}
+
+@media(max-width:700px){
+  #ai-grid,#followup-responses{grid-template-columns:1fr}
+  .key-badges{display:none}
+  #app{padding:14px 10px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOKEN GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">⟁</div>
+    <div class="gate-title">Multi-AI Orchestrator</div>
+    <div class="gate-sub">4 AIs. Parallel. Synthesized. Try it free — no card needed.</div>
+
+    <div class="gate-free" onclick="startFree()">
+      <div class="gate-free-label">▶ START FREE TRIAL</div>
+      <div class="gate-free-sub" id="freeTrialSub">5 free queries · No signup required</div>
+    </div>
+
+    <div class="gate-divider">or enter access token</div>
+
+    <div class="gate-input-wrap">
+      <input type="text" id="tokenInput" placeholder="tok_xxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+      <button class="btn-verify" onclick="verifyToken()" id="verifyBtn">VERIFY</button>
+    </div>
+    <div id="gateError" class="gate-error">Invalid token. <a href="https://multiai.gumroad.com" target="_blank" style="color:var(--gold)">Get access →</a></div>
+
+    <div class="gate-buy">Need a token? <a href="https://multiai.gumroad.com" target="_blank">Get access from $12/mo →</a></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div id="header">
+  <div class="logo">
+    <div class="logo-mark">⟁</div>
+    <div>
+      <div class="logo-name">MULTI·AI ORCHESTRATOR</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+<a href="/" class="back-link">⬡ OS</a>
+    <a href="/" class="back-link">← HOME</a>
+    <div class="key-badges" id="keyBadges">
+      <div class="kb checking" data-key="gpt4o">GPT</div>
+      <div class="kb checking" data-key="claude">CLAUDE</div>
+      <div class="kb checking" data-key="gemini">GEMINI</div>
+      <div class="kb checking" data-key="perp">PERP</div>
+    </div>
+    <span class="tier-badge tier-free" id="tierBadge">FREE</span>
+    <span class="quota-pill" id="quotaPill">5 left</span>
+    <div class="cost-pill" id="costPill">$0.000000
+      <div class="cost-tooltip" id="costTooltip">No API calls yet</div>
+    </div>
+  </div>
+</div>
+
+<!-- UPSELL BANNER (shows when free tier is low) -->
+<div style="max-width:1180px;margin:0 auto;padding:0 18px">
+  <div id="upsell">
+    <span class="upsell-text"><strong id="upsellMsg">2 free queries left.</strong> Upgrade for unlimited access.</span>
+    <a href="https://multiai.gumroad.com" target="_blank" class="upsell-cta">GET UNLIMITED →</a>
+  </div>
+</div>
+
+<div id="app">
+
+  <div id="controls">
+    <span class="ctrl-label">MODELS</span>
+    <button class="model-toggle" data-id="gpt4o"      style="color:var(--gpt);border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.06)"    onclick="toggleModel('gpt4o')">GPT-4o</button>
+    <button class="model-toggle" data-id="claude"     style="color:var(--claude);border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.06)"  onclick="toggleModel('claude')">CLAUDE</button>
+    <button class="model-toggle" data-id="gemini"     style="color:var(--gemini);border-color:rgba(0,255,135,.3);background:rgba(0,255,135,.06)"   onclick="toggleModel('gemini')">GEMINI</button>
+    <button class="model-toggle" data-id="perplexity" style="color:var(--perp);border-color:rgba(179,136,255,.3);background:rgba(179,136,255,.06)" onclick="toggleModel('perplexity')">PERPLEXITY</button>
+    <div class="divider-v"></div>
+    <span class="ctrl-label">LENGTH</span>
+    <select class="ctrl-select" id="lengthSelect">
+      <option value="200">SHORT</option>
+      <option value="500" selected>MED</option>
+      <option value="900">LONG</option>
+    </select>
+    <div class="divider-v"></div>
+    <div class="temp-wrap">
+      <span class="ctrl-label">TEMP</span>
+      <input type="range" class="temp-slider" id="tempSlider" min="0" max="1" step="0.1" value="0.7" oninput="document.getElementById('tempVal').textContent=this.value">
+      <span class="temp-val" id="tempVal">0.7</span>
+    </div>
+  </div>
+
+  <div id="input-wrap">
+    <div class="section-tag">// QUERY</div>
+    <textarea id="q-input" placeholder="Ask anything — all AIs respond simultaneously..."></textarea>
+    <div id="q-len">0 / 1000</div>
+    <div class="btn-row">
+      <button class="btn btn-run"    id="runBtn"    onclick="handleRun()">▶ RUN</button>
+      <button class="btn btn-debate" id="debateBtn" onclick="handleDebate()" style="display:none">⚡ DEBATE</button>
+      <button class="btn btn-export" id="exportBtn" onclick="exportPDF()"    style="display:none">⬇ EXPORT</button>
+      <button class="btn btn-share"  id="shareBtn"  onclick="shareSession()" style="display:none">⤢ SHARE</button>
+      <button class="btn btn-ghost"  id="resetBtn"  onclick="handleReset()"  style="display:none">↺ RESET</button>
+      <span class="hint">⌘+ENTER</span>
+    </div>
+  </div>
+
+  <div id="synth-mode-wrap">
+    <span class="ctrl-label" style="margin-right:4px">SYNTHESIS</span>
+    <button class="mode-tab active" data-mode="standard"        onclick="setSynthMode('standard')">STANDARD</button>
+    <button class="mode-tab"        data-mode="devils_advocate" onclick="setSynthMode('devils_advocate')">DEVIL'S ADVOCATE</button>
+    <button class="mode-tab"        data-mode="red_team"        onclick="setSynthMode('red_team')">RED TEAM</button>
+    <button class="btn btn-synth"   id="resynth" onclick="handleSynthesize()" style="margin-left:auto;display:none">◈ RE-SYNTHESIZE</button>
+  </div>
+
+  <div id="meter-wrap">
+    <div class="meter-hdr">
+      <span class="meter-lbl">CONSENSUS METER</span>
+      <span class="meter-val" id="meterLabel">—</span>
+    </div>
+    <div class="meter-track"><div class="meter-fill" id="meterFill" style="width:0%"></div></div>
+    <div class="meter-scale"><span>DIVERGENT</span><span id="meterScore">—</span><span>UNIFIED</span></div>
+  </div>
+
+  <div id="ai-grid"></div>
+
+  <div id="synth-panel">
+    <div class="synth-hdr">
+      <span class="synth-icon">◈</span>
+      <span class="synth-title" id="synthTitle">SYNTHESIS ENGINE</span>
+      <span class="synth-meta" id="synthMeta"></span>
+      <button class="copy-btn" onclick="copyText('synthesis')" style="display:block">COPY</button>
+    </div>
+    <div id="synth-body"></div>
+  </div>
+
+  <div id="followup-wrap">
+    <div class="followup-hdr">// FOLLOW-UP — ALL AIs ANSWER WITH FULL CONTEXT</div>
+    <textarea id="followup-input" placeholder="Drill deeper..."></textarea>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-run" id="fuBtn" onclick="handleFollowup()">▶ ASK FOLLOW-UP</button>
+    </div>
+    <div id="followup-responses"></div>
+  </div>
+
+  <div id="empty">
+    <div class="empty-icon">⟁</div>
+    <div class="empty-title">STREAMING · SYNTHESIS · DEBATE · FOLLOW-UP</div>
+    <div class="empty-sub">GPT-4o · Claude · Gemini · Perplexity</div>
+  </div>
+
+  <div id="history-section">
+    <div class="history-hdr">// HISTORY <button class="history-clear" onclick="clearHistory()">CLEAR ALL</button></div>
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// RAWagon: override API base if running under server.js
+window.ORCH_API = window.location.origin.includes('10.117') ? null : null;
+
+// ── STATE ──────────────────────────────────────────────────────────
+const FREE_LIMIT = 5;
+const S = {
+  phase: "gate",
+  token: localStorage.getItem("orc_token") || "",
+  tier: localStorage.getItem("orc_tier") || "none",
+  queriesUsed: parseInt(localStorage.getItem("orc_queries") || "0"),
+  question: "", activeModels: ["gpt4o","claude","gemini","perplexity"],
+  temperature: 0.7, maxTokens: 500, synthMode: "standard",
+  responses: {}, synthesis: null, debate: {},
+  sessionCost: 0, costBreakdown: {},
+  history: JSON.parse(localStorage.getItem("orc4_history") || "[]"),
+};
+
+const MODELS = {
+  gpt4o:     {name:"GPT-4o",    color:"var(--gpt)",   c:"#00D4FF", bg:"rgba(0,212,255,.05)",   border:"rgba(0,212,255,.22)",  icon:"⬡"},
+  claude:    {name:"Claude",    color:"var(--claude)", c:"#FF6B35", bg:"rgba(255,107,53,.05)",  border:"rgba(255,107,53,.22)", icon:"◈"},
+  gemini:    {name:"Gemini",    color:"var(--gemini)", c:"#00FF87", bg:"rgba(0,255,135,.05)",   border:"rgba(0,255,135,.22)",  icon:"◇"},
+  perplexity:{name:"Perplexity",color:"var(--perp)",   c:"#B388FF", bg:"rgba(179,136,255,.05)", border:"rgba(179,136,255,.22)",icon:"◉"},
+};
+
+// ── GATE LOGIC ──────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  // If returning user with stored token, auto-verify
+  if (S.token && S.tier === "paid") {
+    openApp("paid");
+    return;
+  }
+  if (S.tier === "free" && S.queriesUsed < FREE_LIMIT) {
+    openApp("free");
+    return;
+  }
+  if (S.tier === "free" && S.queriesUsed >= FREE_LIMIT) {
+    // Show gate with exhausted message
+    document.getElementById("freeTrialSub").textContent = "Free trial used — enter token to continue";
+    return;
+  }
+  // Show gate fresh
+});
+
+document.getElementById("tokenInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") verifyToken();
+});
+
+function startFree() {
+  if (S.queriesUsed >= FREE_LIMIT) {
+    document.getElementById("gateError").textContent = "Free trial exhausted. Get access below.";
+    document.getElementById("gateError").style.display = "block";
+    return;
+  }
+  S.tier = "free";
+  localStorage.setItem("orc_tier", "free");
+  openApp("free");
+}
+
+async function verifyToken() {
+  const token = document.getElementById("tokenInput").value.trim();
+  if (!token) return;
+  const btn = document.getElementById("verifyBtn");
+  btn.disabled = true; btn.textContent = "CHECKING...";
+  document.getElementById("gateError").style.display = "none";
+  try {
+    const res = await fetch("/api/verify", { headers: { "x-access-token": token } });
+    const data = await res.json();
+    if (data.valid && data.tier === "paid") {
+      S.token = token; S.tier = "paid";
+      localStorage.setItem("orc_token", token);
+      localStorage.setItem("orc_tier", "paid");
+      openApp("paid");
+    } else {
+      document.getElementById("gateError").style.display = "block";
+      btn.disabled = false; btn.textContent = "VERIFY";
+    }
+  } catch {
+    document.getElementById("gateError").style.display = "block";
+    btn.disabled = false; btn.textContent = "VERIFY";
+  }
+}
+
+function openApp(tier) {
+  document.getElementById("gate").style.display = "none";
+  S.phase = "idle"; S.tier = tier;
+
+  // Tier badge
+  const badge = document.getElementById("tierBadge");
+  if (tier === "paid") {
+    badge.textContent = "PRO"; badge.className = "tier-badge tier-paid";
+  } else {
+    badge.textContent = "FREE"; badge.className = "tier-badge tier-free";
+    document.getElementById("quotaPill").style.display = "block";
+    updateQuotaPill();
+  }
+
+  buildGrid();
+  renderHistory();
+  checkHealth();
+
+  const qEl = document.getElementById("q-input");
+  qEl.addEventListener("input", () => { document.getElementById("q-len").textContent = `${qEl.value.length} / 1000`; });
+  qEl.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && S.phase === "idle") handleRun(); });
+  document.getElementById("followup-input").addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleFollowup(); });
+
+  const params = new URLSearchParams(location.search);
+  const shared = params.get("q");
+  if (shared) { try { qEl.value = decodeURIComponent(atob(shared)); } catch {} }
+}
+
+function updateQuotaPill() {
+  const left = FREE_LIMIT - S.queriesUsed;
+  document.getElementById("quotaPill").textContent = `${left} free left`;
+  if (left <= 2) {
+    document.getElementById("upsell").style.display = "flex";
+    document.getElementById("upsellMsg").textContent = `${left} free quer${left === 1 ? "y" : "ies"} left.`;
+  }
+}
+
+function checkFreeQuota() {
+  if (S.tier === "paid") return true;
+  if (S.queriesUsed >= FREE_LIMIT) {
+    document.getElementById("upsell").style.display = "flex";
+    document.getElementById("upsellMsg").textContent = "Free trial used up.";
+    toast("Free trial exhausted — upgrade at multiai.gumroad.com");
+    return false;
+  }
+  return true;
+}
+
+// ── HEALTH CHECK ────────────────────────────────────────────────────
+async function checkHealth() {
+  try {
+    const r = await fetch("/api/health");
+    const d = await r.json();
+    const MAP = { gpt4o:"OPENAI_API_KEY", claude:"ANTHROPIC_API_KEY", gemini:"GOOGLE_API_KEY", perp:"PERPLEXITY_API_KEY" };
+    const ID_MAP = { OPENAI_API_KEY:"gpt4o", ANTHROPIC_API_KEY:"claude", GOOGLE_API_KEY:"gemini", PERPLEXITY_API_KEY:"perplexity" };
+    document.querySelectorAll(".kb").forEach(el => {
+      const envKey = MAP[el.dataset.key];
+      el.className = "kb " + (d.keys?.[envKey] ? "ok" : "missing");
+    });
+    Object.entries(d.keys || {}).forEach(([envKey, ok]) => {
+      if (!ok) {
+        const id = ID_MAP[envKey];
+        if (id) {
+          S.activeModels = S.activeModels.filter(m => m !== id);
+          const btn = document.querySelector(`.model-toggle[data-id="${id}"]`);
+          if (btn) btn.classList.add("off");
+        }
+      }
+    });
+  } catch {
+    document.querySelectorAll(".kb").forEach(el => { el.className = "kb missing"; });
+  }
+}
+
+// ── GRID BUILD ──────────────────────────────────────────────────────
+function buildGrid() {
+  document.getElementById("ai-grid").innerHTML = Object.entries(MODELS).map(([id,m]) => `
+    <div class="ai-panel" id="panel-${id}" style="background:${m.bg};border:1px solid ${m.border};--c:${m.c}">
+      <div class="panel-hdr">
+        <span style="color:${m.color};font-size:14px">${m.icon}</span>
+        <span class="panel-name" style="color:${m.color}">${m.name.toUpperCase()}</span>
+        <div class="panel-meta">
+          <span class="panel-words" id="words-${id}"></span>
+          <span class="panel-time"  id="time-${id}"></span>
+          <button class="copy-btn"  id="copy-${id}"  onclick="copyPanel('${id}')">COPY</button>
+          <button class="retry-btn" id="retry-${id}" onclick="retryModel('${id}')">RETRY</button>
+          <span class="panel-pulse" id="pulse-${id}" style="background:${m.c};animation:pulse 1s infinite"></span>
+        </div>
+      </div>
+      <div id="body-${id}" class="panel-empty">—</div>
+      <div id="debate-${id}" style="display:none"></div>
+    </div>`).join("");
+}
+
+function toggleModel(id) {
+  const btn = document.querySelector(`.model-toggle[data-id="${id}"]`);
+  const idx = S.activeModels.indexOf(id);
+  if (idx === -1) { S.activeModels.push(id); btn.classList.remove("off"); }
+  else { if (S.activeModels.length <= 1) return; S.activeModels.splice(idx, 1); btn.classList.add("off"); }
+}
+
+function setSynthMode(mode) {
+  S.synthMode = mode;
+  document.querySelectorAll(".mode-tab").forEach(t => t.classList.toggle("active", t.dataset.mode === mode));
+}
+
+// ── RUN ─────────────────────────────────────────────────────────────
+async function handleRun() {
+  const q = document.getElementById("q-input").value.trim();
+  if (!q || S.phase !== "idle") return;
+  if (!checkFreeQuota()) return;
+
+  S.question = q; S.responses = {}; S.synthesis = null; S.debate = {};
+  S.temperature = parseFloat(document.getElementById("tempSlider").value);
+  S.maxTokens = parseInt(document.getElementById("lengthSelect").value);
+  S.phase = "querying"; setPhaseUI("querying");
+
+  Object.keys(MODELS).forEach(id => {
+    document.getElementById(`panel-${id}`).style.opacity = S.activeModels.includes(id) ? "1" : "0.15";
+  });
+
+  // Increment free query count
+  if (S.tier === "free") {
+    S.queriesUsed++;
+    localStorage.setItem("orc_queries", S.queriesUsed);
+    updateQuotaPill();
+  }
+
+  const headers = { "Content-Type": "application/json" };
+  if (S.token) headers["x-access-token"] = S.token;
+
+  let streamWorked = false;
+  try {
+    const res = await fetch("/api/stream", { method: "POST", headers, body: JSON.stringify({ question: q, models: S.activeModels, temperature: S.temperature, maxTokens: S.maxTokens }) });
+    if (!res.ok || !res.body) throw new Error(`${res.status}`);
+    const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = "";
+    while (true) {
+      const { done, value } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split("\n"); buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith("data: ")) continue;
+        try { handleStreamEvent(JSON.parse(line.slice(6))); } catch {}
+      }
+    }
+    streamWorked = true;
+  } catch (e) {
+    console.warn("Stream failed, fallback:", e.message);
+    await handleRunFallback(q, headers);
+    return;
+  }
+  if (streamWorked) await handleSynthesize();
+}
+
+function handleStreamEvent(evt) {
+  if (evt.type === "start")  { setPulse(evt.id, true); setBodyLoading(evt.id); }
+  if (evt.type === "result") {
+    setPulse(evt.id, false);
+    S.responses[evt.id] = { text: evt.text, tokens: evt.tokens, cost: evt.cost, ms: evt.ms };
+    S.sessionCost += evt.cost || 0; S.costBreakdown[evt.id] = (S.costBreakdown[evt.id] || 0) + (evt.cost || 0);
+    setPanel(evt.id, evt.text, null, evt.ms); updateCostBadge();
+    if (Object.keys(S.responses).length >= 2) renderMeter();
+  }
+  if (evt.type === "error")  { setPulse(evt.id, false); setPanel(evt.id, null, evt.error, 0); showRetry(evt.id); }
+  if (evt.type === "done")   { S.phase = "synthesizing"; setRunBtn("synthesizing"); }
+}
+
+async function handleRunFallback(q, headers) {
+  S.activeModels.forEach(id => { setPulse(id, true); setBodyLoading(id); });
+  try {
+    const res = await fetch("/api/orchestrate", { method: "POST", headers, body: JSON.stringify({ question: q, models: S.activeModels, temperature: S.temperature, maxTokens: S.maxTokens }) });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error);
+    S.responses = data.responses || {}; S.sessionCost += data.totalCost || 0;
+    Object.entries(S.responses).forEach(([id, r]) => {
+      setPulse(id, false); setPanel(id, r.text, r.error, r.ms);
+      if (r.cost) { S.costBreakdown[id] = (S.costBreakdown[id] || 0) + r.cost; }
+    });
+    updateCostBadge(); renderMeter();
+  } catch (e) {
+    S.activeModels.forEach(id => { setPulse(id, false); setPanel(id, null, e.message, 0); showRetry(id); });
+  }
+  await handleSynthesize();
+}
+
+async function retryModel(id) {
+  document.getElementById(`retry-${id}`).style.display = "none";
+  setPulse(id, true); setBodyLoading(id);
+  const headers = { "Content-Type": "application/json" };
+  if (S.token) headers["x-access-token"] = S.token;
+  try {
+    const res = await fetch("/api/orchestrate", { method: "POST", headers, body: JSON.stringify({ question: S.question, models: [id], temperature: S.temperature, maxTokens: S.maxTokens }) });
+    const data = await res.json(); const r = data.responses?.[id];
+    if (r?.text) { S.responses[id] = r; S.sessionCost += r.cost || 0; S.costBreakdown[id] = (S.costBreakdown[id] || 0) + (r.cost || 0); setPanel(id, r.text, null, r.ms); updateCostBadge(); renderMeter(); }
+    else throw new Error(r?.error || "No response");
+  } catch (e) { setPanel(id, null, `Retry: ${e.message}`, 0); showRetry(id); }
+  setPulse(id, false);
+}
+
+// ── SYNTHESIZE ──────────────────────────────────────────────────────
+async function handleSynthesize() {
+  const hasR = Object.values(S.responses).some(r => r?.text);
+  if (!hasR) { finishRun(); return; }
+  S.phase = "synthesizing";
+  const panel = document.getElementById("synth-panel");
+  const body = document.getElementById("synth-body");
+  panel.style.display = "block";
+  body.innerHTML = `<div class="dots">${[0,1,2,3,4].map((i) => `<div class="dot" style="background:var(--synth);animation:bounce 1.2s ${i*.15}s infinite"></div>`).join("")}</div>`;
+  document.getElementById("synthMeta").textContent = "";
+  document.getElementById("synth-mode-wrap").style.display = "flex";
+  document.getElementById("resynth").style.display = "inline-flex";
+
+  const headers = { "Content-Type": "application/json" };
+  if (S.token) headers["x-access-token"] = S.token;
+
+  try {
+    const t = Date.now();
+    const res = await fetch("/api/synthesize", { method: "POST", headers, body: JSON.stringify({ question: S.question, responses: S.responses, mode: S.synthMode }) });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error);
+    S.synthesis = data; S.sessionCost += data.cost || 0; S.costBreakdown["synthesis"] = (S.costBreakdown["synthesis"] || 0) + (data.cost || 0);
+    updateCostBadge();
+    document.getElementById("synthMeta").textContent = `${(data.ms/1000).toFixed(1)}s · $${(data.cost||0).toFixed(5)}`;
+    renderSynthesis(data.synthesis);
+  } catch (e) { body.innerHTML = `<span class="panel-err">Synthesis error: ${e.message}</span>`; }
+  finishRun();
+}
+
+function finishRun() {
+  S.phase = "done"; setPhaseUI("done"); saveHistory();
+  document.getElementById("followup-wrap").style.display = "block";
+  document.getElementById("history-section").style.display = "block";
+}
+
+// ── DEBATE ──────────────────────────────────────────────────────────
+async function handleDebate() {
+  if (S.phase !== "done") return;
+  S.phase = "debating"; document.getElementById("debateBtn").style.display = "none"; setRunBtn("debating");
+  const models = Object.keys(S.responses).filter(id => S.responses[id]?.text);
+  models.forEach(id => {
+    const el = document.getElementById(`debate-${id}`);
+    el.style.display = "block";
+    el.innerHTML = `<div class="debate-block"><div class="debate-tag" style="color:${MODELS[id]?.color||'var(--text)'}">⚡ DEBATE ROUND</div><div class="dots" id="db-dots-${id}">${[0,1,2].map(i=>`<div class="dot" style="background:${MODELS[id]?.c||'#fff'};animation:bounce 1.2s ${i*.2}s infinite"></div>`).join("")}</div><div id="db-text-${id}" style="display:none" class="panel-body"></div></div>`;
+    setPulse(id, true);
+  });
+
+  const headers = { "Content-Type": "application/json" };
+  if (S.token) headers["x-access-token"] = S.token;
+
+  try {
+    const res = await fetch("/api/debate", { method: "POST", headers, body: JSON.stringify({ question: S.question, responses: S.responses }) });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error);
+    S.debate = data.debate || {}; S.sessionCost += data.totalCost || 0; updateCostBadge();
+    models.forEach(id => {
+      setPulse(id, false);
+      const dots = document.getElementById(`db-dots-${id}`);
+      const text = document.getElementById(`db-text-${id}`);
+      if (dots) dots.style.display = "none";
+      if (text) { text.style.display = "block"; text.textContent = S.debate[id]?.text || S.debate[id]?.error || "No response"; text.classList.add("fade-up"); }
+    });
+  } catch (e) {
+    models.forEach(id => { setPulse(id, false); const t2 = document.getElementById(`db-text-${id}`); if (t2) { t2.style.display = "block"; t2.textContent = `Error: ${e.message}`; t2.style.color = "var(--red)"; } const d2 = document.getElementById(`db-dots-${id}`); if (d2) d2.style.display = "none"; });
+  }
+  S.phase = "done"; setRunBtn("done"); document.getElementById("exportBtn").style.display = "inline-flex";
+}
+
+// ── FOLLOW-UP ────────────────────────────────────────────────────────
+async function handleFollowup() {
+  const fu = document.getElementById("followup-input").value.trim(); if (!fu) return;
+  const fuBtn = document.getElementById("fuBtn"); fuBtn.disabled = true; fuBtn.textContent = "▶ ASKING...";
+  const frDiv = document.getElementById("followup-responses");
+  frDiv.style.display = "grid";
+  const ids = Object.keys(S.responses).filter(id => S.responses[id]?.text);
+  frDiv.innerHTML = ids.map(id => { const m = MODELS[id]; return `<div class="fu-panel fade-up" style="background:${m.bg};border:1px solid ${m.border}"><div style="color:${m.color};font-size:9px;letter-spacing:3px;font-weight:700;margin-bottom:10px">${m.icon} ${m.name.toUpperCase()}</div><div id="fu-${id}" class="panel-empty"><div class="dots">${[0,1,2].map(i=>`<div class="dot" style="background:${m.c};animation:bounce 1.2s ${i*.2}s infinite"></div>`).join("")}</div></div></div>`; }).join("");
+
+  const headers = { "Content-Type": "application/json" };
+  if (S.token) headers["x-access-token"] = S.token;
+
+  try {
+    const res = await fetch("/api/followup", { method: "POST", headers, body: JSON.stringify({ originalQuestion: S.question, responses: S.responses, synthesis: S.synthesis, followup: fu, temperature: S.temperature }) });
+    const data = await res.json(); if (!res.ok) throw new Error(data.error);
+    S.sessionCost += data.totalCost || 0; updateCostBadge();
+    Object.entries(data.responses || {}).forEach(([id, r]) => { const el = document.getElementById(`fu-${id}`); if (el) { el.className = "panel-body fade-up"; el.textContent = r.text || r.error || "No response"; } });
+  } catch (e) { ids.forEach(id => { const el = document.getElementById(`fu-${id}`); if (el) { el.className = "panel-err"; el.textContent = `Error: ${e.message}`; } }); }
+  fuBtn.disabled = false; fuBtn.textContent = "▶ ASK FOLLOW-UP";
+  document.getElementById("followup-input").value = "";
+}
+
+// ── RENDER HELPERS ───────────────────────────────────────────────────
+function setPanel(id, text, error, ms) {
+  const b = document.getElementById(`body-${id}`), t = document.getElementById(`time-${id}`), w = document.getElementById(`words-${id}`), c = document.getElementById(`copy-${id}`);
+  if (t && ms) t.textContent = `${(ms/1000).toFixed(1)}s`;
+  if (error && !text) { if (b) { b.className = "panel-err fade-up"; b.textContent = error; } showRetry(id); }
+  else if (text) {
+    if (b) { b.className = "panel-body fade-up"; b.textContent = text; }
+    if (w) w.textContent = `${text.trim().split(/\s+/).length}w`;
+    if (c) c.style.display = "block";
+  }
+}
+function setBodyLoading(id) {
+  const el = document.getElementById(`body-${id}`); const m = MODELS[id];
+  if (el) el.innerHTML = `<div class="dots">${[0,1,2].map(i => `<div class="dot" style="background:${m.c};animation:bounce 1.2s ${i*.2}s infinite"></div>`).join("")}</div>`;
+}
+function renderMeter() {
+  const texts = Object.values(S.responses).filter(r => r?.text).map(r => r.text);
+  if (texts.length < 2) return;
+  const words = texts.map(t => new Set(t.toLowerCase().match(/\b\w{5,}\b/g) || []));
+  let ov = 0, tot = 0;
+  for (let i = 0; i < words.length; i++) for (let j = i+1; j < words.length; j++) { const u = new Set([...words[i],...words[j]]); const inter = [...words[i]].filter(w => words[j].has(w)); ov += inter.length; tot += u.size; }
+  const sc = tot > 0 ? Math.min(100, Math.round((ov/tot)*400)) : 50;
+  const lbl = sc > 65 ? "HIGH CONSENSUS" : sc > 35 ? "PARTIAL AGREEMENT" : "DIVERGENT VIEWS";
+  const mc = sc > 65 ? "#00FF87" : sc > 35 ? "#FFD700" : "#FF4D4D";
+  document.getElementById("meter-wrap").style.display = "block";
+  document.getElementById("meterLabel").textContent = lbl;
+  document.getElementById("meterLabel").style.color = mc;
+  document.getElementById("meterScore").textContent = `${sc}%`;
+  document.getElementById("meterScore").style.color = mc;
+  document.getElementById("meterFill").style.cssText = `width:${sc}%;background:linear-gradient(90deg,${mc}66,${mc});box-shadow:0 0 8px ${mc}44`;
+}
+function renderSynthesis(text) {
+  const body = document.getElementById("synth-body");
+  const SECTIONS = { standard:["AGREEMENTS","DIVERGENCES","GAPS","FINAL VERDICT","KEY INSIGHT"], devils_advocate:["CONSENSUS TRAP","STEELMAN THE MINORITY","WHAT THEY AVOIDED","CONTRARIAN VERDICT","KEY CHALLENGE"], red_team:["WEAKEST ARGUMENTS","MISSING CONTEXT","ASSUMPTIONS EXPOSED","FAILURE MODES","BETTER FRAMING"] };
+  const COLORS = { standard:{AGREEMENTS:"var(--gemini)",DIVERGENCES:"var(--claude)",GAPS:"var(--gpt)","FINAL VERDICT":"var(--text)","KEY INSIGHT":"var(--synth)"}, devils_advocate:{"CONSENSUS TRAP":"var(--red)","STEELMAN THE MINORITY":"var(--gemini)","WHAT THEY AVOIDED":"var(--claude)","CONTRARIAN VERDICT":"var(--text)","KEY CHALLENGE":"var(--synth)"}, red_team:{"WEAKEST ARGUMENTS":"var(--red)","MISSING CONTEXT":"var(--claude)","ASSUMPTIONS EXPOSED":"var(--gpt)","FAILURE MODES":"var(--red)","BETTER FRAMING":"var(--synth)"} };
+  const sections = SECTIONS[S.synthMode] || SECTIONS.standard;
+  const colorMap = COLORS[S.synthMode] || COLORS.standard;
+  const parsed = {};
+  for (let i = 0; i < sections.length; i++) {
+    const key = sections[i], next = sections[i+1];
+    const pat = new RegExp(`${key.replace(/[()]/g,'\\$&')}:[\\s\\S]*?(?=${next?next.replace(/[()]/g,'\\$&')+':':'$'})`, 'i');
+    const m = text.match(pat);
+    if (m) parsed[key] = m[0].replace(new RegExp(`^${key.replace(/[()]/g,'\\$&')}:\\s*`,'i'), '').trim();
+  }
+  const hasParsed = Object.keys(parsed).length > 0;
+  if (hasParsed) {
+    body.innerHTML = sections.map(key => {
+      if (!parsed[key]) return "";
+      const color = colorMap[key] || "var(--text)";
+      const isKey = key.includes("INSIGHT") || key.includes("VERDICT") || key.includes("CHALLENGE") || key.includes("FRAMING");
+      return isKey ? `<div class="key-insight">${parsed[key]}</div>` : `<div class="synth-block"><div class="synth-blabel" style="color:${color}">${key}</div><div class="synth-btext">${parsed[key]}</div></div>`;
+    }).join("");
+  } else { body.className = "panel-body"; body.textContent = text; }
+  body.classList.add("fade-up");
+}
+
+// ── UI STATE ─────────────────────────────────────────────────────────
+function setPhaseUI(phase) {
+  const qEl = document.getElementById("q-input");
+  if (phase === "querying") {
+    qEl.disabled = true; setRunBtn("querying");
+    document.getElementById("empty").style.display = "none";
+    document.getElementById("ai-grid").style.display = "grid";
+    buildGrid();
+    Object.keys(MODELS).forEach(id => { if (!S.activeModels.includes(id)) document.getElementById(`panel-${id}`).style.opacity = "0.15"; });
+    ["debateBtn","exportBtn","shareBtn","resetBtn"].forEach(id => document.getElementById(id).style.display = "none");
+    document.getElementById("followup-wrap").style.display = "none";
+    document.getElementById("synth-panel").style.display = "none";
+    document.getElementById("meter-wrap").style.display = "none";
+    document.getElementById("synth-mode-wrap").style.display = "none";
+  }
+  if (phase === "done") {
+    qEl.disabled = false; setRunBtn("done");
+    document.getElementById("debateBtn").style.display = "inline-flex";
+    document.getElementById("shareBtn").style.display = "inline-flex";
+    document.getElementById("resetBtn").style.display = "inline-flex";
+  }
+}
+function setRunBtn(phase) {
+  const btn = document.getElementById("runBtn");
+  const labels = { querying:"▶ QUERYING...", synthesizing:"◈ SYNTHESIZING...", debating:"⚡ DEBATING...", done:"▶ RUN" };
+  btn.textContent = labels[phase] || "▶ RUN";
+  btn.disabled = phase !== "done" && phase !== "idle";
+}
+function setPulse(id, show) { const el = document.getElementById(`pulse-${id}`); if (el) el.style.display = show ? "block" : "none"; }
+function showRetry(id) { const el = document.getElementById(`retry-${id}`); if (el) el.style.display = "block"; }
+
+// ── COST ─────────────────────────────────────────────────────────────
+function updateCostBadge() {
+  document.getElementById("costPill").childNodes[0].textContent = `$${S.sessionCost.toFixed(6)}`;
+  const names = { gpt4o:"GPT-4o", claude:"Claude", gemini:"Gemini", perplexity:"Perplexity", synthesis:"Synthesis", debate:"Debate" };
+  const lines = Object.entries(S.costBreakdown).map(([k,v]) => `${(names[k]||k).padEnd(12)} $${v.toFixed(6)}`);
+  document.getElementById("costTooltip").innerHTML = lines.length ? `<pre style="font-size:10px;line-height:1.8">${lines.join("\n")}\n${"─".repeat(22)}\nTOTAL        $${S.sessionCost.toFixed(6)}</pre>` : "No costs yet";
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────
+function handleReset() {
+  Object.assign(S, { phase:"idle", question:"", responses:{}, synthesis:null, debate:{} });
+  const qEl = document.getElementById("q-input"); qEl.value = ""; qEl.disabled = false;
+  document.getElementById("q-len").textContent = "0 / 1000";
+  ["debateBtn","exportBtn","shareBtn","resetBtn"].forEach(id => document.getElementById(id).style.display = "none");
+  document.getElementById("empty").style.display = "block";
+  document.getElementById("ai-grid").style.display = "none";
+  document.getElementById("meter-wrap").style.display = "none";
+  document.getElementById("synth-panel").style.display = "none";
+  document.getElementById("followup-wrap").style.display = "none";
+  document.getElementById("synth-mode-wrap").style.display = "none";
+  document.getElementById("followup-responses").style.display = "none";
+  document.getElementById("followup-responses").innerHTML = "";
+  document.getElementById("runBtn").textContent = "▶ RUN"; document.getElementById("runBtn").disabled = false;
+  buildGrid();
+}
+
+// ── COPY / SHARE / EXPORT ─────────────────────────────────────────────
+function copyPanel(id) { const t = S.responses[id]?.text||""; if(t) { navigator.clipboard.writeText(t); toast("Copied"); } }
+function copyText(which) { const t = which === "synthesis" ? S.synthesis?.synthesis||"" : ""; if(t) { navigator.clipboard.writeText(t); toast("Synthesis copied"); } }
+function shareSession() { const enc = btoa(encodeURIComponent(S.question)); navigator.clipboard.writeText(`${location.origin}/app?q=${enc}`); toast("Share URL copied"); }
+function exportPDF() {
+  const lines = [`MULTI-AI ORCHESTRATOR — SESSION EXPORT`,`Date: ${new Date().toLocaleString()}`,`Cost: $${S.sessionCost.toFixed(6)}`,``,`QUESTION:\n${S.question}`,``];
+  Object.entries(S.responses).forEach(([id,r]) => { if(!r?.text) return; lines.push(`── ${(MODELS[id]?.name||id).toUpperCase()} (${r.ms?(r.ms/1000).toFixed(1)+"s":"?"}) ──`,r.text,""); });
+  if(S.synthesis?.synthesis) { lines.push(`── SYNTHESIS [${S.synthMode.toUpperCase()}] ──`,S.synthesis.synthesis,""); }
+  if(Object.keys(S.debate).length) { lines.push("── DEBATE ROUND ──"); Object.entries(S.debate).forEach(([id,d]) => { if(!d?.text) return; lines.push(`${MODELS[id]?.name||id}:\n${d.text}\n`); }); }
+  const win = window.open("","_blank");
+  win.document.write(`<!DOCTYPE html><html><head><title>Export</title><style>body{font-family:monospace;font-size:12px;line-height:1.8;background:#07070D;color:#C9D1D9;padding:40px;max-width:900px;margin:0 auto}pre{white-space:pre-wrap}@media print{body{background:white;color:black}}</style></head><body><pre>${lines.map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("\n")}</pre><script>window.onload=()=>window.print();<\/script></body></html>`);
+  win.document.close();
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────
+function saveHistory() {
+  const e = { id:Date.now(), question:S.question, timestamp:new Date().toISOString(), cost:S.sessionCost };
+  S.history.unshift(e); if(S.history.length > 30) S.history = S.history.slice(0,30);
+  localStorage.setItem("orc4_history", JSON.stringify(S.history)); renderHistory();
+}
+function renderHistory() {
+  const sec = document.getElementById("history-section"), list = document.getElementById("history-list");
+  if(!S.history.length) { sec.style.display = "none"; return; }
+  sec.style.display = "block";
+  list.innerHTML = S.history.map(h => `<div class="history-item" onclick="loadHistory(${h.id})"><span style="font-size:10px;color:var(--muted)">↩</span><span class="hi-q">${h.question}</span><span class="hi-cost">$${(h.cost||0).toFixed(5)}</span><span class="hi-time">${new Date(h.timestamp).toLocaleTimeString()}</span></div>`).join("");
+}
+function loadHistory(id) { const h = S.history.find(e => e.id === id); if(h) { document.getElementById("q-input").value = h.question; document.getElementById("q-input").focus(); } }
+function clearHistory() { S.history = []; localStorage.removeItem("orc4_history"); renderHistory(); document.getElementById("history-section").style.display = "none"; }
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2500); }
+</script>
+</body>
+</html>

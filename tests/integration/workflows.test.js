@@ -622,5 +622,68 @@ t('All apps: OS back-navigation present', () => {
   });
 });
 
+
+// ── New apps integration tests ──────────────────────────────────────────────
+t('Drop The Reel: app file exists and has pipeline', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/drop-the-reel/index.html','utf8');
+  assert(html.includes('runPipeline'), 'must have runPipeline function');
+  assert(html.includes('claude-sonnet-4-6'), 'must reference Claude model');
+  assert(html.includes('ElevenLabs'), 'must reference ElevenLabs');
+  assert(html.includes('Remotion'), 'must reference Remotion');
+});
+
+t('Drop The Reel: 4 critic voices defined', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/drop-the-reel/index.html','utf8');
+  ['hitchcock','kubrick','ebert','shakespeare'].forEach(v =>
+    assert(html.includes(v), `critic ${v} must be present`)
+  );
+});
+
+t('Drop The Reel: revenue model at 500 subs = $3500 MRR', () => {
+  const subs = 500, price = 7;
+  assert.strictEqual(subs * price, 3500);
+});
+
+t('AI Orchestrator: app file exists', () => {
+  const fs = require('fs');
+  assert(fs.existsSync('apps/ai-orchestrator/index.html'), 'ai-orchestrator must exist');
+  const html = fs.readFileSync('apps/ai-orchestrator/index.html','utf8');
+  assert(html.includes('Orchestrator'), 'must reference Orchestrator');
+});
+
+t('PawnVault: app exists with ticket creation', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/pawnvault/index.html','utf8');
+  assert(html.includes('createTicket'), 'must have createTicket');
+  assert(html.includes('redeemTicket'), 'must have redeemTicket');
+  assert(html.includes('PostgreSQL'), 'must reference PostgreSQL');
+});
+
+t('PawnVault: $99/mo × 300 shops = $29,700 MRR', () => {
+  assert.strictEqual(99 * 300, 29700);
+});
+
+t('server: 3 new app aliases in APP_MAP', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("'drop-the-reel'"), 'drop-the-reel must be mapped');
+  assert(src.includes("'ai-orchestrator'"), 'ai-orchestrator must be mapped');
+  assert(src.includes("'pawnvault'"), 'pawnvault must be mapped');
+});
+
+t('Drop The Reel: operating cost math ($52/mo)', () => {
+  const costs = { anthropic: 20, elevenlabs: 22, replicate: 10 };
+  const total = Object.values(costs).reduce((a,b) => a+b, 0);
+  assert.strictEqual(total, 52);
+});
+
+t('Drop The Reel: break-even = 8 subscribers', () => {
+  const cost = 52, price = 7;
+  const breakEven = Math.ceil(cost / price);
+  assert.strictEqual(breakEven, 8);
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

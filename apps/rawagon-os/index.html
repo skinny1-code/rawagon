@@ -1538,13 +1538,16 @@ const SIDEBARS = {
 function switchApp(app) {
   // Map app IDs to server routes
   const APP_URLS = {
-    'identity':   '/apps/1nce-allcard/',
-    'pawnsnap':   '/apps/bitpawn/',
-    'droppa':     '/apps/droppa/',
-    'autoiq':     '/apps/autoiq/',
-    'goldsnap':   '/apps/goldsnap/',
-    'tokens':     '/apps/qwks-protocol/',
-    'profitpilot':'/apps/profitpilot/',
+    'identity':       '/apps/1nce-allcard/',
+    'pawnsnap':       '/apps/bitpawn/',
+    'droppa':         '/apps/droppa/',
+    'autoiq':         '/apps/autoiq/',
+    'goldsnap':       '/apps/goldsnap/',
+    'tokens':         '/apps/qwks-protocol/',
+    'profitpilot':    '/apps/profitpilot/',
+    'dropthereel':    '/apps/drop-the-reel/',
+    'orchestrator':   '/apps/ai-orchestrator/',
+    'pawnvault':      '/apps/pawnvault/',
   };
   if(app !== 'os' && APP_URLS[app]) {
     window.open(APP_URLS[app], '_blank');

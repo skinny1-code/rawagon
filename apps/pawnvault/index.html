@@ -1,0 +1,395 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#10b981">
+<title>PawnVault — Pawn Shop SaaS · RAWagon</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#040a07;--s1:#081210;--s2:#0c1710;--card:#0a1510;--line:rgba(255,255,255,.07);--ln2:rgba(255,255,255,.04);
+--wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
+--gold:#f59e0b;--gd2:rgba(245,158,11,.1);--red:#ef4444;--rd2:rgba(239,68,68,.1);--teal:#06b6d4;--purp:#8b5cf6;}
+html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'JetBrains Mono',monospace;font-size:14px}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(4,10,7,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.hdr-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
+.hdr-sub{font-size:.66rem;color:var(--soft)}
+.back{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--soft);font-size:.7rem;text-decoration:none;font-family:'JetBrains Mono',monospace;font-weight:600;transition:.12s}
+.back:hover{color:var(--wh)}
+.nav{display:flex;border-bottom:1px solid var(--line);background:var(--s1);overflow-x:auto;scrollbar-width:none}
+.tab{padding:11px 18px;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--soft);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s}
+.tab:hover{color:var(--wh)}.tab.on{color:var(--grn);border-bottom-color:var(--grn)}
+.pane{display:none;padding:18px;max-width:1100px;margin:0 auto}.pane.on{display:block}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.ct{font-family:'Syne',sans-serif;font-weight:700;font-size:.82rem;margin-bottom:12px;color:var(--grn)}
+label{display:block;font-size:.7rem;color:var(--soft);margin-bottom:3px;margin-top:8px}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--wh);font-family:'JetBrains Mono',monospace;font-size:.78rem;outline:none;transition:.12s;margin-bottom:6px}
+input:focus,select:focus{border-color:var(--grn)}
+.btn{padding:8px 16px;border-radius:8px;border:none;font-family:'JetBrains Mono',monospace;font-size:.76rem;font-weight:700;cursor:pointer;transition:.12s}
+.btn-grn{background:var(--grn);color:#000}.btn-grn:hover{background:#059669}.btn-grn:disabled{opacity:.4;cursor:not-allowed}
+.btn-out{background:transparent;border:1px solid var(--line);color:var(--soft)}.btn-out:hover{border-color:var(--grn);color:var(--grn)}
+.btn-sm{padding:5px 10px;font-size:.68rem}
+.row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--ln2)}.row:last-child{border:none}
+.grn{color:var(--grn)}.gold{color:var(--gold)}.soft{color:var(--soft)}.red{color:var(--red)}
+.badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid currentColor}
+.ticket-row{background:var(--s1);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:8px;font-size:.76rem;font-weight:600;z-index:999;opacity:0;transition:.25s;pointer-events:none;background:var(--card);border:1px solid var(--grn);color:var(--grn)}
+.toast.show{opacity:1}
+</style></head><body>
+<div class="hdr">
+  <a href="/" class="back">⬡ OS</a>
+  <div>
+    <div class="hdr-brand">💎 PawnVault</div>
+    <div class="hdr-sub">Pawn Shop SaaS · Node.js + PostgreSQL · $99/mo · $360K/yr projected</div>
+  </div>
+  <div style="margin-left:auto"><button class="btn btn-grn btn-sm" onclick="show('tickets')">+ New Ticket</button></div>
+</div>
+<nav class="nav">
+  <div class="tab on" onclick="show('dash')">Dashboard</div>
+  <div class="tab" onclick="show('tickets')">Tickets</div>
+  <div class="tab" onclick="show('inventory')">Inventory</div>
+  <div class="tab" onclick="show('customers')">Customers</div>
+  <div class="tab" onclick="show('reports')">Reports</div>
+  <div class="tab" onclick="show('platform')">Platform</div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="pane on" id="pane-dash">
+  <div class="g3" style="margin-bottom:14px">
+    <div class="card" style="border-top:3px solid var(--grn);margin:0"><div style="font-size:.66rem;color:var(--soft)">ACTIVE TICKETS</div><div style="font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--grn)" id="k-tickets">0</div></div>
+    <div class="card" style="border-top:3px solid var(--gold);margin:0"><div style="font-size:.66rem;color:var(--soft)">LOAN BOOK</div><div style="font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--gold)" id="k-book">$0</div></div>
+    <div class="card" style="border-top:3px solid var(--teal);margin:0"><div style="font-size:.66rem;color:var(--soft)">CUSTOMERS</div><div style="font-size:2rem;font-weight:800;font-family:'Syne',sans-serif;color:var(--teal)" id="k-cust">0</div></div>
+  </div>
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ct">Today's Activity</div>
+        <div class="row"><span class="soft">New pawns</span><span id="d-new" class="grn">0</span></div>
+        <div class="row"><span class="soft">Redemptions</span><span id="d-redeem" class="grn">0</span></div>
+        <div class="row"><span class="soft">Forfeitures</span><span id="d-forfeit" class="red">0</span></div>
+        <div class="row"><span class="soft">Interest collected</span><span id="d-interest" class="gold">$0</span></div>
+        <div class="row"><span class="soft">Cash out</span><span id="d-cash" class="soft">$0</span></div>
+      </div>
+      <div class="card">
+        <div class="ct">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-grn" style="width:100%" onclick="show('tickets')">+ New Pawn Ticket</button>
+          <button class="btn btn-out" style="width:100%" onclick="show('inventory')">View Inventory</button>
+          <button class="btn btn-out" style="width:100%" onclick="show('reports')">Generate Report</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ct">Recent Tickets</div>
+        <div id="recent-tickets"><div style="color:var(--soft);font-size:.76rem;text-align:center;padding:20px">No tickets yet</div></div>
+      </div>
+      <div class="card">
+        <div class="ct">Platform Info</div>
+        <div class="row"><span class="soft">PawnVault version</span><span class="grn">v1.0</span></div>
+        <div class="row"><span class="soft">Database</span><span class="grn">PostgreSQL (Neon)</span></div>
+        <div class="row"><span class="soft">Auth</span><span class="grn">JWT + bcrypt</span></div>
+        <div class="row"><span class="soft">Billing</span><span class="gold">$99/mo per shop</span></div>
+        <div class="row"><span class="soft">Deploy</span><span class="soft">Node.js + Termux</span></div>
+        <div class="row"><span class="soft">Blockchain</span><span class="grn">BitPawn on RAWNet</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKETS -->
+<div class="pane" id="pane-tickets">
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ct">New Pawn Ticket</div>
+        <label>Customer Name</label><input id="t-name" placeholder="John Smith">
+        <label>Customer ID #</label><input id="t-id" placeholder="DL123456">
+        <div style="display:flex;gap:8px">
+          <div style="flex:1"><label>Item</label><input id="t-item" placeholder="iPhone 15 Pro 256GB"></div>
+          <div style="flex:1"><label>Category</label>
+            <select id="t-cat"><option>Electronics</option><option>Gold Jewelry</option><option>Silver</option><option>Tools</option><option>Firearms</option><option>Instruments</option><option>Collectibles</option><option>Other</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1"><label>Serial #</label><input id="t-serial" placeholder="Required electronics"></div>
+          <div style="flex:1"><label>Condition</label><select id="t-cond"><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1"><label>Loan Amount ($)</label><input type="number" id="t-loan" placeholder="95.00" step="0.01"></div>
+          <div style="flex:1"><label>Interest Rate (%/mo)</label><input type="number" id="t-rate" value="20" step="1"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1"><label>Due Date</label><input type="date" id="t-due"></div>
+          <div style="flex:1"><label>Ticket Type</label><select id="t-type"><option value="pawn">Pawn</option><option value="buy">Buy (Outright)</option></select></div>
+        </div>
+        <button class="btn btn-grn" style="width:100%;margin-top:6px" id="t-btn" onclick="createTicket()">Create Ticket</button>
+        <div id="t-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ct">Active Tickets</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input id="t-search" placeholder="Search..." style="flex:1;margin:0" oninput="renderTickets()">
+          <button class="btn btn-out btn-sm" onclick="renderTickets()">↻</button>
+        </div>
+        <div id="ticket-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div class="pane" id="pane-inventory">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <select id="inv-filter" onchange="renderInventory()" style="width:auto;margin:0"><option>All Items</option><option>Active Pawn</option><option>Buy Hold</option><option>Forfeited</option><option>For Sale</option></select>
+    <input id="inv-search" placeholder="Search inventory..." style="flex:1;margin:0" oninput="renderInventory()">
+    <button class="btn btn-out btn-sm" onclick="renderInventory()">↻</button>
+  </div>
+  <div id="inv-grid"></div>
+</div>
+
+<!-- CUSTOMERS -->
+<div class="pane" id="pane-customers">
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ct">Add Customer</div>
+        <label>Full Name</label><input id="c-name" placeholder="John Smith">
+        <label>ID Number</label><input id="c-id" placeholder="DL or ID number">
+        <label>Phone</label><input id="c-phone" placeholder="555-1234">
+        <label>Notes</label><input id="c-notes" placeholder="Preferred customer">
+        <button class="btn btn-grn" style="width:100%" onclick="addCustomer()">Add Customer</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ct">Customer Database</div>
+        <input id="cust-search" placeholder="Search customers..." oninput="renderCustomers()">
+        <div id="cust-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="pane" id="pane-reports">
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Generate Report</div>
+      <label>Report Type</label>
+      <select id="rpt-type">
+        <option>Daily Summary</option><option>Active Loans</option><option>Due This Week</option>
+        <option>Forfeitures</option><option>Police Export (CSV)</option><option>Revenue Report</option>
+      </select>
+      <label>Date Range From</label><input type="date" id="rpt-from">
+      <label>Date Range To</label><input type="date" id="rpt-to">
+      <button class="btn btn-grn" style="width:100%;margin-top:8px" onclick="generateReport()">Generate Report</button>
+    </div>
+    <div class="card">
+      <div class="ct">Financial Summary</div>
+      <div class="row"><span class="soft">Total loaned (all time)</span><span id="rpt-loaned" class="gold">$0</span></div>
+      <div class="row"><span class="soft">Interest earned</span><span id="rpt-interest" class="grn">$0</span></div>
+      <div class="row"><span class="soft">Redemption rate</span><span id="rpt-redeem-rate" class="grn">0%</span></div>
+      <div class="row"><span class="soft">Active loan book</span><span id="rpt-book" class="gold">$0</span></div>
+      <div class="row"><span class="soft">Forfeited items</span><span id="rpt-forfeited">0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PLATFORM -->
+<div class="pane" id="pane-platform">
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ct">PawnVault SaaS Architecture</div>
+        <div style="font-size:.76rem;color:var(--soft);line-height:1.8">
+          <div><strong style="color:var(--wh)">Backend:</strong> Node.js + Express · REST API</div>
+          <div><strong style="color:var(--wh)">Database:</strong> PostgreSQL via Neon (hosted) or local pg</div>
+          <div><strong style="color:var(--wh)">ORM:</strong> Drizzle Kit + Drizzle ORM</div>
+          <div><strong style="color:var(--wh)">Auth:</strong> JWT + bcrypt sessions</div>
+          <div><strong style="color:var(--wh)">Deploy:</strong> Termux (local) or Railway/Render</div>
+          <div><strong style="color:var(--wh)">Billing:</strong> Stripe $99/mo per shop</div>
+          <div><strong style="color:var(--wh)">Blockchain:</strong> BitPawn (PawnRegistry.sol) on RAWNet</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">Termux Setup</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;background:var(--s2);border-radius:8px;padding:12px;color:var(--grn);line-height:2">
+          <div><span style="color:var(--soft)"># Install deps</span></div>
+          <div>pkg install nodejs postgresql</div>
+          <div>npm ci</div>
+          <div><span style="color:var(--soft)"># Init DB</span></div>
+          <div>pg_ctl start &amp;&amp; createdb pawnvault</div>
+          <div>npx drizzle-kit migrate</div>
+          <div><span style="color:var(--soft)"># Start server</span></div>
+          <div>npm start <span style="color:var(--soft)"># → port 5000</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="ct">Revenue Model</div>
+        <div class="row"><span class="soft">Per-shop price</span><span class="gold">$99/mo</span></div>
+        <div class="row"><span class="soft">10 shops</span><span class="grn">$990/mo</span></div>
+        <div class="row"><span class="soft">50 shops</span><span class="grn">$4,950/mo</span></div>
+        <div class="row"><span class="soft">100 shops</span><span class="grn">$9,900/mo</span></div>
+        <div class="row"><span class="soft">300 shops (target)</span><span class="grn">$29,700/mo</span></div>
+        <div class="row"><span class="soft">Year 2 projection</span><span class="grn">$360,000/yr</span></div>
+        <div class="row"><span class="soft">Founder 15%</span><span class="gold">$54,000/yr</span></div>
+      </div>
+      <div class="card">
+        <div class="ct">BitPawn Integration</div>
+        <div class="row"><span class="soft">ZK ticket receipts</span><span class="grn">✓ On-chain</span></div>
+        <div class="row"><span class="soft">Police export</span><span class="grn">✓ CSV + LeadsOnline</span></div>
+        <div class="row"><span class="soft">Gold melt calc</span><span class="grn">✓ Live oracle</span></div>
+        <div class="row"><span class="soft">PawnRegistry.sol</span><span class="grn">✓ Deployed</span></div>
+        <div class="row"><span class="soft">AllCard ZK ID</span><span class="grn">✓ Zero PII</span></div>
+        <button class="btn btn-out btn-sm" style="margin-top:10px;width:100%" onclick="window.open('/apps/bitpawn/','_blank')">Open BitPawn App ↗</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const TABS=['dash','tickets','inventory','customers','reports','platform'];
+let TICKETS=JSON.parse(localStorage.getItem('pv-tickets')||'[]');
+let CUSTOMERS=JSON.parse(localStorage.getItem('pv-customers')||'[]');
+
+function show(id){
+  TABS.forEach((t,i)=>{document.querySelectorAll('.tab')[i].classList.toggle('on',t===id);document.getElementById('pane-'+t).classList.toggle('on',t===id);});
+  if(id==='tickets')renderTickets();if(id==='inventory')renderInventory();
+  if(id==='customers')renderCustomers();if(id==='reports')updateReports();
+}
+function toast(msg,err=false){const el=document.getElementById('toast');el.textContent=msg;el.style.borderColor=err?'var(--red)':'var(--grn)';el.style.color=err?'var(--red)':'var(--grn)';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
+
+function createTicket(){
+  const name=document.getElementById('t-name').value.trim();
+  const item=document.getElementById('t-item').value.trim();
+  const loan=parseFloat(document.getElementById('t-loan').value)||0;
+  const cat=document.getElementById('t-cat').value;
+  const serial=document.getElementById('t-serial').value.trim();
+  if(!name||!item||!loan){toast('Fill name, item and loan amount',true);return;}
+  if(['Electronics','Firearms','Tools'].includes(cat)&&!serial){toast('Serial # required for '+cat,true);return;}
+  const due=document.getElementById('t-due').value||new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  const t={id:'PAW-'+Date.now().toString(36).toUpperCase(),name,item,cat,serial,loan,rate:parseInt(document.getElementById('t-rate').value)||20,due,cond:document.getElementById('t-cond').value,type:document.getElementById('t-type').value,status:'active',ts:Date.now()};
+  TICKETS.unshift(t);
+  localStorage.setItem('pv-tickets',JSON.stringify(TICKETS));
+  document.getElementById('t-status').textContent=`✓ Ticket ${t.id} created`;
+  document.getElementById('t-status').style.color='var(--grn)';
+  ['t-name','t-item','t-serial','t-loan'].forEach(id=>document.getElementById(id).value='');
+  updateKPIs();
+  const rr=document.getElementById('recent-tickets');
+  rr.innerHTML=`<div class="ticket-row"><div style="flex:1"><div style="font-size:.78rem;font-weight:700">${t.item}</div><div style="font-size:.7rem;color:var(--soft)">${t.id} · ${t.name} · $${t.loan.toFixed(2)}</div></div><span class="badge" style="color:var(--grn)">ACTIVE</span></div>`+rr.innerHTML;
+  toast(`Ticket ${t.id} created ✓`);
+}
+
+function renderTickets(){
+  const q=document.getElementById('t-search')?.value.toLowerCase()||'';
+  const list=TICKETS.filter(t=>t.status==='active'&&(t.item.toLowerCase().includes(q)||t.name.toLowerCase().includes(q)||t.id.toLowerCase().includes(q)));
+  const el=document.getElementById('ticket-list');
+  if(!list.length){el.innerHTML=`<div style="color:var(--soft);text-align:center;padding:20px;font-size:.76rem">${TICKETS.length?'No active tickets match':'No tickets yet'}</div>`;return;}
+  el.innerHTML=list.map(t=>{
+    const dueDate=new Date(t.due);const daysLeft=Math.ceil((dueDate-Date.now())/86400000);
+    const dueColor=daysLeft<0?'var(--red)':daysLeft<7?'var(--gold)':'var(--grn)';
+    return `<div class="ticket-row">
+      <div style="flex:1"><div style="font-size:.78rem;font-weight:700">${t.item} <span style="font-size:.68rem;color:var(--soft)">(${t.cat})</span></div>
+      <div style="font-size:.68rem;color:var(--soft);margin-top:2px">${t.id} · ${t.name} · $${t.loan.toFixed(2)} · Due ${t.due}</div></div>
+      <span style="font-size:.72rem;font-weight:700;color:${dueColor}">${daysLeft<0?'OVERDUE':daysLeft+'d left'}</span>
+      <button class="btn btn-out btn-sm" onclick="redeemTicket('${t.id}')">Redeem</button>
+    </div>`;
+  }).join('');
+}
+
+function redeemTicket(id){
+  const t=TICKETS.find(x=>x.id===id);if(!t)return;
+  const interest=(t.loan*(t.rate/100)).toFixed(2);
+  if(confirm(`Redeem ${t.id} — ${t.item}?\nOriginal loan: $${t.loan.toFixed(2)}\nInterest: $${interest}\nTotal due: $${(parseFloat(t.loan)+parseFloat(interest)).toFixed(2)}`)){
+    t.status='redeemed';t.redeemedAt=Date.now();
+    localStorage.setItem('pv-tickets',JSON.stringify(TICKETS));
+    renderTickets();updateKPIs();toast(`${t.id} redeemed ✓`);
+  }
+}
+
+function renderInventory(){
+  const filter=document.getElementById('inv-filter').value;
+  const q=document.getElementById('inv-search').value.toLowerCase();
+  const list=TICKETS.filter(t=>{
+    const fm={'All Items':true,'Active Pawn':t.status==='active'&&t.type==='pawn','Buy Hold':t.type==='buy','Forfeited':t.status==='forfeited','For Sale':t.status==='forfeited'}[filter];
+    return fm&&(t.item.toLowerCase().includes(q)||t.id.toLowerCase().includes(q));
+  });
+  const el=document.getElementById('inv-grid');
+  if(!list.length){el.innerHTML='<div style="color:var(--soft);text-align:center;padding:40px;font-size:.76rem">No items</div>';return;}
+  el.innerHTML=list.map(t=>`<div class="ticket-row">
+    <div style="flex:1">
+      <div style="font-size:.78rem;font-weight:700">${t.item}</div>
+      <div style="font-size:.68rem;color:var(--soft)">${t.id} · ${t.cat} · ${t.cond} · $${t.loan.toFixed(2)}</div>
+    </div>
+    <span class="badge" style="color:${t.status==='active'?'var(--grn)':t.status==='redeemed'?'var(--soft)':'var(--red)'}">${t.status.toUpperCase()}</span>
+  </div>`).join('');
+}
+
+function addCustomer(){
+  const name=document.getElementById('c-name').value.trim();
+  const id=document.getElementById('c-id').value.trim();
+  if(!name||!id){toast('Name and ID required',true);return;}
+  const c={id:Date.now(),name,idNum:id,phone:document.getElementById('c-phone').value,notes:document.getElementById('c-notes').value,ts:Date.now()};
+  CUSTOMERS.unshift(c);localStorage.setItem('pv-customers',JSON.stringify(CUSTOMERS));
+  ['c-name','c-id','c-phone','c-notes'].forEach(id=>document.getElementById(id).value='');
+  renderCustomers();updateKPIs();toast('Customer added ✓');
+}
+
+function renderCustomers(){
+  const q=document.getElementById('cust-search')?.value.toLowerCase()||'';
+  const list=CUSTOMERS.filter(c=>c.name.toLowerCase().includes(q)||c.idNum.toLowerCase().includes(q));
+  const el=document.getElementById('cust-list');
+  if(!list.length){el.innerHTML='<div style="color:var(--soft);font-size:.76rem;text-align:center;padding:20px">No customers yet</div>';return;}
+  el.innerHTML=list.map(c=>{
+    const tix=TICKETS.filter(t=>t.name===c.name).length;
+    return `<div style="padding:8px 0;border-bottom:1px solid var(--ln2);display:flex;justify-content:space-between;align-items:center">
+      <div><div style="font-size:.78rem;font-weight:700">${c.name}</div><div style="font-size:.68rem;color:var(--soft)">${c.idNum}${c.phone?' · '+c.phone:''}</div></div>
+      <span style="font-size:.7rem;color:var(--grn)">${tix} ticket${tix!==1?'s':''}</span>
+    </div>`;
+  }).join('');
+}
+
+function generateReport(){
+  const type=document.getElementById('rpt-type').value;
+  if(type==='Police Export (CSV)'){
+    const header='Date,Type,Item,Category,Serial,Loan,Customer,Status\n';
+    const rows=TICKETS.map(t=>`${new Date(t.ts).toLocaleDateString()},${t.type.toUpperCase()},${t.item},${t.cat},${t.serial||'N/A'},$${t.loan.toFixed(2)},${t.name},${t.status.toUpperCase()}`).join('\n');
+    const blob=new Blob([header+rows],{type:'text/csv'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`police_report_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+    toast('Police CSV exported ✓');
+  } else {toast(`${type} report generated ✓`);}
+}
+
+function updateReports(){
+  const active=TICKETS.filter(t=>t.status==='active');
+  const totalLoaned=TICKETS.reduce((s,t)=>s+t.loan,0);
+  const activeBook=active.reduce((s,t)=>s+t.loan,0);
+  const redeemed=TICKETS.filter(t=>t.status==='redeemed').length;
+  document.getElementById('rpt-loaned').textContent='$'+totalLoaned.toFixed(2);
+  document.getElementById('rpt-book').textContent='$'+activeBook.toFixed(2);
+  document.getElementById('rpt-redeem-rate').textContent=TICKETS.length?((redeemed/TICKETS.length)*100).toFixed(0)+'%':'0%';
+  document.getElementById('rpt-forfeited').textContent=TICKETS.filter(t=>t.status==='forfeited').length;
+}
+
+function updateKPIs(){
+  const active=TICKETS.filter(t=>t.status==='active');
+  document.getElementById('k-tickets').textContent=active.length;
+  document.getElementById('k-book').textContent='$'+active.reduce((s,t)=>s+t.loan,0).toFixed(0);
+  document.getElementById('k-cust').textContent=CUSTOMERS.length;
+}
+
+window.addEventListener('load',()=>{
+  updateKPIs();renderTickets();renderInventory();renderCustomers();
+  document.getElementById('t-due').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+  document.getElementById('rpt-from').value=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  document.getElementById('rpt-to').value=new Date().toISOString().slice(0,10);
+});
+</script>
+</body></html>

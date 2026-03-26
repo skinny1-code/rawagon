@@ -28,16 +28,21 @@ const MIME = {
 
 // Friendly app name → folder mapping
 const APP_MAP = {
-  'rawagon-os':    'rawagon-os',
-  'allcard':       '1nce-allcard',
-  '1nce-allcard':  '1nce-allcard',
-  'bitpawn':       'bitpawn',
-  'droppa':        'droppa',
-  'autoiq':        'autoiq',
-  'goldsnap':      'goldsnap',
-  'qwks':          'qwks-protocol',
-  'qwks-protocol': 'qwks-protocol',
-  'profitpilot':   'profitpilot',
+  'rawagon-os':      'rawagon-os',
+  'allcard':         '1nce-allcard',
+  '1nce-allcard':    '1nce-allcard',
+  'bitpawn':         'bitpawn',
+  'droppa':          'droppa',
+  'autoiq':          'autoiq',
+  'goldsnap':        'goldsnap',
+  'qwks':            'qwks-protocol',
+  'qwks-protocol':   'qwks-protocol',
+  'profitpilot':     'profitpilot',
+  'drop-the-reel':   'drop-the-reel',
+  'dropthereel':     'drop-the-reel',
+  'ai-orchestrator': 'ai-orchestrator',
+  'orchestrator':    'ai-orchestrator',
+  'pawnvault':       'pawnvault',
 };
 
 function serveFile(res, filePath) {
