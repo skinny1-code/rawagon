@@ -52,6 +52,7 @@ rawagon/
 │   │   ├── AllCard/EmployeeVault.sol
 │   │   ├── GoldSnap/GoldMint.sol
 │   │   └── AutoIQ/IQTitle.sol
+│   ├── compile-local.js          # Offline compiler using bundled solc npm package
 │   ├── hardhat.config.js         # Hardhat config (networks, etherscan, paths)
 │   └── package.json
 ├── docs/
@@ -107,7 +108,7 @@ npm run test:watch     # vitest watch mode
 npm run lint:fix       # eslint --fix .
 npm run format         # prettier --write .
 npm run typecheck      # tsc --noEmit
-npm run compile        # hardhat compile (delegates to @rawagon/contracts workspace)
+npm run compile        # compile-local.js via --prefix contracts (bundled solc, no download)
 npm run build          # alias for compile
 ```
 
@@ -123,9 +124,19 @@ Test files live at `packages/<name>/test/index.test.js`. They are CJS files (use
 ### Compile contracts
 
 ```bash
-npm run compile           # from root — runs hardhat compile in contracts/
-cd contracts && npm run compile   # direct
+npm run compile                          # from root — runs compile-local.js in contracts/
+cd contracts && npm run compile          # direct — same result
+cd contracts && npm run compile:hardhat  # Hardhat compiler (requires solc binary download)
 ```
+
+`compile-local.js` is the default compiler. It uses `solc@0.8.26` bundled as a transitive dep
+of `@nomicfoundation/hardhat-toolbox` — no network required. It reads all `.sol` files from
+`contracts/src/`, resolves `@openzeppelin/` and `@chainlink/` imports from
+`contracts/node_modules/` via a `findImports` callback, and writes JSON artifacts to
+`contracts/artifacts/`.
+
+`compile:hardhat` is retained for when you need Hardhat's full pipeline (deployment scripts,
+gas reports, etc.) and have internet access to download the `solc 0.8.24` binary.
 
 Solidity sources are in `contracts/src/` (not `contracts/` root) to avoid Hardhat picking up `node_modules/**/*.sol`.
 
@@ -147,7 +158,7 @@ GitHub Actions runs on push to `main`/`develop` and PRs to `main`:
 3. `npx prettier --check .` — format check
 4. `npm run typecheck` — tsc
 5. `npm test` — vitest (42 tests, all blocking)
-6. `npm run compile` — hardhat compile
+6. `npm run compile` — compile-local.js (bundled solc@0.8.26, no binary download)
 
 ---
 
@@ -321,19 +332,19 @@ NODE_ENV=development
 - **Prettier** (`.prettierrc`): `singleQuote: true`, `semi: true`, `tabWidth: 2`, `printWidth: 100`, `trailingComma: "es5"`
 - **TypeScript** (`tsconfig.json`): `allowJs: true`, `checkJs: false`, `noEmit: true`. Paths map `@rawagon/*` to workspace `packages/*/index.js`. Excludes `contracts/` and `**/test/**`. Uses `ignoreDeprecations: "6.0"` for TS 6 compatibility
 - **Hardhat** (`contracts/hardhat.config.js`): sources path is `./src` (not `.`); supports `base` and `base-sepolia` networks; Basescan etherscan config included
+- **compile-local.js** (`contracts/compile-local.js`): offline-capable compiler using the `solc` npm package bundled with `hardhat-toolbox`. Invoked by `npm run compile` (root) and `cd contracts && npm run compile`. Use `compile:hardhat` when you need Hardhat's full pipeline and internet access is available
 
 ---
 
 ## Known Incomplete Areas
 
-| Area                                                 | Status                                                                                               |
-| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `apps/`                                              | All frontend apps are directory stubs — no implementation                                            |
-| `scripts/deploy.js`                                  | Deployment logic is `[todo]` comments — contracts cannot be deployed yet                             |
-| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier                                             |
-| `packages/ltn-token/index.js`                        | Empty stub — exports `{}`                                                                            |
-| `contracts/test/`                                    | Directory does not exist — no Hardhat/contract tests written                                         |
-| `npm run compile`                                    | Requires Solidity 0.8.24 compiler download — blocked in network-restricted sandboxes but works in CI |
+| Area                                                 | Status                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ |
+| `apps/`                                              | All frontend apps are directory stubs — no implementation                |
+| `scripts/deploy.js`                                  | Deployment logic is `[todo]` comments — contracts cannot be deployed yet |
+| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier                 |
+| `packages/ltn-token/index.js`                        | Empty stub — exports `{}`                                                |
+| `contracts/test/`                                    | Directory does not exist — no Hardhat/contract tests written             |
 
 ---
 
