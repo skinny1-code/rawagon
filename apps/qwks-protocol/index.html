@@ -242,6 +242,14 @@ input:focus,select:focus{border-color:var(--indigo);}
         <option>Food & Beverage</option><option>Services</option><option>E-commerce</option>
         <option>Healthcare</option><option>Entertainment</option>
       </select>
+      <label>Business Category</label>
+      <select id="biz-category" onchange="calcSavings()" style="margin-bottom:8px">
+        <option>Restaurant</option><option>Retail</option><option>E-commerce</option>
+        <option>Gas Station</option><option>Grocery</option><option>Hotel</option>
+        <option>Healthcare</option><option>Professional Svcs</option>
+        <option>Pawn Shop</option><option>Auto Dealer</option><option>Other</option>
+      </select>
+      <div id="baseline-rate-display" style="font-size:.7rem;color:var(--soft);margin-bottom:8px;padding:5px 8px;background:var(--in3);border-radius:5px"></div>
       <label>Monthly Volume ($)</label>
       <input type="number" id="mig-vol" placeholder="50000">
       <label>Current Rate (basis points, e.g. 250 = 2.5%)</label>
@@ -626,6 +634,17 @@ async function getTestUSDC() {
   } catch(e) { showToast(e.message,true); }
 }
 
+// Real Visa interchange rates by business category (2024)
+const VISA_RATES = {
+  'Restaurant':        { bps: 165 }, 'Retail':      { bps: 151 },
+  'E-commerce':        { bps: 230 }, 'Gas Station': { bps: 140 },
+  'Grocery':           { bps: 116 }, 'Hotel':       { bps: 220 },
+  'Healthcare':        { bps: 175 }, 'Professional Svcs': { bps: 210 },
+  'Pawn Shop':         { bps: 195 }, 'Auto Dealer': { bps: 180 },
+  'Other':             { bps: 180 },
+};
+const QWKS_BPS = 1;
+
 function calcSavings() {
   const vol = parseFloat(document.getElementById("sv-vol").value)||0;
   const txns = parseFloat(document.getElementById("sv-txns").value)||0;
@@ -714,6 +733,61 @@ function renderComplianceList() {
     </div>`).join('');
 }
 
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:   () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:        () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs:  () => localStorage.getItem("rawagon-elevenlabs-key") || localStorage.getItem("dtr-el") || "",
+  goldapi:     () => localStorage.getItem("rawagon-goldapi-key") || "",
+};
+
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) {
+    localStorage.setItem("rawagon-anthropic-key", key);
+    localStorage.setItem("dtr-anthropic", key); // also set for Drop The Reel
+  } else if (key.startsWith("xi-")) {
+    localStorage.setItem("rawagon-elevenlabs-key", key);
+  } else if (key.length > 20) {
+    localStorage.setItem("rawagon-tmdb-key", key);
+  }
+  document.getElementById("global-key-banner").style.display = "none";
+  document.getElementById("gkb-key").value = "";
+  if (typeof toast === "function") toast("API key saved ✓");
+}
+
+// Show banner if no Anthropic key and user clicks an AI feature
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) {
+    const banner = document.getElementById("global-key-banner");
+    if (banner) { banner.style.display = "flex"; banner.style.removeProperty("display"); 
+      document.getElementById("gkb-key")?.focus(); return false; }
+  }
+  return true;
+}
+
+function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
+  const key = RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body = { model: "claude-sonnet-4-6", max_tokens: maxTokens, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(d => {
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text || "";
+  });
+}
+
 window.addEventListener("load",()=>{
   calcSavings();
   loadNetworkStats();
@@ -721,4 +795,13 @@ window.addEventListener("load",()=>{
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
 </body></html>

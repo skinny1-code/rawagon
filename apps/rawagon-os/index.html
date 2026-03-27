@@ -320,6 +320,34 @@ select.fi option{background:var(--deep);}
     window.ethereum.on("chainChanged",()=>location.reload());
   }
 })();
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:  () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:       () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs: () => localStorage.getItem("rawagon-elevenlabs-key") || "",
+};
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) { localStorage.setItem("rawagon-anthropic-key",key); localStorage.setItem("dtr-anthropic",key); }
+  else if (key.startsWith("xi-")) localStorage.setItem("rawagon-elevenlabs-key",key);
+  else if (key.length > 20) localStorage.setItem("rawagon-tmdb-key",key);
+  document.getElementById("global-key-banner").style.display="none";
+  document.getElementById("gkb-key").value="";
+  if(typeof toast==="function") toast("API key saved ✓");
+}
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) { const b=document.getElementById("global-key-banner"); if(b){b.style.display="flex";document.getElementById("gkb-key")?.focus();return false;} } return true;
+}
+function anthropicFetch(messages, maxTokens=800, system="") {
+  const key=RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body={model:"claude-sonnet-4-6",max_tokens:maxTokens,messages};
+  if(system) body.system=system;
+  return fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||"";});
+}
+
 </script>
 <!-- ── END WALLET BAR ────────────────────────────────────────────── -->
 
@@ -1637,5 +1665,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   setInterval(()=>loadChain().then(()=>renderChainActivity()), 30000);
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
 </body>
 </html>

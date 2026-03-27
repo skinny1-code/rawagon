@@ -1345,7 +1345,7 @@ async function getAIPrice(){
       document.getElementById("ai-price-status").textContent="Set API key in Settings for live AI pricing";
       return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -1370,7 +1370,7 @@ async function askCoach(){
       output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live coaching.</strong><br><br>Demo tip: Create urgency by announcing "LAST 5 SLOTS" when you have 5+ remaining. Show the box, hype the potential pulls, and use countdowns.</div>`;
       btn.disabled=false;btn.textContent="Ask Coach";return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:600,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -1397,7 +1397,7 @@ async function generateClip(){
       output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live clip generation.</strong><br><br>Demo clip for ${platform}:<br><br><strong>Hook:</strong> "Wait... is this real?! 👀"<br><br><strong>Script:</strong> Just pulled this from the break — [show card] — this is exactly why we do these breaks. Slots still available, link in bio!<br><br><strong>Caption:</strong> ${ctx.slice(0,80)}... #trading cards #cardbreaks #droppa<br><br><strong>CTA:</strong> Join the next break → link in bio</div>`;
       btn.disabled=false;btn.textContent="Generate Script + Hook";return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:700,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -2074,6 +2074,75 @@ async function loadVaultStats() {
   } catch(e) {}
 }
 
+
+// ── Anthropic Key Manager ─────────────────────────────────────────────────
+function getAnthropicKey() {
+  return localStorage.getItem("rawagon-anthropic-key") ||
+         localStorage.getItem("dtr-anthropic") || "";
+}
+function requireAnthropicKey() {
+  const k = getAnthropicKey();
+  if (!k) {
+    toast("Add your Anthropic API key in Settings → API Keys", true);
+    return null;
+  }
+  return k;
+}
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:   () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:        () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs:  () => localStorage.getItem("rawagon-elevenlabs-key") || localStorage.getItem("dtr-el") || "",
+  goldapi:     () => localStorage.getItem("rawagon-goldapi-key") || "",
+};
+
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) {
+    localStorage.setItem("rawagon-anthropic-key", key);
+    localStorage.setItem("dtr-anthropic", key); // also set for Drop The Reel
+  } else if (key.startsWith("xi-")) {
+    localStorage.setItem("rawagon-elevenlabs-key", key);
+  } else if (key.length > 20) {
+    localStorage.setItem("rawagon-tmdb-key", key);
+  }
+  document.getElementById("global-key-banner").style.display = "none";
+  document.getElementById("gkb-key").value = "";
+  if (typeof toast === "function") toast("API key saved ✓");
+}
+
+// Show banner if no Anthropic key and user clicks an AI feature
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) {
+    const banner = document.getElementById("global-key-banner");
+    if (banner) { banner.style.display = "flex"; banner.style.removeProperty("display"); 
+      document.getElementById("gkb-key")?.focus(); return false; }
+  }
+  return true;
+}
+
+function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
+  const key = RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body = { model: "claude-sonnet-4-6", max_tokens: maxTokens, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(d => {
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text || "";
+  });
+}
+
 window.addEventListener("load",()=>{
   previewBreak();
   renderInventory();updateInvStats();
@@ -2098,4 +2167,13 @@ window.addEventListener("load",()=>{
   ethereum?.on("accountsChanged",()=>location.reload());
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
 </body></html>

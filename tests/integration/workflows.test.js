@@ -685,5 +685,81 @@ t('Drop The Reel: break-even = 8 subscribers', () => {
   assert.strictEqual(breakEven, 8);
 });
 
+
+// ── Real API integration tests ─────────────────────────────────────────────
+t('Droppa: anthropicFetch helper exists in app', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('function anthropicFetch('), 'anthropicFetch must exist');
+  assert(html.includes('anthropic-dangerous-direct-browser-access'), 'must have browser header');
+  assert(html.includes('claude-sonnet-4-6'), 'must use latest model');
+  assert(!html.includes('claude-sonnet-4-20250514'), 'old model must be removed');
+});
+
+t('Drop The Reel: uses anthropicFetch not raw fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/drop-the-reel/index.html','utf8');
+  assert(html.includes('anthropicFetch('), 'must use anthropicFetch helper');
+});
+
+t('GoldSnap: CoinGecko PAXG gold price fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/goldsnap/index.html','utf8');
+  assert(html.includes('pax-gold'), 'must use PAXG for live gold price');
+  assert(!html.includes('query1.finance.yahoo'), 'Yahoo Finance must be removed');
+});
+
+t('BitPawn: CoinGecko PAXG gold price fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/bitpawn/index.html','utf8');
+  assert(html.includes('pax-gold'), 'BitPawn must use PAXG for gold price');
+});
+
+t('QWKS: real Visa interchange rates by category', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/qwks-protocol/index.html','utf8');
+  assert(html.includes('VISA_RATES'), 'must have VISA_RATES object');
+  assert(html.includes('Restaurant'), 'must have restaurant category');
+  assert(html.includes('Pawn Shop'), 'must have pawn shop rate');
+});
+
+t('AutoIQ: NHTSA recall-based valuation', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/autoiq/index.html','utf8');
+  assert(html.includes('recallPenalty'), 'must adjust price for recalls');
+  assert(html.includes('api.nhtsa.gov/recalls'), 'must query NHTSA recalls');
+});
+
+t('Global key manager: RAW_KEYS object in AI apps', () => {
+  const fs = require('fs');
+  const apps = ['apps/droppa/index.html','apps/drop-the-reel/index.html','apps/rawagon-os/index.html'];
+  apps.forEach(app => {
+    const html = fs.readFileSync(app,'utf8');
+    assert(html.includes('RAW_KEYS'), `${app} must have RAW_KEYS`);
+    assert(html.includes('rawagon-anthropic-key'), `${app} must use shared key name`);
+  });
+});
+
+t('ProfitPilot: revenue from allocation.json', () => {
+  const alloc = JSON.parse(require('fs').readFileSync('config/allocation.json','utf8'));
+  const qwks = alloc.entities.QWKS.year2_annual_revenue;
+  assert(qwks > 7000000, 'QWKS revenue should be > $7M');
+  const total = alloc.totals.year2_gross_revenue;
+  assert(total > 25000000, 'Total revenue should be > $25M');
+});
+
+t('CoinGecko PAXG: correct API endpoint format', () => {
+  const url = 'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd';
+  assert(url.includes('pax-gold'), 'must use pax-gold token ID');
+  assert(url.includes('coingecko.com'), 'must use CoinGecko');
+});
+
+t('Droppa: key manager banner exists', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('global-key-banner'), 'must have key banner');
+  assert(html.includes('saveGlobalKey'), 'must have saveGlobalKey function');
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

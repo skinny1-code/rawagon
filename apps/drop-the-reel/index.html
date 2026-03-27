@@ -512,7 +512,7 @@ async function runPipeline() {
     
     // Step 2: Generate Claude review
     log('Generating critic review with Claude...');
-    if (!anthropicKey) { log('⚠ No Anthropic key — generating placeholder review', 'var(--gold)'); }
+    if (!RAW_KEYS.anthropic()) { log('⚠ No Anthropic key — add in Settings banner below', 'var(--gold)'); }
     
     const criticPersonas = {
       hitchcock: 'Alfred Hitchcock, master of suspense. You focus on psychological tension, visual storytelling, and the macabre. Your prose is theatrical and authoritative.',
@@ -524,23 +524,12 @@ async function runPipeline() {
     let reviewText = '';
     if (anthropicKey) {
       try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 800,
-            messages: [{
-              role: 'user',
-              content: `You are ${criticPersonas[voice]}. Write a 3-paragraph film review of "${movie?.title||tmdb}" (${movie?.release_date?.slice(0,4)||'2024'}). Overview: ${movie?.overview||''}. Start with a punchy opening line. End with a rating out of 10. Stay completely in character.`
-            }]
-          })
-        });
-        const d = await resp.json();
-        reviewText = d.content?.[0]?.text || '';
-        log('✓ Claude review generated (' + reviewText.split(' ').length + ' words)');
-      } catch(e) { log('Claude API error: ' + e.message.split('(')[0], 'var(--red)'); }
-    }
+        reviewText = await anthropicFetch([{
+          role: 'user',
+          content: `You are ${criticPersonas[voice]}. Write a 3-paragraph film review of "${movie?.title||tmdb}" (${movie?.release_date?.slice(0,4)||'2024'}). Overview: ${movie?.overview||''}. Start with a punchy opening line. End with a rating out of 10. Stay completely in character.`
+        }], 800);
+        if (reviewText) log('✓ Claude review generated (' + reviewText.split(' ').length + ' words)');
+    } catch(e) { log('Claude error: ' + e.message.split('(')[0], 'var(--red)'); }
     
     if (!reviewText) {
       reviewText = `"${movie?.title||tmdb}" is a remarkable piece of cinema that demands attention. The direction is masterful, the performances transcendent. One finds themselves utterly consumed by the narrative. ★★★★☆ · 8/10`;
@@ -676,7 +665,7 @@ const ENV_VARS = ['ANTHROPIC_API_KEY','TMDB_API_KEY','ELEVENLABS_API_KEY','SUPAB
   'YOUTUBE_CLIENT_ID','REPLICATE_API_TOKEN','CRON_SECRET'];
 
 function loadConfig() {
-  document.getElementById('cfg-anthropic').value = localStorage.getItem('dtr-anthropic')||'';
+  document.getElementById('cfg-anthropic').value = localStorage.getItem('dtr-anthropic')||localStorage.getItem('rawagon-anthropic-key')||'';
   document.getElementById('cfg-tmdb').value = localStorage.getItem('dtr-tmdb')||'';
   document.getElementById('cfg-elevenlabs').value = localStorage.getItem('dtr-elevenlabs')||'';
   document.getElementById('cfg-supa-url').value = localStorage.getItem('dtr-supa-url')||'';
@@ -690,7 +679,12 @@ function loadConfig() {
 }
 
 function saveConfig() {
-  localStorage.setItem('dtr-anthropic', document.getElementById('cfg-anthropic').value.trim());
+  const ak = document.getElementById('cfg-anthropic').value.trim();
+  localStorage.setItem('dtr-anthropic', ak);
+  if (ak) localStorage.setItem('rawagon-anthropic-key', ak); // share with all apps
+  const tk = document.getElementById('cfg-tmdb').value.trim();
+  localStorage.setItem('dtr-tmdb', tk);
+  if (tk) localStorage.setItem('rawagon-tmdb-key', tk);
   localStorage.setItem('dtr-tmdb', document.getElementById('cfg-tmdb').value.trim());
   localStorage.setItem('dtr-elevenlabs', document.getElementById('cfg-elevenlabs').value.trim());
   localStorage.setItem('dtr-supa-url', document.getElementById('cfg-supa-url').value.trim());
@@ -721,5 +715,14 @@ window.addEventListener('load', () => {
   setInterval(() => { x -= 1; if(Math.abs(x) > t.scrollWidth/2) x=0; t.style.transform=`translateX(${x}px)`; }, 30);
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
 </body>
 </html>

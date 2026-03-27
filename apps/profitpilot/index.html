@@ -382,13 +382,13 @@ let provider, signer, addr;
 
 // ── Static data ─────────────────────────────────────────────────
 const ENTITIES = [
-  { name:"QWKS Protocol",       revenue:9344267, icon:"⛓", desc:"Payment processing 0.01% fee" },
-  { name:"BitPawn",              revenue:5280000, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
-  { name:"Droppa",               revenue:4200000, icon:"🎴", desc:"1% of break GMV + vault fees" },
-  { name:"AutoIQ / IQTitle",     revenue:3780000, icon:"🚗", desc:"0.3% of vehicle sale value" },
-  { name:"1.nce AllCard",        revenue:3240000, icon:"🪪", desc:"$49/mo identity subscription" },
-  { name:"GoldSnap / BWG / sBTC",revenue:2162000, icon:"🥇", desc:"0.25% mint + BWG vault custody" },
-  { name:"ProfitPilot",          revenue:1120000, icon:"📊", desc:"$29/mo analytics SaaS" },
+  { name:"QWKS Protocol", revenue:7500000, icon:"⛓", desc:"Payment processing 0.01% fee" },
+  { name:"BitPawn", revenue:961056, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
+  { name:"Droppa", revenue:3744000, icon:"🎴", desc:"1% of break GMV + vault fees" },
+  { name:"AutoIQ / IQTitle", revenue:12960000, icon:"🚗", desc:"0.3% of vehicle sale value" },
+  { name:"1.nce AllCard", revenue:898200, icon:"🪪", desc:"$49/mo identity subscription" },
+  { name:"GoldSnap / BWG / sBTC", revenue:93011, icon:"🥇", desc:"0.25% mint + BWG vault custody" },
+  { name:"ProfitPilot", revenue:2970000, icon:"📊", desc:"$29/mo analytics SaaS" },
   { name:"Drop The Reel",        revenue:480000,  icon:"🎬", desc:"AI film review subscriptions — Claude + ElevenLabs" },
   { name:"PawnVault",            revenue:360000,  icon:"💎", desc:"$99/mo pawn shop SaaS (Postgres)" },
   { name:"AI Orchestrator",      revenue:240000,  icon:"🤖", desc:"Multi-model SaaS — Vercel Edge" },
@@ -774,9 +774,65 @@ function renderHardware() {
       <div style="font-size:.68rem;color:var(--dim);margin-top:8px">Pilot qty: ${p.bom_qty}</div>
     </div>`).join("");
 }
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:   () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:        () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs:  () => localStorage.getItem("rawagon-elevenlabs-key") || localStorage.getItem("dtr-el") || "",
+  goldapi:     () => localStorage.getItem("rawagon-goldapi-key") || "",
+};
+
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) {
+    localStorage.setItem("rawagon-anthropic-key", key);
+    localStorage.setItem("dtr-anthropic", key); // also set for Drop The Reel
+  } else if (key.startsWith("xi-")) {
+    localStorage.setItem("rawagon-elevenlabs-key", key);
+  } else if (key.length > 20) {
+    localStorage.setItem("rawagon-tmdb-key", key);
+  }
+  document.getElementById("global-key-banner").style.display = "none";
+  document.getElementById("gkb-key").value = "";
+  if (typeof toast === "function") toast("API key saved ✓");
+}
+
+// Show banner if no Anthropic key and user clicks an AI feature
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) {
+    const banner = document.getElementById("global-key-banner");
+    if (banner) { banner.style.display = "flex"; banner.style.removeProperty("display"); 
+      document.getElementById("gkb-key")?.focus(); return false; }
+  }
+  return true;
+}
+
+function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
+  const key = RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body = { model: "claude-sonnet-4-6", max_tokens: maxTokens, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(d => {
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text || "";
+  });
+}
+
 window.addEventListener("load",()=>{
   renderEntityBars();
   renderCompoundBars();
+  fetchLTNPrice();
   calcCompound();
   renderLTNCompound();
   renderIPVault();
@@ -799,4 +855,13 @@ window.addEventListener("load",()=>{
   }
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
 </body></html>

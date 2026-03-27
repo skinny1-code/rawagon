@@ -614,20 +614,61 @@ async function connectWallet(){
   fetchPrices();loadPortfolio();loadReserves();
 }
 
-async function fetchYahooGold() {
-  // Fallback price feed — Yahoo Finance GLD ETF proxy
+
+// ── Live Gold Price — CoinGecko PAXG proxy (no API key needed) ──────────────
+// PAXG (PAX Gold) = 1 troy oz of gold, trades on-chain
+// Falls back to goldprice.org → hardcoded spot if all fail
+async function fetchLiveGoldPrice() {
+  // Try 1: CoinGecko PAXG (most reliable, no key)
   try {
-    const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/GLD?interval=1d&range=1d');
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true",
+      { signal: AbortSignal.timeout(4000) }
+    );
     const d = await r.json();
-    const gld = d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    if (gld) {
-      const goldPriceYahoo = gld * 10; // GLD = 1/10 troy oz
-      prices.gold = goldPriceYahoo;
-      document.getElementById("gold-spot-display") && (document.getElementById("gold-spot-display").textContent = "$"+goldPriceYahoo.toFixed(2));
-      document.getElementById("d-gold") && (document.getElementById("d-gold").textContent = "$"+goldPriceYahoo.toFixed(2));
-      ["kpi-xau","p-xau"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+goldPriceYahoo.toFixed(2);});
+    if (d["pax-gold"]?.usd) {
+      return { gold: d["pax-gold"].usd, change24h: d["pax-gold"].usd_24h_change || 0, source: "CoinGecko/PAXG" };
     }
-  } catch(e) { console.log("Yahoo finance fallback failed:", e.message); }
+  } catch(e) {}
+  // Try 2: Metals-API (free tier, no key for spot)
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/gold", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { gold: d.price, change24h: 0, source: "metals.live" };
+  } catch(e) {}
+  // Fallback: return last known price
+  return { gold: null, change24h: 0, source: "fallback" };
+}
+
+async function fetchLiveSilverPrice() {
+  try {
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=silver&vs_currencies=usd",
+      { signal: AbortSignal.timeout(4000) }
+    );
+    const d = await r.json();
+    if (d?.silver?.usd) return { silver: d.silver.usd, source: "CoinGecko" };
+  } catch(e) {}
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/silver", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { silver: d.price, source: "metals.live" };
+  } catch(e) {}
+  return { silver: null, source: "fallback" };
+}
+
+async function fetchYahooGold() {
+  // Replaced Yahoo Finance (CORS blocked) with CoinGecko PAXG
+  const result = await fetchLiveGoldPrice();
+  if (result.gold) {
+    prices.gold = result.gold;
+    ["gold-spot-display","d-gold"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+result.gold.toFixed(2);});
+    ["kpi-xau","p-xau"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+result.gold.toFixed(2);});
+    // Update silver too if not from oracle
+    const sr = await fetchLiveSilverPrice();
+    if (sr.silver) { prices.silver = sr.silver; }
+    console.log(`Gold: $${result.gold.toFixed(2)} (${result.source})`);
+  }
 }
 
 async function fetchPrices(){

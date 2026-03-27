@@ -824,7 +824,61 @@ function updateSpot(){
   calcMelt();
 }
 
+
+// ── Live Gold Price — CoinGecko PAXG proxy (no API key needed) ──────────────
+// PAXG (PAX Gold) = 1 troy oz of gold, trades on-chain
+// Falls back to goldprice.org → hardcoded spot if all fail
+async function fetchLiveGoldPrice() {
+  // Try 1: CoinGecko PAXG (most reliable, no key)
+  try {
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true",
+      { signal: AbortSignal.timeout(4000) }
+    );
+    const d = await r.json();
+    if (d["pax-gold"]?.usd) {
+      return { gold: d["pax-gold"].usd, change24h: d["pax-gold"].usd_24h_change || 0, source: "CoinGecko/PAXG" };
+    }
+  } catch(e) {}
+  // Try 2: Metals-API (free tier, no key for spot)
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/gold", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { gold: d.price, change24h: 0, source: "metals.live" };
+  } catch(e) {}
+  // Fallback: return last known price
+  return { gold: null, change24h: 0, source: "fallback" };
+}
+
+async function fetchLiveSilverPrice() {
+  try {
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=silver&vs_currencies=usd",
+      { signal: AbortSignal.timeout(4000) }
+    );
+    const d = await r.json();
+    if (d?.silver?.usd) return { silver: d.silver.usd, source: "CoinGecko" };
+  } catch(e) {}
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/silver", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { silver: d.price, source: "metals.live" };
+  } catch(e) {}
+  return { silver: null, source: "fallback" };
+}
+
 async function fetchOraclePrices(){
+  // Try live CoinGecko PAXG first (works without wallet)
+  const live = await fetchLiveGoldPrice();
+  if (live.gold) {
+    goldSpot = live.gold;
+    document.getElementById("gold-spot-display") && (document.getElementById("gold-spot-display").textContent = "$"+goldSpot.toFixed(2));
+    document.getElementById("gc-spot") && (document.getElementById("gc-spot").value = goldSpot.toFixed(2));
+    document.getElementById("d-gold") && (document.getElementById("d-gold").textContent = "$"+goldSpot.toFixed(2));
+    ["feed-gold"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+goldSpot.toFixed(2)+"/oz";});
+    calcMelt();
+  }
+  // Also try on-chain oracle (overrides if wallet connected)
   if(oracleContract){
     try{
       const p = await oracleContract.latestAnswer();

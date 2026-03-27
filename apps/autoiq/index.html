@@ -813,24 +813,34 @@ async function getAutoListData() {
   const vin = document.getElementById("al-vin").value.trim().toUpperCase();
   if (vin.length < 5) return;
   const el = document.getElementById("al-result");
-  el.innerHTML = "<div style=\'color:var(--soft);font-size:.78rem\'>Fetching NHTSA + market data...</div>";
+  el.innerHTML = "<div style=\'color:var(--soft);font-size:.78rem\'>Fetching NHTSA data...</div>";
   try {
     const r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/${vin}?format=json`);
     const d = await r.json();
     const v = d.Results[0];
     if (!v.Make) { el.innerHTML="<div style=\'color:var(--red);font-size:.78rem\'>VIN not found</div>"; return; }
-    // AutoList pricing model (retail/wholesale/private based on NHTSA decode + market spread)
-    // Realistic price range from NHTSA year + typical model segment
-    const yr = parseInt(v.ModelYear)||2020;
-    const ageFactor = Math.max(0.3, 1 - (2026-yr)*0.08);
-    const basePrice = Math.round(25000 * ageFactor / 1000) * 1000;
+    // NHTSA recalls check for valuation adjustment
+    let recallPenalty = 0, recallCount = 0;
+    try {
+      const rr = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(v.Make)}&model=${encodeURIComponent(v.Model)}&modelYear=${v.ModelYear}`);
+      const rd = await rr.json();
+      recallCount = rd.Count || 0;
+      recallPenalty = Math.min(recallCount * 150, 2000);
+    } catch(e) {}
+    // Market valuation estimate
+    const tiers = {toyota:28000,honda:27000,ford:32000,chevrolet:31000,bmw:52000,mercedes:55000,tesla:48000,audi:47000,nissan:26000,hyundai:24000,kia:23000,subaru:28000,mazda:26000,volkswagen:30000};
+    const makeTier = tiers[v.Make?.toLowerCase()] || 29000;
+    const ageYears = new Date().getFullYear() - parseInt(v.ModelYear || 2020);
+    const depreciation = Math.max(0.3, 1 - (ageYears * 0.12));
+    const basePrice = Math.round(makeTier * depreciation - recallPenalty);
     el.innerHTML = `<div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
       <div style="font-weight:700;color:var(--blue);margin-bottom:6px">${v.ModelYear} ${v.Make} ${v.Model}</div>
-      <div class="row"><span style="color:var(--soft)">AutoList Private</span><span class="mono" style="color:var(--grn)">$${(basePrice*.85).toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">AutoList Retail</span><span class="mono" style="color:var(--blue)">$${basePrice.toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">Dealer Wholesale</span><span class="mono" style="color:var(--soft)">$${(basePrice*.75).toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">IQCAR mint fee (0.3%)</span><span class="mono" style="color:var(--gold)">$${(basePrice*.003).toFixed(0)}</span></div>
-      <div style="font-size:.66rem;color:var(--dim);margin-top:4px">AutoList pricing model — NHTSA VIN + market spread · Direct API Q2 2026</div>
+      <div class="row"><span style="color:var(--soft)">Est. Private Party</span><span class="mono" style="color:var(--grn)">$${Math.round(basePrice*.88).toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">Est. Retail (dealer)</span><span class="mono" style="color:var(--blue)">$${basePrice.toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">Est. Wholesale</span><span class="mono" style="color:var(--soft)">$${Math.round(basePrice*.78).toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">IQCAR mint fee (0.3%)</span><span class="mono" style="color:var(--gold)">$${Math.round(basePrice*.003)}</span></div>
+      ${recallCount > 0 ? `<div class="row"><span style="color:var(--red)">NHTSA recalls (${recallCount})</span><span class="mono" style="color:var(--red)">-$${recallPenalty}</span></div>` : '<div class="row"><span style="color:var(--grn)">NHTSA recalls</span><span class="mono" style="color:var(--grn)">None found ✓</span></div>'}
+      <div style="font-size:.66rem;color:var(--dim);margin-top:4px">NHTSA data · recallPenalty $150/recall · depreciation 12%/yr</div>
     </div>`;
   } catch(e) { el.innerHTML="<div style=\'color:var(--red);font-size:.78rem\'>" + e.message + "</div>"; }
 }
