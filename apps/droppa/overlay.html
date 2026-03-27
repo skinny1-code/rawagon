@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Droppa Live Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: transparent !important;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
+  background: linear-gradient(90deg, rgba(6,4,10,.97) 0%, rgba(13,10,20,.95) 60%, rgba(6,4,10,.97) 100%);
+  border-top: 2px solid rgba(139,92,246,.6);
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 0;
+}
+
+.bar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 28px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  margin-right: 28px;
+  flex-shrink: 0;
+}
+
+.bar-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.bar-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 900;
+  font-size: 18px;
+  background: linear-gradient(135deg, #a78bfa, #f9a8d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bar-platform {
+  font-size: 9px;
+  color: rgba(255,255,255,.4);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* BREAK INFO */
+.break-section {
+  flex: 1;
+  padding-right: 28px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  margin-right: 28px;
+}
+
+.break-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: #f0eaff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.break-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.45);
+  margin-top: 2px;
+  display: flex;
+  gap: 14px;
+}
+
+.break-meta span { white-space: nowrap; }
+
+/* SLOTS PROGRESS */
+.slots-section {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-right: 28px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  margin-right: 28px;
+  flex-shrink: 0;
+  width: 140px;
+}
+
+.slots-label {
+  font-size: 9px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.slots-bar {
+  height: 6px;
+  background: rgba(255,255,255,.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.slots-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-radius: 3px;
+  transition: width .5s ease;
+}
+
+.slots-count {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #a78bfa;
+}
+
+/* LAST WINNER */
+.winner-section {
+  flex-shrink: 0;
+  min-width: 180px;
+}
+
+.winner-label {
+  font-size: 9px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.winner-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #f59e0b;
+  animation: winnerPop .4s ease;
+}
+
+@keyframes winnerPop {
+  0% { transform: scale(.8); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* LIVE BADGE */
+.live-badge {
+  position: absolute;
+  top: -42px;
+  right: 32px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(6,4,10,.92);
+  border: 1.5px solid rgba(239,68,68,.5);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: livePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.85); }
+}
+
+.live-text {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: .1em;
+}
+
+.live-platform {
+  font-size: 10px;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .06em;
+}
+
+/* ── TOP CORNER — SLOT CALLOUT ── */
+.callout-box {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  background: rgba(6,4,10,.95);
+  border: 1.5px solid rgba(139,92,246,.5);
+  border-radius: 12px;
+  padding: 14px 20px;
+  min-width: 220px;
+  display: none;
+  animation: slideIn .3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+.callout-label {
+  font-size: 9px;
+  color: rgba(255,255,255,.35);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.callout-winner {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #f0eaff;
+}
+
+.callout-card {
+  font-size: 12px;
+  color: #a78bfa;
+  margin-top: 3px;
+}
+
+.callout-slot {
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+  margin-top: 2px;
+}
+
+/* ── PRICE TICKER ── */
+.price-ticker {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 32px;
+  background: rgba(6,4,10,.85);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ticker-inner {
+  display: flex;
+  gap: 48px;
+  animation: tickerScroll 40s linear infinite;
+  white-space: nowrap;
+  padding-left: 100%;
+}
+
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-item {
+  font-size: 11px;
+  color: rgba(255,255,255,.55);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ticker-val { color: #f0eaff; font-weight: 700; }
+.ticker-up  { color: #10b981; }
+.ticker-dn  { color: #ef4444; }
+
+/* ── CONFETTI burst for winner ── */
+.confetti-container {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px; height: 8px;
+  opacity: 0;
+  animation: confettiFall 2s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(1200px) rotate(720deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- Price ticker -->
+<div class="price-ticker">
+  <div class="ticker-inner" id="ticker-inner">
+    <span class="ticker-item">🔴 LIVE BREAK<span class="ticker-val" id="tk-break">Loading...</span></span>
+    <span class="ticker-item">💰 SLOT PRICE<span class="ticker-val" id="tk-price">$—</span></span>
+    <span class="ticker-item">🎴 SLOTS FILLED<span class="ticker-val" id="tk-filled">0/0</span></span>
+    <span class="ticker-item">🥇 GOLD<span class="ticker-val" id="tk-gold">$—</span></span>
+    <span class="ticker-item">₿ BTC<span class="ticker-val" id="tk-btc">$—</span></span>
+    <span class="ticker-item">🏆 LAST WINNER<span class="ticker-val" id="tk-winner">—</span></span>
+    <!-- Duplicate for seamless loop -->
+    <span class="ticker-item">🔴 LIVE BREAK<span class="ticker-val" id="tk-break2">Loading...</span></span>
+    <span class="ticker-item">💰 SLOT PRICE<span class="ticker-val" id="tk-price2">$—</span></span>
+    <span class="ticker-item">🎴 SLOTS FILLED<span class="ticker-val" id="tk-filled2">0/0</span></span>
+    <span class="ticker-item">🥇 GOLD<span class="ticker-val" id="tk-gold2">$—</span></span>
+    <span class="ticker-item">₿ BTC<span class="ticker-val" id="tk-btc2">$—</span></span>
+    <span class="ticker-item">🏆 LAST WINNER<span class="ticker-val" id="tk-winner2">—</span></span>
+  </div>
+</div>
+
+<!-- Callout box (top right, shows on new winner) -->
+<div class="callout-box" id="callout-box">
+  <div class="callout-label">🏆 Slot Winner</div>
+  <div class="callout-winner" id="callout-winner">—</div>
+  <div class="callout-card" id="callout-card"></div>
+  <div class="callout-slot" id="callout-slot"></div>
+</div>
+
+<!-- Confetti -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- Bottom bar -->
+<div class="bottom-bar">
+  <div class="bar-brand">
+    <div class="bar-logo">🎴</div>
+    <div>
+      <div class="bar-title">DROPPA</div>
+      <div class="bar-platform" id="bar-platform">LIVE BREAK</div>
+    </div>
+  </div>
+
+  <div class="break-section">
+    <div class="break-name" id="bar-break-name">Loading break...</div>
+    <div class="break-meta">
+      <span id="bar-format">Random Teams</span>
+      <span>·</span>
+      <span id="bar-price">$—/slot</span>
+      <span>·</span>
+      <span id="bar-time"></span>
+    </div>
+  </div>
+
+  <div class="slots-section">
+    <div class="slots-label">Slots</div>
+    <div class="slots-count"><span id="bar-filled">0</span>/<span id="bar-slots">—</span></div>
+    <div class="slots-bar">
+      <div class="slots-fill" id="slots-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="winner-section">
+    <div class="winner-label">Last Winner</div>
+    <div class="winner-name" id="bar-last-winner">Waiting...</div>
+  </div>
+
+  <!-- Live badge -->
+  <div class="live-badge">
+    <div class="live-dot" id="live-dot"></div>
+    <div class="live-text" id="live-text">LIVE</div>
+    <div class="live-platform" id="live-platform-badge">WhatNot</div>
+  </div>
+</div>
+
+<script>
+let lastWinner = '';
+let overlayData = {};
+
+function update() {
+  try {
+    const raw = localStorage.getItem('droppa-overlay');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    overlayData = data;
+
+    // Break name
+    if (data.breakTitle) {
+      document.getElementById('bar-break-name').textContent = data.breakTitle;
+      ['tk-break','tk-break2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = data.breakTitle; });
+    }
+
+    // Price
+    if (data.price) {
+      document.getElementById('bar-price').textContent = '$' + data.price + '/slot';
+      ['tk-price','tk-price2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '$' + data.price; });
+    }
+
+    // Slots
+    const filled = data.filled || 0;
+    const total  = data.slots || 30;
+    const pct    = Math.min(100, (filled / total) * 100).toFixed(1);
+    document.getElementById('bar-filled').textContent = filled;
+    document.getElementById('bar-slots').textContent  = total;
+    document.getElementById('slots-fill').style.width  = pct + '%';
+    ['tk-filled','tk-filled2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = filled + '/' + total; });
+
+    // Platform
+    if (data.platform) {
+      ['bar-platform','live-platform-badge'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = data.platform.toUpperCase();
+      });
+    }
+
+    // Live status
+    const liveDot  = document.getElementById('live-dot');
+    const liveText = document.getElementById('live-text');
+    if (data.live) {
+      liveDot.style.background  = '#ef4444';
+      liveText.style.color = '#ef4444';
+      liveText.textContent = 'LIVE';
+    } else {
+      liveDot.style.background  = '#6b7280';
+      liveText.style.color = '#6b7280';
+      liveText.textContent = 'OFFLINE';
+    }
+
+    // New winner callout
+    if (data.lastWinner && data.lastWinner !== lastWinner) {
+      lastWinner = data.lastWinner;
+      document.getElementById('bar-last-winner').textContent = lastWinner;
+      ['tk-winner','tk-winner2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = lastWinner; });
+      showWinnerCallout(lastWinner);
+    }
+
+    // Time
+    document.getElementById('bar-time').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  } catch(e) {}
+}
+
+function showWinnerCallout(name) {
+  const box = document.getElementById('callout-box');
+  document.getElementById('callout-winner').textContent = name;
+  box.style.display = 'block';
+  spawnConfetti();
+  setTimeout(() => { box.style.display = 'none'; }, 6000);
+}
+
+function spawnConfetti() {
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = ['#8b5cf6','#ec4899','#f59e0b','#10b981','#60a5fa','#f0eaff'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 40}%;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      border-radius: ${Math.random() > .5 ? '50%' : '2px'};
+      animation-delay: ${Math.random() * .8}s;
+      animation-duration: ${1.5 + Math.random()}s;
+    `;
+    container.appendChild(p);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 3000);
+}
+
+async function fetchPrices() {
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,pax-gold&vs_currencies=usd');
+    const d = await r.json();
+    if (d.bitcoin?.usd) {
+      const btc = '$' + d.bitcoin.usd.toLocaleString();
+      ['tk-btc','tk-btc2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = btc; });
+    }
+    if (d['pax-gold']?.usd) {
+      const gold = '$' + d['pax-gold'].usd.toFixed(2);
+      ['tk-gold','tk-gold2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = gold; });
+    }
+  } catch(e) {}
+}
+
+// Poll for updates from localStorage (Droppa app writes to droppa-overlay)
+update();
+setInterval(update, 3000);
+
+// Fetch prices every 5 min
+fetchPrices();
+setInterval(fetchPrices, 300000);
+</script>
+</body>
+</html>

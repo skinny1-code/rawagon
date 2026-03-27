@@ -761,5 +761,95 @@ t('Droppa: key manager banner exists', () => {
   assert(html.includes('saveGlobalKey'), 'must have saveGlobalKey function');
 });
 
+
+// ── Droppa Live Stream / Winners / Postage / Notify tests ─────────────────
+t('Droppa: 13 tabs (4 new added)', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const m = html.match(/const ids=\[([^\]]+)\]/);
+  assert(m, 'ids array must exist');
+  const ids = m[1].split(',').map(s => s.trim().replace(/['"]/g,''));
+  assert.strictEqual(ids.length, 13, 'must have 13 tabs');
+  ['stream','winners','postage','notify'].forEach(tab =>
+    assert(ids.includes(tab), `${tab} tab must exist`)
+  );
+});
+
+t('Droppa: all 13 pane IDs exist in HTML', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const tabs = ['dashboard','breaks','inventory','pricing','analytics','clips','referrals','vault','stream','winners','postage','notify','settings'];
+  tabs.forEach(t => assert(html.includes('id="pane-'+t+'"'), `pane-${t} must exist`));
+});
+
+t('Droppa: Live Stream tab has parseChatMessages + anthropicFetch', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('parseChatMessages'), 'must have parseChatMessages');
+  assert(src.includes('generateCallout'), 'must have generateCallout');
+  assert(src.includes('updateOverlayData'), 'must have updateOverlayData');
+  assert(src.includes('startLiveSession'), 'must have startLiveSession');
+});
+
+t('Droppa: Winners tab has CRUD + CSV export + auto-assign', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('saveWinner'), 'must have saveWinner');
+  assert(html.includes('exportWinnersCSV'), 'must have exportWinnersCSV');
+  assert(html.includes('autoAssignCards'), 'must have autoAssignCards');
+  assert(html.includes('renderWinnersTable'), 'must have renderWinnersTable');
+});
+
+t('Droppa: Postage tab has EasyPost API integration', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('api.easypost.com'), 'must call EasyPost API');
+  assert(src.includes('shopRates'), 'must have shopRates');
+  assert(src.includes('generateBulkLabels'), 'must have generateBulkLabels');
+  assert(src.includes('buyLabel'), 'must have buyLabel');
+  assert(src.includes('/v2/shipments'), 'must use EasyPost v2 shipments endpoint');
+});
+
+t('Droppa: Notify tab has Email + SMS + Discord channels', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('api.resend.com/emails'), 'must use Resend API for email');
+  assert(src.includes('twilio.com'), 'must use Twilio for SMS');
+  assert(src.includes('discord'), 'must use Discord webhook');
+  assert(src.includes('sendNotification'), 'must have sendNotification');
+});
+
+t('Droppa: Notify tab has all 6 message templates', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const src2 = require('fs').readFileSync('apps/droppa/droppa-live.js','utf8');
+  ['announce','winner','shipped','reminder','sold_out','results'].forEach(t =>
+    assert(src2.includes(t + ':'), `template ${t} must exist`)
+  );
+});
+
+t('Droppa: OBS overlay file exists', () => {
+  const fs = require('fs');
+  assert(fs.existsSync('apps/droppa/overlay.html'), 'overlay.html must exist');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('droppa-overlay'), 'must read from localStorage');
+  assert(html.includes('confetti'), 'must have winner confetti');
+  assert(html.includes('bottom-bar'), 'must have bottom bar overlay');
+});
+
+t('Droppa: EasyPost rate shopping handles no-key gracefully', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('EasyPost API key'), 'must show fallback when no key');
+});
+
+t('OBS overlay: reads CoinGecko for live prices', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('pax-gold'), 'overlay must show live gold price');
+  assert(html.includes('bitcoin'), 'overlay must show live BTC price');
+  assert(html.includes('confettiFall'), 'must have winner confetti animation');
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
 process.exit(f?1:0);

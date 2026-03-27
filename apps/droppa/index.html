@@ -192,7 +192,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
     <div class="nav-item" onclick="show('referrals')">Referrals</div>
     <div class="nav-item" onclick="show('vault')">Card Vault</div>
     <div class="nav-item" onclick="show('vault-tab')">🏦 Card Vault</div>
-    <div class="nav-item" onclick="show('settings')">Settings</div>
+    <div class="nav-item" onclick="show('stream')">🔴 Live Stream</div>
+  <div class="nav-item" onclick="show('winners')">🏆 Winners</div>
+  <div class="nav-item" onclick="show('postage')">📦 Postage</div>
+  <div class="nav-item" onclick="show('notify')">📣 Notify</div>
+  <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
@@ -494,6 +498,384 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
 </div>
 
 <!-- SETTINGS -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LIVE STREAM TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-stream">
+  <div class="g2" style="margin-bottom:14px">
+    <div>
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div class="card-title" style="color:var(--red)">🔴 Live Stream Assistant</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:12px;line-height:1.7">AI co-host for WhatNot · TikTok · YouTube Live. Paste chat messages → Claude manages winners, answers questions, generates call-outs.</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <select id="ls-platform" style="width:auto;margin:0;font-size:.76rem">
+            <option value="whatnot">WhatNot</option>
+            <option value="tiktok">TikTok Live</option>
+            <option value="youtube">YouTube Live</option>
+          </select>
+          <select id="ls-break" style="flex:1;margin:0;font-size:.76rem">
+            <option value="">-- select active break --</option>
+          </select>
+          <button class="btn btn-sm" style="background:var(--red);color:#fff;border:none" onclick="startLiveSession()" id="ls-start-btn">▶ Go Live</button>
+        </div>
+        <div id="ls-live-banner" style="display:none;padding:8px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;font-size:.74rem;margin-bottom:10px">
+          <span style="color:var(--red);font-weight:700">🔴 LIVE</span>
+          <span id="ls-break-name" style="color:var(--wh);margin-left:8px"></span>
+          <span id="ls-slot-count" style="color:var(--soft);margin-left:8px"></span>
+        </div>
+        <label>Paste chat messages (WhatNot/TikTok/YouTube chat export)</label>
+        <textarea id="ls-chat-input" style="height:90px;resize:vertical" placeholder="e.g.:&#10;@user1: Can I get slot 5?&#10;@user2: How much for a random slot?&#10;@user3: What set is this?"></textarea>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="btn btn-purp btn-sm" onclick="parseChatMessages()" style="flex:1">🤖 Parse Chat → Winners</button>
+          <button class="btn btn-outline btn-sm" onclick="generateCallout()" style="flex:1">📢 Generate Call-out</button>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="aiAnswerQuestion()" style="flex:1">❓ Answer Question</button>
+          <button class="btn btn-outline btn-sm" onclick="announceSale()">📣 Hype Card</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--purp)">🎙 AI Response</div>
+        <div id="ls-ai-output" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.78rem;color:var(--wh);line-height:1.7;min-height:80px;white-space:pre-wrap">AI co-host ready — connect a break and start your session.</div>
+        <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%" onclick="navigator.clipboard.writeText(document.getElementById('ls-ai-output').textContent).then(()=>toast('Copied ✓'))">Copy to Chat</button>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">📺 OBS Browser Source Overlay</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;line-height:1.7">Add this URL as a Browser Source in OBS. Shows live break status, current slot, winner callouts, and countdown.</div>
+        <div style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--gold);word-break:break-all;margin-bottom:8px" id="overlay-url">http://localhost:3000/apps/droppa/overlay.html</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('overlay-url').textContent).then(()=>toast('URL copied ✓'))">Copy URL</button>
+          <button class="btn btn-outline btn-sm" onclick="window.open(document.getElementById('overlay-url').textContent,'_blank')">Preview Overlay ↗</button>
+        </div>
+        <div style="font-size:.7rem;color:var(--soft);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">OBS Settings</div>
+        <div style="font-size:.72rem;display:flex;flex-direction:column;gap:4px;color:var(--soft)">
+          <div>Width: <span style="color:var(--wh)">1920</span> · Height: <span style="color:var(--wh)">1080</span></div>
+          <div>FPS: <span style="color:var(--wh)">30</span> · Custom CSS: <span style="color:var(--wh)">body { background: transparent !important; }</span></div>
+          <div>Refresh: <span style="color:var(--wh)">Every 5 seconds</span> (auto-updates with break data)</div>
+        </div>
+        <div style="margin-top:10px;padding:8px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:6px;font-size:.7rem;color:var(--soft)">
+          Overlay reads data from this same Droppa app. No extra setup. Works while you stream.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--grn)">📊 Live Stats</div>
+        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px">
+          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Session duration</span><span id="ls-duration">—</span></div>
+          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Slots assigned</span><span id="ls-assigned" style="color:var(--grn)">0</span></div>
+          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Messages parsed</span><span id="ls-msgs-parsed">0</span></div>
+          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Chat questions answered</span><span id="ls-answered">0</span></div>
+          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0"><span class="soft">Revenue this session</span><span id="ls-session-rev" style="color:var(--gold)">$0</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="endSession()">⏹ End Session + Export Winners</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     WINNERS TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-winners">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="font-size:.88rem;font-weight:700">Winner Management</div>
+    <select id="w-break-filter" onchange="loadWinners()" style="width:auto;margin:0;font-size:.76rem">
+      <option value="">All Breaks</option>
+    </select>
+    <button class="btn btn-purp btn-sm" onclick="addWinnerManual()">+ Add Winner</button>
+    <button class="btn btn-outline btn-sm" onclick="exportWinnersCSV()">↓ Export CSV</button>
+    <button class="btn btn-outline btn-sm" onclick="autoAssignCards()">🤖 Auto-Assign Cards</button>
+    <div style="margin-left:auto;font-size:.74rem;color:var(--soft)" id="winners-meta"></div>
+  </div>
+
+  <!-- Add winner panel -->
+  <div id="add-winner-panel" style="display:none;margin-bottom:14px">
+    <div class="card" style="border-left:3px solid var(--gold)">
+      <div class="card-title" style="color:var(--gold)">Add Winner</div>
+      <div class="form-row">
+        <div><label>Username / Name</label><input id="aw-name" placeholder="@username or Full Name"></div>
+        <div><label>Slot(s) Won</label><input id="aw-slots" placeholder="3, 7, 12 (comma separated)"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Platform</label>
+          <select id="aw-platform">
+            <option>WhatNot</option><option>TikTok Live</option><option>YouTube Live</option><option>Direct/Other</option>
+          </select>
+        </div>
+        <div><label>Card(s) Assigned</label><input id="aw-cards" placeholder="Juan Soto /50, Mike Trout Auto"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Email (for shipping notification)</label><input type="email" id="aw-email" placeholder="winner@email.com"></div>
+        <div><label>Phone (for SMS notification)</label><input id="aw-phone" placeholder="+15551234567"></div>
+      </div>
+      <div>
+        <label>Shipping Address</label>
+        <input id="aw-addr1" placeholder="123 Main St" style="margin-bottom:6px">
+        <div class="form-row" style="gap:8px">
+          <input id="aw-city" placeholder="City" style="flex:2">
+          <input id="aw-state" placeholder="ST" style="flex:1;max-width:60px">
+          <input id="aw-zip" placeholder="12345" style="flex:1;max-width:80px">
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label>Payment Status</label>
+          <select id="aw-paid">
+            <option value="paid">Paid ✓</option>
+            <option value="pending">Pending</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </div>
+        <div><label>Card Value Est. ($)</label><input type="number" id="aw-value" placeholder="45.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn btn-purp" onclick="saveWinner()">Save Winner</button>
+        <button class="btn btn-outline" onclick="document.getElementById('add-winner-panel').style.display='none'">Cancel</button>
+      </div>
+      <div id="aw-status" style="margin-top:6px;font-size:.72rem;color:var(--soft)"></div>
+    </div>
+  </div>
+
+  <!-- Winners table -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl" id="winners-table">
+      <thead>
+        <tr>
+          <th style="padding:10px 12px">Winner</th>
+          <th>Slot(s)</th>
+          <th>Card(s)</th>
+          <th>Platform</th>
+          <th>Payment</th>
+          <th>Label</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="winners-tbody">
+        <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--soft);font-size:.78rem">No winners yet — add from Live Stream tab or manually</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="g3" style="margin-top:14px">
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">TOTAL WINNERS</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--purp);font-family:'Syne',sans-serif" id="w-total">0</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">LABELS NEEDED</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--gold);font-family:'Syne',sans-serif" id="w-labels-needed">0</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">SHIPPED</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--grn);font-family:'Syne',sans-serif" id="w-shipped">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     POSTAGE TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-postage">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid var(--gold)">
+        <div class="card-title" style="color:var(--gold)">📦 Shipping Settings</div>
+        <label>Preferred Carrier</label>
+        <select id="ps-carrier" onchange="updateCarrierUI()">
+          <option value="USPS">USPS (Priority Mail)</option>
+          <option value="UPS">UPS Ground</option>
+          <option value="USPS_FC">USPS First Class</option>
+          <option value="cheapest">Always Cheapest</option>
+        </select>
+        <label>Default Package Type</label>
+        <select id="ps-pkg">
+          <option value="SMALL_FLAT_RATE_BOX">USPS Small Flat Rate Box</option>
+          <option value="MEDIUM_FLAT_RATE_BOX">USPS Medium Flat Rate Box</option>
+          <option value="bubble_mailer">Bubble Mailer (4x8)</option>
+          <option value="toploader_mailer">Toploader PWE</option>
+          <option value="custom">Custom Dimensions</option>
+        </select>
+        <div id="custom-dims" style="display:none">
+          <div class="form-row">
+            <div><label>Length (in)</label><input type="number" id="ps-len" value="6" step="0.5"></div>
+            <div><label>Width (in)</label><input type="number" id="ps-wid" value="4" step="0.5"></div>
+            <div><label>Height (in)</label><input type="number" id="ps-hgt" value="1" step="0.25"></div>
+          </div>
+        </div>
+        <label>Default Weight (oz)</label>
+        <input type="number" id="ps-weight" value="2" step="0.5">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input type="checkbox" id="ps-signature" style="width:auto;margin:0">
+          <label style="display:inline;margin:0;text-transform:none;letter-spacing:0;font-size:.76rem;color:var(--wh)">Require signature on delivery</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <input type="checkbox" id="ps-insurance" style="width:auto;margin:0" checked>
+          <label style="display:inline;margin:0;text-transform:none;letter-spacing:0;font-size:.76rem;color:var(--wh)">Include insurance (declared value)</label>
+        </div>
+        <button class="btn btn-purp btn-sm" style="margin-top:10px;width:100%" onclick="savePostageSettings()">Save Preferences</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--gold)">🔑 Shipping API Keys</div>
+        <div style="font-size:.7rem;color:var(--gold);padding:6px 10px;background:rgba(245,158,11,.06);border-radius:6px;margin-bottom:10px">Keys stored locally only</div>
+        <label>EasyPost API Key</label>
+        <input type="password" id="ps-easypost" placeholder="EZAK... (test or live)">
+        <div style="font-size:.68rem;color:var(--soft);margin-bottom:8px">Get free at easypost.com — includes USPS + UPS + FedEx rates</div>
+        <label>Sender Name</label>
+        <input id="ps-sender-name" placeholder="Your Name / Shop Name">
+        <label>Sender Address</label>
+        <input id="ps-addr1" placeholder="123 Main St">
+        <div class="form-row">
+          <input id="ps-city" placeholder="City" style="flex:2">
+          <input id="ps-state" placeholder="ST" style="flex:1;max-width:60px">
+          <input id="ps-zip" placeholder="12345" style="flex:1;max-width:80px">
+        </div>
+        <button class="btn btn-purp" style="width:100%;margin-top:6px" onclick="saveShippingKeys()">Save</button>
+        <div id="ps-key-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Rate Shopper -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title" style="color:var(--gold)">💰 Rate Shopper</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px">Compare USPS vs UPS for a single shipment</div>
+        <label>To Address</label>
+        <input id="rs-to-zip" placeholder="Destination ZIP code">
+        <div class="form-row">
+          <div><label>Weight (oz)</label><input type="number" id="rs-weight" value="2" step="0.5"></div>
+          <div><label>Value ($)</label><input type="number" id="rs-value" placeholder="25.00"></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="width:100%;margin-top:6px" onclick="shopRates()" id="rs-btn">Get Live Rates</button>
+        <div id="rates-display" style="margin-top:10px"></div>
+      </div>
+
+      <!-- Bulk Label Generation -->
+      <div class="card">
+        <div class="card-title" style="color:var(--grn)">🏷 Bulk Label Generation</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px">Generate shipping labels for all winners without addresses</div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Winners needing labels</span><span id="bulk-count" style="color:var(--gold)">0</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Missing addresses</span><span id="bulk-missing" style="color:var(--red)">0</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Est. postage (USPS)</span><span id="bulk-est" style="color:var(--grn)">$0.00</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0"><span class="soft">Labels ready</span><span id="bulk-ready" style="color:var(--grn)">0</span></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-purp btn-sm" onclick="generateBulkLabels()" style="flex:1">Generate All Labels</button>
+          <button class="btn btn-outline btn-sm" onclick="downloadAllLabels()" style="flex:1">↓ Download ZIP</button>
+        </div>
+        <div id="bulk-status" style="margin-top:8px;font-size:.72rem;color:var(--soft)"></div>
+        <!-- Label list -->
+        <div id="label-list" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     NOTIFY TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-notify">
+  <div class="g2">
+    <div>
+      <!-- Notification Channels Config -->
+      <div class="card" style="border-top:3px solid var(--blue)">
+        <div class="card-title" style="color:var(--blue)">📣 Notification Channels</div>
+        <!-- Email -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">📧</span>
+            <span style="font-size:.8rem;font-weight:700">Email</span>
+            <span id="email-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input type="password" id="n-resend-key" placeholder="Resend API key (re_...)">
+          <input id="n-from-email" placeholder="breaks@yourdomain.com" style="margin-top:4px">
+          <div style="font-size:.68rem;color:var(--soft);margin-bottom:4px">Get free at resend.com · 3,000 emails/mo free</div>
+        </div>
+        <!-- SMS -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">💬</span>
+            <span style="font-size:.8rem;font-weight:700">SMS (Twilio)</span>
+            <span id="sms-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input type="password" id="n-twilio-sid" placeholder="Twilio Account SID">
+          <input type="password" id="n-twilio-token" placeholder="Twilio Auth Token" style="margin-top:4px">
+          <input id="n-twilio-from" placeholder="Your Twilio phone +15551234567" style="margin-top:4px">
+        </div>
+        <!-- Discord -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">🟣</span>
+            <span style="font-size:.8rem;font-weight:700">Discord</span>
+            <span id="discord-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input id="n-discord-webhook" placeholder="Discord webhook URL">
+          <div style="font-size:.68rem;color:var(--soft)">Server Settings → Integrations → Webhooks</div>
+        </div>
+        <button class="btn btn-purp" style="width:100%" onclick="saveNotifyChannels()">Save Channels</button>
+        <div id="n-ch-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
+      </div>
+
+      <!-- Customer List -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">👥 Customer List</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="n-cust-search" placeholder="Search..." style="flex:1;margin:0" oninput="renderCustomerList()">
+          <button class="btn btn-outline btn-sm" onclick="importCustomersFromWinners()">↑ Import from Winners</button>
+        </div>
+        <div id="customer-list-display" style="font-size:.74rem;max-height:180px;overflow-y:auto"></div>
+        <div style="font-size:.7rem;color:var(--soft);margin-top:6px" id="customer-count">0 customers · 0 with email · 0 with phone</div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Compose & Send -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">✉️ Compose Message</div>
+        <label>Template</label>
+        <select id="n-template" onchange="loadTemplate()">
+          <option value="custom">Custom Message</option>
+          <option value="announce">📅 Upcoming Break Announcement</option>
+          <option value="winner">🏆 You Won! Congratulations</option>
+          <option value="shipped">📦 Your Package Shipped</option>
+          <option value="reminder">⏰ Break Starting Soon Reminder</option>
+          <option value="sold_out">🔥 Break Sold Out!</option>
+          <option value="results">📊 Break Results + Cards</option>
+        </select>
+        <label>Subject (Email)</label>
+        <input id="n-subject" placeholder="🔥 Box Break Tonight at 8pm EST!">
+        <label>Message</label>
+        <textarea id="n-message" style="height:120px;resize:vertical" placeholder="Write your message here...&#10;&#10;Use {name} for winner name&#10;{break_name} for break title&#10;{card} for their card&#10;{tracking} for tracking number"></textarea>
+        <label>Send To</label>
+        <select id="n-send-to">
+          <option value="all">All Customers</option>
+          <option value="winners">Winners Only (current break)</option>
+          <option value="paid">Paid Winners Only</option>
+          <option value="unshipped">Unshipped Winners</option>
+          <option value="test">Test (send to myself only)</option>
+        </select>
+        <label>Send Via</label>
+        <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-email" checked style="width:auto;margin:0"> Email</label>
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-sms" style="width:auto;margin:0"> SMS</label>
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-discord" style="width:auto;margin:0"> Discord</label>
+        </div>
+        <button class="btn btn-purp" style="width:100%" id="n-send-btn" onclick="sendNotification()">📣 Send Notification</button>
+        <div id="n-send-status" style="margin-top:8px;font-size:.74rem;text-align:center;color:var(--soft)"></div>
+      </div>
+
+      <!-- Sent History -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">📨 Sent History</div>
+        <div id="notify-history" style="font-size:.74rem;max-height:200px;overflow-y:auto">
+          <div style="color:var(--soft);text-align:center;padding:16px">No messages sent yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="pane" id="pane-settings">
   <div class="g2">
     <div class="card">
@@ -1521,7 +1903,7 @@ async function getTestUSDC(){
 }
 
 function show(id){
-  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","vault","settings"];
+  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","vault","stream","winners","postage","notify","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="dashboard")loadDashboard();
@@ -2165,6 +2547,21 @@ window.addEventListener("load",()=>{
   })();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+  populateBreakSelects();
+  renderWinnersTable();
+  updatePostageStats();
+  loadPostageSettings();
+  loadNotifySettings();
+  renderNotifyHistory();
+  renderCustomerList();
+  // Set overlay URL to actual device IP
+  try {
+    const overlayEl = document.getElementById('overlay-url');
+    if (overlayEl) {
+      const base = window.location.origin;
+      overlayEl.textContent = base + '/apps/droppa/overlay.html';
+    }
+  } catch(e) {}
 });
 </script>
 
@@ -2176,4 +2573,5 @@ window.addEventListener("load",()=>{
   <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
+<script src="/apps/droppa/droppa-live.js"></script>
 </body></html>
