@@ -144,9 +144,9 @@ input:focus,select:focus{border-color:var(--teal);}
 <!-- DASHBOARD -->
 <div class="pane active" id="pane-dashboard">
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$29.1M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">7 entities</div></div>
+    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">10 active entities</div></div>
     <div class="kpi"><div class="kpi-val grn" id="kpi-ebitda">84.9%</div><div class="kpi-lbl">EBITDA Margin</div><div class="kpi-sub">$24.7M net</div></div>
-    <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.37M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.53M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
     <div class="kpi"><div class="kpi-val" style="color:#8b5cf6" id="kpi-ltn-stk">$3.44M</div><div class="kpi-lbl">Staker Yield/yr</div><div class="kpi-sub">0.1% of $3.44B vol</div></div>
     <div class="kpi"><div class="kpi-val teal" id="kpi-gas">$0.0000082</div><div class="kpi-lbl">Gas per tx</div><div class="kpi-delta up">304,878x cheaper than Visa</div></div>
     <div class="kpi"><div class="kpi-val gold">$0.084</div><div class="kpi-lbl">LTN Price</div><div class="kpi-sub">1B supply · 0.001 burn/tx</div></div>
@@ -341,6 +341,7 @@ input:focus,select:focus{border-color:var(--teal);}
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Non-provisional deadline</span><span class="gold">Mar 22, 2027</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Attorney engagement</span><span class="gold">Sep 2026</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Est. prosecution cost</span><span style="color:var(--soft)">$15K–$25K</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Days since filing</span><span id="patent-days-elapsed" class="soft">—</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Days remaining</span><span id="patent-days" class="teal">—</span></div>
         </div>
       </div>
@@ -754,25 +755,65 @@ function renderIPVault() {
 
 // ── Hardware Products ─────────────────────────────────────────────────────
 function renderHardware() {
-  const products=[
-    {emoji:"🥽",name:"NeuroWave HUD",status:"Prototype Ready",desc:"AI HUD with retinal-safe microprojection, adaptive metasurface optics, noninvasive EEG/neural sensors. FDA Class I/II wearable. Regulatory pre-notification filed. IEC 60825-1 (laser), ISO 10993 (biocompatibility), FCC Part 15.",specs:["Retinal-safe microprojection","Adaptive metasurface optics","Noninvasive EEG sensors","BLE + WiFi","FDA/IEC/FCC compliance path"],bom_qty:"3-5 working prototypes",color:"#a78bfa"},
-    {emoji:"🤖",name:"Gold-Seeking Robot",status:"BOM Complete",desc:"Autonomous gold detection device. AS7341 11-channel spectrometer identifies spectral signature of gold. ATECC608A signs verified detections on-chain. Triggers GTX mint via GoldSnap API.",specs:["ESP32-WROOM-32E MCU","AS7341 spectrometer 340-1000nm","HX711 load cell ±0.5%","ATECC608A secure signing","PN532 NFC + ADS1115 ADC"],bom_qty:"Pilot qty TBD",color:"#fbbf24"},
-    {emoji:"🎧",name:"WaV⁵ Stealth Node",status:"Pilot Build",desc:"Wearable open-ear audio device. Cartilage-coupled piezo transducer, ESP32-S3, real-time psychoacoustic DSP, binaural spatialization. SnapMod dock for accessory expansion.",specs:["ESP32-S3-WROOM-1-N8R2 MCU","TLV320AIC3206 audio codec","Piezo transducer 12–15mm","USB-C · 3.3V TPS62177","Control: USB CDC JSON API"],bom_qty:"20 boards pilot",color:"#8b5cf6"},
-    {emoji:"👁️",name:"PaperThin™ Display",status:"5-Unit Pilot",desc:"0.35–0.60mm transparent waveguide lens with micro-LED display layer. MIPI input compatible. Optical clarity >95%, haze <1%. AR/HUD integration target.",specs:["Flexible polymer waveguide","Micro-LED tile array","MIPI input (external driver)","60–80mm arc radius","Scratch-resistant coating"],bom_qty:"5 pilot units",color:"#06b6d4"},
-    {emoji:"🔑",name:"TeloKey™ Housing",status:"3-5 First Articles",desc:"6061-T6 aluminum enclosure for Telo key device. Bead-blast anodized finish, ±0.05mm tolerances, button and LED cutouts. 1m drop tested.",specs:["6061-T6 aluminum","Bead-blast + anodize","±0.05mm mating faces","Button/LED cutouts","1m drop test"],bom_qty:"3–5 first articles",color:"#10b981"},
-    {emoji:"🧠",name:"AuraMe Sensor Node",status:"Spec Phase",desc:"Behavioral biometric capture device. Integrates with AllCard for keystroke dynamics, gyro, pressure, and motion capture. Feeds master key derivation.",specs:["Behavioral multi-vector","Keystroke + gyro + pressure","SHA-256 key derivation","BLE + USB-C","AllCard integration"],bom_qty:"TBD",color:"#f59e0b"},
+  const BOM_COMPONENTS = [
+    { ref:'U1', qty:1, part:'ESP32-WROOM-32E',  notes:'MCU — WiFi + BLE + Xtensa LX6 dual-core',     cost:4.50,  status:'sourced',   cat:'MCU' },
+    { ref:'U2', qty:1, part:'ADS1115',           notes:'16-bit I²C ADC — biosignal acquisition',       cost:2.20,  status:'sourced',   cat:'ADC' },
+    { ref:'U3', qty:1, part:'AS7341',            notes:'11-channel spectral sensor / spectrometer',     cost:5.80,  status:'sourced',   cat:'Sensor' },
+    { ref:'U4', qty:1, part:'HX711',             notes:'24-bit load cell amplifier / strain gauge',     cost:1.50,  status:'sourced',   cat:'ADC' },
+    { ref:'U5', qty:1, part:'ATECC608A',         notes:'Secure Element — ECDSA signing for ZK proofs', cost:0.85,  status:'sourced',   cat:'Security' },
+    { ref:'U6', qty:1, part:'MAX30102',          notes:'Pulse ox / heart rate sensor (SpO2)',          cost:3.20,  status:'planned',   cat:'Sensor' },
+    { ref:'U7', qty:1, part:'ICM-42688-P',       notes:'6-axis IMU — accelerometer + gyroscope',       cost:2.80,  status:'planned',   cat:'IMU' },
+    { ref:'U8', qty:1, part:'SGP41',             notes:'VOC/NOx gas index sensor',                     cost:8.50,  status:'planned',   cat:'Sensor' },
+    { ref:'J1', qty:1, part:'USB-C PD Controller','notes':'Power delivery + charging',                 cost:1.20,  status:'sourced',   cat:'Power' },
+    { ref:'BT1',qty:1, part:'LiPo 300mAh',      notes:'3.7V rechargeable — wearable profile',          cost:3.50,  status:'sourced',   cat:'Power' },
   ];
-  document.getElementById("hardware-grid").innerHTML=products.map(p=>`
-    <div class="panel" style="border-top:3px solid ${p.color}">
-      <div style="font-size:2rem;margin-bottom:8px">${p.emoji}</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:3px">${p.name}</div>
-      <div style="margin-bottom:8px"><span style="font-size:.64rem;font-weight:700;color:${p.color};padding:2px 8px;border-radius:10px;border:1px solid currentColor">${p.status}</span></div>
-      <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;line-height:1.5">${p.desc}</div>
-      <div style="font-size:.7rem;color:var(--dim)">
-        ${p.specs.map(s=>`<div style="padding:2px 0">· ${s}</div>`).join("")}
-      </div>
-      <div style="font-size:.68rem;color:var(--dim);margin-top:8px">Pilot qty: ${p.bom_qty}</div>
-    </div>`).join("");
+  const products=[
+    {emoji:"🥽",name:"NeuroWave HUD",status:"Prototype",desc:"AI HUD with retinal-safe microprojection, adaptive metasurface optics, noninvasive EEG/neural sensors. FDA Class I/II wearable. IEC 60825-1 (laser), ISO 10993 (biocompatibility), FCC Part 15.",specs:["Retinal-safe microprojection","Adaptive metasurface optics","Noninvasive EEG sensors","BLE + WiFi","FDA/IEC/FCC compliance path"],color:"#a78bfa"},
+    {emoji:"👂",name:"WaV⁵ Stealth Node",status:"Patent Draft",desc:"Cartilage-coupled transducer with real-time micro-tonal psychoacoustic processing. Fractional-octave harmonic bands. Safety controller with exposure monitoring. Patent RAW-2026-WaV5.",specs:["Cartilage-coupled driver","DSP + psychoacoustic engine","Bone conduction backup","AllCard ZK identity integration","RAWNet payment gating"],color:"#06b6d4"},
+    {emoji:"📡",name:"RAWNet Node Device",status:"Design",desc:"Physical RAWNet validator node. Runs Ganache equivalent locally, syncs with RAWNet testnet. Plug-in form factor. BreakFactory + PawnRegistry contract host.",specs:["Local Ganache equivalent","RAWNet chainId 720701","USB-C + Ethernet","Always-on validation","LTN staking hardware"],color:"#10b981"},
+  ];
+  const grid = document.getElementById("hardware-grid");
+  if (!grid) return;
+
+  // BOM summary card
+  const bomTotal = BOM_COMPONENTS.reduce((s,c) => s + c.cost, 0);
+  const sourced  = BOM_COMPONENTS.filter(c => c.status === 'sourced').length;
+  let bomHTML = '<div class="panel" style="grid-column:1/-1;margin-bottom:0">' +
+    '<div class="panel-title">\uD83D\uDCC4 Bill of Materials (NeuroWave HUD / WaV\u2075)</div>' +
+    '<div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap">' +
+    '<div style="padding:8px 14px;background:var(--gn2);border-radius:8px;font-size:.76rem"><strong style="color:var(--grn)">' + sourced + '/' + BOM_COMPONENTS.length + '</strong> <span style="color:var(--soft)">parts sourced</span></div>' +
+    '<div style="padding:8px 14px;background:rgba(245,158,11,.08);border-radius:8px;font-size:.76rem"><strong style="color:var(--gold)">$' + bomTotal.toFixed(2) + '</strong> <span style="color:var(--soft)">BOM cost/unit</span></div>' +
+    '<div style="padding:8px 14px;background:rgba(139,92,246,.08);border-radius:8px;font-size:.76rem"><strong style="color:var(--purp)">$' + (bomTotal * 3.5).toFixed(0) + '</strong> <span style="color:var(--soft)">retail target (3.5x)</span></div>' +
+    '</div>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:.74rem">' +
+    '<thead><tr style="border-bottom:1px solid var(--line2)">' +
+    '<th style="text-align:left;padding:5px 0;color:var(--soft)">Ref</th>' +
+    '<th style="text-align:left;padding:5px 0;color:var(--soft)">Part</th>' +
+    '<th style="padding:5px 0;color:var(--soft)">Notes</th>' +
+    '<th style="text-align:right;padding:5px 0;color:var(--soft)">Cost</th>' +
+    '<th style="text-align:right;padding:5px 0;color:var(--soft)">Status</th>' +
+    '</tr></thead><tbody>' +
+    BOM_COMPONENTS.map(c =>
+      '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">' +
+      '<td style="padding:5px 0;font-family:monospace;color:var(--teal)">' + c.ref + '</td>' +
+      '<td style="padding:5px 0;font-weight:600">' + c.part + '</td>' +
+      '<td style="padding:5px 0;color:var(--soft);font-size:.7rem">' + c.notes + '</td>' +
+      '<td style="text-align:right;padding:5px 0;color:var(--gold)">$' + c.cost.toFixed(2) + '</td>' +
+      '<td style="text-align:right;padding:5px 0"><span style="font-size:.66rem;font-weight:700;color:' + (c.status==='sourced'?'var(--grn)':'var(--gold)') + '">' + c.status.toUpperCase() + '</span></td>' +
+      '</tr>'
+    ).join('') +
+    '</tbody></table></div>';
+
+  grid.innerHTML = bomHTML + products.map(p =>
+    '<div class="panel"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+    '<span style="font-size:2rem">' + p.emoji + '</span>' +
+    '<div><div style="font-weight:700;font-size:.9rem;color:var(--wh)">' + p.name + '</div>' +
+    '<span style="font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--gold)">' + p.status + '</span></div></div>' +
+    '<div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.7">' + p.desc + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px">' +
+    p.specs.map(s => '<div style="font-size:.72rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--soft)">→ ' + s + '</div>').join('') +
+    '</div></div>'
+  ).join('');
 }
 
 // ── Global API Key Manager ────────────────────────────────────────────────
@@ -833,6 +874,19 @@ window.addEventListener("load",()=>{
   renderEntityBars();
   renderCompoundBars();
   fetchLTNPrice();
+  renderHardware();
+  // Patent countdown
+  try {
+    const deadline   = new Date("2027-03-22");
+    const filedDate  = new Date("2026-03-22");
+    const today      = new Date();
+    const daysLeft   = Math.ceil((deadline - today) / 86400000);
+    const daysElapsed= Math.ceil((today - filedDate)  / 86400000);
+    const pdEl = document.getElementById("patent-days");
+    const peEl = document.getElementById("patent-days-elapsed");
+    if (pdEl) { pdEl.textContent = daysLeft + " days"; pdEl.style.color = daysLeft < 90 ? "var(--red)" : daysLeft < 180 ? "var(--gold)" : "var(--teal)"; }
+    if (peEl) peEl.textContent = daysElapsed + " days";
+  } catch(e) {}
   calcCompound();
   renderLTNCompound();
   renderIPVault();

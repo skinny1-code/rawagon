@@ -460,6 +460,15 @@ async function connectWallet() {
   showToast("Wallet connected ✓");
 }
 
+async function refreshTicker() {
+  try {
+    const p = provider || new ethers.JsonRpcProvider("http://10.117.122.142:8545");
+    const block = await p.getBlockNumber();
+    const el = document.getElementById("lt-block");
+    if (el) el.textContent = "Block " + block.toLocaleString();
+  } catch(e) {}
+}
+
 async function loadBalances() {
   if (!addr) return;
   try {
@@ -483,7 +492,6 @@ async function loadContractStats() {
     const [inflow, staked, ltnSupply, ltnBurned] = await Promise.all([
       fdContract.totalInflow(),
       fdContract.totalStaked(),
-      fdContract.totalInflow(),
       ltnContract.totalSupply(),
       ltnContract.totalBurned(),
     ]);
@@ -494,6 +502,15 @@ async function loadContractStats() {
       const pend = await fdContract.pending(addr);
       document.getElementById("kpi-pending").textContent = "$"+parseFloat(ethers.formatUnits(pend,6)).toFixed(4);
     }
+    // Update ticker bar
+    const stakedLTN = parseFloat(ethers.formatEther(staked));
+    const inflowUSDC = parseFloat(ethers.formatUnits(inflow, 6));
+    const apy = stakedLTN > 0 ? (inflowUSDC / (stakedLTN * 0.084) * 100) : 12;
+    const pstar = Math.round((1499 / (0.084 * (apy/100))));
+    document.getElementById("lt-staked")  && (document.getElementById("lt-staked").textContent = stakedLTN.toLocaleString() + " LTN");
+    document.getElementById("lt-inflow")  && (document.getElementById("lt-inflow").textContent = "$" + inflowUSDC.toFixed(2));
+    document.getElementById("lt-apy")     && (document.getElementById("lt-apy").textContent    = apy.toFixed(1) + "%");
+    document.getElementById("lt-pstar")   && (document.getElementById("lt-pstar").textContent  = pstar.toLocaleString());
     document.getElementById("fd-stats-table").innerHTML = [
       ["Total inflow","$"+parseFloat(ethers.formatUnits(inflow,6)).toFixed(4)],
       ["Total staked",parseFloat(ethers.formatEther(staked)).toFixed(4)+" LTN"],
@@ -557,6 +574,12 @@ async function sendPayment() {
 function previewStake() {
   const amt = parseFloat(document.getElementById("stake-amt").value)||0;
   if (!amt) { document.getElementById("stake-preview").style.display="none"; return; }
+  // Real APY: based on network inflow / total staked
+  const totalStakedLTN = parseFloat(document.getElementById("kpi-staked")?.textContent)||1000000;
+  const annualInflowUSDC = 3_440_000; // Y2 estimate from allocation.json
+  const ltnPriceUSD = 0.084;
+  const yieldPerLTN = annualInflowUSDC / Math.max(totalStakedLTN, 1);
+  const realAPY     = yieldPerLTN / ltnPriceUSD;
   const val = amt*0.084;
   const yield_ = amt*0.0861;
   const monthly = yield_/12;
@@ -689,27 +712,62 @@ function showToast(msg,err=false){
 
 
 async function simulateRoute() {
-  const to = document.getElementById("ar-to").value.trim() || (addr || "0x0000000000000000000000000000000000000000");
-  const amount = parseFloat(document.getElementById("ar-amount").value)||100;
-  const score = parseInt(document.getElementById("ar-score").value)||87;
-  const el = document.getElementById("ar-result");
-  if (score < 70) { el.textContent = "✗ Score "+score+" below minimum threshold (70)"; el.style.color="var(--red)"; return; }
-  // Simulate EIP-712 RouteIntent hash
-  const enc = new TextEncoder();
-  const nonce = Date.now();
-  const deadline = Math.floor(Date.now()/1000) + 300;
-  const intentStr = JSON.stringify({to,amount,score,nonce,deadline});
-  const buf = await crypto.subtle.digest("SHA-256", enc.encode("RouteIntent:"+intentStr));
-  const hash = "0x"+Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,40);
-  el.innerHTML = `<div style="padding:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;">
-    <div style="font-weight:700;color:var(--grn);margin-bottom:6px">✓ Route intent valid — AI score ${score}/100</div>
-    <div style="font-size:.7rem;display:flex;flex-direction:column;gap:3px;">
-      <div>Hash: <span class="mono" style="color:var(--indigo)">${hash}...</span></div>
-      <div>Amount: <span class="mono" style="color:var(--gold)">${amount} LTN</span></div>
-      <div>Deadline: <span class="mono" style="color:var(--soft)">${new Date(deadline*1000).toLocaleTimeString()}</span></div>
-      <div>Status: <span class="mono" style="color:var(--grn)">Awaiting policy signer</span></div>
-    </div>
-  </div>`;
+  const to     = document.getElementById("ar-to").value.trim() || (addr || "0x000...000");
+  const amount = parseFloat(document.getElementById("ar-amount").value) || 100;
+  const score  = parseInt(document.getElementById("ar-score").value) || 87;
+  const el     = document.getElementById("ar-result");
+
+  if (score < 70) {
+    el.innerHTML = '<div style="color:var(--red);padding:10px;background:rgba(239,68,68,.08);border-radius:8px;">' +
+      '<strong>✗ Route Rejected</strong><br>AI score ' + score + '/100 is below the minimum threshold of 70.' +
+      '<br><br>Increase score or review the recipient wallet's history.</div>';
+    return;
+  }
+
+  // Compute EIP-712 intent hash
+  const nonce    = Date.now();
+  const deadline = Math.floor(Date.now() / 1000) + 300;
+  const intentStr = JSON.stringify({ to, amount, score, nonce, deadline });
+  const buf  = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("RouteIntent:" + intentStr));
+  const hash = "0x" + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 40);
+
+  el.innerHTML = '<div style="color:var(--soft);padding:10px">Analyzing route with AI policy engine…</div>';
+
+  // Claude policy analysis
+  try {
+    const prompt = "You are an AI policy engine for a blockchain payment router (RAWNet). Analyze this RouteIntent:\n" +
+      "- Recipient: " + to + "\n" +
+      "- Amount: " + amount + " LTN ($" + (amount * 0.084).toFixed(2) + " USD)\n" +
+      "- AI confidence score: " + score + "/100\n" +
+      "- Deadline: 5 minutes from now\n\n" +
+      "Provide a 2-sentence policy decision (APPROVE or CONDITIONAL), risk level (LOW/MEDIUM/HIGH), " +
+      "and one specific guardrail recommendation. Be concise and technical.";
+
+    const decision = await anthropicFetch([{ role: "user", content: prompt }], 300);
+    const approved = !decision.toLowerCase().includes("reject") && !decision.toLowerCase().includes("deny");
+    const riskColor = score >= 90 ? "var(--grn)" : score >= 75 ? "var(--gold)" : "var(--red)";
+
+    el.innerHTML = '<div style="padding:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;">' +
+      '<div style="font-weight:700;color:' + (approved ? "var(--grn)" : "var(--gold)") + ';margin-bottom:8px">' +
+        (approved ? "✓ Route Approved" : "⚠ Conditional Approval") + ' — AI Score ' + score + '/100</div>' +
+      '<div style="font-size:.74rem;color:var(--wh);line-height:1.7;margin-bottom:8px">' + decision + '</div>' +
+      '<div style="font-size:.68rem;font-family:monospace;display:flex;flex-direction:column;gap:3px;color:var(--soft)">' +
+        '<div>Hash: <span style="color:var(--indigo)">' + hash + '…</span></div>' +
+        '<div>Nonce: <span style="color:var(--gold)">' + nonce + '</span></div>' +
+        '<div>Deadline: <span>' + new Date(deadline * 1000).toLocaleTimeString() + '</span></div>' +
+        '<div>Amount: <span style="color:var(--purp)">' + amount + ' LTN</span></div>' +
+      '</div></div>';
+  } catch(e) {
+    // Fallback without API key
+    el.innerHTML = '<div style="padding:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;">' +
+      '<div style="font-weight:700;color:var(--grn);margin-bottom:6px">✓ Route intent valid — score ' + score + '/100</div>' +
+      '<div style="font-size:.7rem;font-family:monospace;display:flex;flex-direction:column;gap:3px;color:var(--soft)">' +
+        '<div>Hash: <span style="color:var(--indigo)">' + hash + '…</span></div>' +
+        '<div>Amount: <span style="color:var(--gold)">' + amount + ' LTN</span></div>' +
+        '<div>Deadline: <span>' + new Date(deadline * 1000).toLocaleTimeString() + '</span></div>' +
+        '<div style="color:var(--gold)">Add Anthropic key for full AI policy analysis</div>' +
+      '</div></div>';
+  }
 }
 
 function renderComplianceList() {
