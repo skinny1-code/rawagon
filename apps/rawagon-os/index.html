@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
   <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,7 +10,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAWagon OS — RAWNet Command Center</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#03030a;--deep:#06060f;--surf:#0b0b18;--panel:#0f0f1e;--card:#141425;
@@ -19,13 +20,13 @@
   --grn:#22c55e;--gn2:rgba(34,197,94,.1);
   --red:#ef4444;--rd2:rgba(239,68,68,.1);
   --blue:#3b82f6;--bl2:rgba(59,130,246,.1);
-  --purp:#8b5cf6;--pr2:rgba(139,92,246,.1);
+  --accent:#8b5cf6;--accent-glow:rgba(139,92,246,.2);--accent-bg:rgba(139,92,246,.04);--purp:#8b5cf6;--pr2:rgba(139,92,246,.1);
   --orng:#f59e0b;--or2:rgba(245,158,11,.1);
   --silver:#94a3b8;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:15px;}
-body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+body{background:var(--bg);color:var(--wh);font-family:'Geist', sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
 .mono{font-family:'IBM Plex Mono',monospace;}
 .serif{font-family:'Playfair Display',serif;}
 
@@ -145,7 +146,7 @@ body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-we
 .spark-bar{border-radius:1px 1px 0 0;transition:background .2s;}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'Geist', sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;}
 .btn-gold{background:var(--gold);color:#000;}
 .btn-gold:hover{background:#e8ba60;}
 .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);}
@@ -156,7 +157,7 @@ body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-we
 
 /* FORM */
 .fl{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;}
-.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--wh);font-family:'Inter',sans-serif;font-size:.84rem;outline:none;transition:border-color .18s;}
+.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--wh);font-family:'Geist',sans-serif;font-size:.84rem;outline:none;transition:border-color .18s;}
 .fi:focus{border-color:var(--gold);}
 .fi::placeholder{color:var(--muted);}
 select.fi option{background:var(--deep);}
@@ -242,7 +243,7 @@ select.fi option{background:var(--deep);}
 </head>
 <body>
 <!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
-<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
+<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:'Geist', sans-serif;font-size:13px;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:7px;">
     <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
     <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>

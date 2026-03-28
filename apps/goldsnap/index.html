@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GoldSnap — GTX/STX · RAWNet</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#080600;--s1:#0f0c00;--s2:#151200;--card:#1a1600;
   --line:rgba(251,191,36,.18);--ln2:rgba(251,191,36,.07);
   --wh:#fffbea;--soft:#7a6a20;--dim:#3a3000;
-  --gold:#fbbf24;--gd2:rgba(251,191,36,.18);--gd3:rgba(251,191,36,.06);
+  --accent:#fbbf24;--accent-glow:rgba(251,191,36,.2);--accent-bg:rgba(251,191,36,.06);--gold:#fbbf24;--gd2:rgba(251,191,36,.18);--gd3:rgba(251,191,36,.06);
   --silver:#d1d5db;--sl2:rgba(209,213,219,.12);--sl3:rgba(209,213,219,.06);
   --grn:#34d399;--gn2:rgba(52,211,153,.1);
   --red:#f87171;--blue:#60a5fa;--purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Barlow",sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Cormorant Garamond', serif;font-size:14px;min-height:100vh;}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),#b45309,var(--gold),transparent);pointer-events:none;z-index:100;}
 
 .hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);}
@@ -37,14 +38,14 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:1px;backgroun
 #connect-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--gold);background:var(--gd2);color:var(--gold);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
-.pane{display:none;padding:20px 24px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
 .kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:'Cormorant Garamond', serif;}
 .kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
 .gold{color:var(--gold);}.silver{color:var(--silver);}.grn{color:var(--grn);}.red{color:var(--red);}
@@ -103,6 +104,23 @@ input:focus{border-color:var(--gold);}
 .tx-redeem{background:var(--sl2);}
 
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;background:var(--card);border:1px solid var(--gold);border-radius:10px;font-size:.8rem;color:var(--gold);z-index:999;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>

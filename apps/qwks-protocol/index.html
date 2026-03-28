@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>QWKS Protocol — RAWNet</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Fira+Code:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
-:root{--bg:#04050f;--s1:#070816;--card:#0b0d1e;--line:rgba(99,102,241,.15);--ln2:rgba(99,102,241,.06);--wh:#e0e4ff;--soft:#6366f1;--dim:#2d3060;--indigo:#6366f1;--in2:rgba(99,102,241,.12);--in3:rgba(99,102,241,.06);--grn:#22d3ee;--gn2:rgba(34,211,238,.1);--gold:#fbbf24;--gd2:rgba(251,191,36,.1);--red:#f87171;--purp:#a78bfa;}
+:root{--bg:#04050f;--s1:#070816;--card:#0b0d1e;--line:rgba(99,102,241,.15);--ln2:rgba(99,102,241,.06);--wh:#e0e4ff;--soft:#6366f1;--dim:#2d3060;--accent:#6366f1;--accent-glow:rgba(99,102,241,.2);--accent-bg:rgba(99,102,241,.06);--indigo:#6366f1;--in2:rgba(99,102,241,.12);--in3:rgba(99,102,241,.06);--grn:#22d3ee;--gn2:rgba(34,211,238,.1);--gold:#fbbf24;--gd2:rgba(251,191,36,.1);--red:#f87171;--purp:#a78bfa;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Space Grotesk",sans-serif;font-size:14px;}
+body{background:var(--bg);color:var(--wh);font-family:'Chakra Petch', sans-serif;font-size:14px;}
 .mono{font-family:"Fira Code",monospace;}
 /* header */
 .hdr{display:flex;align-items:center;padding:0;border-bottom:1px solid var(--line);background:var(--s1);}
@@ -27,7 +28,7 @@ body{background:var(--bg);color:var(--wh);font-family:"Space Grotesk",sans-serif
 #connect-btn{margin:8px 16px;padding:7px 16px;border-radius:6px;border:1px solid var(--indigo);background:var(--in2);color:var(--indigo);font-size:.76rem;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 /* content */
-.pane{display:none;padding:20px 24px;max-width:1200px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px;max-width:1200px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -55,6 +56,23 @@ input:focus,select:focus{border-color:var(--indigo);}
 .badge-live{background:var(--gn2);color:var(--grn);border:1px solid rgba(34,211,238,.25);}
 .badge-pend{background:var(--gd2);color:var(--gold);border:1px solid rgba(251,191,36,.2);}
 .toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;background:var(--card);border:1px solid var(--grn);border-radius:10px;font-size:.8rem;color:var(--grn);z-index:999;display:none;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>
@@ -64,7 +82,7 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div><div class="logo-text">QWKS Protocol</div><div class="logo-sub">Payment OS · RAWNet 720701</div></div>
   </div>
   <div class="tabs">
-    <div class="tab active" onclick="showTab('overview')">Overview</div>
+    <div class="tab active" onclick="showTab('staking')">Overview</div>
     <div class="tab" onclick="showTab('payment')">Send Payment</div>
     <div class="tab" onclick="showTab('staking')">LTN Staking</div>
     <div class="tab" onclick="showTab('savings')">Savings Calc</div>
@@ -161,6 +179,11 @@ input:focus,select:focus{border-color:var(--indigo);}
   <div class="g2">
     <div>
       <div class="card" style="margin-bottom:14px;">
+        <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <div style="padding:6px 12px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);border-radius:20px;font-size:.7rem;font-weight:700;color:var(--indigo)">1 Stake LTN</div>
+          <div style="padding:6px 12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:20px;font-size:.7rem;color:var(--soft)">2 Earn USDC yield</div>
+          <div style="padding:6px 12px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:20px;font-size:.7rem;color:var(--soft)">3 Reach P* break-even</div>
+        </div>
         <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">Stake LTN</div>
         <label>LTN Amount</label>
         <input type="number" id="stake-amt" placeholder="1000" oninput="previewStake()">
@@ -698,7 +721,7 @@ function setRate() {
 }
 
 function showTab(id) {
-  const ids=["overview","payment","staking","savings","migrate","airouter","compliance","network"];
+  const ids=["staking","payment","savings","overview","migrate","airouter","compliance","network"];
   document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="network") loadNetworkStats();

@@ -1,23 +1,24 @@
 <!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#10b981">
 <title>PawnVault — Pawn Shop SaaS · RAWagon</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#040a07;--s1:#081210;--s2:#0c1710;--card:#0a1510;--line:rgba(255,255,255,.07);--ln2:rgba(255,255,255,.04);
---wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
+--wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--accent:#10b981;--accent-glow:rgba(16,185,129,.2);--accent-bg:rgba(16,185,129,.06);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
 --gold:#f59e0b;--gd2:rgba(245,158,11,.1);--red:#ef4444;--rd2:rgba(239,68,68,.1);--teal:#06b6d4;--purp:#8b5cf6;}
-html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'JetBrains Mono',monospace;font-size:14px}
+html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'Outfit', sans-serif;font-size:14px}
 .hdr{position:sticky;top:0;z-index:100;background:rgba(4,10,7,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px}
 .hdr-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
 .hdr-sub{font-size:.66rem;color:var(--soft)}
-.back{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--soft);font-size:.7rem;text-decoration:none;font-family:'JetBrains Mono',monospace;font-weight:600;transition:.12s}
+.back{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--soft);font-size:.7rem;text-decoration:none;font-family:'Outfit', sans-serif;font-weight:600;transition:.12s}
 .back:hover{color:var(--wh)}
 .nav{display:flex;border-bottom:1px solid var(--line);background:var(--s1);overflow-x:auto;scrollbar-width:none}
 .tab{padding:11px 18px;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--soft);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s}
 .tab:hover{color:var(--wh)}.tab.on{color:var(--grn);border-bottom-color:var(--grn)}
-.pane{display:none;padding:18px;max-width:1100px;margin:0 auto}.pane.on{display:block}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:18px;max-width:1100px;margin:0 auto}.pane.on{display:block}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
@@ -36,6 +37,23 @@ input:focus,select:focus{border-color:var(--grn)}
 .ticket-row{background:var(--s1);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 .toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:8px;font-size:.76rem;font-weight:600;z-index:999;opacity:0;transition:.25s;pointer-events:none;background:var(--card);border:1px solid var(--grn);color:var(--grn)}
 .toast.show{opacity:1}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style></head><body>
 <div class="hdr">
   <a href="/" class="back">⬡ OS</a>
@@ -46,7 +64,7 @@ input:focus,select:focus{border-color:var(--grn)}
   <div style="margin-left:auto"><button class="btn btn-grn btn-sm" onclick="show('tickets')">+ New Ticket</button></div>
 </div>
 <nav class="nav">
-  <div class="tab on" onclick="show('dash')">Dashboard</div>
+  <div class="tab on" onclick="show('tickets')">Dashboard</div>
   <div class="tab" onclick="show('tickets')">Tickets</div>
   <div class="tab" onclick="show('inventory')">Inventory</div>
   <div class="tab" onclick="show('customers')">Customers</div>
