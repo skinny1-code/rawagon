@@ -743,5 +743,23 @@ window.addEventListener('load', () => {
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
 <script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+</script>
 </body>
 </html>

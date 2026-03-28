@@ -107,9 +107,9 @@
       }
     },
     "BitPawn": {
-      "name": "BitPawn",
+      "name": "BitPawn (+ PawnVault merged)",
       "fee_model": "$99/mo + 0.5% vol",
-      "year2_annual_revenue": 961056,
+      "year2_annual_revenue": 1321056,
       "allocation_structure": {
         "product_dev": {
           "pct": 30,
@@ -146,7 +146,8 @@
           "monthly_usd": 12013,
           "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
         }
-      }
+      },
+      "model": "$99/mo SaaS (pawn + buy) + 0.5% volume + AI valuations"
     },
     "Droppa": {
       "name": "Droppa",
@@ -416,60 +417,6 @@
         "annual": 49
       },
       "cogs_monthly": 52
-    },
-    "PawnVault": {
-      "name": "PawnVault",
-      "emoji": "\ud83d\udc8e",
-      "model": "$99/mo pawn shop SaaS",
-      "year2_annual_revenue": 360000,
-      "apis": [
-        "claude-sonnet-4-6",
-        "easypost"
-      ],
-      "allocation_structure": {
-        "product_dev": {
-          "pct": 30,
-          "label": "Product Development",
-          "annual_usd": 108000,
-          "monthly_usd": 9000
-        },
-        "operations": {
-          "pct": 20,
-          "label": "Operations",
-          "annual_usd": 72000,
-          "monthly_usd": 6000
-        },
-        "founder": {
-          "pct": 15,
-          "label": "Founder",
-          "annual_usd": 54000,
-          "monthly_usd": 4500
-        },
-        "ltn_buyback": {
-          "pct": 10,
-          "label": "LTN Buyback & Burn",
-          "annual_usd": 36000,
-          "monthly_usd": 3000
-        },
-        "marketing": {
-          "pct": 15,
-          "label": "Marketing",
-          "annual_usd": 54000,
-          "monthly_usd": 4500
-        },
-        "reserve": {
-          "pct": 10,
-          "label": "Reserve",
-          "annual_usd": 36000,
-          "monthly_usd": 3000
-        }
-      },
-      "subscribers": {
-        "monthly": 303
-      },
-      "pricing": {
-        "monthly": 99
-      }
     },
     "AIOrchestrator": {
       "name": "AI Orchestrator",

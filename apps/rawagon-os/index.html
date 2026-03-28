@@ -316,7 +316,8 @@ select.fi option{background:var(--deep);}
   };
 
   if(window.ethereum){
-    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
+    loadNetworkProtocols();
+  window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
   if(window.RAWNet) {
     RAWNet.subscribe('*', () => { renderChainActivity(); });
     const w = RAWNet.getWallet();
@@ -371,7 +372,6 @@ function anthropicFetch(messages, maxTokens=800, system="") {
   <div class="gnav-app" onclick="switchApp('tokens')"><span class="app-dot" style="background:var(--purp);"></span>Token Network</div>
   <div class="gnav-app" onclick="switchApp('profitpilot')"><span class="app-dot" style="background:var(--orng);"></span>ProfitPilot</div>
   <div class="gnav-app" onclick="switchApp('dropthereel')"><span class="app-dot" style="background:var(--red);"></span>Drop The Reel</div>
-  <div class="gnav-app" onclick="switchApp('pawnvault')"><span class="app-dot" style="background:var(--grn);"></span>PawnVault</div>
   <div class="gnav-app" onclick="switchApp('orchestrator')"><span class="app-dot" style="background:var(--teal);"></span>AI Orchestrator</div>
   <div class="gnav-right">
     <div class="live-bar">LIVE</div>
@@ -480,7 +480,14 @@ function anthropicFetch(messages, maxTokens=800, system="") {
 
       <!-- LIVE WORKFLOWS -->
       <div class="card" style="margin-bottom:14px;">
-        <div class="card-label" style="margin-bottom:12px;">Cross-app automation — live workflows</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div class="card-label" style="margin:0">Network Health — ProfitPilot Protocol</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.15);color:var(--grn)" id="os-network-rev">$30.2M Y2</span>
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);color:var(--purp)" id="os-entities">10 entities</span>
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);color:var(--blue)" id="os-contracts">— live</span>
+          </div>
+        </div>
         <div id="os-workflows"></div>
       </div>
 
@@ -1539,16 +1546,7 @@ const SIDEBARS = {
     {s:'Revenue'},
     {ico:'📊',lbl:'$480K/yr target'},
   ],
-  pawnvault:[
-    {s:'PawnVault'},
-    {ico:'💎',lbl:'New ticket'},
-    {ico:'📋',lbl:'Active tickets'},
-    {ico:'👥',lbl:'Customers'},
-    {ico:'📤',lbl:'Police report'},
-    {s:'Revenue'},
-    {ico:'📊',lbl:'$99/mo SaaS'},
-    {ico:'🤖',lbl:'AI valuations'},
-  ],
+
   orchestrator:[
     {s:'AI Orchestrator'},
     {ico:'🤖',lbl:'Multi-model debate'},
@@ -1643,14 +1641,13 @@ function switchApp(app) {
     'profitpilot':    '/apps/profitpilot/',
     'dropthereel':    '/apps/drop-the-reel/',
     'orchestrator':   '/apps/ai-orchestrator/',
-    'pawnvault':      '/apps/pawnvault/',
   };
   if(app !== 'os' && APP_URLS[app]) {
     window.open(APP_URLS[app], '_blank');
     return;
   }
   document.querySelectorAll('.gnav-app').forEach(a=>a.classList.remove('on'));
-  const navApps = ['os','identity','bitpawn','droppa','autoiq','goldsnap','tokens','profitpilot','dropthereel','pawnvault','orchestrator'];
+  const navApps = ['os','identity','bitpawn','droppa','autoiq','goldsnap','tokens','profitpilot','dropthereel','orchestrator'];
   const idx = navApps.indexOf(app);
   document.querySelectorAll('.gnav-app')[idx]?.classList.add('on');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));

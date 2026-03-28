@@ -965,7 +965,8 @@ t('rawagon-os nav has all 11 apps including 3 new', () => {
   const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
   assert(html.includes("switchApp('bitpawn')"),     'must have BitPawn nav');
   assert(html.includes("switchApp('dropthereel')"), 'must have Drop The Reel nav');
-  assert(html.includes("switchApp('pawnvault')"),   'must have PawnVault nav');
+  // PawnVault merged into BitPawn - nav uses bitpawn
+  assert(html.includes("switchApp('bitpawn')"),     'must have BitPawn nav (merged PawnVault)');
   assert(html.includes("switchApp('orchestrator')"), 'must have AI Orchestrator nav');
   assert(!html.includes("switchApp('pawnsnap')") || html.includes("switchApp('bitpawn')"),
     'pawnsnap must be renamed to bitpawn');
@@ -982,9 +983,10 @@ t('allocation.json has all 10 entities with correct totals', () => {
   const fs = require('fs');
   const alloc = JSON.parse(fs.readFileSync('config/allocation.json','utf8'));
   const entities = Object.keys(alloc.entities);
-  assert(entities.length >= 10,         'must have at least 10 entities');
+  assert(entities.length >= 9,          'must have at least 9 entities (PawnVault merged)');
   assert(alloc.entities.DropTheReel,    'must have Drop The Reel');
-  assert(alloc.entities.PawnVault,      'must have PawnVault');
+  // PawnVault merged into BitPawn
+  assert(alloc.entities.BitPawn && alloc.entities.BitPawn.year2_annual_revenue >= 1000000, 'BitPawn must have merged PawnVault revenue');
   assert(alloc.entities.AIOrchestrator, 'must have AI Orchestrator');
   const total = Object.values(alloc.entities).reduce((s,e)=>s+(e.year2_annual_revenue||0),0);
   assert(total > 25000000, 'total must be > $25M (got $' + total.toLocaleString() + ')');
@@ -994,7 +996,8 @@ t('agent-system.js has 11 agents including 3 new', () => {
   const fs = require('fs');
   const src = fs.readFileSync('agents/agent-system.js','utf8');
   assert(src.includes("id:'dropthereel'"),    'must have dropthereel agent');
-  assert(src.includes("id:'pawnvault'"),      'must have pawnvault agent');
+  // PawnVault agent merged into bitpawn agent
+  assert(src.includes("id:'bitpawn'"),          'must have bitpawn agent (merged pawnvault)');
   assert(src.includes("id:'aiorchestrator'"), 'must have aiorchestrator agent');
   const count = (src.match(/id:'/g)||[]).length;
   assert(count >= 11, 'must have at least 11 agents');
@@ -1075,6 +1078,68 @@ t('Droppa: droppa-agent.js wired into index.html', () => {
   const fs = require('fs');
   const html = fs.readFileSync('apps/droppa/index.html','utf8');
   assert(html.includes('droppa-agent.js'), 'droppa-agent.js must be wired in');
+});
+
+// ── Architecture refactor tests ───────────────────────────────────────────────
+t('server root serves rawagon-os (THE network OS)', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("rawagon-os'") && src.includes('index.html'), 'root must serve rawagon-os');
+  // Root serves rawagon-os directly - verified above
+});
+
+t('/api/profit-pilot endpoint exists in server', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("/api/profit-pilot"), 'must have /api/profit-pilot route');
+  assert(src.includes("packages/profit-pilot/network.js"), 'must require profit-pilot module');
+});
+
+t('profit-pilot network.js has ENTITIES + LTN + networkHealth', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('packages/profit-pilot/network.js','utf8');
+  assert(src.includes('ENTITIES'),     'must have ENTITIES');
+  assert(src.includes('LTN'),          'must have LTN economics');
+  assert(src.includes('networkHealth'),'must have networkHealth function');
+  assert(src.includes('TOTAL_Y2'),     'must compute total Y2 revenue');
+});
+
+t('BitPawn has customers tab (merged from PawnVault)', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/bitpawn/index.html','utf8');
+  assert(html.includes("show('customers')"), 'must have customers tab');
+  assert(html.includes('pane-customers'),    'must have customers pane');
+  assert(html.includes('addCustomer'),       'must have addCustomer function');
+});
+
+t('PawnVault redirects to BitPawn in server APP_MAP', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("pawnvault':'bitpawn") || src.includes("'pawnvault':'bitpawn"), 'pawnvault must map to bitpawn');
+});
+
+t('Droppa CardVault has 4-step lockbox pipeline', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('Lockbox'),      'must mention lockbox');
+  assert(html.includes('STEP 1'),       'must have step 1');
+  assert(html.includes('NFT Minted'),   'must have NFT minted step');
+  assert(html.includes('CardVault.sol'),'must reference on-chain contract');
+});
+
+t('rawagon-os calls /api/profit-pilot for network health', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
+  assert(html.includes('api/profit-pilot') || html.includes('loadNetworkProtocols'),
+    'rawagon-os must read from profit-pilot protocol');
+});
+
+t('allocation.json: no separate PawnVault entity (merged into BitPawn)', () => {
+  const fs = require('fs');
+  const alloc = JSON.parse(fs.readFileSync('config/allocation.json','utf8'));
+  assert(!alloc.entities.PawnVault, 'PawnVault must not be a separate entity');
+  const bp = alloc.entities.BitPawn;
+  assert(bp && bp.year2_annual_revenue >= 1000000, 'BitPawn must have merged revenue > $1M');
 });
 
 process.exit(f?1:0);

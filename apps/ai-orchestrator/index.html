@@ -860,6 +860,24 @@ function exportPDF() {
   if(Object.keys(S.debate).length) { lines.push("── DEBATE ROUND ──"); Object.entries(S.debate).forEach(([id,d]) => { if(!d?.text) return; lines.push(`${MODELS[id]?.name||id}:\n${d.text}\n`); }); }
   const win = window.open("","_blank");
   win.document.write(`<!DOCTYPE html><html><head><title>Export</title><style>body{font-family:'Share Tech Mono', monospace;font-size:12px;line-height:1.8;background:#07070D;color:#C9D1D9;padding:40px;max-width:900px;margin:0 auto}pre{white-space:pre-wrap}@media print{body{background:white;color:black}}</style></head><body><pre>${lines.map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("\n")}</pre><script>window.onload=()=>window.print();<\/script><script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+</script>
 </body></html>`);
   win.document.close();
 }
@@ -884,5 +902,23 @@ let toastTimer;
 function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2500); }
 </script>
 <script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+</script>
 </body>
 </html>

@@ -42,7 +42,7 @@ const APP_MAP = {
   'profitpilot':'profitpilot',
   'drop-the-reel':'drop-the-reel', 'dropthereel':'drop-the-reel',
   'ai-orchestrator':'ai-orchestrator', 'orchestrator':'ai-orchestrator',
-  'pawnvault':'pawnvault',
+  'pawnvault':'bitpawn',
 };
 
 const APP_META = {
@@ -56,7 +56,7 @@ const APP_META = {
   'profitpilot':    { emoji:'📊', label:'ProfitPilot',      color:'#06b6d4' },
   'drop-the-reel':  { emoji:'🎬', label:'Drop The Reel',    color:'#dc2626' },
   'ai-orchestrator':{ emoji:'🤖', label:'AI Orchestrator',  color:'#10b981' },
-  'pawnvault':      { emoji:'💎', label:'PawnVault',         color:'#10b981' },
+  'pawnvault':      { emoji:'🏦', label:'BitPawn (+ PawnVault)',  color:'#f59e0b' },
 };
 
 // SSE clients for real-time cross-app events
@@ -232,6 +232,24 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+
+  // ── /api/profit-pilot  — network analytics protocol ──────────────────────
+  if (pathname === '/api/profit-pilot') {
+    try {
+      const pp = require('./packages/profit-pilot/network.js');
+      const appFolders = fs.readdirSync(APPS).filter(d => fs.existsSync(path.join(APPS,d,'index.html')));
+      const deployed   = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT,'deployed-addresses.json'),'utf8')); } catch { return {}; } })();
+      const contracts  = deployed?.rawnet_testnet || {};
+      const live       = Object.entries(contracts).filter(([k,v])=>v&&v!=='pending'&&!k.startsWith('_')).length;
+      const health     = pp.networkHealth(appFolders.length, live);
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify(health, null, 2));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // ── /health ────────────────────────────────────────────────────────────────
   if (pathname === '/health') {
     const appFolders = fs.readdirSync(APPS).filter(d => fs.existsSync(path.join(APPS, d, 'index.html')));
@@ -252,11 +270,9 @@ const server = http.createServer(async (req, res) => {
   // ── /manifest.json ─────────────────────────────────────────────────────────
   if (pathname === '/manifest.json') { serveFile(res, path.join(ROOT, 'manifest.json')); return; }
 
-  // ── / root ─────────────────────────────────────────────────────────────────
+  // ── / root → rawagon-os (THE network OS) ─────────────────────────────────
   if (pathname === '/' || pathname === '') {
-    const appFolders = fs.readdirSync(APPS).filter(d => fs.existsSync(path.join(APPS, d, 'index.html')));
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(indexPage(appFolders));
+    serveFile(res, path.join(APPS, 'rawagon-os', 'index.html'));
     return;
   }
 
