@@ -155,7 +155,7 @@ input:focus,select:focus{border-color:var(--teal);}
   <span class="tick-item">GTX <span class="gold">$41.338</span></span>
   <span class="tick-item">QWKS savings vs Visa <span class="grn">99.6%</span></span>
   <span class="tick-item">RAWNet gas <span class="grn">$0.0000082/tx</span></span>
-  <span class="tick-item">Year 2 EBITDA <span class="grn">84.9%</span></span>
+  <span class="tick-item">Year 2 EBITDA Target <span class="grn">84.9%</span></span>
   <span class="tick-item">Founder share <span class="gold">15% → Solana</span></span>
   <span class="tick-item">Total LTN burned <span id="tick-burned">0</span></span>
 </div>
@@ -163,7 +163,7 @@ input:focus,select:focus{border-color:var(--teal);}
 <!-- DASHBOARD -->
 <div class="pane active" id="pane-dashboard">
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">10 active entities</div></div>
+    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Target</div><div class="kpi-sub">Projected · not yet earned</div></div>
     <div class="kpi"><div class="kpi-val grn" id="kpi-ebitda">84.9%</div><div class="kpi-lbl">EBITDA Margin</div><div class="kpi-sub">$24.7M net</div></div>
     <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.53M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
     <div class="kpi"><div class="kpi-val" style="color:#8b5cf6" id="kpi-ltn-stk">$3.44M</div><div class="kpi-lbl">Staker Yield/yr</div><div class="kpi-sub">0.1% of $3.44B vol</div></div>
@@ -175,7 +175,7 @@ input:focus,select:focus{border-color:var(--teal);}
 
   <div class="panels">
     <div class="panel">
-      <div class="panel-title">Entity Revenue Breakdown (Year 2)</div>
+      <div class="panel-title">Entity Revenue Model Targets (Year 2 Projected)</div>
       <div id="entity-bars"></div>
     </div>
     <div class="panel">
@@ -949,7 +949,7 @@ window.addEventListener("load",()=>{
       const d = await r.json();
       const el = document.getElementById('pp-network-pill');
       if (el && d.totalY2) {
-        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
         el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
       }
     } catch {}

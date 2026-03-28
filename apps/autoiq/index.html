@@ -421,7 +421,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Avg title fee (0.3% of $35K)</span><span class="pval">$105/title</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">TAM (1% penetration)</span><span class="grn">$157.5M/yr</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned @ 1% pen.</span><span class="gold">15,000 LTN/yr</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M projected</span></div>
         </div>
       </div>
       <div class="card">
@@ -923,7 +923,7 @@ window.addEventListener("load",()=>{
       const d = await r.json();
       const el = document.getElementById('pp-network-pill');
       if (el && d.totalY2) {
-        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
         el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
       }
     } catch {}

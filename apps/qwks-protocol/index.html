@@ -209,8 +209,8 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="card">
       <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;">Staking Math</div>
       <div class="row"><span style="color:var(--soft)">Fee rate</span><span class="val">0.1% of volume</span></div>
-      <div class="row"><span style="color:var(--soft)">Network volume (est Y2)</span><span class="val">$3.44B/yr</span></div>
-      <div class="row"><span style="color:var(--soft)">Annual inflow to stakers</span><span class="val">$3.44M/yr</span></div>
+      <div class="row"><span style="color:var(--soft)">Network volume (est Y2)</span><span class="val">$3.44B/yr target</span></div>
+      <div class="row"><span style="color:var(--soft)">Annual inflow to stakers</span><span class="val">$3.44M/yr projected</span></div>
       <div class="row"><span style="color:var(--soft)">Yield per LTN (est)</span><span class="val">$0.0861/yr</span></div>
       <div class="row"><span style="color:var(--soft)">50K LTN stake yields</span><span style="color:var(--gold);font-family:monospace">~$4,305/yr</span></div>
       <div style="margin-top:16px;padding:12px;background:var(--in3);border-radius:8px;font-size:.76rem;color:var(--soft);line-height:1.7;">
@@ -898,7 +898,7 @@ window.addEventListener("load",()=>{
       const d = await r.json();
       const el = document.getElementById('pp-network-pill');
       if (el && d.totalY2) {
-        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
         el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
       }
     } catch {}

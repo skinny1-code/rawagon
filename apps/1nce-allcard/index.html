@@ -1143,7 +1143,7 @@ window.addEventListener("load",()=>{
       const d = await r.json();
       const el = document.getElementById('pp-network-pill');
       if (el && d.totalY2) {
-        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M network';
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
         el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
       }
     } catch {}
