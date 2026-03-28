@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -93,7 +94,7 @@ input:focus,select:focus{border-color:var(--indigo);}
   </div>
   <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
-  id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
+  id="connect-btn" data-rw-connect onclick="connectWallet()">🦊 Connect Wallet</button>
 </div>
 
 <!-- OVERVIEW -->
@@ -573,7 +574,7 @@ function calcPayFee() {
 }
 
 async function sendPayment() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const amt = parseFloat(document.getElementById("pay-amount").value);
   const to = document.getElementById("pay-to").value.trim();
   const biz = document.getElementById("pay-biz").value.trim() || addr;
@@ -614,7 +615,7 @@ function previewStake() {
 }
 
 async function stakeLTN() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const amt = parseFloat(document.getElementById("stake-amt").value);
   if (!amt) return;
   try {
@@ -627,7 +628,7 @@ async function stakeLTN() {
 }
 
 async function unstakeLTN() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const amt = parseFloat(document.getElementById("unstake-amt").value);
   if (!amt) return;
   try {
@@ -638,7 +639,7 @@ async function unstakeLTN() {
 }
 
 async function claimYield() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const status = document.getElementById("claim-status");
   try {
     status.textContent = "Claiming...";
@@ -650,7 +651,7 @@ async function claimYield() {
 }
 
 async function approveProduct() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const p = document.getElementById("approve-product").value.trim();
   if (!p) return;
   try {
@@ -673,7 +674,7 @@ async function registerMigration() {
 }
 
 async function getTestUSDC() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   try {
     await (await usdcContract.faucet()).wait();
     showToast("10,000 USDC added ✓");
@@ -871,6 +872,16 @@ function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
 }
 
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   calcSavings();
   loadNetworkStats();
   renderComplianceList();

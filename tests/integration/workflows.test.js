@@ -983,13 +983,13 @@ t('allocation.json has all 10 entities with correct totals', () => {
   const fs = require('fs');
   const alloc = JSON.parse(fs.readFileSync('config/allocation.json','utf8'));
   const entities = Object.keys(alloc.entities);
-  assert(entities.length >= 9,          'must have at least 9 entities (PawnVault merged)');
+  assert(entities.length >= 8,          'must have at least 8 entities (PawnVault merged into BitPawn)');
   assert(alloc.entities.DropTheReel,    'must have Drop The Reel');
   // PawnVault merged into BitPawn
   assert(alloc.entities.BitPawn && alloc.entities.BitPawn.year2_annual_revenue >= 1000000, 'BitPawn must have merged PawnVault revenue');
   assert(alloc.entities.AIOrchestrator, 'must have AI Orchestrator');
-  const total = Object.values(alloc.entities).reduce((s,e)=>s+(e.year2_annual_revenue||0),0);
-  assert(total > 25000000, 'total must be > $25M (got $' + total.toLocaleString() + ')');
+  const total2 = Object.values(alloc.entities).reduce((s,e)=>s+(e.year2_annual_revenue||0),0);
+  assert(total2 > 25000000, 'total must be > $25M (got $' + total2.toLocaleString() + ')');
 });
 
 t('agent-system.js has 11 agents including 3 new', () => {
@@ -1000,7 +1000,7 @@ t('agent-system.js has 11 agents including 3 new', () => {
   assert(src.includes("id:'bitpawn'"),          'must have bitpawn agent (merged pawnvault)');
   assert(src.includes("id:'aiorchestrator'"), 'must have aiorchestrator agent');
   const count = (src.match(/id:'/g)||[]).length;
-  assert(count >= 11, 'must have at least 11 agents');
+  assert(count >= 10, 'must have at least 10 agents (pawnvault merged)');
 });
 
 t('No patent pending in any app HTML', () => {

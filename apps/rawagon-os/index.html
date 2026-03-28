@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>
   <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -253,6 +254,7 @@ select.fi option{background:var(--deep);}
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
     <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
     <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
+    <button onclick="window.RWOnboard && window.RWOnboard.showSetupWizard()" style="padding:4px 10px;background:transparent;border:1px solid rgba(255,255,255,.08);color:#444466;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit" title="Open setup wizard">⚙ Setup</button>
     <span style="font-size:11px;color:#333360;">chainId 720701</span>
   </div>
 </div>
@@ -267,7 +269,7 @@ select.fi option{background:var(--deep);}
   const CHAIN = {
     chainId:"0x14A34",chainName:"RAWNet Testnet",
     nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
-    rpcUrls:["https://sepolia.base.org"],
+    rpcUrls:["http://10.117.122.142:8545","http://localhost:8545"],
     blockExplorerUrls:["http://10.117.122.142:3000"]
   };
   const wrap = document.getElementById("rwc-btn-wrap");
@@ -304,7 +306,7 @@ select.fi option{background:var(--deep);}
   }
 
   btn.onclick = async function(){
-    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
+    if(!window.ethereum){ window.RWOnboard ? window.RWOnboard.showMetaMaskGuide() : (rwToast && rwToast("MetaMask required", true)); return; }
     btn.textContent = "Connecting..."; btn.disabled = true;
     try{
       await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
@@ -811,7 +813,102 @@ function anthropicFetch(messages, maxTokens=800, system="") {
       </div>
     </div>
 
-  </main>
+  
+<!-- ── SETTINGS VIEW ───────────────────────────────────────────────────── -->
+<div id="app-settings" class="view">
+  <div style="max-width:720px;margin:0 auto">
+
+    <!-- Header -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--wh);margin-bottom:4px">⚙ Settings</div>
+      <div style="font-size:.76rem;color:var(--soft)">API keys, wallet config, and network settings — stored locally on this device only</div>
+    </div>
+
+    <!-- API Keys -->
+    <div class="card" style="margin-bottom:14px;border-left:3px solid var(--purp)">
+      <div class="card-label" style="color:var(--purp);margin-bottom:12px">🤖 API Keys</div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">Anthropic (Claude AI)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-anthropic" placeholder="sk-ant-..." style="flex:1"
+                 oninput="document.getElementById('cfg-anthropic-save').disabled=!this.value.startsWith('sk-ant-')">
+          <button id="cfg-anthropic-save" class="btn btn-purp btn-sm" disabled
+                  onclick="saveConfigKey('anthropic')">Save</button>
+        </div>
+        <div style="font-size:.68rem;color:var(--soft);margin-top:4px" id="cfg-anthropic-status"></div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">ElevenLabs (voice synthesis — Drop The Reel)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-elevenlabs" placeholder="xi-..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('elevenlabs')">Save</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">TMDB (movie database — Drop The Reel)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-tmdb" placeholder="TMDB key..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('tmdb')">Save</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">EasyPost (shipping labels — Droppa)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-easypost" placeholder="EZAK..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('easypost')">Save</button>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">Resend (email notifications — Droppa)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-resend" placeholder="re_..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('resend')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet -->
+    <div class="card" style="margin-bottom:14px;border-left:3px solid var(--gold)">
+      <div class="card-label" style="color:var(--gold);margin-bottom:12px">🦊 Wallet</div>
+      <div style="font-size:.78rem;display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)">
+          <span style="color:var(--soft)">Connected address</span>
+          <span style="font-family:monospace;font-size:.72rem" id="cfg-wallet-addr">Not connected</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)">
+          <span style="color:var(--soft)">Network</span>
+          <span style="color:var(--purp)">RAWNet Testnet (720701)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0">
+          <span style="color:var(--soft)">RPC</span>
+          <span style="font-family:monospace;font-size:.68rem;color:var(--soft)">10.117.122.142:8545</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="RWWallet.connect()">Connect Wallet</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="disconnectWallet()">Disconnect</button>
+      </div>
+    </div>
+
+    <!-- Key status dashboard -->
+    <div class="card" style="border-left:3px solid var(--grn)">
+      <div class="card-label" style="color:var(--grn);margin-bottom:12px">✓ Setup Status</div>
+      <div id="cfg-status-grid" style="display:flex;flex-direction:column;gap:5px;font-size:.76rem"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-outline btn-sm" onclick="window.RWOnboard && window.RWOnboard.showSetupWizard()">Re-run Setup Wizard</button>
+        <button class="btn btn-outline btn-sm" style="margin-left:8px;color:var(--red)" onclick="clearAllKeys()">Clear All Keys</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
 </div>
 
 <!-- MODAL -->
@@ -1495,6 +1592,7 @@ const SIDEBARS = {
   os: [
     {s:'Overview'},
     {ico:'⊞',lbl:'Dashboard',view:'v-os-dash',on:true},
+    {ico:'⚙',lbl:'Settings',onclick:"switchToSettings()"},
     {ico:'🔄',lbl:'Live workflows'},
     {ico:'📊',lbl:'Activity stream'},
     {s:'Quick actions'},
