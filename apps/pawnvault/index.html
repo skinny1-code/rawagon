@@ -1,23 +1,24 @@
 <!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#10b981">
 <title>PawnVault — Pawn Shop SaaS · RAWagon</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#040a07;--s1:#081210;--s2:#0c1710;--card:#0a1510;--line:rgba(255,255,255,.07);--ln2:rgba(255,255,255,.04);
---wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
+--wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--accent:#10b981;--accent-glow:rgba(16,185,129,.2);--accent-bg:rgba(16,185,129,.06);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
 --gold:#f59e0b;--gd2:rgba(245,158,11,.1);--red:#ef4444;--rd2:rgba(239,68,68,.1);--teal:#06b6d4;--purp:#8b5cf6;}
-html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'JetBrains Mono',monospace;font-size:14px}
+html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'Outfit', sans-serif;font-size:14px}
 .hdr{position:sticky;top:0;z-index:100;background:rgba(4,10,7,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px}
 .hdr-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
 .hdr-sub{font-size:.66rem;color:var(--soft)}
-.back{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--soft);font-size:.7rem;text-decoration:none;font-family:'JetBrains Mono',monospace;font-weight:600;transition:.12s}
+.back{padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--soft);font-size:.7rem;text-decoration:none;font-family:'Outfit', sans-serif;font-weight:600;transition:.12s}
 .back:hover{color:var(--wh)}
 .nav{display:flex;border-bottom:1px solid var(--line);background:var(--s1);overflow-x:auto;scrollbar-width:none}
 .tab{padding:11px 18px;font-size:.72rem;font-weight:600;letter-spacing:.06em;color:var(--soft);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s}
 .tab:hover{color:var(--wh)}.tab.on{color:var(--grn);border-bottom-color:var(--grn)}
-.pane{display:none;padding:18px;max-width:1100px;margin:0 auto}.pane.on{display:block}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:18px;max-width:1100px;margin:0 auto}.pane.on{display:block}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 @media(max-width:700px){.g2,.g3{grid-template-columns:1fr}}
@@ -36,6 +37,23 @@ input:focus,select:focus{border-color:var(--grn)}
 .ticket-row{background:var(--s1);border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 .toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:8px;font-size:.76rem;font-weight:600;z-index:999;opacity:0;transition:.25s;pointer-events:none;background:var(--card);border:1px solid var(--grn);color:var(--grn)}
 .toast.show{opacity:1}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style></head><body>
 <div class="hdr">
   <a href="/" class="back">⬡ OS</a>
@@ -46,7 +64,7 @@ input:focus,select:focus{border-color:var(--grn)}
   <div style="margin-left:auto"><button class="btn btn-grn btn-sm" onclick="show('tickets')">+ New Ticket</button></div>
 </div>
 <nav class="nav">
-  <div class="tab on" onclick="show('dash')">Dashboard</div>
+  <div class="tab on" onclick="show('tickets')">Dashboard</div>
   <div class="tab" onclick="show('tickets')">Tickets</div>
   <div class="tab" onclick="show('inventory')">Inventory</div>
   <div class="tab" onclick="show('customers')">Customers</div>
@@ -124,7 +142,10 @@ input:focus,select:focus{border-color:var(--grn)}
           <div style="flex:1"><label>Due Date</label><input type="date" id="t-due"></div>
           <div style="flex:1"><label>Ticket Type</label><select id="t-type"><option value="pawn">Pawn</option><option value="buy">Buy (Outright)</option></select></div>
         </div>
-        <button class="btn btn-grn" style="width:100%;margin-top:6px" id="t-btn" onclick="createTicket()">Create Ticket</button>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn btn-grn" style="flex:2" id="t-btn" onclick="createTicket()">Create Ticket</button>
+          <button class="btn btn-out" style="flex:1" onclick="aiValueItem()" title="AI Valuation">🤖 Value</button>
+        </div>
         <div id="t-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
       </div>
     </div>
@@ -205,6 +226,9 @@ input:focus,select:focus{border-color:var(--grn)}
     <div>
       <div class="card">
         <div class="ct">PawnVault SaaS Architecture</div>
+          <div style="font-size:.7rem;color:var(--gold);padding:5px 8px;background:rgba(245,158,11,.06);border-radius:5px;margin-bottom:10px">
+            Set Anthropic API key in RAWagon OS → automatically enables AI valuations
+          </div>
         <div style="font-size:.76rem;color:var(--soft);line-height:1.8">
           <div><strong style="color:var(--wh)">Backend:</strong> Node.js + Express · REST API</div>
           <div><strong style="color:var(--wh)">Database:</strong> PostgreSQL via Neon (hosted) or local pg</div>
@@ -237,7 +261,7 @@ input:focus,select:focus{border-color:var(--grn)}
         <div class="row"><span class="soft">50 shops</span><span class="grn">$4,950/mo</span></div>
         <div class="row"><span class="soft">100 shops</span><span class="grn">$9,900/mo</span></div>
         <div class="row"><span class="soft">300 shops (target)</span><span class="grn">$29,700/mo</span></div>
-        <div class="row"><span class="soft">Year 2 projection</span><span class="grn">$360,000/yr</span></div>
+        <div class="row"><span class="soft">Year 2 projection</span><span class="grn">$360,000/yr projected</span></div>
         <div class="row"><span class="soft">Founder 15%</span><span class="gold">$54,000/yr</span></div>
       </div>
       <div class="card">
@@ -385,11 +409,60 @@ function updateKPIs(){
   document.getElementById('k-cust').textContent=CUSTOMERS.length;
 }
 
+
+const RAW_KEYS = {
+  anthropic: () => localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '',
+};
+function anthropicFetch(messages, maxTokens=400) {
+  const key = RAW_KEYS.anthropic();
+  if (!key) return Promise.reject(new Error('No Anthropic API key'));
+  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages})
+  }).then(r=>r.json()).then(d=>{if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||'';});
+}
+
+async function aiValueItem() {
+  const item  = (document.getElementById('t-item')||{}).value||'';
+  const cat   = (document.getElementById('t-cat') ||{}).value||'Electronics';
+  const cond  = (document.getElementById('t-cond')||{}).value||'Good';
+  if (!item) { toast('Enter item description first', true); return; }
+  const loanEl   = document.getElementById('t-loan');
+  const statusEl = document.getElementById('t-status');
+  if (statusEl) statusEl.textContent = 'Getting AI valuation…';
+  const prompt = 'You are a pawn shop expert appraiser. Give a quick valuation for this item:\n' +
+    'Item: ' + item + '\nCategory: ' + cat + '\nCondition: ' + cond + '\n\n' +
+    'Reply with ONLY a JSON object: {"retail":"$X","pawn_offer":"$X","buy_offer":"$X","reasoning":"1 sentence"}\n' +
+    'Pawn offer = 40-60% of retail. Buy offer = 70-85% of retail. Be realistic.';
+  try {
+    const result = await anthropicFetch([{role:'user',content:prompt}], 200);
+    const data   = JSON.parse(result.replace(/```json|```/g,'').trim());
+    if (loanEl && data.pawn_offer) {
+      const pawnNum = parseFloat(data.pawn_offer.replace(/[$,]/g,''));
+      loanEl.value = pawnNum.toFixed(2);
+    }
+    if (statusEl) {
+      statusEl.innerHTML = '✓ AI valuation: Retail ' + data.retail + 
+        ' | Pawn offer ' + data.pawn_offer + 
+        ' | Buy offer ' + data.buy_offer + 
+        '<br><span style="color:var(--soft);font-size:.7rem">' + data.reasoning + '</span>';
+      statusEl.style.color = 'var(--grn)';
+    }
+    toast('AI valuation set: ' + data.pawn_offer);
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Add Anthropic API key in settings for AI valuations';
+  }
+}
+
 window.addEventListener('load',()=>{
   updateKPIs();renderTickets();renderInventory();renderCustomers();
   document.getElementById('t-due').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
   document.getElementById('rpt-from').value=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
   document.getElementById('rpt-to').value=new Date().toISOString().slice(0,10);
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'pawnvault'});
 });
 </script>
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#040a07;border-top:1px solid rgba(16,185,129,.3);padding:10px 16px;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:.72rem;color:#10b981;font-weight:700">AI valuations available — add Anthropic key</span><input id="gkb-key" type="password" placeholder="sk-ant-..." style="flex:1;min-width:180px;background:rgba(255,255,255,.06);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;color:#e8f5e9;font-size:.74rem;outline:none"><button onclick="(function(){const k=(document.getElementById('gkb-key')||{}).value||'';if(k.startsWith('sk-ant-')){localStorage.setItem('rawagon-anthropic-key',k);document.getElementById('global-key-banner').style.display='none';toast('Key saved ✓');}})()" style="padding:5px 14px;background:#10b981;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer">Save</button><button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#5a8a6a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button></div>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

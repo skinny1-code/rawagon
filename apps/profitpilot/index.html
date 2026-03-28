@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#06b6d4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ProfitPilot — RAWagon Analytics</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
@@ -21,7 +22,7 @@
   --soft:#2d6e68;--dim:#1a3d3a;--wh:#d4f0ed;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"JetBrains Mono",monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
+body{background:var(--bg);color:var(--wh);font-family:'JetBrains Mono', monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
 /* scanline overlay */
 body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:1000;}
 
@@ -34,13 +35,13 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .htab:hover{color:var(--teal);background:var(--tl3);}
 .htab.active{color:var(--teal);background:var(--tl3);border-bottom:2px solid var(--teal);}
 .hdr-right{padding:0 16px;display:flex;align-items:center;gap:12px;margin-left:auto;border-left:1px solid var(--line2);}
-#connect-btn{padding:5px 12px;border-radius:3px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-size:.7rem;font-family:"JetBrains Mono",monospace;font-weight:600;cursor:pointer;letter-spacing:.06em;}
+#connect-btn{padding:5px 12px;border-radius:3px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-size:.7rem;font-family:'JetBrains Mono', monospace;font-weight:600;cursor:pointer;letter-spacing:.06em;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
 /* panes */
-.pane{display:none;padding:16px 20px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:16px 20px;}
 .pane.active{display:block;}
 
 /* KPI grid */
@@ -103,6 +104,23 @@ input:focus,select:focus{border-color:var(--teal);}
 .terminal .dim{color:var(--dim);}
 .terminal .warn{color:var(--gold);}
 .terminal .err{color:var(--red);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>
@@ -126,7 +144,8 @@ input:focus,select:focus{border-color:var(--teal);}
     <div class="live-dot"></div>
     <span id="block-num" style="font-size:.7rem;color:var(--soft)">block —</span>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">CONNECT</button>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" onclick="connectWallet()">CONNECT</button>
   </div>
 </div>
 
@@ -136,7 +155,7 @@ input:focus,select:focus{border-color:var(--teal);}
   <span class="tick-item">GTX <span class="gold">$41.338</span></span>
   <span class="tick-item">QWKS savings vs Visa <span class="grn">99.6%</span></span>
   <span class="tick-item">RAWNet gas <span class="grn">$0.0000082/tx</span></span>
-  <span class="tick-item">Year 2 EBITDA <span class="grn">84.9%</span></span>
+  <span class="tick-item">Year 2 EBITDA Target <span class="grn">84.9%</span></span>
   <span class="tick-item">Founder share <span class="gold">15% → Solana</span></span>
   <span class="tick-item">Total LTN burned <span id="tick-burned">0</span></span>
 </div>
@@ -144,7 +163,7 @@ input:focus,select:focus{border-color:var(--teal);}
 <!-- DASHBOARD -->
 <div class="pane active" id="pane-dashboard">
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">10 active entities</div></div>
+    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Target</div><div class="kpi-sub">Projected · not yet earned</div></div>
     <div class="kpi"><div class="kpi-val grn" id="kpi-ebitda">84.9%</div><div class="kpi-lbl">EBITDA Margin</div><div class="kpi-sub">$24.7M net</div></div>
     <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.53M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
     <div class="kpi"><div class="kpi-val" style="color:#8b5cf6" id="kpi-ltn-stk">$3.44M</div><div class="kpi-lbl">Staker Yield/yr</div><div class="kpi-sub">0.1% of $3.44B vol</div></div>
@@ -156,7 +175,7 @@ input:focus,select:focus{border-color:var(--teal);}
 
   <div class="panels">
     <div class="panel">
-      <div class="panel-title">Entity Revenue Breakdown (Year 2)</div>
+      <div class="panel-title">Entity Revenue Model Targets (Year 2 Projected)</div>
       <div id="entity-bars"></div>
     </div>
     <div class="panel">
@@ -318,7 +337,7 @@ input:focus,select:focus{border-color:var(--teal);}
     <div class="panel">
       <div class="panel-title">RAWagon™ Genesis IP Vault</div>
       <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">
-        RAWagon has established a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filed March 22, 2026.
+        RAWagon is building a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filing in preparation.
       </div>
       <div id="ip-vault-list"></div>
     </div>
@@ -328,8 +347,8 @@ input:focus,select:focus{border-color:var(--teal);}
         <table>
           <thead><tr><th>Application</th><th>Filing Date</th><th>Status</th><th>Inventions</th></tr></thead>
           <tbody>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026-PROV-001</td><td>Mar 22, 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>5 inventions</td></tr>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe-2026-PROV</td><td>Mar 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>Behavioral biometric</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026 (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>5 inventions</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>Behavioral biometric</td></tr>
             <tr><td class="mono" style="font-size:.72rem;color:var(--gold)">WaV5-PATENT-DRAFT</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">DRAFTING</span></td><td>Wearable audio</td></tr>
           </tbody>
         </table>
@@ -337,7 +356,7 @@ input:focus,select:focus{border-color:var(--teal);}
       <div class="panel">
         <div class="panel-title">12-Month Patent Timeline</div>
         <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
-          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span class="teal">Mar 22, 2026 ✓</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span style="color:var(--gold)">Pending — filing in preparation</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Non-provisional deadline</span><span class="gold">Mar 22, 2027</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Attorney engagement</span><span class="gold">Sep 2026</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Est. prosecution cost</span><span style="color:var(--soft)">$15K–$25K</span></div>
@@ -724,9 +743,9 @@ function renderLTNCompound() {
 // ── IP Vault ──────────────────────────────────────────────────────────────
 function renderIPVault() {
   const items=[
-    {n:1,title:"Patents Bundle",desc:"RAW-2026-PROV-001 (5 inventions) + AuraMe + WaV5",status:"Filed"},
+    {n:1,title:"Patents Bundle",desc:"Provisional application in preparation — 5 inventions, AuraMe, WaV5",status:"Preparing"},
     {n:2,title:"Trademark Filings",desc:"RAWagon™ + all sub-brands (QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap)",status:"Pending"},
-    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Filed"},
+    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Drafted"},
     {n:4,title:"Licensing Templates",desc:"Modular licensing for 7 entity products + hardware",status:"Drafted"},
     {n:5,title:"Legal Clearance Summary",desc:"Conflict checks vs prior art — all 5 inventions cleared",status:"Complete"},
     {n:6,title:"NFT Governance Clause",desc:"On-chain IP proof via IQCAR-style NFT minting for each invention",status:"Spec"},
@@ -739,7 +758,7 @@ function renderIPVault() {
     {n:13,title:"AI Orchestrator 4m",desc:"Multi-model SaaS — Vercel Edge, streaming SSE, GPT-5 + Claude + Gemini + Perplexity",status:"Deployed"},
     {n:14,title:"NeuroWave HUD",desc:"FDA Class I/II wearable HUD — retinal projection + EEG. Regulatory pre-notification filed.",status:"Pre-reg"},
   ];
-  const statusColors={Filed:"var(--grn)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
+  const statusColors={Filed:"var(--gold)",Preparing:"var(--gold)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
   document.getElementById("ip-vault-list").innerHTML=items.map(i=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2)">
       <div style="width:20px;height:20px;border-radius:50%;background:var(--tl2);border:1px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--teal);flex-shrink:0">${i.n}</div>
@@ -878,7 +897,7 @@ window.addEventListener("load",()=>{
   // Patent countdown
   try {
     const deadline   = new Date("2027-03-22");
-    const filedDate  = new Date("2026-03-22");
+    const filedDate  = null; // not yet filed
     const today      = new Date();
     const daysLeft   = Math.ceil((deadline - today) / 86400000);
     const daysElapsed= Math.ceil((today - filedDate)  / 86400000);
@@ -907,6 +926,8 @@ window.addEventListener("load",()=>{
     ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
     ethereum.on("accountsChanged",()=>location.reload());
   }
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'profitpilot'});
 });
 </script>
 
@@ -918,4 +939,23 @@ window.addEventListener("load",()=>{
   <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+</script>
 </body></html>

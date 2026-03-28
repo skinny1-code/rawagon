@@ -2,7 +2,7 @@
  * @rawagon/fee-distributor
  * TypeScript implementation of QWKS fee distribution math.
  * Mirrors FeeDistributor.sol logic for off-chain calculations.
- * Patent pending: RAW-2026-PROV-001
+ * Proprietary — RAWagon Systems LLC
  */
 
 export interface SavingsResult {

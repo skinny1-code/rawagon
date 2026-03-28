@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#8b5cf6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>1.nce AllCard — Sovereign ID</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#0a080f;--s1:#100d18;--s2:#15121f;--card:#1c1628;
   --line:rgba(139,92,246,.18);--ln2:rgba(139,92,246,.07);--ln3:rgba(139,92,246,.03);
   --wh:#f0ecff;--soft:#7c6fa0;--dim:#3a2d5a;
-  --purp:#8b5cf6;--pr2:rgba(139,92,246,.15);--pr3:rgba(139,92,246,.07);
+  --accent:#8b5cf6;--accent-glow:rgba(139,92,246,.2);--accent-bg:rgba(139,92,246,.06);--purp:#8b5cf6;--pr2:rgba(139,92,246,.15);--pr3:rgba(139,92,246,.07);
   --cyan:#67e8f9;--cy2:rgba(103,232,249,.1);--cy3:rgba(103,232,249,.06);
   --grn:#34d399;--gn2:rgba(52,211,153,.1);--gn3:rgba(52,211,153,.06);
   --gold:#fcd34d;--gd2:rgba(252,211,77,.1);
@@ -23,7 +24,7 @@
   --pink:#f472b6;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"DM Sans",sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Oxanium', sans-serif;font-size:14px;min-height:100vh;}
 .hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);position:relative;}
 .hdr::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purp),var(--cyan),var(--pink),transparent);}
 .hdr-brand{padding:13px 20px;border-right:1px solid var(--ln2);display:flex;align-items:center;gap:12px;min-width:200px;}
@@ -36,7 +37,7 @@ body{background:var(--bg);color:var(--wh);font-family:"DM Sans",sans-serif;font-
 #connect-btn{margin:8px 14px;padding:7px 14px;border-radius:6px;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
-.pane{display:none;padding:18px 22px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:18px 22px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
@@ -113,6 +114,23 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
 
 /* Toast */
 .toast{position:fixed;bottom:22px;right:22px;padding:10px 16px;background:var(--card);border:1px solid var(--purp);border-radius:10px;font-size:.79rem;color:var(--purp);z-index:999;display:none;box-shadow:0 6px 24px rgba(139,92,246,.2);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>
@@ -120,7 +138,7 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
 <div class="hdr">
   <div class="hdr-brand">
     <div class="logo-card">AC</div>
-    <div><div class="brand-name">1.nce AllCard</div><div class="brand-sub">Sovereign Identity · Patent Pending</div></div>
+    <div><div class="brand-name">1.nce AllCard</div><div class="brand-sub">Sovereign Identity · ZK-Powered</div></div>
   </div>
   <div class="hdr-nav">
     <div class="nav-item active" onclick="show('card')">My Card</div>
@@ -132,7 +150,8 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
     <div class="nav-item" onclick="show('patent')">Patent</div>
   </div>
   <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
 </div>
 
 <!-- MY CARD -->
@@ -458,9 +477,9 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
 <div class="pane" id="pane-patent">
   <div class="g2">
     <div class="card">
-      <div class="card-title">RAW-2026-PROV-001</div>
+      <div class="card-title">IP Portfolio</div>
       <div style="font-size:.78rem;font-weight:600;margin-bottom:6px;">Zero-Knowledge Commerce System with Behavioral Biometric Key Derivation and Sovereign Identity</div>
-      <div style="font-size:.7rem;color:var(--soft);margin-bottom:10px;">RAW-2026-PROV-001 · Filed March 22, 2026 · RAWagon Systems LLC · 5 core inventions</div>
+      <div style="font-size:.7rem;color:var(--soft);margin-bottom:10px;">RAWagon Systems LLC · IP filing in preparation · 5 core inventions</div>
       <div style="font-size:.74rem;color:var(--soft);line-height:1.9;">
         <div><strong style="color:var(--purp)">Claim 1.</strong> Shifting PAN — payment card number derived from HD path per transaction; each spend produces unique PAN cryptographically linked to master key</div>
         <div><strong style="color:var(--purp)">Claim 2.</strong> 8-mode sovereign identity card — single physical/digital card assumes multiple network personas (identity, debit, crypto, health, vehicle, government, security, retirement) under unified master key</div>
@@ -485,7 +504,7 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
       </div>
       <div class="card">
         <div class="card-title">AuraMe Patent (separate)</div>
-        <div style="font-size:.74rem;color:var(--soft);line-height:1.7;">AI-Powered Behavioral Identity, Authentication, and Interaction System. Covers the on-device ML engine, anomaly detection, FIDO2/WebAuthn integration, and user-sovereign data architecture.<br><br>Filed provisionally March 22, 2026 (RAW-2026-PROV-001). Non-provisional deadline: March 22, 2027.</div>
+        <div style="font-size:.74rem;color:var(--soft);line-height:1.7;">AI-Powered Behavioral Identity, Authentication, and Interaction System. Covers the on-device ML engine, anomaly detection, FIDO2/WebAuthn integration, and user-sovereign data architecture.<br><br>Provisional filing in preparation. Covers behavioral biometric key derivation, shifting PAN, and ZK credential architecture.</div>
       </div>
     </div>
   </div>
@@ -494,6 +513,31 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
 <div class="toast" id="toast"></div>
 
 <script>
+
+const RAW_KEYS = {
+  anthropic: () => localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '',
+};
+function saveGlobalKey() {
+  const key = (document.getElementById('gkb-key')||{}).value||'';
+  if (!key) return;
+  if (key.startsWith('sk-ant-')) { localStorage.setItem('rawagon-anthropic-key',key); }
+  const b = document.getElementById('global-key-banner'); if (b) b.style.display='none';
+  document.getElementById('gkb-key').value='';
+  if (typeof toast==='function') toast('API key saved ✓');
+}
+function anthropicFetch(messages, maxTokens=600) {
+  const key = RAW_KEYS.anthropic();
+  if (!key) {
+    const b = document.getElementById('global-key-banner'); if (b) b.style.display='flex';
+    return Promise.reject(new Error('No Anthropic API key'));
+  }
+  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages})
+  }).then(r=>r.json()).then(d=>{if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||'';});
+}
+
+
 // ── Contracts ──────────────────────────────────────────────────────────────
 const ADDRS = { EmployeeVault: "0x86072CbFF48dA3C1F01824a6761A03F105BCC697" };
 const EV_ABI = [
@@ -671,7 +715,30 @@ async function usePattern() {
 // ── Device sensor capture ──────────────────────────────────────────────────
 function startMotionCapture() {
   if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", e => {
+    
+async function aiIdentityAnalysis() {
+  const keySet = !!localStorage.getItem('allcard-masterkey');
+  const prompt = 'You are an identity security advisor for AllCard sovereign identity. Analyze this setup:\n' +
+    '- Biometric master key derived: ' + (keySet?'YES':'NO') + '\n' +
+    '- System: ZK commitments on RAWNet, no PII stored on-chain\n\n' +
+    'Give 3 bullet points: (1) Security posture assessment, (2) What to do next, (3) Best practice for shifting PAN cards.';
+  const outEl = document.getElementById('ai-identity-out');
+  if (!outEl) return;
+  outEl.textContent = 'Analyzing identity setup…';
+  outEl.style.display = 'block';
+  const key = localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '';
+  if (!key) { outEl.textContent = 'Add Anthropic API key in RAWagon OS for AI analysis'; return; }
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await r.json();
+    outEl.textContent = d.content?.[0]?.text||'No response';
+  } catch(e) { outEl.textContent = 'Error: ' + e.message.split('(')[0]; }
+}
+
+window.addEventListener("deviceorientation", e => {
       if (e.beta !== null) {
         const g = Math.round(Math.abs(e.beta) % 256);
         document.getElementById("bio-g").value = g;
@@ -1056,6 +1123,33 @@ window.addEventListener("load",()=>{
   if(saved){masterKey=saved;document.getElementById("st-key").textContent=saved.slice(0,16)+"...";document.getElementById("key-set-status").textContent="✓ Set (restored)";document.getElementById("key-set-status").style.color="var(--grn)";}
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: '1nce-allcard'});
 });
+</script>
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need Anthropic API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-..." style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;">Save Key</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body></html>

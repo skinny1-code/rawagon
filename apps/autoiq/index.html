@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#60a5fa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AutoIQ — Vehicle Title OS · RAWNet</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#030609;--s1:#050b10;--s2:#080f18;--card:#0c1520;
   --line:rgba(96,165,250,.15);--ln2:rgba(96,165,250,.06);
   --wh:#e8f4ff;--soft:#4a7090;--dim:#1e3a50;
-  --blue:#60a5fa;--bl2:rgba(96,165,250,.15);--bl3:rgba(96,165,250,.06);
+  --accent:#60a5fa;--accent-glow:rgba(96,165,250,.2);--accent-bg:rgba(96,165,250,.06);--blue:#60a5fa;--bl2:rgba(96,165,250,.15);--bl3:rgba(96,165,250,.06);
   --cyan:#22d3ee;--cy2:rgba(34,211,238,.1);
   --grn:#34d399;--gn2:rgba(52,211,153,.1);
   --gold:#fbbf24;--red:#f87171;--purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Rajdhani', sans-serif;font-size:14px;min-height:100vh;}
 /* road line */
 body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);pointer-events:none;z-index:100;}
 
@@ -40,7 +41,7 @@ body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;backgr
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-.pane{display:none;padding:20px 24px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -49,7 +50,7 @@ body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;backgr
 /* KPI strip */
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
 .kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:'Rajdhani', sans-serif;line-height:1;}
 .kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
 .blue{color:var(--blue);}.cyan{color:var(--cyan);}.grn{color:var(--grn);}.gold{color:var(--gold);}.red{color:var(--red);}
@@ -115,6 +116,23 @@ input:focus,select:focus{border-color:var(--blue);}
 
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--ln2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>
@@ -137,7 +155,8 @@ input:focus,select:focus{border-color:var(--blue);}
     <div class="live-dot"></div>
     <span id="nhtsa-status" style="font-size:.68rem;color:var(--soft)">NHTSA Live</span>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
 
@@ -193,7 +212,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fraud prevention</span><span class="grn">Cryptographic</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">History immutable</span><span class="grn">On-chain forever</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Works across borders</span><span class="grn">Global EVM</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="cyan">On-chain (Q3 2026)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="soft">Planned (v2)</span></div>
         </div>
       </div>
     </div>
@@ -257,7 +276,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div>3. NFT minted to buyer wallet on RAWNet</div>
           <div>4. 0.3% fee on sale price → LTN stakers</div>
           <div>5. On-chain history: permanent + immutable</div>
-          <div>6. DMV oracle integration: Q3 2026</div>
+          <div>6. DMV oracle integration: Planned (v2)</div>
         </div>
       </div>
     </div>
@@ -389,7 +408,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <tr><td>Fraud risk</td><td class="grn">Cryptographic</td><td class="red">High (forgery)</td></tr>
           <tr><td>Cross-state</td><td class="grn">Works globally</td><td class="red">Re-register required</td></tr>
           <tr><td>History</td><td class="grn">On-chain immutable</td><td class="red">Varies by state</td></tr>
-          <tr><td>Lien recording</td><td class="cyan">Q3 2026</td><td>County recorder</td></tr>
+          <tr><td>Lien recording</td><td class="soft">Planned</td><td>County recorder</td></tr>
           <tr><td>Integration</td><td class="grn">Any EVM dApp</td><td class="red">State-only silo</td></tr>
         </tbody>
       </table>
@@ -402,7 +421,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Avg title fee (0.3% of $35K)</span><span class="pval">$105/title</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">TAM (1% penetration)</span><span class="grn">$157.5M/yr</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned @ 1% pen.</span><span class="gold">15,000 LTN/yr</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M projected</span></div>
         </div>
       </div>
       <div class="card">
@@ -411,8 +430,8 @@ input:focus,select:focus{border-color:var(--blue);}
           <div><span style="color:var(--grn)">✓</span> IQCAR NFT minting + transfer</div>
           <div><span style="color:var(--grn)">✓</span> NHTSA VIN decode + recall lookup</div>
           <div><span style="color:var(--grn)">✓</span> On-chain ownership history</div>
-          <div><span style="color:var(--gold)">Q2 2026</span> Lien recording oracle</div>
-          <div><span style="color:var(--gold)">Q3 2026</span> DMV state integration (pilot)</div>
+          <div><span style="color:var(--soft)">Planned</span> Lien recording oracle</div>
+          <div><span style="color:var(--soft)">Planned</span> DMV state integration</div>
           <div><span style="color:var(--gold)">Q4 2026</span> Insurance hook (AllCard mode 5)</div>
           <div><span style="color:var(--blue)">2027</span> Cross-chain title bridge (Solana)</div>
         </div>
@@ -464,7 +483,7 @@ input:focus,select:focus{border-color:var(--blue);}
         <div style="display:flex;flex-direction:column;gap:5px;font-size:.76rem;">
           <div class="row"><span style="color:var(--soft)">Telo contract</span><span class="mono" style="color:var(--purp);font-size:.7rem">IQTitle.sol via Telo</span></div>
           <div class="row"><span style="color:var(--soft)">Smart title transfer</span><span class="grn">Active</span></div>
-          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--gold)">Q3 2026</span></div>
+          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--soft)">Planned</span></div>
           <div class="row"><span style="color:var(--soft)">DMV oracle</span><span style="color:var(--gold)">Planned</span></div>
           <div class="row"><span style="color:var(--soft)">SaaS to govts/dealers</span><span style="color:var(--gold)">Q4 2026</span></div>
         </div>
@@ -776,7 +795,7 @@ async function loadRecentRecalls(){
 }
 
 function show(id){
-  const ids=["decode","mint","mytitles","transfer","history","recalls","integrations","compare"];
+  const ids=["decode","recalls","mint","transfer","mytitles","history","integrations","compare"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="mytitles")loadMyTitles();
@@ -862,10 +881,55 @@ async function fraudCheck() {
       : `<div style="padding:8px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);border-radius:6px;font-size:.76rem;color:var(--grn)">✓ ${v.ModelYear} ${v.Make} ${v.Model} — No NHTSA flags detected<br>Full NICB/salvage check: <a href="https://www.nicb.org/vincheck" target="_blank" style="color:var(--grn)">NICB VIN Check →</a></div>`;
   } catch(e) { el.innerHTML = "<div style=\'color:var(--red);font-size:.76rem\'>" + e.message + "</div>"; }
 }
+
+async function aiVINAnalysis() {
+  const vin = (document.getElementById('vin-input')||{}).value||'';
+  const resultEl = document.getElementById('ai-vin-result');
+  if (!vin || vin.length < 10) { toast('Decode a VIN first', true); return; }
+  if (!resultEl) return;
+  resultEl.style.display = 'block';
+  resultEl.textContent = 'Generating AI report…';
+  const make  = document.getElementById('vd-make' )?.textContent||'';
+  const model = document.getElementById('vd-model')?.textContent||'';
+  const year  = document.getElementById('vd-year' )?.textContent||'';
+  const prompt = 'You are an automotive expert. Write a 3-bullet buyer report: (1) Known reliability/issues for ' + year + ' ' + make + ' ' + model + ', (2) What to inspect on VIN ' + vin + ', (3) Is this a good candidate for IQTitle blockchain title. Be specific and practical.';
+  const key = localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '';
+  if (!key) { resultEl.textContent = 'Add Anthropic API key in RAWagon OS for AI reports'; return; }
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:350,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await r.json();
+    resultEl.textContent = d.content?.[0]?.text||'No response';
+  } catch(e) { resultEl.textContent = 'Error: ' + e.message.split('(')[0]; }
+}
+
 window.addEventListener("load",()=>{
   loadStats();loadRecentRecalls();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'autoiq'});
 });
+</script>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body></html>

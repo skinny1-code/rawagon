@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>BitPawn — Pawn Shop OS · RAWNet</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#050509;--s1:#08090e;--s2:#0d0e16;--card:#11121c;
   --line:rgba(245,158,11,.12);--ln2:rgba(245,158,11,.05);
   --wh:#fff8e8;--soft:#8a7a5a;--dim:#3a3020;
-  --gold:#f59e0b;--gd2:rgba(245,158,11,.15);--gd3:rgba(245,158,11,.06);
+  --accent:#f59e0b;--accent-glow:rgba(245,158,11,.2);--accent-bg:rgba(245,158,11,.06);--gold:#f59e0b;--gd2:rgba(245,158,11,.15);--gd3:rgba(245,158,11,.06);
   --grn:#10b981;--gn2:rgba(16,185,129,.12);
   --red:#ef4444;--rd2:rgba(239,68,68,.1);
   --blue:#60a5fa;--bl2:rgba(96,165,250,.1);
   --purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Outfit",sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Exo 2', sans-serif;font-size:14px;min-height:100vh;}
 /* gold scanline */
 body::after{content:"";position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4;pointer-events:none;z-index:100;}
 
@@ -42,13 +43,13 @@ body::after{content:"";position:fixed;top:0;left:0;right:0;height:1px;background
 .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-.pane{display:none;padding:20px 24px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px 40px;}
 .pane.active{display:block;}
 
 /* KPI strip */
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:20px;border-radius:8px;overflow:hidden;}
 .kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:'Exo 2', sans-serif;line-height:1;}
 .kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.66rem;color:var(--soft);margin-top:2px;}
 .gold{color:var(--gold);} .grn{color:var(--grn);} .red{color:var(--red);} .blue{color:var(--blue);}
@@ -121,6 +122,23 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
 
 /* status indicator */
 .status-bar{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--s2);border:1px solid var(--line);border-radius:8px;font-size:.74rem;color:var(--soft);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
 </style>
 </head>
 <body>
@@ -138,13 +156,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
     <div class="nav-item" onclick="show('inventory')">Inventory</div>
     <div class="nav-item" onclick="show('reports')">Reports</div>
     <div class="nav-item" onclick="show('buy')">Buy Intake</div>
-    <div class="nav-item" onclick="show('police')">Police Export</div>
+    <div class="nav-item" onclick="show('customers')">Customers</div>
+      <div class="nav-item" onclick="show('police')">Police Export</div>
     <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
     <div class="live"><div class="dot"></div><span id="net-status">RAWNet</span></div>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
 
@@ -537,6 +557,27 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
 </div>
 
 <!-- POLICE EXPORT -->
+<div class="pane" id="pane-customers">
+  <div class="g2">
+    <div><div class="card"><div class="card-title">Add Customer</div>
+      <label>Name</label><input id="cust-name" placeholder="Jane Smith">
+      <label>Phone</label><input id="cust-phone" placeholder="+1 555 000 0000">
+      <label>Email</label><input id="cust-email" type="email" placeholder="jane@email.com">
+      <label>ID Type</label><select id="cust-id-type"><option>Driver License</option><option>State ID</option><option>Passport</option></select>
+      <label>ID # (last 4)</label><input id="cust-id-num" placeholder="XXXX" maxlength="4">
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn btn-gold" style="flex:1" onclick="addCustomer()">Add Customer</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="importCustomersFromBP()">Import from Tickets</button>
+      </div>
+    </div></div>
+    <div><div class="card"><div class="card-title grn-t">Customer List</div>
+      <input id="cust-search" placeholder="Search..." style="margin-bottom:10px" oninput="renderCustomers()">
+      <div id="cust-list"></div>
+      <div style="margin-top:6px;font-size:.7rem;color:var(--soft)" id="cust-count">0 customers</div>
+    </div></div>
+  </div>
+</div>
+
 <div class="pane" id="pane-police">
   <div class="g2">
     <div>
@@ -963,7 +1004,7 @@ function loadInventory(){
 function updateItemIcon(){}
 
 function show(id){
-  const ids=["dashboard","intake","tickets","goldcalc","inventory","reports","buy","police","settings"];
+  const ids=["intake","tickets","customers","goldcalc","inventory","reports","buy","police","dashboard","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="dashboard")loadDashboard();
@@ -1056,6 +1097,27 @@ window.addEventListener("load",()=>{
   document.getElementById("s-ltv").value=settings.ltv;
   document.getElementById("i-rate").value=settings.rate;
   document.getElementById("i-term").value=settings.term;
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'bitpawn'});
 });
+</script>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body></html>

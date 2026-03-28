@@ -22,13 +22,15 @@ const LOG_DIR = path.join(__dirname, 'log');
 fs.mkdirSync(LOG_DIR, { recursive: true });
 
 const AGENTS = [
-  { id:'bitpawn',   name:'BitPawn Agent',    emoji:'🏦', app:'apps/bitpawn/index.html',       contract:'contracts/BitPawn/PawnRegistry.sol', addr:'0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A', focus:'pawn ticket creation, ZK commitment, gold melt calculator, redeem flow' },
+  { id:'bitpawn',   name:'BitPawn Agent',    emoji:'🏦', app:'apps/bitpawn/index.html',       contract:'contracts/BitPawn/PawnRegistry.sol', addr:'0x2D8BE6BF0baA74e0A907016679CaE9190e80dD0A', focus:'pawn ticket creation, buy tickets, ZK commitment, gold melt calculator, AI valuations, customer management, police export, redeem flow' },
   { id:'goldsnap',  name:'GoldSnap Agent',   emoji:'🥇', app:'apps/goldsnap/index.html',      contract:'contracts/GoldSnap/GoldMint.sol',    addr:'0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA', focus:'GTX/STX mint and redeem, oracle prices, portfolio, reserve audit, faucet' },
   { id:'droppa',    name:'Droppa Agent',     emoji:'🎴', app:'apps/droppa/index.html',        contract:'contracts/Droppa/BreakFactory.sol',  addr:'0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68', focus:'break creation, slot purchase, VRF completion, earnings, Card Vault intake/mint/redeem, vault marketplace, DCV NFT' },
   { id:'autoiq',    name:'AutoIQ Agent',     emoji:'🚗', app:'apps/autoiq/index.html',        contract:'contracts/AutoIQ/IQTitle.sol',       addr:'0xA586074FA4Fe3E546A132a16238abe37951D41fE', focus:'VIN decode NHTSA API, IQCAR mint, title transfer, recall lookup' },
   { id:'allcard',   name:'AllCard Agent',    emoji:'🪪', app:'apps/1nce-allcard/index.html',  contract:'contracts/AllCard/EmployeeVault.sol', addr:'0x86072CbFF48dA3C1F01824a6761A03F105BCC697', focus:'ZK identity, shifting PAN, 8 modes, employer enrollment' },
   { id:'qwks',      name:'QWKS Agent',       emoji:'⛓',  app:'apps/qwks-protocol/index.html', contract:'contracts/QWKS/FeeDistributor.sol',  addr:'0x7C728214be9A0049e6a86f2137ec61030D0AA964', focus:'fee routing, LTN staking, savings calculator, business onboarding' },
   { id:'profitpilot', name:'ProfitPilot Agent',  emoji:'📊', app:'apps/profitpilot/index.html',    contract:'contracts/Allocation/EntityAllocation.sol', addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'entity revenue charts, LTN staking projections, compound calculator, IP vault, hardware tracker' },
+  { id:'dropthereel', name:'Drop The Reel Agent', emoji:'🎬', app:'apps/drop-the-reel/index.html', contract:'', addr:'', focus:'AI film review generation, TMDB API, ElevenLabs voice, Resend email digest, subscriber management, $480K/yr revenue target' },
+  { id:'aiorchestrator', name:'AI Orchestrator Agent', emoji:'🤖', app:'apps/ai-orchestrator/index.html', contract:'', addr:'', focus:'multi-model comparison (Claude/GPT/Gemini), streaming responses, model benchmarking, $240K/yr target' },
   { id:'rawagonos', name:'RAWagon OS Agent', emoji:'⬡',  app:'apps/rawagon-os/index.html',    contract:'contracts/LTN/LivingToken.sol',      addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'OS navigation, LTN stats, wallet connect, app links' },
 ];
 
