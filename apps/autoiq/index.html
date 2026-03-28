@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#60a5fa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -156,7 +157,7 @@ input:focus,select:focus{border-color:var(--blue);}
     <span id="nhtsa-status" style="font-size:.68rem;color:var(--soft)">NHTSA Live</span>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
-  id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+  id="connect-btn" data-rw-connect onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
 
@@ -644,7 +645,7 @@ function previewMint(){
 }
 
 async function mintTitle(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const vin = document.getElementById("m-vin").value.trim().toUpperCase();
   const price = parseFloat(document.getElementById("m-price").value);
   const buyer = document.getElementById("m-buyer").value.trim()||addr;
@@ -689,7 +690,7 @@ async function loadMyTitles(){
 function prefillTransfer(tokenId){show("transfer");document.getElementById("t-tokenid").value=tokenId;}
 
 async function transferTitle(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const tokenId = document.getElementById("t-tokenid").value.trim();
   const to = document.getElementById("t-to").value.trim();
   if(!tokenId||!to){toast("Fill all fields",true);return;}
@@ -811,7 +812,7 @@ function toast(msg,err=false){
 
 // ── SwiftCash ──────────────────────────────────────────────────────────────
 async function swiftCashTransfer() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const amount = parseFloat(document.getElementById("swift-amount").value);
   const tokenId = document.getElementById("swift-tokenid").value.trim();
   const buyer = document.getElementById("swift-buyer").value.trim();
@@ -906,6 +907,16 @@ async function aiVINAnalysis() {
 }
 
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   loadStats();loadRecentRecalls();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());

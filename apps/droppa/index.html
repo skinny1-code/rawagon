@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/apps/shared/rawagon-design.css">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#8b5cf6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -218,7 +219,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   </div>
   <div class="hdr-right">
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <button id="connect-btn" data-rw-connect onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
 
@@ -1668,7 +1669,7 @@ function previewBreak(){
 }
 
 async function createBreak(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const title=document.getElementById("cb-title").value;
   const slots=parseInt(document.getElementById("cb-slots").value)||30;
   const price=parseFloat(document.getElementById("cb-price").value)||65;
@@ -1769,7 +1770,7 @@ function renderSampleBreaks(){
 }
 
 async function buySlot(breakId,price){
-  if(!signer){alert("Connect wallet to buy slots");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to buy slots", true);return;}
   const commit=ethers.keccak256(ethers.randomBytes(32));
   try{
     const tx=await bfContract.purchaseSlot(breakId,commit);
@@ -2053,7 +2054,7 @@ async function testConnection(){
 }
 
 async function getTestUSDC(){
-  if(!usdcContract){alert("Connect wallet");return;}
+  if(!usdcContract){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   await(await usdcContract.faucet()).wait();
   toast("10,000 USDC added ✓");
 }
@@ -2400,7 +2401,7 @@ function updateVaultPreview() {
 }
 
 async function submitCardToVault() {
-  if (!signer) { alert("Connect wallet first"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const desc  = document.getElementById("vc-desc").value.trim();
   const grader = document.getElementById("vc-grader").value;
   const grade  = parseInt(document.getElementById("vc-grade").value)||100;
@@ -2683,6 +2684,16 @@ function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
 }
 
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   previewBreak();
   renderInventory();updateInvStats();
   renderReferrals();
