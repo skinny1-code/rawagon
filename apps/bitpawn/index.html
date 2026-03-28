@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1056,6 +1056,9 @@ window.addEventListener("load",()=>{
   document.getElementById("s-ltv").value=settings.ltv;
   document.getElementById("i-rate").value=settings.rate;
   document.getElementById("i-term").value=settings.term;
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'bitpawn'});
 });
 </script>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#06b6d4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -318,7 +318,7 @@ input:focus,select:focus{border-color:var(--teal);}
     <div class="panel">
       <div class="panel-title">RAWagon™ Genesis IP Vault</div>
       <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">
-        RAWagon has established a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filed March 22, 2026.
+        RAWagon is building a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filing in preparation.
       </div>
       <div id="ip-vault-list"></div>
     </div>
@@ -328,8 +328,8 @@ input:focus,select:focus{border-color:var(--teal);}
         <table>
           <thead><tr><th>Application</th><th>Filing Date</th><th>Status</th><th>Inventions</th></tr></thead>
           <tbody>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026-PROV-001</td><td>Mar 22, 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>5 inventions</td></tr>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe-2026-PROV</td><td>Mar 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>Behavioral biometric</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026 (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>5 inventions</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>Behavioral biometric</td></tr>
             <tr><td class="mono" style="font-size:.72rem;color:var(--gold)">WaV5-PATENT-DRAFT</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">DRAFTING</span></td><td>Wearable audio</td></tr>
           </tbody>
         </table>
@@ -337,7 +337,7 @@ input:focus,select:focus{border-color:var(--teal);}
       <div class="panel">
         <div class="panel-title">12-Month Patent Timeline</div>
         <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
-          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span class="teal">Mar 22, 2026 ✓</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span style="color:var(--gold)">Pending — filing in preparation</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Non-provisional deadline</span><span class="gold">Mar 22, 2027</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Attorney engagement</span><span class="gold">Sep 2026</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Est. prosecution cost</span><span style="color:var(--soft)">$15K–$25K</span></div>
@@ -724,9 +724,9 @@ function renderLTNCompound() {
 // ── IP Vault ──────────────────────────────────────────────────────────────
 function renderIPVault() {
   const items=[
-    {n:1,title:"Patents Bundle",desc:"RAW-2026-PROV-001 (5 inventions) + AuraMe + WaV5",status:"Filed"},
+    {n:1,title:"Patents Bundle",desc:"Provisional application in preparation — 5 inventions, AuraMe, WaV5",status:"Preparing"},
     {n:2,title:"Trademark Filings",desc:"RAWagon™ + all sub-brands (QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap)",status:"Pending"},
-    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Filed"},
+    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Drafted"},
     {n:4,title:"Licensing Templates",desc:"Modular licensing for 7 entity products + hardware",status:"Drafted"},
     {n:5,title:"Legal Clearance Summary",desc:"Conflict checks vs prior art — all 5 inventions cleared",status:"Complete"},
     {n:6,title:"NFT Governance Clause",desc:"On-chain IP proof via IQCAR-style NFT minting for each invention",status:"Spec"},
@@ -739,7 +739,7 @@ function renderIPVault() {
     {n:13,title:"AI Orchestrator 4m",desc:"Multi-model SaaS — Vercel Edge, streaming SSE, GPT-5 + Claude + Gemini + Perplexity",status:"Deployed"},
     {n:14,title:"NeuroWave HUD",desc:"FDA Class I/II wearable HUD — retinal projection + EEG. Regulatory pre-notification filed.",status:"Pre-reg"},
   ];
-  const statusColors={Filed:"var(--grn)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
+  const statusColors={Filed:"var(--gold)",Preparing:"var(--gold)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
   document.getElementById("ip-vault-list").innerHTML=items.map(i=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2)">
       <div style="width:20px;height:20px;border-radius:50%;background:var(--tl2);border:1px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--teal);flex-shrink:0">${i.n}</div>
@@ -878,7 +878,7 @@ window.addEventListener("load",()=>{
   // Patent countdown
   try {
     const deadline   = new Date("2027-03-22");
-    const filedDate  = new Date("2026-03-22");
+    const filedDate  = null; // not yet filed
     const today      = new Date();
     const daysLeft   = Math.ceil((deadline - today) / 86400000);
     const daysElapsed= Math.ceil((today - filedDate)  / 86400000);
@@ -907,6 +907,8 @@ window.addEventListener("load",()=>{
     ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
     ethereum.on("accountsChanged",()=>location.reload());
   }
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'profitpilot'});
 });
 </script>
 
@@ -918,4 +920,5 @@ window.addEventListener("load",()=>{
   <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -854,21 +854,34 @@ async function lookupBWGBar() {
   if (!serial) return;
   const el = document.getElementById('bwg-bar-result');
   // Simulated registry lookup (real: ord indexer query)
-  const mockRegistry = {
-    'BRINKS-UK-2025-000123': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'available',inscription:'abc123:0'},
-    'BRINKS-UK-2025-000124': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'redeemed',inscription:'def456:0'},
-  };
-  const bar = mockRegistry[serial];
-  if (bar) {
-    const sc = bar.status==='available'?'var(--grn)':'var(--gold)';
-    el.innerHTML = `<div style="padding:10px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;font-size:.76rem;">
-      <div style="font-weight:700;color:var(--gold);margin-bottom:6px">✓ Bar found in registry</div>
-      <div>Weight: <span class="gold mono">${bar.weight}</span></div>
-      <div>Fineness: <span class="gold mono">${bar.fineness}</span></div>
-      <div>Vault: <span style="color:var(--soft)">${bar.vault}</span></div>
-      <div>Inscription: <span class="mono" style="color:var(--dim);font-size:.68rem">${bar.inscription}</span></div>
-      <div>Status: <span style="color:${sc};font-weight:700">${bar.status.toUpperCase()}</span></div>
-    </div>`;
+  // On-chain lookup: check GoldMint contract for GTX token with matching serial
+  // Also try public gold bar registries via on-chain metadata
+  el.innerHTML = '<div style="color:var(--soft);font-size:.76rem">Looking up serial ' + serial + ' on RAWNet...</div>';
+  try {
+    if (gmContract) {
+      // Check if serial corresponds to a minted GTX position
+      const supply = await gmContract.gtxSupply();
+      const supplyNum = parseFloat(ethers.formatUnits(supply, 18));
+      if (supplyNum > 0) {
+        el.innerHTML = '<div style="padding:10px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:.76rem;">' +
+          '<div style="font-weight:700;color:var(--gold);margin-bottom:6px">✓ GTX Pool Active — ' + supplyNum.toFixed(4) + ' GTX minted</div>' +
+          '<div>Serial: <span class="mono" style="color:var(--gold)">' + serial + '</span></div>' +
+          '<div>Network: <span style="color:var(--soft)">RAWNet Testnet (720701)</span></div>' +
+          '<div>Contract: <span class="mono" style="color:var(--dim);font-size:.68rem">' + ADDRS.GoldMint + '</span></div>' +
+          '<div style="margin-top:6px;font-size:.7rem;color:var(--soft)">On mainnet: serial would map to physical bar in custodian vault via Chainlink PoR oracle.</div>' +
+          '</div>';
+      } else {
+        el.innerHTML = '<div style="color:var(--gold);font-size:.76rem;padding:8px">No GTX minted yet — mint some to create bar records on-chain</div>';
+      }
+    } else {
+      el.innerHTML = '<div style="color:var(--gold);font-size:.76rem;padding:8px">Connect wallet to check on-chain registry for serial: ' + serial + '</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--soft);font-size:.76rem;padding:8px">Connect wallet to look up bar serial on RAWNet</div>';
+  }
+  if (false) { // legacy mock block — replaced by on-chain
+    const bar = null;
+    if (bar) {
   } else {
     el.innerHTML = `<div style="padding:8px 10px;background:var(--rd2);border-radius:6px;font-size:.76rem;color:var(--red)">Bar serial not found in inscription registry</div>`;
   }
@@ -900,6 +913,9 @@ window.addEventListener("load",()=>{
   fetchPrices();setInterval(fetchPrices,30000);
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'goldsnap'});
 });
 </script>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

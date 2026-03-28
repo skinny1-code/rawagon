@@ -1,7 +1,7 @@
 /**
  * @rawagon/zk-identity
  * ZK proof generation + AuraMe biometric key derivation + Shifting PAN
- * Patent pending: RAW-2026-PROV-001
+ * Proprietary — RAWagon Systems LLC
  * Uses Node.js built-in crypto only — zero external dependencies
  */
 'use strict';

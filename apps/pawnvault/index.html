@@ -124,7 +124,10 @@ input:focus,select:focus{border-color:var(--grn)}
           <div style="flex:1"><label>Due Date</label><input type="date" id="t-due"></div>
           <div style="flex:1"><label>Ticket Type</label><select id="t-type"><option value="pawn">Pawn</option><option value="buy">Buy (Outright)</option></select></div>
         </div>
-        <button class="btn btn-grn" style="width:100%;margin-top:6px" id="t-btn" onclick="createTicket()">Create Ticket</button>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn btn-grn" style="flex:2" id="t-btn" onclick="createTicket()">Create Ticket</button>
+          <button class="btn btn-out" style="flex:1" onclick="aiValueItem()" title="AI Valuation">🤖 Value</button>
+        </div>
         <div id="t-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
       </div>
     </div>
@@ -205,6 +208,9 @@ input:focus,select:focus{border-color:var(--grn)}
     <div>
       <div class="card">
         <div class="ct">PawnVault SaaS Architecture</div>
+          <div style="font-size:.7rem;color:var(--gold);padding:5px 8px;background:rgba(245,158,11,.06);border-radius:5px;margin-bottom:10px">
+            Set Anthropic API key in RAWagon OS → automatically enables AI valuations
+          </div>
         <div style="font-size:.76rem;color:var(--soft);line-height:1.8">
           <div><strong style="color:var(--wh)">Backend:</strong> Node.js + Express · REST API</div>
           <div><strong style="color:var(--wh)">Database:</strong> PostgreSQL via Neon (hosted) or local pg</div>
@@ -385,11 +391,60 @@ function updateKPIs(){
   document.getElementById('k-cust').textContent=CUSTOMERS.length;
 }
 
+
+const RAW_KEYS = {
+  anthropic: () => localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '',
+};
+function anthropicFetch(messages, maxTokens=400) {
+  const key = RAW_KEYS.anthropic();
+  if (!key) return Promise.reject(new Error('No Anthropic API key'));
+  return fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages})
+  }).then(r=>r.json()).then(d=>{if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||'';});
+}
+
+async function aiValueItem() {
+  const item  = (document.getElementById('t-item')||{}).value||'';
+  const cat   = (document.getElementById('t-cat') ||{}).value||'Electronics';
+  const cond  = (document.getElementById('t-cond')||{}).value||'Good';
+  if (!item) { toast('Enter item description first', true); return; }
+  const loanEl   = document.getElementById('t-loan');
+  const statusEl = document.getElementById('t-status');
+  if (statusEl) statusEl.textContent = 'Getting AI valuation…';
+  const prompt = 'You are a pawn shop expert appraiser. Give a quick valuation for this item:\n' +
+    'Item: ' + item + '\nCategory: ' + cat + '\nCondition: ' + cond + '\n\n' +
+    'Reply with ONLY a JSON object: {"retail":"$X","pawn_offer":"$X","buy_offer":"$X","reasoning":"1 sentence"}\n' +
+    'Pawn offer = 40-60% of retail. Buy offer = 70-85% of retail. Be realistic.';
+  try {
+    const result = await anthropicFetch([{role:'user',content:prompt}], 200);
+    const data   = JSON.parse(result.replace(/```json|```/g,'').trim());
+    if (loanEl && data.pawn_offer) {
+      const pawnNum = parseFloat(data.pawn_offer.replace(/[$,]/g,''));
+      loanEl.value = pawnNum.toFixed(2);
+    }
+    if (statusEl) {
+      statusEl.innerHTML = '✓ AI valuation: Retail ' + data.retail + 
+        ' | Pawn offer ' + data.pawn_offer + 
+        ' | Buy offer ' + data.buy_offer + 
+        '<br><span style="color:var(--soft);font-size:.7rem">' + data.reasoning + '</span>';
+      statusEl.style.color = 'var(--grn)';
+    }
+    toast('AI valuation set: ' + data.pawn_offer);
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Add Anthropic API key in settings for AI valuations';
+  }
+}
+
 window.addEventListener('load',()=>{
   updateKPIs();renderTickets();renderInventory();renderCustomers();
   document.getElementById('t-due').value=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
   document.getElementById('rpt-from').value=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
   document.getElementById('rpt-to').value=new Date().toISOString().slice(0,10);
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'pawnvault'});
 });
 </script>
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#040a07;border-top:1px solid rgba(16,185,129,.3);padding:10px 16px;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:.72rem;color:#10b981;font-weight:700">AI valuations available — add Anthropic key</span><input id="gkb-key" type="password" placeholder="sk-ant-..." style="flex:1;min-width:180px;background:rgba(255,255,255,.06);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 10px;color:#e8f5e9;font-size:.74rem;outline:none"><button onclick="(function(){const k=(document.getElementById('gkb-key')||{}).value||'';if(k.startsWith('sk-ant-')){localStorage.setItem('rawagon-anthropic-key',k);document.getElementById('global-key-banner').style.display='none';toast('Key saved ✓');}})()" style="padding:5px 14px;background:#10b981;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer">Save</button><button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#5a8a6a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button></div>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

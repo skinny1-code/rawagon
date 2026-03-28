@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#60a5fa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -193,7 +193,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fraud prevention</span><span class="grn">Cryptographic</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">History immutable</span><span class="grn">On-chain forever</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Works across borders</span><span class="grn">Global EVM</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="cyan">On-chain (Q3 2026)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="soft">Planned (v2)</span></div>
         </div>
       </div>
     </div>
@@ -257,7 +257,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div>3. NFT minted to buyer wallet on RAWNet</div>
           <div>4. 0.3% fee on sale price → LTN stakers</div>
           <div>5. On-chain history: permanent + immutable</div>
-          <div>6. DMV oracle integration: Q3 2026</div>
+          <div>6. DMV oracle integration: Planned (v2)</div>
         </div>
       </div>
     </div>
@@ -389,7 +389,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <tr><td>Fraud risk</td><td class="grn">Cryptographic</td><td class="red">High (forgery)</td></tr>
           <tr><td>Cross-state</td><td class="grn">Works globally</td><td class="red">Re-register required</td></tr>
           <tr><td>History</td><td class="grn">On-chain immutable</td><td class="red">Varies by state</td></tr>
-          <tr><td>Lien recording</td><td class="cyan">Q3 2026</td><td>County recorder</td></tr>
+          <tr><td>Lien recording</td><td class="soft">Planned</td><td>County recorder</td></tr>
           <tr><td>Integration</td><td class="grn">Any EVM dApp</td><td class="red">State-only silo</td></tr>
         </tbody>
       </table>
@@ -411,8 +411,8 @@ input:focus,select:focus{border-color:var(--blue);}
           <div><span style="color:var(--grn)">✓</span> IQCAR NFT minting + transfer</div>
           <div><span style="color:var(--grn)">✓</span> NHTSA VIN decode + recall lookup</div>
           <div><span style="color:var(--grn)">✓</span> On-chain ownership history</div>
-          <div><span style="color:var(--gold)">Q2 2026</span> Lien recording oracle</div>
-          <div><span style="color:var(--gold)">Q3 2026</span> DMV state integration (pilot)</div>
+          <div><span style="color:var(--soft)">Planned</span> Lien recording oracle</div>
+          <div><span style="color:var(--soft)">Planned</span> DMV state integration</div>
           <div><span style="color:var(--gold)">Q4 2026</span> Insurance hook (AllCard mode 5)</div>
           <div><span style="color:var(--blue)">2027</span> Cross-chain title bridge (Solana)</div>
         </div>
@@ -464,8 +464,8 @@ input:focus,select:focus{border-color:var(--blue);}
         <div style="display:flex;flex-direction:column;gap:5px;font-size:.76rem;">
           <div class="row"><span style="color:var(--soft)">Telo contract</span><span class="mono" style="color:var(--purp);font-size:.7rem">IQTitle.sol via Telo</span></div>
           <div class="row"><span style="color:var(--soft)">Smart title transfer</span><span class="grn">Active</span></div>
-          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--gold)">Q3 2026</span></div>
-          <div class="row"><span style="color:var(--soft)">DMV oracle</span><span style="color:var(--gold)">Q3 2026 pilot</span></div>
+          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--soft)">Planned</span></div>
+          <div class="row"><span style="color:var(--soft)">DMV oracle</span><span style="color:var(--gold)">Planned</span></div>
           <div class="row"><span style="color:var(--soft)">SaaS to govts/dealers</span><span style="color:var(--gold)">Q4 2026</span></div>
         </div>
       </div>
@@ -862,10 +862,37 @@ async function fraudCheck() {
       : `<div style="padding:8px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);border-radius:6px;font-size:.76rem;color:var(--grn)">✓ ${v.ModelYear} ${v.Make} ${v.Model} — No NHTSA flags detected<br>Full NICB/salvage check: <a href="https://www.nicb.org/vincheck" target="_blank" style="color:var(--grn)">NICB VIN Check →</a></div>`;
   } catch(e) { el.innerHTML = "<div style=\'color:var(--red);font-size:.76rem\'>" + e.message + "</div>"; }
 }
+
+async function aiVINAnalysis() {
+  const vin = (document.getElementById('vin-input')||{}).value||'';
+  const resultEl = document.getElementById('ai-vin-result');
+  if (!vin || vin.length < 10) { toast('Decode a VIN first', true); return; }
+  if (!resultEl) return;
+  resultEl.style.display = 'block';
+  resultEl.textContent = 'Generating AI report…';
+  const make  = document.getElementById('vd-make' )?.textContent||'';
+  const model = document.getElementById('vd-model')?.textContent||'';
+  const year  = document.getElementById('vd-year' )?.textContent||'';
+  const prompt = 'You are an automotive expert. Write a 3-bullet buyer report: (1) Known reliability/issues for ' + year + ' ' + make + ' ' + model + ', (2) What to inspect on VIN ' + vin + ', (3) Is this a good candidate for IQTitle blockchain title. Be specific and practical.';
+  const key = localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '';
+  if (!key) { resultEl.textContent = 'Add Anthropic API key in RAWagon OS for AI reports'; return; }
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:350,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await r.json();
+    resultEl.textContent = d.content?.[0]?.text||'No response';
+  } catch(e) { resultEl.textContent = 'Error: ' + e.message.split('(')[0]; }
+}
+
 window.addEventListener("load",()=>{
   loadStats();loadRecentRecalls();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'autoiq'});
 });
 </script>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -851,6 +851,8 @@ window.addEventListener("load",()=>{
   loadNetworkStats();
   renderComplianceList();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'qwks-protocol'});
 });
 </script>
 
@@ -862,4 +864,5 @@ window.addEventListener("load",()=>{
   <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
+<script src="/packages/network-sdk/index.js"></script>
 </body></html>

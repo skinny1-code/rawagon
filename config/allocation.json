@@ -1,7 +1,7 @@
 {
   "_comment": "RAWagon Systems \u2014 Revenue Allocation Configuration",
   "_version": "1.0.0",
-  "_updated": "2026-03-22",
+  "_updated": "2026-03-28",
   "founder": {
     "name": "Ryan Williams",
     "title": "Founder & CEO, RAWagon Systems LLC",
@@ -357,6 +357,175 @@
           "recipient": "Ryan Williams \u2192 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78 (Solana)"
         }
       }
+    },
+    "DropTheReel": {
+      "name": "Drop The Reel",
+      "emoji": "\ud83c\udfac",
+      "model": "AI film review subscriptions",
+      "year2_annual_revenue": 480000,
+      "apis": [
+        "claude-sonnet-4-6",
+        "elevenlabs",
+        "tmdb",
+        "resend"
+      ],
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 144000,
+          "monthly_usd": 12000
+        },
+        "operations": {
+          "pct": 20,
+          "label": "Operations",
+          "annual_usd": 96000,
+          "monthly_usd": 8000
+        },
+        "founder": {
+          "pct": 15,
+          "label": "Founder",
+          "annual_usd": 72000,
+          "monthly_usd": 6000
+        },
+        "ltn_buyback": {
+          "pct": 10,
+          "label": "LTN Buyback & Burn",
+          "annual_usd": 48000,
+          "monthly_usd": 4000
+        },
+        "marketing": {
+          "pct": 15,
+          "label": "Marketing",
+          "annual_usd": 72000,
+          "monthly_usd": 6000
+        },
+        "reserve": {
+          "pct": 10,
+          "label": "Reserve",
+          "annual_usd": 48000,
+          "monthly_usd": 4000
+        }
+      },
+      "subscribers": {
+        "monthly": 480,
+        "annual": 57
+      },
+      "pricing": {
+        "monthly": 7,
+        "annual": 49
+      },
+      "cogs_monthly": 52
+    },
+    "PawnVault": {
+      "name": "PawnVault",
+      "emoji": "\ud83d\udc8e",
+      "model": "$99/mo pawn shop SaaS",
+      "year2_annual_revenue": 360000,
+      "apis": [
+        "claude-sonnet-4-6",
+        "easypost"
+      ],
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 108000,
+          "monthly_usd": 9000
+        },
+        "operations": {
+          "pct": 20,
+          "label": "Operations",
+          "annual_usd": 72000,
+          "monthly_usd": 6000
+        },
+        "founder": {
+          "pct": 15,
+          "label": "Founder",
+          "annual_usd": 54000,
+          "monthly_usd": 4500
+        },
+        "ltn_buyback": {
+          "pct": 10,
+          "label": "LTN Buyback & Burn",
+          "annual_usd": 36000,
+          "monthly_usd": 3000
+        },
+        "marketing": {
+          "pct": 15,
+          "label": "Marketing",
+          "annual_usd": 54000,
+          "monthly_usd": 4500
+        },
+        "reserve": {
+          "pct": 10,
+          "label": "Reserve",
+          "annual_usd": 36000,
+          "monthly_usd": 3000
+        }
+      },
+      "subscribers": {
+        "monthly": 303
+      },
+      "pricing": {
+        "monthly": 99
+      }
+    },
+    "AIOrchestrator": {
+      "name": "AI Orchestrator",
+      "emoji": "\ud83e\udd16",
+      "model": "Multi-model SaaS Vercel Edge",
+      "year2_annual_revenue": 240000,
+      "apis": [
+        "claude-sonnet-4-6",
+        "openai",
+        "gemini",
+        "perplexity"
+      ],
+      "allocation_structure": {
+        "product_dev": {
+          "pct": 30,
+          "label": "Product Development",
+          "annual_usd": 72000,
+          "monthly_usd": 6000
+        },
+        "operations": {
+          "pct": 20,
+          "label": "Operations",
+          "annual_usd": 48000,
+          "monthly_usd": 4000
+        },
+        "founder": {
+          "pct": 15,
+          "label": "Founder",
+          "annual_usd": 36000,
+          "monthly_usd": 3000
+        },
+        "ltn_buyback": {
+          "pct": 10,
+          "label": "LTN Buyback & Burn",
+          "annual_usd": 24000,
+          "monthly_usd": 2000
+        },
+        "marketing": {
+          "pct": 15,
+          "label": "Marketing",
+          "annual_usd": 36000,
+          "monthly_usd": 3000
+        },
+        "reserve": {
+          "pct": 10,
+          "label": "Reserve",
+          "annual_usd": 24000,
+          "monthly_usd": 2000
+        }
+      },
+      "subscribers": {
+        "monthly": 200
+      },
+      "pricing": {
+        "monthly": 20
+      }
     }
   },
   "network": {
@@ -384,14 +553,18 @@
     "address": "0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D"
   },
   "totals": {
-    "year2_gross_revenue": 29126267,
-    "year2_founder_total": 4368940,
+    "year2_gross_revenue": 30206267,
+    "year2_founder_total": 162000.0,
     "year2_per_bucket": {
       "product_dev": 8737880,
       "bd_marketing": 5825253,
       "ltn_treasury": 5825253,
       "reserve_fund": 4368940,
       "founder_dist": 4368940
-    }
+    },
+    "entity_count": 10,
+    "active_entity_count": 10,
+    "last_updated": "2026-03-28",
+    "year2_founder_15pct": 4530940
   }
 }

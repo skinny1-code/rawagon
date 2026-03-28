@@ -29,6 +29,9 @@ const AGENTS = [
   { id:'allcard',   name:'AllCard Agent',    emoji:'🪪', app:'apps/1nce-allcard/index.html',  contract:'contracts/AllCard/EmployeeVault.sol', addr:'0x86072CbFF48dA3C1F01824a6761A03F105BCC697', focus:'ZK identity, shifting PAN, 8 modes, employer enrollment' },
   { id:'qwks',      name:'QWKS Agent',       emoji:'⛓',  app:'apps/qwks-protocol/index.html', contract:'contracts/QWKS/FeeDistributor.sol',  addr:'0x7C728214be9A0049e6a86f2137ec61030D0AA964', focus:'fee routing, LTN staking, savings calculator, business onboarding' },
   { id:'profitpilot', name:'ProfitPilot Agent',  emoji:'📊', app:'apps/profitpilot/index.html',    contract:'contracts/Allocation/EntityAllocation.sol', addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'entity revenue charts, LTN staking projections, compound calculator, IP vault, hardware tracker' },
+  { id:'dropthereel', name:'Drop The Reel Agent', emoji:'🎬', app:'apps/drop-the-reel/index.html', contract:'', addr:'', focus:'AI film review generation, TMDB API, ElevenLabs voice, Resend email digest, subscriber management, $480K/yr revenue target' },
+  { id:'pawnvault',   name:'PawnVault Agent',    emoji:'💎', app:'apps/pawnvault/index.html',    contract:'', addr:'', focus:'pawn ticket CRUD, AI item valuation, customer management, police CSV export, $99/mo SaaS revenue model' },
+  { id:'aiorchestrator', name:'AI Orchestrator Agent', emoji:'🤖', app:'apps/ai-orchestrator/index.html', contract:'', addr:'', focus:'multi-model comparison (Claude/GPT/Gemini), streaming responses, model benchmarking, $240K/yr target' },
   { id:'rawagonos', name:'RAWagon OS Agent', emoji:'⬡',  app:'apps/rawagon-os/index.html',    contract:'contracts/LTN/LivingToken.sol',      addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'OS navigation, LTN stats, wallet connect, app links' },
 ];
 
