@@ -833,8 +833,8 @@ t('Droppa: OBS overlay file exists', () => {
   assert(fs.existsSync('apps/droppa/overlay.html'), 'overlay.html must exist');
   const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
   assert(html.includes('droppa-overlay'), 'must read from localStorage');
-  assert(html.includes('confetti'), 'must have winner confetti');
-  assert(html.includes('bottom-bar'), 'must have bottom bar overlay');
+  assert(html.includes('confetti') || html.includes('cFall'), 'must have winner confetti');
+  assert(html.includes('class="bar"') || html.includes('.bar {') || html.includes('.bar{'), 'must have bottom bar overlay');
 });
 
 t('Droppa: EasyPost rate shopping handles no-key gracefully', () => {
@@ -848,7 +848,7 @@ t('OBS overlay: reads CoinGecko for live prices', () => {
   const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
   assert(html.includes('pax-gold'), 'overlay must show live gold price');
   assert(html.includes('bitcoin'), 'overlay must show live BTC price');
-  assert(html.includes('confettiFall'), 'must have winner confetti animation');
+  assert(html.includes('cFall') || html.includes('confettiFall'), 'must have winner confetti animation');
 });
 
 
@@ -1007,6 +1007,74 @@ t('No patent pending in any app HTML', () => {
     const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
     assert(!html.toLowerCase().includes('patent pending'), app + ' must not say patent pending');
   });
+});
+
+// ── Droppa Streaming Agent tests ─────────────────────────────────────────────
+t('Droppa agent: droppa-agent.js exists with all platform + mode functions', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes('setPlatform'),       'must have setPlatform');
+  assert(src.includes('setAgentMode'),      'must have setAgentMode');
+  assert(src.includes('toggleLiveSession'), 'must have toggleLiveSession');
+  assert(src.includes('parseChatMessages'), 'must have parseChatMessages');
+  assert(src.includes('genScript'),         'must have genScript host scripts');
+  assert(src.includes('runFullCycle'),      'must have runFullCycle');
+  assert(src.includes('runPostShowWorkflow'), 'must have runPostShowWorkflow');
+  assert(src.includes("mode === 'auto'"),   'must have auto mode');
+  assert(src.includes("mode === 'host'"),   'must have host mode');
+  assert(src.includes('overlayAction'),     'must have overlayAction');
+});
+
+t('Droppa agent: platform support for WhatNot + TikTok + YouTube + Instagram', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes("whatnot"),   'must support WhatNot');
+  assert(src.includes("tiktok"),    'must support TikTok');
+  assert(src.includes("YouTube") || src.includes("youtube"), 'must support YouTube');
+  assert(src.includes("Instagram") || src.includes("instagram"), 'must support Instagram');
+});
+
+t('Droppa agent: post-show workflow sends emails + discord', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes('api.resend.com'), 'must send winner emails via Resend');
+  assert(src.includes('discord'),        'must post to Discord after show');
+  assert(src.includes('generateBulkLabels'), 'must call generateBulkLabels');
+});
+
+t('Droppa: command center pane has all 3 agent modes', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes("mode-assist"),   'must have assist mode button');
+  assert(html.includes("mode-host"),     'must have host mode button');
+  assert(html.includes("mode-auto"),     'must have auto mode button');
+  assert(html.includes('plat-btn'),      'must have platform buttons');
+  assert(html.includes("cc-live-btn"),   'must have Go Live button');
+});
+
+t('Droppa: command center has live winner board + host scripts', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('live-winner-board'), 'must have live winner board');
+  assert(html.includes('host-script-card'),  'must have host script card');
+  assert(html.includes('runPostShowWorkflow'),'must have post-show button');
+  assert(html.includes('overlayAction'),     'must have overlay action buttons');
+});
+
+t('Droppa: overlay has platform color support + sold-out + duration', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('--plat'),          'must have platform color var');
+  assert(html.includes('sold-out'),        'must have sold-out display');
+  assert(html.includes('sessionRevenue'),  'must show session revenue');
+  assert(html.includes('durTimer'),        'must have duration timer');
+  assert(html.includes('doAction'),        'must handle overlay actions');
+});
+
+t('Droppa: droppa-agent.js wired into index.html', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('droppa-agent.js'), 'droppa-agent.js must be wired in');
 });
 
 process.exit(f?1:0);

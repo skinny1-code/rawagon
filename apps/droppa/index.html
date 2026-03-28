@@ -520,75 +520,187 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
 <!-- ═══════════════════════════════════════════════════════════════════════
      LIVE STREAM TAB
 ═══════════════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ COMMAND CENTER ═══════════ -->
 <div class="pane" id="pane-stream">
-  <div class="g2" style="margin-bottom:14px">
-    <div>
-      <div class="card" style="border-top:3px solid var(--red)">
-        <div class="card-title" style="color:var(--red)">🔴 Live Stream Assistant</div>
-        <div style="font-size:.74rem;color:var(--soft);margin-bottom:12px;line-height:1.7">AI co-host for WhatNot · TikTok · YouTube Live. Paste chat messages → Claude manages winners, answers questions, generates call-outs.</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
-          <select id="ls-platform" style="width:auto;margin:0;font-size:.76rem">
-            <option value="whatnot">WhatNot</option>
-            <option value="tiktok">TikTok Live</option>
-            <option value="youtube">YouTube Live</option>
-          </select>
-          <select id="ls-break" style="flex:1;margin:0;font-size:.76rem">
-            <option value="">-- select active break --</option>
-          </select>
-          <button class="btn btn-sm" style="background:var(--red);color:#fff;border:none" onclick="startLiveSession()" id="ls-start-btn">▶ Go Live</button>
-        </div>
-        <div id="ls-live-banner" style="display:none;padding:8px 12px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;font-size:.74rem;margin-bottom:10px">
-          <span style="color:var(--red);font-weight:700">🔴 LIVE</span>
-          <span id="ls-break-name" style="color:var(--wh);margin-left:8px"></span>
-          <span id="ls-slot-count" style="color:var(--soft);margin-left:8px"></span>
-        </div>
-        <label>Paste chat messages (WhatNot/TikTok/YouTube chat export)</label>
-        <textarea id="ls-chat-input" style="height:90px;resize:vertical" placeholder="e.g.:&#10;@user1: Can I get slot 5?&#10;@user2: How much for a random slot?&#10;@user3: What set is this?"></textarea>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <button class="btn btn-purp btn-sm" onclick="parseChatMessages()" style="flex:1">🤖 Parse Chat → Winners</button>
-          <button class="btn btn-outline btn-sm" onclick="generateCallout()" style="flex:1">📢 Generate Call-out</button>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-outline btn-sm" onclick="aiAnswerQuestion()" style="flex:1">❓ Answer Question</button>
-          <button class="btn btn-outline btn-sm" onclick="announceSale()">📣 Hype Card</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="color:var(--purp)">🎙 AI Response</div>
-        <div id="ls-ai-output" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.78rem;color:var(--wh);line-height:1.7;min-height:80px;white-space:pre-wrap">AI co-host ready — connect a break and start your session.</div>
-        <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%" onclick="navigator.clipboard.writeText(document.getElementById('ls-ai-output').textContent).then(()=>toast('Copied ✓'))">Copy to Chat</button>
+
+  <!-- Mission Control top bar -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:10px 16px;">
+    <!-- Platform selector -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft)">Platform</span>
+      <div style="display:flex;gap:4px" id="platform-btns">
+        <button onclick="setPlatform('whatnot')"   class="plat-btn active" data-plat="whatnot"   style="background:rgba(255,60,0,.12);border:1px solid rgba(255,60,0,.3);color:#ff6b35;padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">WhatNot</button>
+        <button onclick="setPlatform('tiktok')"    class="plat-btn"       data-plat="tiktok"    style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">TikTok</button>
+        <button onclick="setPlatform('youtube')"   class="plat-btn"       data-plat="youtube"   style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">YouTube</button>
+        <button onclick="setPlatform('instagram')" class="plat-btn"       data-plat="instagram" style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">Instagram</button>
       </div>
     </div>
-    <div>
-      <div class="card">
-        <div class="card-title">📺 OBS Browser Source Overlay</div>
-        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;line-height:1.7">Add this URL as a Browser Source in OBS. Shows live break status, current slot, winner callouts, and countdown.</div>
-        <div style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:10px;font-family:'Plus Jakarta Sans', sans-serif;font-size:.7rem;color:var(--gold);word-break:break-all;margin-bottom:8px" id="overlay-url">http://localhost:3000/apps/droppa/overlay.html</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px">
-          <button class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('overlay-url').textContent).then(()=>toast('URL copied ✓'))">Copy URL</button>
-          <button class="btn btn-outline btn-sm" onclick="window.open(document.getElementById('overlay-url').textContent,'_blank')">Preview Overlay ↗</button>
+
+    <div style="width:1px;height:28px;background:var(--line)"></div>
+
+    <!-- Break selector -->
+    <select id="ls-break" style="flex:1;min-width:160px;margin:0;font-size:.76rem;max-width:260px">
+      <option value="">— Select active break —</option>
+    </select>
+
+    <div style="width:1px;height:28px;background:var(--line)"></div>
+
+    <!-- Agent mode toggle -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft)">Mode</span>
+      <button onclick="setAgentMode('assist')"  id="mode-assist"  class="mode-btn active" style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);transition:.12s">🤖 Assist</button>
+      <button onclick="setAgentMode('host')"    id="mode-host"    class="mode-btn"        style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--soft);transition:.12s">🎙 Host</button>
+      <button onclick="setAgentMode('auto')"    id="mode-auto"    class="mode-btn"        style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--soft);transition:.12s">⚡ Auto</button>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <!-- Live session timer -->
+      <div id="session-timer" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--soft);display:none">
+        <span style="color:var(--red);font-weight:700">● </span><span id="ls-duration-main">0:00</span>
+      </div>
+      <!-- Go Live button -->
+      <button onclick="toggleLiveSession()" id="cc-live-btn" style="padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:.12s;display:flex;align-items:center;gap:7px">
+        <span id="cc-live-dot" style="width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block"></span>
+        <span id="cc-live-label">GO LIVE</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN COMMAND CENTER GRID -->
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:14px;min-height:calc(100vh - 220px)">
+
+    <!-- ── LEFT COLUMN: Chat + AI Brain ── -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Chat Feed -->
+      <div class="card" style="border-left:3px solid var(--purp);flex:1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0;color:var(--purp)">💬 Chat Feed</div>
+          <div style="display:flex;gap:6px">
+            <button onclick="clearChat()" class="btn btn-outline btn-sm" style="font-size:.66rem">Clear</button>
+            <button onclick="toggleAutoScan()" id="auto-scan-btn" class="btn btn-outline btn-sm" style="font-size:.66rem">Auto-parse: OFF</button>
+          </div>
         </div>
-        <div style="font-size:.7rem;color:var(--soft);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.06em">OBS Settings</div>
-        <div style="font-size:.72rem;display:flex;flex-direction:column;gap:4px;color:var(--soft)">
-          <div>Width: <span style="color:var(--wh)">1920</span> · Height: <span style="color:var(--wh)">1080</span></div>
-          <div>FPS: <span style="color:var(--wh)">30</span> · Custom CSS: <span style="color:var(--wh)">body { background: transparent !important; }</span></div>
-          <div>Refresh: <span style="color:var(--wh)">Every 5 seconds</span> (auto-updates with break data)</div>
+
+        <!-- Parsed chat live display -->
+        <div id="chat-feed-display" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:8px;min-height:120px;max-height:180px;overflow-y:auto;font-size:.74rem;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.8">
+          <div style="color:var(--dim);text-align:center;padding:24px 0">Chat feed ready — paste messages or enable Auto-parse</div>
         </div>
-        <div style="margin-top:10px;padding:8px;background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:6px;font-size:.7rem;color:var(--soft)">
-          Overlay reads data from this same Droppa app. No extra setup. Works while you stream.
+
+        <!-- Input area -->
+        <textarea id="ls-chat-input" style="height:80px;resize:none;font-size:.76rem;font-family:inherit;margin-bottom:8px" placeholder="Paste chat messages here — or use Auto-parse mode to continuously process&#10;&#10;@user1: I want slot 7&#10;@user2: how much per slot?&#10;@user3: is this baseball or football?"></textarea>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <button onclick="parseChatMessages()" class="btn btn-purp btn-sm">🤖 Parse Chat</button>
+          <button onclick="aiAnswerQuestion()"  class="btn btn-outline btn-sm">❓ Answer Q</button>
+          <button onclick="runFullCycle()"      class="btn btn-outline btn-sm" style="color:var(--gold);border-color:rgba(251,191,36,.3)">⚡ Full Cycle</button>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title" style="color:var(--grn)">📊 Live Stats</div>
-        <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px">
-          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Session duration</span><span id="ls-duration">—</span></div>
-          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Slots assigned</span><span id="ls-assigned" style="color:var(--grn)">0</span></div>
-          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Messages parsed</span><span id="ls-msgs-parsed">0</span></div>
-          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Chat questions answered</span><span id="ls-answered">0</span></div>
-          <div class="row" style="display:flex;justify-content:space-between;padding:4px 0"><span class="soft">Revenue this session</span><span id="ls-session-rev" style="color:var(--gold)">$0</span></div>
+
+      <!-- AI Agent Response -->
+      <div class="card" style="border-left:3px solid var(--grn)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="card-title" style="margin:0;color:var(--grn)">🧠 Agent Output</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span id="agent-mode-badge" style="font-size:.64rem;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--pr2);color:var(--purp);border:1px solid var(--line)">ASSIST</span>
+            <button onclick="copyAgentOutput()" class="btn btn-outline btn-sm" style="font-size:.66rem">Copy</button>
+          </div>
         </div>
-        <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%" onclick="endSession()">⏹ End Session + Export Winners</button>
+        <div id="ls-ai-output" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.78rem;color:var(--wh);line-height:1.8;min-height:90px;max-height:160px;overflow-y:auto;white-space:pre-wrap">Agent ready. Hit Parse Chat or ask a question to get started.</div>
       </div>
+
+      <!-- Host Script Generator (Host + Auto modes) -->
+      <div class="card" id="host-script-card" style="border-left:3px solid var(--gold);display:none">
+        <div class="card-title" style="color:var(--gold);margin-bottom:10px">🎙 Host Script</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+          <button onclick="genScript('open')"     class="btn btn-outline btn-sm" style="font-size:.7rem">📣 Open</button>
+          <button onclick="genScript('item')"     class="btn btn-outline btn-sm" style="font-size:.7rem">🎴 Pitch Item</button>
+          <button onclick="genScript('winner')"   class="btn btn-outline btn-sm" style="font-size:.7rem">🏆 Winner</button>
+          <button onclick="genScript('hype')"     class="btn btn-outline btn-sm" style="font-size:.7rem">🔥 Hype</button>
+          <button onclick="genScript('faq')"      class="btn btn-outline btn-sm" style="font-size:.7rem">❓ FAQ</button>
+          <button onclick="genScript('closing')"  class="btn btn-outline btn-sm" style="font-size:.7rem">👋 Close</button>
+          <button onclick="genScript('shipping')" class="btn btn-outline btn-sm" style="font-size:.7rem">📦 Ship Info</button>
+          <button onclick="genScript('tease')"    class="btn btn-outline btn-sm" style="font-size:.7rem">📅 Next Break</button>
+        </div>
+        <div id="host-script-output" style="background:var(--s2);border:1px solid rgba(251,191,36,.15);border-radius:8px;padding:12px;font-size:.8rem;color:var(--wh);line-height:1.9;min-height:70px;white-space:pre-wrap;max-height:140px;overflow-y:auto">Script will appear here — tap a button above</div>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('host-script-output').textContent).then(()=>toast('Script copied ✓'))" class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;font-size:.7rem">Copy Script</button>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN: Break Status + Winners + OBS ── -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Active Break Status -->
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0;color:var(--red)">🔴 Break Status</div>
+          <span id="break-live-badge" style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)">OFFLINE</span>
+        </div>
+        <div id="break-status-display">
+          <div style="color:var(--soft);font-size:.76rem;text-align:center;padding:12px">Select a break to start</div>
+        </div>
+      </div>
+
+      <!-- Live Winner Board -->
+      <div class="card" style="flex:1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="card-title" style="margin:0;color:var(--gold)">🏆 Winner Board</div>
+          <div style="display:flex;gap:5px">
+            <span id="winner-count-badge" style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(251,191,36,.08);color:var(--gold);border:1px solid rgba(251,191,36,.15)">0 winners</span>
+            <button onclick="show('winners')" class="btn btn-outline btn-sm" style="font-size:.64rem">Full View ↗</button>
+          </div>
+        </div>
+        <div id="live-winner-board" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">
+          <div style="color:var(--dim);font-size:.74rem;text-align:center;padding:20px">No winners yet this session</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+          <button onclick="addWinnerManual();show('winners')" class="btn btn-outline btn-sm" style="font-size:.68rem">+ Add Winner</button>
+          <button onclick="autoAssignCards()" class="btn btn-outline btn-sm" style="font-size:.68rem">🤖 Auto-Assign</button>
+        </div>
+      </div>
+
+      <!-- OBS Overlay Control -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">📺 Overlay</div>
+        <div style="background:var(--s2);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--gold);margin-bottom:7px;word-break:break-all" id="overlay-url">http://localhost:3000/apps/droppa/overlay.html</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px">
+          <button onclick="copyOverlayUrl()" class="btn btn-outline btn-sm" style="font-size:.68rem">Copy URL</button>
+          <button onclick="window.open(document.getElementById('overlay-url').textContent,'overlay','width=960,height=540')" class="btn btn-outline btn-sm" style="font-size:.68rem">Preview ↗</button>
+        </div>
+        <!-- Overlay controls -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <button onclick="overlayAction('winner_callout')" class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--gold)">🏆 Callout</button>
+          <button onclick="overlayAction('confetti')"       class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--grn)">🎉 Confetti</button>
+          <button onclick="overlayAction('sold_out')"       class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--red)">🔥 Sold Out</button>
+          <button onclick="overlayAction('coming_soon')"    class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--blue)">📅 Teaser</button>
+        </div>
+      </div>
+
+      <!-- Quick Fulfillment Launcher -->
+      <div class="card" style="border-top:2px solid var(--grn)">
+        <div class="card-title" style="margin-bottom:8px;color:var(--grn)">⚡ Post-Show</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <button onclick="runPostShowWorkflow()" class="btn btn-outline btn-sm" style="font-size:.72rem;color:var(--grn);border-color:rgba(52,211,153,.2)">
+            🚀 Run Full Post-Show (Labels + Notify)
+          </button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+            <button onclick="show('postage')" class="btn btn-outline btn-sm" style="font-size:.68rem">📦 Labels</button>
+            <button onclick="show('notify')"  class="btn btn-outline btn-sm" style="font-size:.68rem">📣 Notify</button>
+          </div>
+        </div>
+        <div id="postshow-status" style="margin-top:6px;font-size:.7rem;color:var(--soft);min-height:14px"></div>
+      </div>
+
+      <!-- Session Stats -->
+      <div class="card" style="padding:10px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;text-align:center">
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--purp)" id="stat-winners-live">0</div><div style="font-size:.6rem;color:var(--soft)">Winners</div></div>
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--gold)" id="stat-revenue-live">$0</div><div style="font-size:.6rem;color:var(--soft)">Revenue</div></div>
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--grn)" id="stat-msgs-live">0</div><div style="font-size:.6rem;color:var(--soft)">Parsed</div></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -2595,5 +2707,6 @@ window.addEventListener("load",()=>{
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
 <script src="/apps/droppa/droppa-live.js"></script>
+<script src="/apps/droppa/droppa-agent.js"></script>
 <script src="/packages/network-sdk/index.js"></script>
 </body></html>
