@@ -872,15 +872,6 @@ function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
 }
 
 window.addEventListener("load",()=>{
-  // Restore wallet from shared state
-  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
-    const _savedAddr = window.RWWallet.getAddr();
-    if (_savedAddr && !addr) {
-      addr = _savedAddr;
-      if (typeof updateWalletUI === 'function') updateWalletUI();
-      else if (typeof connectWallet === 'function') {} // already handled
-    }
-  }
   
   calcSavings();
   loadNetworkStats();

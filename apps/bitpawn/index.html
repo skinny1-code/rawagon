@@ -1088,15 +1088,6 @@ function generatePoliceExport() {
   hist.innerHTML=`<div style="padding:6px;font-size:.76rem;border-bottom:1px solid var(--ln2)">${new Date().toLocaleString()} — ${buyInventory.length} items — ${type}</div>`+hist.innerHTML;
 }
 window.addEventListener("load",()=>{
-  // Restore wallet from shared state
-  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
-    const _savedAddr = window.RWWallet.getAddr();
-    if (_savedAddr && !addr) {
-      addr = _savedAddr;
-      if (typeof updateWalletUI === 'function') updateWalletUI();
-      else if (typeof connectWallet === 'function') {} // already handled
-    }
-  }
   
   fetchOraclePrices();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
