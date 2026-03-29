@@ -54,9 +54,16 @@ rawagon/
 │   │   └── AutoIQ/IQTitle.sol
 │   ├── scripts/
 │   │   └── deploy.js             # Hardhat deploy script (all 5 contracts, ordered)
+│   ├── test/                     # Hardhat/Mocha/Chai contract tests (86 tests)
+│   │   ├── LivingToken.test.js
+│   │   ├── FeeDistributor.test.js
+│   │   ├── EmployeeVault.test.js
+│   │   ├── GoldMint.test.js
+│   │   └── IQTitle.test.js
 │   ├── deployments/              # Deployment manifests written after each deploy
 │   │   └── base-sepolia.json     # example — created on first deploy
 │   ├── compile-local.js          # Offline compiler using bundled solc npm package
+│   ├── hh-artifacts.js           # Converts compile-local.js artifacts → Hardhat format
 │   ├── hardhat.config.js         # Hardhat config (networks, etherscan, paths)
 │   └── package.json
 ├── docs/
@@ -138,6 +145,11 @@ of `@nomicfoundation/hardhat-toolbox` — no network required. It reads all `.so
 `contracts/src/`, resolves `@openzeppelin/` and `@chainlink/` imports from
 `contracts/node_modules/` via a `findImports` callback, and writes JSON artifacts to
 `contracts/artifacts/`.
+
+`hh-artifacts.js` runs automatically after `compile-local.js` (baked into the `compile` script).
+It converts the flat compile-local.js artifact format into the Hardhat directory structure
+(`artifacts/src/<Family>/<Name>.sol/<Name>.json`) so that `npx hardhat test --no-compile` can
+resolve contract factories without downloading the solc binary.
 
 `compile:hardhat` is retained for when you need Hardhat's full pipeline (deployment scripts,
 gas reports, etc.) and have internet access to download the `solc 0.8.24` binary.
@@ -335,7 +347,7 @@ NODE_ENV=development
 - Vitest globals (`describe`, `it`, `expect`, `vi`, `beforeAll`, etc.) are injected automatically — **do not** `require('vitest')`
 - To mock `fetch` in tests, use `vi.stubGlobal('fetch', mockFn)` before calling the function under test
 - Gold-oracle has a module-level cache (`C = {}`); tests work because the cache is empty on first import and `fetch` is stubbed before any test runs
-- Contract tests go in `contracts/test/` (Hardhat/Mocha/Chai) — directory exists but no tests written yet
+- Contract tests live in `contracts/test/` — 86 Hardhat/Mocha/Chai tests across all 5 contracts
 
 ### Solidity
 
@@ -368,7 +380,7 @@ NODE_ENV=development
 | ----------------------------- | ------------------------------------------------------------------------------------------ |
 | `apps/`                       | All frontend apps are directory stubs — no implementation                                  |
 | `packages/ltn-token/index.js` | Empty stub — exports `{}`                                                                  |
-| `contracts/test/`             | Directory does not exist — no Hardhat/contract tests written                               |
+| `ltn-token` SDK               | JS client for LTN staking/governance — implement after first deploy                        |
 | GoldMint on Base Sepolia      | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live |
 | Deploy to mainnet             | `EmployeeVault.verify()` uses commitment-hash check only — upgrade before mainnet          |
 

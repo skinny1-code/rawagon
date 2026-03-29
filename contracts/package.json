@@ -2,9 +2,9 @@
   "name": "@rawagon/contracts",
   "version": "0.1.0",
   "scripts": {
-    "compile": "node compile-local.js",
+    "compile": "node compile-local.js && node hh-artifacts.js",
     "compile:hardhat": "npx hardhat compile",
-    "test": "npx hardhat test",
+    "test": "npm run compile && npx hardhat test --no-compile",
     "deploy": "npx hardhat run scripts/deploy.js --network base-sepolia",
     "deploy:mainnet": "npx hardhat run scripts/deploy.js --network base"
   },
