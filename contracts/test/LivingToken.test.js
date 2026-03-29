@@ -1,7 +1,7 @@
 'use strict';
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
-const { loadFixture } = require('@nomicfoundation/hardhat-toolbox/network-helpers');
+const { loadFixture, time } = require('@nomicfoundation/hardhat-toolbox/network-helpers');
 
 describe('LivingToken', function () {
   async function deployFixture() {
@@ -140,6 +140,163 @@ describe('LivingToken', function () {
       await ltn.approve(alice.address, amt);
       await ltn.connect(alice).transferFrom(owner.address, bob.address, amt);
       expect(await ltn.balanceOf(bob.address)).to.equal(amt);
+    });
+  });
+
+  // ── setBurnRate() ─────────────────────────────────────────────────────────
+
+  describe('setBurnRate()', function () {
+    it('admin can set burn rate within bounds', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const newRate = ethers.parseEther('0.005'); // 5e15
+      await ltn.setBurnRate(newRate);
+      expect(await ltn.burnPerTx()).to.equal(newRate);
+    });
+
+    it('emits BurnRateSet event', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const newRate = ethers.parseEther('0.005');
+      await expect(ltn.setBurnRate(newRate)).to.emit(ltn, 'BurnRateSet').withArgs(newRate);
+    });
+
+    it('non-admin cannot set burn rate', async function () {
+      const { ltn, alice } = await loadFixture(deployFixture);
+      await expect(ltn.connect(alice).setBurnRate(1e15)).to.be.reverted;
+    });
+
+    it('rate below MIN_BURN reverts', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const minBurn = await ltn.MIN_BURN();
+      await expect(ltn.setBurnRate(minBurn - 1n)).to.be.revertedWith('rate out of bounds');
+    });
+
+    it('rate above MAX_BURN reverts', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const maxBurn = await ltn.MAX_BURN();
+      await expect(ltn.setBurnRate(maxBurn + 1n)).to.be.revertedWith('rate out of bounds');
+    });
+
+    it('rate exactly at MIN_BURN is accepted', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const minBurn = await ltn.MIN_BURN();
+      await ltn.setBurnRate(minBurn);
+      expect(await ltn.burnPerTx()).to.equal(minBurn);
+    });
+
+    it('rate exactly at MAX_BURN is accepted', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const maxBurn = await ltn.MAX_BURN();
+      await ltn.setBurnRate(maxBurn);
+      expect(await ltn.burnPerTx()).to.equal(maxBurn);
+    });
+
+    it('burnOnTx uses the new rate after setBurnRate', async function () {
+      const { ltn, alice } = await loadFixture(withBurnerFixture);
+      const newRate = 2n * 10n ** 15n; // 0.002 LTN
+      await ltn.setBurnRate(newRate);
+      const before = await ltn.balanceOf(alice.address);
+      await ltn.connect(alice).burnOnTx();
+      expect(await ltn.balanceOf(alice.address)).to.equal(before - newRate);
+    });
+  });
+
+  // ── settleEpoch() ─────────────────────────────────────────────────────────
+
+  describe('settleEpoch()', function () {
+    it('reverts before epoch has elapsed', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      await expect(ltn.settleEpoch()).to.be.revertedWith('epoch not finished');
+    });
+
+    it('advances after one epochDuration has passed', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await expect(ltn.settleEpoch()).to.not.be.reverted;
+      expect(await ltn.lastSettledEpoch()).to.equal(1n);
+    });
+
+    it('resets epochTxCount to zero after settling', async function () {
+      const { ltn, alice } = await loadFixture(withBurnerFixture);
+      await ltn.connect(alice).burnOnTx();
+      expect(await ltn.epochTxCount()).to.equal(1n);
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      expect(await ltn.epochTxCount()).to.equal(0n);
+    });
+
+    it('increases burnPerTx by 10% when epochTxCount > highTxThreshold', async function () {
+      const { ltn, alice } = await loadFixture(withBurnerFixture);
+      // Lower threshold so we can hit it without 10k tx calls
+      await ltn.setTxThresholds(2, 1);
+      await ltn.connect(alice).burnOnTx();
+      await ltn.connect(alice).burnOnTx();
+      await ltn.connect(alice).burnOnTx(); // 3 > high=2
+      const rateBefore = await ltn.burnPerTx();
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      const rateAfter = await ltn.burnPerTx();
+      expect(rateAfter).to.equal((rateBefore * 110n) / 100n);
+    });
+
+    it('decreases burnPerTx by 10% when epochTxCount < lowTxThreshold', async function () {
+      const { ltn } = await loadFixture(withBurnerFixture);
+      // Set thresholds so 1 tx is NOT below low threshold — use high=100, low=5 so 0 tx < 5
+      await ltn.setTxThresholds(100, 5);
+      // epochTxCount = 0, which is < lowTxThreshold=5
+      const rateBefore = await ltn.burnPerTx();
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      const rateAfter = await ltn.burnPerTx();
+      expect(rateAfter).to.equal((rateBefore * 90n) / 100n);
+    });
+
+    it('clamps at MAX_BURN when rate would exceed it', async function () {
+      const { ltn, alice } = await loadFixture(withBurnerFixture);
+      const maxBurn = await ltn.MAX_BURN();
+      // Set rate just below MAX so a 10% increase would exceed the ceiling
+      await ltn.setBurnRate(maxBurn - 1n);
+      // Set thresholds so 3 txs > high (2), triggering an increase
+      await ltn.setTxThresholds(2, 1);
+      await ltn.connect(alice).burnOnTx();
+      await ltn.connect(alice).burnOnTx();
+      await ltn.connect(alice).burnOnTx(); // epochTxCount=3 > highTxThreshold=2
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      expect(await ltn.burnPerTx()).to.equal(maxBurn);
+    });
+
+    it('clamps at MIN_BURN when rate would go below it', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const minBurn = await ltn.MIN_BURN();
+      await ltn.setBurnRate(minBurn + 1n); // just above floor
+      await ltn.setTxThresholds(100, 50); // epochTxCount=0 < low=50 → decrease
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      expect(await ltn.burnPerTx()).to.equal(minBurn);
+    });
+
+    it('emits EpochSettled event with correct args', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      const expectedRate = await ltn.burnPerTx(); // unchanged (epochTxCount between thresholds)
+      // default thresholds: high=10000, low=1000; epochTxCount=0 < 1000 → rate decreases
+      const expectedNew = (expectedRate * 90n) / 100n;
+      await expect(ltn.settleEpoch()).to.emit(ltn, 'EpochSettled').withArgs(1n, expectedNew);
+    });
+
+    it('cannot settle the same epoch twice', async function () {
+      const { ltn } = await loadFixture(deployFixture);
+      const dur = await ltn.epochDuration();
+      await time.increase(dur);
+      await ltn.settleEpoch();
+      await expect(ltn.settleEpoch()).to.be.revertedWith('epoch not finished');
     });
   });
 });
