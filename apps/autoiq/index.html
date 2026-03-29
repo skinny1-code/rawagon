@@ -23,7 +23,7 @@
   --gold:#fbbf24;--red:#f87171;--purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:'Rajdhani', sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Rajdhani', sans-serif;font-size:14px;min-height:100vh;;overflow-x:hidden}
 /* road line */
 body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);pointer-events:none;z-index:100;}
 
@@ -133,6 +133,97 @@ input:focus,select:focus{border-color:var(--blue);}
   .nav-item { transition: color .12s, background .12s; }
   .tbl td, .tbl th { transition: background .1s; }
   .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  /* ── Mobile + Polish ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow, .kpi-strip { grid-template-columns: 1fr !important; }
+    .pane { padding: 14px 14px 80px !important; }
+    .hdr { flex-wrap: nowrap !important; overflow-x: auto !important; }
+    .hdr-nav { overflow-x: auto; scrollbar-width: none; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; }
+    .hdr-right { flex-shrink: 0; }
+    /* Card touch targets */
+    .card { border-radius: 12px; }
+    /* Bigger inputs */
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    /* Bigger buttons */
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    /* Full-width action buttons */
+    .pane > .g2 > div > .card > .btn:last-child { width: 100%; }
+    /* Hide secondary columns on mobile, stack them */
+    .kpi-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .g2 > div:last-child { display: none; } /* hide right column on very small */
+  }
+
+  /* Button micro-interactions */
+  .btn { transition: filter .12s, transform .1s !important; cursor: pointer; }
+  .btn:active { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Form focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card hover */
+  .card { transition: border-color .15s; }
+  
+  /* Tab pane entry */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:none } }
+  
+  /* Fix fixed-width containers */
+  .modal-inner, [style*="max-width:700px"], [style*="max-width: 700px"] { max-width: min(700px, 95vw) !important; }
+  [style*="min-width:"] { min-width: 0 !important; }
+
+  /* Better table on mobile */
+  .tbl-wrap, .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+
+  /* Professional card improvements */
+  .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,.3);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  /* Accent borders on primary cards */
+  .card[style*="border-top:3px"] {
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  }
+  /* Input groups */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+  
+  /* Better empty states */
+  [style*="color:var(--soft);font-size:.78rem;text-align:center;padding:16px"],
+  [style*="color:var(--soft);text-align:center;padding:16px"] {
+    padding: 28px 16px !important;
+  }
+
+  /* Loading shimmer */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, var(--s1) 50%, var(--s2) 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    border-radius: 6px;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
 
 </style>
 </head>
@@ -934,7 +1025,7 @@ window.addEventListener("load",()=>{
       const d = await r.json();
       const el = document.getElementById('pp-network-pill');
       if (el && d.totalY2) {
-        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected';
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
         el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
       }
     } catch {}
@@ -943,4 +1034,18 @@ window.addEventListener("load",()=>{
   setInterval(ppSync, 60000);
 })();
 </script>
+
+<!-- Mobile bottom nav -->
+<div class="rw-bottom-nav" id="mobile-bottom-nav">
+  <div class="rw-bottom-nav-items">
+    <div class="rw-bottom-nav-item" onclick="show('decode')" ontouchstart=""><span class="nav-icon">🔍</span><span>Decode</span></div><div class="rw-bottom-nav-item" onclick="show('recalls')" ontouchstart=""><span class="nav-icon">⚠️</span><span>Recalls</span></div><div class="rw-bottom-nav-item" onclick="show('mint')" ontouchstart=""><span class="nav-icon">🪙</span><span>Mint</span></div><div class="rw-bottom-nav-item" onclick="show('mytitles')" ontouchstart=""><span class="nav-icon">📋</span><span>My Titles</span></div><div class="rw-bottom-nav-item" onclick="show('compare')" ontouchstart=""><span class="nav-icon">📊</span><span>Compare</span></div>
+  </div>
+</div>
+<style>
+@media (max-width: 700px) {
+  .rw-bottom-nav { display: block !important; }
+  /* Active state syncs with show() */
+}
+</style>
+
 </body></html>

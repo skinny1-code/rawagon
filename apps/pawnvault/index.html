@@ -10,7 +10,7 @@
 :root{--bg:#040a07;--s1:#081210;--s2:#0c1710;--card:#0a1510;--line:rgba(255,255,255,.07);--ln2:rgba(255,255,255,.04);
 --wh:#e8f5e9;--soft:#5a8a6a;--dim:#1a3a2a;--accent:#10b981;--accent-glow:rgba(16,185,129,.2);--accent-bg:rgba(16,185,129,.06);--grn:#10b981;--gn2:rgba(16,185,129,.1);--gn3:rgba(16,185,129,.06);
 --gold:#f59e0b;--gd2:rgba(245,158,11,.1);--red:#ef4444;--rd2:rgba(239,68,68,.1);--teal:#06b6d4;--purp:#8b5cf6;}
-html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'Outfit', sans-serif;font-size:14px}
+html,body{min-height:100%;background:var(--bg);color:var(--wh);font-family:'Outfit', sans-serif;font-size:14px;overflow-x:hidden}
 .hdr{position:sticky;top:0;z-index:100;background:rgba(4,10,7,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px}
 .hdr-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1}
 .hdr-sub{font-size:.66rem;color:var(--soft)}
@@ -54,6 +54,66 @@ input:focus,select:focus{border-color:var(--grn)}
   .nav-item { transition: color .12s, background .12s; }
   .tbl td, .tbl th { transition: background .1s; }
   .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  /* ── Mobile + Polish ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow, .kpi-strip { grid-template-columns: 1fr !important; }
+    .pane { padding: 14px 14px 80px !important; }
+    .hdr { flex-wrap: nowrap !important; overflow-x: auto !important; }
+    .hdr-nav { overflow-x: auto; scrollbar-width: none; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; }
+    .hdr-right { flex-shrink: 0; }
+    /* Card touch targets */
+    .card { border-radius: 12px; }
+    /* Bigger inputs */
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    /* Bigger buttons */
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    /* Full-width action buttons */
+    .pane > .g2 > div > .card > .btn:last-child { width: 100%; }
+    /* Hide secondary columns on mobile, stack them */
+    .kpi-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .g2 > div:last-child { display: none; } /* hide right column on very small */
+  }
+
+  /* Button micro-interactions */
+  .btn { transition: filter .12s, transform .1s !important; cursor: pointer; }
+  .btn:active { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Form focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card hover */
+  .card { transition: border-color .15s; }
+  
+  /* Tab pane entry */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:none } }
+  
+  /* Fix fixed-width containers */
+  .modal-inner, [style*="max-width:700px"], [style*="max-width: 700px"] { max-width: min(700px, 95vw) !important; }
+  [style*="min-width:"] { min-width: 0 !important; }
+
+  /* Better table on mobile */
+  .tbl-wrap, .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 </style></head><body>
 <div class="hdr">

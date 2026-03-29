@@ -27,7 +27,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:15px;}
-body{background:var(--bg);color:var(--wh);font-family:'Geist', sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+body{background:var(--bg);color:var(--wh);font-family:'Geist', sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;;overflow-x:hidden}
 .mono{font-family:'IBM Plex Mono',monospace;}
 .serif{font-family:'Playfair Display',serif;}
 
@@ -240,6 +240,124 @@ select.fi option{background:var(--deep);}
 /* SHIM */
 .shim{background:linear-gradient(90deg,var(--surf) 25%,var(--panel) 50%,var(--surf) 75%);background-size:200% 100%;animation:shim 1.4s infinite;border-radius:4px;}
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  /* ── Mobile + Polish ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow, .kpi-strip { grid-template-columns: 1fr !important; }
+    .pane { padding: 14px 14px 80px !important; }
+    .hdr { flex-wrap: nowrap !important; overflow-x: auto !important; }
+    .hdr-nav { overflow-x: auto; scrollbar-width: none; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; }
+    .hdr-right { flex-shrink: 0; }
+    /* Card touch targets */
+    .card { border-radius: 12px; }
+    /* Bigger inputs */
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    /* Bigger buttons */
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    /* Full-width action buttons */
+    .pane > .g2 > div > .card > .btn:last-child { width: 100%; }
+    /* Hide secondary columns on mobile, stack them */
+    .kpi-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-radius: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .g2 > div:last-child { display: none; } /* hide right column on very small */
+  }
+
+  /* Button micro-interactions */
+  .btn { transition: filter .12s, transform .1s !important; cursor: pointer; }
+  .btn:active { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Form focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card hover */
+  .card { transition: border-color .15s; }
+  
+  /* Tab pane entry */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(6px) } to { opacity:1; transform:none } }
+  
+  /* Fix fixed-width containers */
+  .modal-inner, [style*="max-width:700px"], [style*="max-width: 700px"] { max-width: min(700px, 95vw) !important; }
+  [style*="min-width:"] { min-width: 0 !important; }
+
+  /* Better table on mobile */
+  .tbl-wrap, .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+
+  /* Professional card improvements */
+  .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,.3);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+  /* Accent borders on primary cards */
+  .card[style*="border-top:3px"] {
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  }
+  /* Input groups */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+  
+  /* Better empty states */
+  [style*="color:var(--soft);font-size:.78rem;text-align:center;padding:16px"],
+  [style*="color:var(--soft);text-align:center;padding:16px"] {
+    padding: 28px 16px !important;
+  }
+
+  /* Loading shimmer */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, var(--s1) 50%, var(--s2) 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+    border-radius: 6px;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+
+  /* ── rawagon-os mobile ── */
+  @media (max-width: 700px) {
+    /* On mobile, OS is an app launcher - hide sidebar, show content full width */
+    .workspace { grid-template-columns: 1fr !important; }
+    .sidebar { display: none !important; }
+    .gnav { overflow-x: auto !important; scrollbar-width: none; }
+    .gnav::-webkit-scrollbar { display: none; }
+    .gnav-app { white-space: nowrap; flex-shrink: 0; min-height: 44px; }
+    .main { overflow-y: auto !important; }
+    .view { padding: 14px !important; }
+    
+    /* App grid for mobile */
+    #os-app-grid { grid-template-columns: repeat(3,1fr) !important; gap: 10px !important; }
+    
+    /* Make KPI strip scroll on mobile */
+    .kpi-strip { 
+      display: flex !important; 
+      overflow-x: auto !important;
+      gap: 8px !important;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 130px; flex-shrink: 0; }
+  }
+
 </style>
 </head>
 <body>
@@ -1596,7 +1714,7 @@ const SIDEBARS = {
     {ico:'🔄',lbl:'Live workflows'},
     {ico:'📊',lbl:'Activity stream'},
     {s:'Quick actions'},
-    {ico:'🏦',lbl:'Pawn item',onclick:"switchApp('bitpawn')"},
+    {ico:'🏦',lbl:'BitPawn',onclick:"switchApp('bitpawn')"},
     {ico:'🚗',lbl:'Decode VIN',onclick:"switchApp('autoiq')"},
     {ico:'🎴',lbl:'Start break',onclick:"switchApp('droppa')"},
     {ico:'🪙',lbl:'Stake LTN',onclick:"openModal('stake-ltn')"},
@@ -1838,5 +1956,87 @@ document.addEventListener('DOMContentLoaded',()=>{
   <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
 </div>
 <script src="/packages/network-sdk/index.js"></script>
+
+<script>
+// ── Settings Panel Functions (global scope) ───────────────────────────────
+function switchToSettings() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  const el = document.getElementById('app-settings');
+  if (el) { el.classList.add('on'); loadConfigStatus(); }
+  // Update nav highlight
+  document.querySelectorAll('.gnav-app').forEach(a => a.classList.remove('on'));
+  // Restore saved values (masked)
+  const keyMap = {
+    'cfg-anthropic':  'rawagon-anthropic-key',
+    'cfg-elevenlabs': 'rawagon-elevenlabs-key',
+    'cfg-tmdb':       'rawagon-tmdb-key',
+    'cfg-easypost':   'droppa-ps-easypost',
+    'cfg-resend':     'droppa-n-resend-key',
+  };
+  Object.entries(keyMap).forEach(([elId, lsKey]) => {
+    const el = document.getElementById(elId);
+    const val = localStorage.getItem(lsKey);
+    if (el) el.value = val ? val.slice(0,4) + '●●●●●●●●' : '';
+  });
+  const w = window.RWWallet && window.RWWallet.getAddr();
+  const waddrEl = document.getElementById('cfg-wallet-addr');
+  if (waddrEl) waddrEl.textContent = w ? w.slice(0,10)+'…'+w.slice(-6) : 'Not connected';
+}
+
+function saveConfigKey(type) {
+  const keyMap = {
+    anthropic:  { el:'cfg-anthropic',  ls:'rawagon-anthropic-key', also:['dtr-anthropic'] },
+    elevenlabs: { el:'cfg-elevenlabs', ls:'rawagon-elevenlabs-key' },
+    tmdb:       { el:'cfg-tmdb',       ls:'rawagon-tmdb-key', also:['dtr-tmdb'] },
+    easypost:   { el:'cfg-easypost',   ls:'droppa-ps-easypost' },
+    resend:     { el:'cfg-resend',     ls:'droppa-n-resend-key' },
+  };
+  const m = keyMap[type]; if (!m) return;
+  const el = document.getElementById(m.el);
+  const val = el?.value?.trim();
+  if (!val || val.includes('●')) { toast && toast('Enter a new key value', true); return; }
+  localStorage.setItem(m.ls, val);
+  (m.also||[]).forEach(k => localStorage.setItem(k, val));
+  el.value = val.slice(0,4) + '●●●●●●●●';
+  if (typeof toast === 'function') toast(type + ' key saved ✓');
+  loadConfigStatus();
+}
+
+function disconnectWallet() {
+  localStorage.removeItem('rawagon-wallet');
+  if (window.RWWallet) window.RWWallet.addr = null;
+  const el = document.getElementById('cfg-wallet-addr');
+  if (el) el.textContent = 'Not connected';
+  if (typeof toast === 'function') toast('Wallet disconnected');
+}
+
+function clearAllKeys() {
+  if (!confirm('Clear all API keys? This cannot be undone.')) return;
+  ['rawagon-anthropic-key','dtr-anthropic','rawagon-elevenlabs-key',
+   'rawagon-tmdb-key','droppa-ps-easypost','droppa-n-resend-key',
+   'rawagon-setup-done'].forEach(k => localStorage.removeItem(k));
+  if (typeof toast === 'function') toast('All keys cleared');
+  loadConfigStatus();
+}
+
+function loadConfigStatus() {
+  const el = document.getElementById('cfg-status-grid');
+  if (!el) return;
+  const checks = [
+    { label:'Anthropic API key',   ok: !!localStorage.getItem('rawagon-anthropic-key'), note:'Required for all AI features' },
+    { label:'Wallet connected',    ok: !!(window.RWWallet && window.RWWallet.getAddr()),  note:'Required for on-chain features' },
+    { label:'EasyPost (shipping)', ok: !!localStorage.getItem('droppa-ps-easypost'),      note:'Optional — Droppa labels' },
+    { label:'Resend (email)',      ok: !!localStorage.getItem('droppa-n-resend-key'),      note:'Optional — winner emails' },
+    { label:'ElevenLabs (voice)',  ok: !!localStorage.getItem('rawagon-elevenlabs-key'),   note:'Optional — Drop The Reel' },
+  ];
+  el.innerHTML = checks.map(c =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:${c.ok?'rgba(52,211,153,.04)':'rgba(255,255,255,.02)'};border-radius:7px;margin-bottom:4px">
+      <span style="font-size:.78rem">${c.ok?'✓ ':'○ '}<span style="color:${c.ok?'var(--grn)':'var(--soft)'}">${c.label}</span></span>
+      <span style="font-size:.68rem;color:var(--dim)">${c.note}</span>
+    </div>`
+  ).join('');
+}
+</script>
+
 </body>
 </html>
