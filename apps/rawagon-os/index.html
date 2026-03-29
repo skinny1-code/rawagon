@@ -333,7 +333,7 @@ select.fi option{background:var(--deep);}
   };
   const wrap = document.getElementById("rwc-btn-wrap");
   const btn  = document.createElement("button");
-  btn.textContent = "🦊 Connect";
+  btn.textContent = "🔗 Connect";
   wrap.appendChild(btn);
   const chainEl = document.getElementById("rwc-chain");
   const balEl   = document.getElementById("rwc-bal");
@@ -357,7 +357,7 @@ select.fi option{background:var(--deep);}
       }catch(e){}
       document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
     } else {
-      btn.textContent = "🦊 Connect";
+      btn.textContent = "🔗 Connect";
       btn.className = "";
       chainEl.textContent = "";
       balEl.textContent = "";
@@ -366,13 +366,13 @@ select.fi option{background:var(--deep);}
 
   btn.onclick = async function(){
     if(!window.ethereum){ window.RWOnboard ? window.RWOnboard.showMetaMaskGuide() : (rwToast && rwToast("MetaMask required", true)); return; }
-    btn.textContent = "Connecting..."; btn.disabled = true;
+    btn.textContent = "Connecting…"; btn.disabled = true;
     try{
       await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
       await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
       const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
       await update(accounts);
-    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
+    }catch(e){ btn.textContent="🔗 Connect"; alert(e.message); }
     btn.disabled = false;
   };
 
