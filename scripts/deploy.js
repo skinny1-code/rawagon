@@ -1,21 +1,54 @@
 #!/usr/bin/env node
-require('dotenv').config({ path: '../.env' });
+// Deploy all RAWagon contracts via Hardhat.
+// Usage: node scripts/deploy.js [--network base-sepolia|base]
+// Requires: PRIVATE_KEY + BASE_SEPOLIA_RPC_URL (or BASE_RPC_URL for mainnet) in .env
+'use strict';
+
+const { execSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+
 const NET = process.argv.includes('--network')
   ? process.argv[process.argv.indexOf('--network') + 1]
   : 'base-sepolia';
-// eslint-disable-next-line no-unused-vars
-const USDC = {
-  base: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-  'base-sepolia': '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-};
-// eslint-disable-next-line no-unused-vars
-const XAU = {
-  base: '0x214eD9Da11D2fbe465a6fc601a91E62EbEc1a0D6',
-  'base-sepolia': '0x0000000000000000000000000000000000000000',
-}; // TODO: add Chainlink XAU/USD on Base Sepolia when available
-const CONTRACTS = ['LivingToken', 'FeeDistributor', 'EmployeeVault', 'GoldMint', 'IQTitle'];
-console.log(`\nDeploying to ${NET}...`);
-CONTRACTS.forEach((c) => {
-  console.log(`  [todo] ${c} — add ethers.js deploy logic`);
-});
-console.log('\nAdd PRIVATE_KEY + BASE_RPC_URL to .env then run with hardhat');
+
+if (!['base', 'base-sepolia'].includes(NET)) {
+  console.error(`✗ Unknown network: "${NET}". Valid options: base, base-sepolia`);
+  process.exit(1);
+}
+
+// ── Pre-flight: required env vars ────────────────────────────────────────────
+const required = ['PRIVATE_KEY', NET === 'base' ? 'BASE_RPC_URL' : 'BASE_SEPOLIA_RPC_URL'];
+const missing = required.filter(
+  (k) => !process.env[k] || process.env[k] === '' || process.env[k].startsWith('0x_')
+);
+if (missing.length) {
+  console.error(`\n✗ Missing or placeholder env vars: ${missing.join(', ')}`);
+  console.error('  Copy .env.example → .env and fill in real values.\n');
+  process.exit(1);
+}
+
+// ── Pre-flight: Hardhat artifacts must exist ─────────────────────────────────
+// Hardhat's artifact directory (populated by npx hardhat compile)
+const hardhatArtifacts = path.join(__dirname, '..', 'contracts', 'artifacts', 'contracts');
+if (!fs.existsSync(hardhatArtifacts)) {
+  console.error('\n✗ Hardhat artifacts not found.');
+  console.error(
+    '  Run `cd contracts && npm run compile:hardhat` first (requires internet for solc download).\n'
+  );
+  process.exit(1);
+}
+
+// ── Launch Hardhat deploy ─────────────────────────────────────────────────────
+console.log(`\nLaunching Hardhat deploy on ${NET}...\n`);
+try {
+  execSync(`npx hardhat run scripts/deploy.js --network ${NET}`, {
+    cwd: path.join(__dirname, '..', 'contracts'),
+    stdio: 'inherit',
+    env: { ...process.env },
+  });
+} catch {
+  process.exit(1);
+}

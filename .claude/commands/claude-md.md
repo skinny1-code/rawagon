@@ -1,6 +1,7 @@
 Scan the entire RAWagon repository and update CLAUDE.md to reflect the current state of the codebase.
 
 Follow this process:
+
 1. Read the current CLAUDE.md to understand its structure
 2. Check the actual files on disk:
    - `package.json` (root + each workspace) for scripts, deps, versions

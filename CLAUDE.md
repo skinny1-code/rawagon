@@ -52,6 +52,10 @@ rawagon/
 │   │   ├── AllCard/EmployeeVault.sol
 │   │   ├── GoldSnap/GoldMint.sol
 │   │   └── AutoIQ/IQTitle.sol
+│   ├── scripts/
+│   │   └── deploy.js             # Hardhat deploy script (all 5 contracts, ordered)
+│   ├── deployments/              # Deployment manifests written after each deploy
+│   │   └── base-sepolia.json     # example — created on first deploy
 │   ├── compile-local.js          # Offline compiler using bundled solc npm package
 │   ├── hardhat.config.js         # Hardhat config (networks, etherscan, paths)
 │   └── package.json
@@ -59,7 +63,7 @@ rawagon/
 │   └── architecture/
 │       └── SYSTEM_OVERVIEW.md
 ├── scripts/
-│   └── deploy.js                 # Contract deployment (WIP — TODO deploy logic)
+│   └── deploy.js                 # Root deploy runner — pre-flight checks + delegates to Hardhat
 ├── .github/workflows/
 │   └── test.yml                  # CI: lint → format-check → typecheck → vitest → compile
 ├── vitest.config.mjs             # Vitest config (globals: true, node env)
@@ -143,11 +147,30 @@ Solidity sources are in `contracts/src/` (not `contracts/` root) to avoid Hardha
 ### Deploy contracts
 
 ```bash
-node scripts/deploy.js                      # base-sepolia (default)
-node scripts/deploy.js --network base       # mainnet
+node scripts/deploy.js                       # base-sepolia (default)
+node scripts/deploy.js --network base        # mainnet
+
+# or directly via Hardhat (from contracts/ directory):
+cd contracts && npm run deploy               # base-sepolia
+cd contracts && npm run deploy:mainnet       # base mainnet
 ```
 
-Deploy logic is currently TODO stubs. Requires `PRIVATE_KEY` and `BASE_RPC_URL` / `BASE_SEPOLIA_RPC_URL` in `.env`.
+**Deploy requires Hardhat compilation first** (needs internet for solc binary):
+
+```bash
+cd contracts && npm run compile:hardhat      # produces Hardhat-format artifacts
+node scripts/deploy.js --network base-sepolia
+```
+
+Deployment order is fixed (dependency-driven):
+
+1. `LivingToken` → 2. `FeeDistributor` (needs LTN address) → 3. `EmployeeVault` → 4. `GoldMint` (needs XAU oracle + USDC) → 5. `IQTitle`
+
+After deploy, addresses are saved to `contracts/deployments/<network>.json` and Basescan
+verify commands are printed to stdout.
+
+Requires `PRIVATE_KEY` and `BASE_SEPOLIA_RPC_URL` (or `BASE_RPC_URL` for mainnet) in `.env`.
+The root `scripts/deploy.js` validates env vars and artifact presence before launching Hardhat.
 
 ### CI pipeline
 
@@ -255,13 +278,16 @@ All contracts in `contracts/src/`, target **Solidity ^0.8.24**, deploy on **Base
 
 - Stores ZK credential commitments (`bytes32`) — **zero PII on-chain**
 - Maps: `address → { employer, commitment, active }`
-- `enroll(emp, commitment)`, `verify(proof, scope)` (**TODO**: replace stub with real ZK verifier), `update(commitment)`, `deactivate(addr)`
+- `enroll(employer, commitment)` — stores HMAC commitment; `update(commitment)` — key rotation
+- `verify(proof bytes32, scope 1-3)` — checks `bytes32(proof) == commit[msg.sender]` via assembly
+  (proof is the 32-byte HMAC from `zk-identity prove().proof`, hex-decoded)
+- `deactivate(addr)` — callable by employee or their employer
 
 ### `GoldMint.sol` (GTX) — `contracts/src/GoldSnap/`
 
 - ERC20 gold-backed token; 1 GTX = 1/100 troy oz gold
-- Chainlink XAU/USD oracle for live price; 0.25% minting fee
-- USDC-backed reserve
+- Chainlink XAU/USD oracle for live price; 0.25% minting fee; USDC-backed reserve
+- `price()` enforces oracle freshness (`ORACLE_MAX_AGE = 2 hours`) and positive price — reverts if stale
 - `mint(usdcAmount)` → mints GTX; `redeem(gtxAmount)` → returns USDC
 
 ### `IQTitle.sol` (IQCAR) — `contracts/src/AutoIQ/`
@@ -338,13 +364,13 @@ NODE_ENV=development
 
 ## Known Incomplete Areas
 
-| Area                                                 | Status                                                                   |
-| ---------------------------------------------------- | ------------------------------------------------------------------------ |
-| `apps/`                                              | All frontend apps are directory stubs — no implementation                |
-| `scripts/deploy.js`                                  | Deployment logic is `[todo]` comments — contracts cannot be deployed yet |
-| `contracts/src/AllCard/EmployeeVault.sol` `verify()` | Stub returns `proof.length > 0` — needs real ZK verifier                 |
-| `packages/ltn-token/index.js`                        | Empty stub — exports `{}`                                                |
-| `contracts/test/`                                    | Directory does not exist — no Hardhat/contract tests written             |
+| Area                          | Status                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `apps/`                       | All frontend apps are directory stubs — no implementation                                  |
+| `packages/ltn-token/index.js` | Empty stub — exports `{}`                                                                  |
+| `contracts/test/`             | Directory does not exist — no Hardhat/contract tests written                               |
+| GoldMint on Base Sepolia      | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live |
+| Deploy to mainnet             | `EmployeeVault.verify()` uses commitment-hash check only — upgrade before mainnet          |
 
 ---
 

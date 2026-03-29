@@ -1,6 +1,7 @@
 Run a full project health check for the RAWagon monorepo and report the results in a clear summary table.
 
 Execute these checks IN ORDER (stop on first fatal error):
+
 1. `npm run lint:fix` — ESLint; report error count
 2. `npx prettier --check .` — format check; list dirty files if any
 3. `npm run typecheck` — tsc --noEmit; report errors
