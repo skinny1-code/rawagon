@@ -136,7 +136,7 @@ a.health:hover{color:#8b5cf6}
 }
 
 const server = http.createServer(async (req, res) => {
-  const { pathname } = url.parse(req.url);
+  const { pathname } = new URL(req.url, 'http://localhost');
   const parts = pathname.split('/').filter(Boolean);
 
   // CORS
