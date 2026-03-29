@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-R3WAGON Monitor Runner
+RAWagon Monitor Runner
 Run all monitors in background threads.
 Usage: python3 packages/monitors/run_monitors.py
 """

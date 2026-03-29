@@ -1,5 +1,5 @@
 /**
- * R3WAGON Solana Distribution
+ * RAWagon Solana Distribution
  * Receives USDC from Wormhole bridge and confirms receipt
  * in Ryan Williams' wallet: 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78
  *
@@ -22,7 +22,7 @@ async function checkFounderBalance() {
   console.log("Address:", FOUNDER_WALLET.toBase58());
   console.log("SOL balance:", (solBalance / LAMPORTS_PER_SOL).toFixed(6), "SOL");
 
-  // USDC balance (bridged from R3NET via Wormhole)
+  // USDC balance (bridged from RAWNet via Wormhole)
   try {
     const usdcAta = await getAssociatedTokenAddress(USDC_MINT_SOLANA, FOUNDER_WALLET);
     const ataInfo = await conn.getTokenAccountBalance(usdcAta);
@@ -32,8 +32,8 @@ async function checkFounderBalance() {
     console.log("USDC: No account yet (will be created on first bridge)");
   }
 
-  console.log("\nWormhole bridge receipts from R3NET chain 720701");
-  console.log("Auto-bridges when R3NET queue >= $1,000 USDC");
+  console.log("\nWormhole bridge receipts from RAWNet chain 720701");
+  console.log("Auto-bridges when RAWNet queue >= $1,000 USDC");
   console.log("\nYear 2 founder allocation: $4,368,940/year");
   console.log("Monthly average:             $364,078/month");
   console.log("Distribution: 15% of each entity revenue, bridged monthly");

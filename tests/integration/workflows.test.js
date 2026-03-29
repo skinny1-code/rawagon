@@ -63,11 +63,11 @@ t('QWKS: payment proof has no PII', ()=>{
   assert(!JSON.stringify(record).includes('Alice'));
 });
 
-t('QWKS: R3NET 100x cheaper than Base', ()=>{
+t('QWKS: RAWNet 100x cheaper than Base', ()=>{
   assert(0.000825/0.0000082 > 90);
 });
 
-t('QWKS: visa 304000x+ more than R3NET', ()=>{
+t('QWKS: visa 304000x+ more than RAWNet', ()=>{
   assert(2.50/0.0000082 > 300000);
 });
 
@@ -461,7 +461,7 @@ t('monitors: z-score 3-sigma anomaly detection', () => {
 t('SECURITY.md: not a generic template', () => {
   const fs = require('fs');
   const sec = fs.readFileSync('SECURITY.md','utf8');
-  assert(sec.includes('r3wagon.io'), 'must have real contact');
+  assert(sec.includes('rawagon.io'), 'must have real contact');
   assert(!sec.includes('5.1.x'), 'must not have generic version table');
 });
 
@@ -479,7 +479,7 @@ t('allcard-sdk: CardVault ABI exported', () => {
 
 
 // ── Final integration + infrastructure tests ──────────────────────────────
-t('contracts-sdk: all 10 R3NET addresses present', () => {
+t('contracts-sdk: all 10 RAWNet addresses present', () => {
   const { RAWContracts } = require('../../packages/contracts-sdk/contracts.js');
   const contracts = ['MockUSDC','MockOracleXAU','MockOracleXAG','LivingToken',
     'FeeDistributor','EmployeeVault','GoldMint','IQTitle','PawnRegistry','BreakFactory'];
@@ -498,7 +498,7 @@ t('contracts-sdk: all ABIs present for 11 contracts', () => {
 
 t('server: manifest.json valid JSON', () => {
   const m = JSON.parse(require('fs').readFileSync('manifest.json','utf8'));
-  assert.strictEqual(m.name, 'R3WAGON OS');
+  assert.strictEqual(m.name, 'RAWagon OS');
   assert.strictEqual(m.start_url, '/');
   assert(m.icons.length >= 2);
 });

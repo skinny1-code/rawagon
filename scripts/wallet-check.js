@@ -26,7 +26,7 @@ async function main() {
   const gasGwei = parseFloat(ethers.formatUnits(gas.gasPrice || 0n, 'gwei')).toFixed(4);
 
   console.log('\n══════════════════════════════════════════════');
-  console.log('  WAGON + FOUNDER Wallet Balances (R3NET Testnet)');
+  console.log('  WAGON + FOUNDER Wallet Balances (RAWNet Testnet)');
   console.log(`  Block: ${block.toLocaleString()} · Gas: ${gasGwei} Gwei`);
   console.log('══════════════════════════════════════════════\n');
 
@@ -38,7 +38,7 @@ async function main() {
     console.log(`  ${tag} ${w.name.padEnd(20)} ${eth} ETH${needsFunds}`);
   }
 
-  console.log('\n  R3NET Testnet (chainId 720701):');
+  console.log('\n  RAWNet Testnet (chainId 720701):');
   console.log('  RPC: http://10.117.122.142:8545');
   console.log('  Faucet: call MockUSDC.faucet()');
   console.log('\n  Founder Solana: 6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78');

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * R3WAGON — Full contract deployment script
+ * RAWagon — Full contract deployment script
  *
  * Usage:
  *   npx hardhat run scripts/deploy.js --network base_sepolia
@@ -79,7 +79,7 @@ async function main() {
   const isTestnet = netName !== "base";
 
   console.log("\n╔══════════════════════════════════════════════╗");
-  console.log("║  R3WAGON Contract Deployment                 ║");
+  console.log("║  RAWagon Contract Deployment                 ║");
   console.log("╚══════════════════════════════════════════════╝");
   console.log(`  Network:  ${netName} (chainId ${chainId})`);
   console.log(`  Deployer: ${deployer.address}`);

@@ -17,6 +17,6 @@ t('encryptVault roundtrip', ()=>{const d={ssn:'123-45-6789'};assert.deepStrictEq
 t('fromBiometrics creates AllCard', ()=>{const c=AllCard.fromBiometrics({k:90,v:80});assert(c instanceof AllCard);});
 t('paymentRecord: no raw PII', ()=>{const r=card.paymentRecord(100);assert(!JSON.stringify(r).includes(card.masterKey));});
 t('paymentRecord: has commitment', ()=>{const r=card.paymentRecord(100);assert(r.commitment&&r.commitment.startsWith('0x'));});
-t('createWAGONPayment: R3NET chainId', ()=>{const tx=createWAGONPayment('0xabc','0xdef',100);assert.strictEqual(tx.chainId,720701);});
+t('createWAGONPayment: RAWNet chainId', ()=>{const tx=createWAGONPayment('0xabc','0xdef',100);assert.strictEqual(tx.chainId,720701);});
 t('8 MODES exist', ()=>assert(Object.keys(MODES).length===8));
 console.log(`\n  ${p}/${p+f} passed`); process.exit(f?1:0);

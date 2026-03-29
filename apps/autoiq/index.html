@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/apps/shared/rawagon-design.css">
 <script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
@@ -10,8 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AutoIQ — Vehicle Title OS · R3NET</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <title>AutoIQ — Vehicle Title OS · RAWNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
@@ -202,7 +199,7 @@ input:focus,select:focus{border-color:var(--blue);}
 <div class="hdr">
   <div class="hdr-brand">
     <div class="brand-plate">IQCAR</div>
-    <div><div class="brand-name">AutoIQ</div><div class="brand-sub">Vehicle Title OS · R3NET</div></div>
+    <div><div class="brand-name">AutoIQ</div><div class="brand-sub">Vehicle Title OS · RAWNet</div></div>
   </div>
   <div class="hdr-nav">
     <div class="nav-item active" onclick="show('decode')">VIN Decode</div>
@@ -217,8 +214,6 @@ input:focus,select:focus{border-color:var(--blue);}
   <div class="hdr-right">
     <div class="live-dot"></div>
     <span id="nhtsa-status" style="font-size:.68rem;color:var(--soft)">NHTSA Live</span>
-    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
   id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
@@ -232,7 +227,7 @@ input:focus,select:focus{border-color:var(--blue);}
     <div class="kpi"><div class="kpi-val grn">$0.001</div><div class="kpi-lbl">Transfer Cost</div><div class="kpi-sub">vs $75-150 DMV</div></div>
     <div class="kpi"><div class="kpi-val cyan">500ms</div><div class="kpi-lbl">Settlement</div><div class="kpi-sub">vs 4-8 wks DMV</div></div>
     <div class="kpi"><div class="kpi-val gold">0.3%</div><div class="kpi-lbl">Mint Fee</div><div class="kpi-sub">of sale price</div></div>
-    <div class="kpi"><div class="kpi-val grn" id="k-block">—</div><div class="kpi-lbl">R3NET Block</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="k-block">—</div><div class="kpi-lbl">RAWNet Block</div></div>
   </div>
   <div class="g2">
     <div>
@@ -318,7 +313,7 @@ input:focus,select:focus{border-color:var(--blue);}
       <div style="margin-bottom:18px;">
         <div style="font-size:.7rem;color:var(--soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Preview</div>
         <div class="nft-card">
-          <div style="font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">IQCAR · ERC-721 · R3NET</div>
+          <div style="font-size:.66rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">IQCAR · ERC-721 · RAWNet</div>
           <div class="nft-plate" id="preview-plate">•••• ••••• •••••••</div>
           <div class="nft-vin" id="preview-vin">VIN: not entered</div>
           <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;">
@@ -328,7 +323,7 @@ input:focus,select:focus{border-color:var(--blue);}
             </div>
             <div style="text-align:right">
               <div style="font-size:.62rem;color:var(--dim)">Network</div>
-              <div style="font-size:.72rem;color:var(--blue);font-weight:700">R3NET 720701</div>
+              <div style="font-size:.72rem;color:var(--blue);font-weight:700">RAWNet 720701</div>
             </div>
           </div>
         </div>
@@ -338,7 +333,7 @@ input:focus,select:focus{border-color:var(--blue);}
         <div style="font-size:.76rem;color:var(--soft);line-height:1.9;">
           <div>1. Enter VIN → Token ID = keccak256(VIN)</div>
           <div>2. Each VIN can only be minted once</div>
-          <div>3. NFT minted to buyer wallet on R3NET</div>
+          <div>3. NFT minted to buyer wallet on RAWNet</div>
           <div>4. 0.3% fee on sale price → LTN stakers</div>
           <div>5. On-chain history: permanent + immutable</div>
           <div>6. DMV oracle integration: Planned (v2)</div>
@@ -603,7 +598,7 @@ let myTokenIds = JSON.parse(localStorage.getItem('iq-tokens')||'[]');
 async function connectWallet() {
   if (!window.ethereum){alert("Open in MetaMask browser");return;}
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"R3NET Testnet",
+    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
   }]}).catch(()=>{});

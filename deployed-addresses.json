@@ -1,10 +1,10 @@
 {
-  "_comment": "Live Ganache addresses \u2014 R3NET Testnet chainId 720701",
+  "_comment": "Live Ganache addresses \u2014 RAWNet Testnet chainId 720701",
   "_rpc": "http://10.117.122.142:8545",
   "_deployed": "via scripts/deploy-ganache.js using deterministic seed",
   "_seed": "myth like bonus scare over problem client lizard pioneer submit female collect",
   "rawnet_testnet": {
-    "network": "R3NET Testnet",
+    "network": "RAWNet Testnet",
     "chainId": 720701,
     "rpc": "http://10.117.122.142:8545",
     "deployedAt": "2026-03-23",

@@ -6,7 +6,7 @@
  */
 
 export const LTN_PRICE_USD  = 0.084;
-export const BURN_PER_TX    = 0.001;   // LTN burned per R3NET tx
+export const BURN_PER_TX    = 0.001;   // LTN burned per RAWNet tx
 export const INITIAL_SUPPLY = 1_000_000_000;
 export const STAKING_APY    = 0.12;
 

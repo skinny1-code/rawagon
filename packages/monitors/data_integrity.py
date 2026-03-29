@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-R3WAGON Data Integrity Monitor
+RAWagon Data Integrity Monitor
 Detects anomalies in on-chain data and price feeds using z-score.
 Alerts on oracle manipulation, price spikes, unusual tx volumes.
 """
