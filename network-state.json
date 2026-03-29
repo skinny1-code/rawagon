@@ -1,0 +1,22 @@
+{
+  "events": [
+    {
+      "type": "app.opened",
+      "data": {
+        "app": "1nce-allcard"
+      },
+      "app": "1nce-allcard",
+      "ts": 1774790500788
+    },
+    {
+      "type": "app.opened",
+      "data": {
+        "app": "1nce-allcard"
+      },
+      "app": "1nce-allcard",
+      "ts": 1774790346180
+    }
+  ],
+  "stats": {},
+  "lastUpdate": "2026-03-29T13:21:40.788Z"
+}
