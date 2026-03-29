@@ -13,7 +13,7 @@ describe('LivingToken', function () {
 
   async function withBurnerFixture() {
     const base = await deployFixture();
-    const { ltn, owner, alice } = base;
+    const { ltn, alice } = base;
     const BURNER_ROLE = await ltn.BURNER_ROLE();
     await ltn.grantRole(BURNER_ROLE, alice.address);
     // fund alice so she has tokens to burn
@@ -53,7 +53,7 @@ describe('LivingToken', function () {
 
   describe('mint()', function () {
     it('admin can mint to any address', async function () {
-      const { ltn, owner, alice } = await loadFixture(deployFixture);
+      const { ltn, alice } = await loadFixture(deployFixture);
       const amt = ethers.parseEther('1000');
       await ltn.mint(alice.address, amt);
       expect(await ltn.balanceOf(alice.address)).to.equal(amt);
@@ -128,7 +128,7 @@ describe('LivingToken', function () {
 
   describe('ERC20 transfers', function () {
     it('admin can transfer tokens', async function () {
-      const { ltn, owner, alice } = await loadFixture(deployFixture);
+      const { ltn, alice } = await loadFixture(deployFixture);
       const amt = ethers.parseEther('500');
       await ltn.transfer(alice.address, amt);
       expect(await ltn.balanceOf(alice.address)).to.equal(amt);

@@ -125,7 +125,7 @@ describe('IQTitle', function () {
     });
 
     it('reverts on duplicate VIN', async function () {
-      const { iq, alice, bob } = await loadFixture(mintFixture);
+      const { iq, bob } = await loadFixture(mintFixture);
       await expect(
         iq.connect(bob).mint(VIN, MAKE, MODEL, YEAR, RECALLS, SALVAGE, URI, { value: MINT_FEE })
       ).to.be.reverted;
@@ -184,7 +184,7 @@ describe('IQTitle', function () {
 
   describe('withdraw()', function () {
     it('owner can withdraw accumulated ETH', async function () {
-      const { iq, owner, alice } = await loadFixture(mintFixture);
+      const { iq, owner } = await loadFixture(mintFixture);
       const ownerBefore = await ethers.provider.getBalance(owner.address);
       const tx = await iq.connect(owner).withdraw();
       const receipt = await tx.wait();

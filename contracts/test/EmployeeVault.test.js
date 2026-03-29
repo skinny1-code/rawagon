@@ -122,7 +122,7 @@ describe('EmployeeVault', function () {
     });
 
     it('inactive employee cannot update', async function () {
-      const { vault, employer, employee } = await loadFixture(enrolledFixture);
+      const { vault, employee } = await loadFixture(enrolledFixture);
       await vault.connect(employee).deactivate(employee.address);
       await expect(vault.connect(employee).update(COMMITMENT2)).to.be.revertedWith('not active');
     });

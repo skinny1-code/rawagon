@@ -4,10 +4,8 @@ const { ethers } = require('hardhat');
 const { loadFixture } = require('@nomicfoundation/hardhat-toolbox/network-helpers');
 
 describe('FeeDistributor', function () {
-  // Stake 1 LTN = parseEther('1'), vol units match LTN wei for clean math.
-  // With stakeAmt=1000 LTN and vol=1_000_000 LTN:
-  //   fee = vol * 10 / 10000 = 1000 LTN  (exactly equals stakeAmt — tidy test numbers)
-  //   rpt = fee * 1e18 / totalStaked = 1e18 → each staker earns 1 LTN per 1 staked LTN
+  // Math: vol=1_000_000 LTN → fee = vol * 10/10000 = 1000 LTN
+  // With stakeAmt=1000 LTN: rpt = 1000e18 / 1000e18 = 1e18 → each token earns 1 LTN
 
   async function deployFixture() {
     const [owner, alice, bob, reporter] = await ethers.getSigners();
@@ -20,11 +18,15 @@ describe('FeeDistributor', function () {
     const fd = await FeeDistributor.deploy(ltnAddr, owner.address);
     const fdAddr = await fd.getAddress();
 
-    // Fund test accounts
+    // Fund staker accounts
     await ltn.transfer(alice.address, ethers.parseEther('10000'));
     await ltn.transfer(bob.address, ethers.parseEther('10000'));
 
-    // Approve reporter
+    // Fund reporter (needs LTN to deposit fees via inflow) + approve FeeDistributor
+    await ltn.transfer(reporter.address, ethers.parseEther('100000'));
+    await ltn.connect(reporter).approve(fdAddr, ethers.MaxUint256);
+
+    // Approve reporter to call inflow()
     await fd.approve(reporter.address);
 
     return { ltn, fd, ltnAddr, fdAddr, owner, alice, bob, reporter };
@@ -34,7 +36,7 @@ describe('FeeDistributor', function () {
 
   describe('deployment', function () {
     it('stores the LTN token address', async function () {
-      const { ltn, fd, ltnAddr } = await loadFixture(deployFixture);
+      const { fd, ltnAddr } = await loadFixture(deployFixture);
       expect(await fd.ltn()).to.equal(ltnAddr);
     });
 
@@ -53,12 +55,12 @@ describe('FeeDistributor', function () {
   // ── approve() ────────────────────────────────────────────────────────────
 
   describe('approve()', function () {
-    it('reporter is already approved in fixture', async function () {
+    it('reporter is approved in fixture', async function () {
       const { fd, reporter } = await loadFixture(deployFixture);
       expect(await fd.approved(reporter.address)).to.be.true;
     });
 
-    it('non-owner cannot approve', async function () {
+    it('non-owner cannot approve a new reporter', async function () {
       const { fd, alice } = await loadFixture(deployFixture);
       await expect(fd.connect(alice).approve(alice.address)).to.be.reverted;
     });
@@ -112,6 +114,16 @@ describe('FeeDistributor', function () {
       expect(await ltn.balanceOf(alice.address)).to.equal(before + amt);
     });
 
+    it('emits Unstaked event', async function () {
+      const { ltn, fd, fdAddr, alice } = await loadFixture(deployFixture);
+      const amt = ethers.parseEther('1000');
+      await ltn.connect(alice).approve(fdAddr, amt);
+      await fd.connect(alice).stake(amt);
+      await expect(fd.connect(alice).unstake(amt))
+        .to.emit(fd, 'Unstaked')
+        .withArgs(alice.address, amt);
+    });
+
     it('partial unstake leaves correct remainder', async function () {
       const { ltn, fd, fdAddr, alice } = await loadFixture(deployFixture);
       const amt = ethers.parseEther('1000');
@@ -130,47 +142,67 @@ describe('FeeDistributor', function () {
       await expect(fd.connect(alice).inflow(ethers.parseEther('1000'))).to.be.reverted;
     });
 
-    it('inflow with zero totalStaked does not update rpt', async function () {
-      const { fd, reporter } = await loadFixture(deployFixture);
+    it('inflow with zero totalStaked skips token transfer and RPT stays zero', async function () {
+      const { ltn, fd, fdAddr, reporter } = await loadFixture(deployFixture);
+      const reporterBefore = await ltn.balanceOf(reporter.address);
       await fd.connect(reporter).inflow(ethers.parseEther('1000000'));
       expect(await fd.rpt()).to.equal(0n);
+      // No tokens moved — contract is empty, reporter unchanged
+      expect(await ltn.balanceOf(fdAddr)).to.equal(0n);
+      expect(await ltn.balanceOf(reporter.address)).to.equal(reporterBefore);
     });
 
-    it('inflow updates rpt correctly when stakers exist', async function () {
+    it('inflow transfers fee LTN from reporter and updates rpt', async function () {
       const { ltn, fd, fdAddr, alice, reporter } = await loadFixture(deployFixture);
       const stakeAmt = ethers.parseEther('1000');
       await ltn.connect(alice).approve(fdAddr, stakeAmt);
       await fd.connect(alice).stake(stakeAmt);
 
-      // vol=1_000_000 → fee=1000 → rpt = 1000e18/1000e18 = 1e18
       const vol = ethers.parseEther('1000000');
+      const fee = (vol * 10n) / 10000n; // 1000 LTN
+      const reporterBefore = await ltn.balanceOf(reporter.address);
+
       await fd.connect(reporter).inflow(vol);
 
-      const expectedFee = (vol * 10n) / 10000n;
-      const expectedRpt = (expectedFee * ethers.parseEther('1')) / stakeAmt;
+      // Reporter's balance decreased by fee
+      expect(await ltn.balanceOf(reporter.address)).to.equal(reporterBefore - fee);
+      // Contract received staked + fee tokens
+      expect(await ltn.balanceOf(fdAddr)).to.equal(stakeAmt + fee);
+      // RPT updated correctly: 1000e18 / 1000e18 = 1e18
+      const expectedRpt = (fee * ethers.parseEther('1')) / stakeAmt;
       expect(await fd.rpt()).to.equal(expectedRpt);
+    });
+
+    it('emits Inflow event', async function () {
+      const { ltn, fd, fdAddr, alice, reporter } = await loadFixture(deployFixture);
+      const stakeAmt = ethers.parseEther('1000');
+      await ltn.connect(alice).approve(fdAddr, stakeAmt);
+      await fd.connect(alice).stake(stakeAmt);
+
+      const vol = ethers.parseEther('1000000');
+      const fee = (vol * 10n) / 10000n;
+      await expect(fd.connect(reporter).inflow(vol))
+        .to.emit(fd, 'Inflow')
+        .withArgs(reporter.address, vol, fee);
     });
   });
 
   // ── claim() ───────────────────────────────────────────────────────────────
 
   describe('claim()', function () {
-    // Helper: stake → fund contract → report volume → return expected reward
-    async function stakeAndInflow(ltn, fd, fdAddr, staker, stakeAmt, vol, owner) {
+    // Helper: stake → inflow (reporter deposits fee automatically)
+    async function stakeAndInflow(ltn, fd, fdAddr, reporter, staker, stakeAmt, vol) {
       await ltn.connect(staker).approve(fdAddr, stakeAmt);
       await fd.connect(staker).stake(stakeAmt);
-      const fee = (vol * 10n) / 10000n;
-      // Seed the distributor with reward tokens (protocol fee income)
-      await ltn.transfer(fdAddr, fee);
-      return fee;
+      await fd.connect(reporter).inflow(vol);
+      return (vol * 10n) / 10000n;
     }
 
     it('single staker claims correct reward', async function () {
-      const { ltn, fd, fdAddr, owner, alice, reporter } = await loadFixture(deployFixture);
+      const { ltn, fd, fdAddr, alice, reporter } = await loadFixture(deployFixture);
       const stakeAmt = ethers.parseEther('1000');
       const vol = ethers.parseEther('1000000');
-      const fee = await stakeAndInflow(ltn, fd, fdAddr, alice, stakeAmt, vol, owner);
-      await fd.connect(reporter).inflow(vol);
+      const fee = await stakeAndInflow(ltn, fd, fdAddr, reporter, alice, stakeAmt, vol);
 
       const before = await ltn.balanceOf(alice.address);
       await fd.connect(alice).claim();
@@ -178,41 +210,52 @@ describe('FeeDistributor', function () {
     });
 
     it('claim resets pending to zero', async function () {
-      const { ltn, fd, fdAddr, owner, alice, reporter } = await loadFixture(deployFixture);
-      const stakeAmt = ethers.parseEther('1000');
-      const vol = ethers.parseEther('1000000');
-      await stakeAndInflow(ltn, fd, fdAddr, alice, stakeAmt, vol, owner);
-      await fd.connect(reporter).inflow(vol);
+      const { ltn, fd, fdAddr, alice, reporter } = await loadFixture(deployFixture);
+      await stakeAndInflow(
+        ltn,
+        fd,
+        fdAddr,
+        reporter,
+        alice,
+        ethers.parseEther('1000'),
+        ethers.parseEther('1000000')
+      );
       await fd.connect(alice).claim();
       expect(await fd.pending(alice.address)).to.equal(0n);
     });
 
     it('emits Claimed event', async function () {
-      const { ltn, fd, fdAddr, owner, alice, reporter } = await loadFixture(deployFixture);
+      const { ltn, fd, fdAddr, alice, reporter } = await loadFixture(deployFixture);
       const stakeAmt = ethers.parseEther('1000');
       const vol = ethers.parseEther('1000000');
-      const fee = await stakeAndInflow(ltn, fd, fdAddr, alice, stakeAmt, vol, owner);
-      await fd.connect(reporter).inflow(vol);
+      const fee = await stakeAndInflow(ltn, fd, fdAddr, reporter, alice, stakeAmt, vol);
       await expect(fd.connect(alice).claim()).to.emit(fd, 'Claimed').withArgs(alice.address, fee);
     });
 
-    it('two stakers receive proportional rewards (1:3 ratio)', async function () {
-      const { ltn, fd, fdAddr, owner, alice, bob, reporter } = await loadFixture(deployFixture);
+    it('claim() is a no-op when there are no pending rewards', async function () {
+      const { ltn, fd, fdAddr, alice } = await loadFixture(deployFixture);
+      // Alice stakes but no inflow happens
+      const amt = ethers.parseEther('1000');
+      await ltn.connect(alice).approve(fdAddr, amt);
+      await fd.connect(alice).stake(amt);
+      // claim should not revert but emit nothing
+      await expect(fd.connect(alice).claim()).to.not.emit(fd, 'Claimed');
+    });
 
-      // Alice 1000 : Bob 3000 = 1:3
+    it('two stakers receive proportional rewards (1:3 ratio)', async function () {
+      const { ltn, fd, fdAddr, alice, bob, reporter } = await loadFixture(deployFixture);
+
       const aliceStake = ethers.parseEther('1000');
       const bobStake = ethers.parseEther('3000');
-      const vol = ethers.parseEther('4000000'); // fee = 4000 LTN = totalStaked
+      const vol = ethers.parseEther('4000000'); // fee = 4000 LTN = total staked
 
       await ltn.connect(alice).approve(fdAddr, aliceStake);
       await ltn.connect(bob).approve(fdAddr, bobStake);
       await fd.connect(alice).stake(aliceStake);
       await fd.connect(bob).stake(bobStake);
-
-      const fee = (vol * 10n) / 10000n; // 4000 LTN
-      await ltn.transfer(fdAddr, fee);
       await fd.connect(reporter).inflow(vol);
 
+      const fee = (vol * 10n) / 10000n;
       const aliceBefore = await ltn.balanceOf(alice.address);
       const bobBefore = await ltn.balanceOf(bob.address);
       await fd.connect(alice).claim();
@@ -220,15 +263,12 @@ describe('FeeDistributor', function () {
 
       const aliceGot = (await ltn.balanceOf(alice.address)) - aliceBefore;
       const bobGot = (await ltn.balanceOf(bob.address)) - bobBefore;
-
-      // Total claimed = total fee (no rounding loss with clean numbers)
       expect(aliceGot + bobGot).to.equal(fee);
-      // Bob gets exactly 3x alice
       expect(bobGot).to.equal(aliceGot * 3n);
     });
 
     it('second inflow after unstake correctly excludes unstaked tokens', async function () {
-      const { ltn, fd, fdAddr, owner, alice, bob, reporter } = await loadFixture(deployFixture);
+      const { ltn, fd, fdAddr, alice, bob, reporter } = await loadFixture(deployFixture);
       const amt = ethers.parseEther('1000');
       const vol = ethers.parseEther('1000000');
 
@@ -238,25 +278,21 @@ describe('FeeDistributor', function () {
       await fd.connect(bob).stake(amt);
 
       // Round 1 — both staked
-      const fee1 = (vol * 10n) / 10000n;
-      await ltn.transfer(fdAddr, fee1);
       await fd.connect(reporter).inflow(vol);
+      const fee1 = (vol * 10n) / 10000n;
 
-      // Bob unstakes before round 2
+      // Bob unstakes
       await fd.connect(bob).unstake(amt);
 
       // Round 2 — only alice staked
-      const fee2 = (vol * 10n) / 10000n;
-      await ltn.transfer(fdAddr, fee2);
       await fd.connect(reporter).inflow(vol);
+      const fee2 = (vol * 10n) / 10000n;
 
       const aliceBefore = await ltn.balanceOf(alice.address);
       await fd.connect(alice).claim();
       const aliceGot = (await ltn.balanceOf(alice.address)) - aliceBefore;
 
-      // Alice: half of round1 + all of round2
-      const expected = fee1 / 2n + fee2;
-      expect(aliceGot).to.equal(expected);
+      expect(aliceGot).to.equal(fee1 / 2n + fee2);
     });
   });
 });

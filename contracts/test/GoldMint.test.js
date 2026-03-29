@@ -133,7 +133,7 @@ describe('GoldMint', function () {
     }
 
     it('burns GTX and returns USDC at current price', async function () {
-      const { gm, gmAddr, usdc, alice } = await loadFixture(mintedFixture);
+      const { gm, usdc, alice } = await loadFixture(mintedFixture);
       const gtxBal = await gm.balanceOf(alice.address);
       const p = await gm.price();
       const expectedUsdc = (gtxBal * p) / ethers.parseEther('1');
