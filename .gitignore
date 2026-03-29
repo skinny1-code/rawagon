@@ -4,3 +4,4 @@ dist/
 !.env.example
 artifacts/
 cache/
+.claude/settings.local.json
