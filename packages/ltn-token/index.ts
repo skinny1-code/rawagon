@@ -2,7 +2,7 @@
  * @rawagon/ltn-token
  * TypeScript implementation of LTN tokenomics.
  * Mirrors LivingToken.sol + FeeDistributor.sol lifecycle math.
- * Patent pending: RAW-2026-PROV-001
+ * Proprietary — RAWagon Systems LLC
  */
 
 export const LTN_PRICE_USD  = 0.084;

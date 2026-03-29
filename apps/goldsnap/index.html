@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,19 +12,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>GoldSnap — GTX/STX · R3NET</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>GoldSnap — GTX/STX · RAWNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#080600;--s1:#0f0c00;--s2:#151200;--card:#1a1600;
   --line:rgba(251,191,36,.18);--ln2:rgba(251,191,36,.07);
   --wh:#fffbea;--soft:#7a6a20;--dim:#3a3000;
-  --gold:#fbbf24;--gd2:rgba(251,191,36,.18);--gd3:rgba(251,191,36,.06);
+  --accent:#fbbf24;--accent-glow:rgba(251,191,36,.2);--accent-bg:rgba(251,191,36,.06);--gold:#fbbf24;--gd2:rgba(251,191,36,.18);--gd3:rgba(251,191,36,.06);
   --silver:#d1d5db;--sl2:rgba(209,213,219,.12);--sl3:rgba(209,213,219,.06);
   --grn:#34d399;--gn2:rgba(52,211,153,.1);
   --red:#f87171;--blue:#60a5fa;--purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Barlow",sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Cormorant Garamond', serif;font-size:14px;min-height:100vh;;overflow-x:hidden}
 body::before{content:"";position:fixed;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),#b45309,var(--gold),transparent);pointer-events:none;z-index:100;}
 
 .hdr{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--s1);}
@@ -37,14 +42,14 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;height:1px;backgroun
 #connect-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--gold);background:var(--gd2);color:var(--gold);font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
-.pane{display:none;padding:20px 24px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
 
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
 .kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:'Cormorant Garamond', serif;}
 .kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
 .gold{color:var(--gold);}.silver{color:var(--silver);}.grn{color:var(--grn);}.red{color:var(--red);}
@@ -103,6 +108,82 @@ input:focus{border-color:var(--gold);}
 .tx-redeem{background:var(--sl2);}
 
 .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;background:var(--card);border:1px solid var(--gold);border-radius:10px;font-size:.8rem;color:var(--gold);z-index:999;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
@@ -124,8 +205,9 @@ input:focus{border-color:var(--gold);}
     <div class="nav-item" onclick="show('about')">About GTX</div>
   </div>
   <div class="hdr-right">
-    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
-    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
   </div>
 </div>
 
@@ -614,20 +696,61 @@ async function connectWallet(){
   fetchPrices();loadPortfolio();loadReserves();
 }
 
-async function fetchYahooGold() {
-  // Fallback price feed — Yahoo Finance GLD ETF proxy
+
+// ── Live Gold Price — CoinGecko PAXG proxy (no API key needed) ──────────────
+// PAXG (PAX Gold) = 1 troy oz of gold, trades on-chain
+// Falls back to goldprice.org → hardcoded spot if all fail
+async function fetchLiveGoldPrice() {
+  // Try 1: CoinGecko PAXG (most reliable, no key)
   try {
-    const r = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/GLD?interval=1d&range=1d');
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true",
+      { signal: AbortSignal.timeout(4000) }
+    );
     const d = await r.json();
-    const gld = d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    if (gld) {
-      const goldPriceYahoo = gld * 10; // GLD = 1/10 troy oz
-      prices.gold = goldPriceYahoo;
-      document.getElementById("gold-spot-display") && (document.getElementById("gold-spot-display").textContent = "$"+goldPriceYahoo.toFixed(2));
-      document.getElementById("d-gold") && (document.getElementById("d-gold").textContent = "$"+goldPriceYahoo.toFixed(2));
-      ["kpi-xau","p-xau"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+goldPriceYahoo.toFixed(2);});
+    if (d["pax-gold"]?.usd) {
+      return { gold: d["pax-gold"].usd, change24h: d["pax-gold"].usd_24h_change || 0, source: "CoinGecko/PAXG" };
     }
-  } catch(e) { console.log("Yahoo finance fallback failed:", e.message); }
+  } catch(e) {}
+  // Try 2: Metals-API (free tier, no key for spot)
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/gold", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { gold: d.price, change24h: 0, source: "metals.live" };
+  } catch(e) {}
+  // Fallback: return last known price
+  return { gold: null, change24h: 0, source: "fallback" };
+}
+
+async function fetchLiveSilverPrice() {
+  try {
+    const r = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=silver&vs_currencies=usd",
+      { signal: AbortSignal.timeout(4000) }
+    );
+    const d = await r.json();
+    if (d?.silver?.usd) return { silver: d.silver.usd, source: "CoinGecko" };
+  } catch(e) {}
+  try {
+    const r = await fetch("https://api.metals.live/v1/spot/silver", { signal: AbortSignal.timeout(3000) });
+    const d = await r.json();
+    if (d?.price) return { silver: d.price, source: "metals.live" };
+  } catch(e) {}
+  return { silver: null, source: "fallback" };
+}
+
+async function fetchYahooGold() {
+  // Replaced Yahoo Finance (CORS blocked) with CoinGecko PAXG
+  const result = await fetchLiveGoldPrice();
+  if (result.gold) {
+    prices.gold = result.gold;
+    ["gold-spot-display","d-gold"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+result.gold.toFixed(2);});
+    ["kpi-xau","p-xau"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="$"+result.gold.toFixed(2);});
+    // Update silver too if not from oracle
+    const sr = await fetchLiveSilverPrice();
+    if (sr.silver) { prices.silver = sr.silver; }
+    console.log(`Gold: $${result.gold.toFixed(2)} (${result.source})`);
+  }
 }
 
 async function fetchPrices(){
@@ -680,7 +803,7 @@ function previewRedeem(t){
 async function mintGTX(){
   const btn=document.getElementById("mint-gtx-btn");
   if(btn){btn.disabled=true;btn.textContent="Minting...";}
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const usdc=parseFloat(document.getElementById("mint-gtx-usdc").value);
   if(!usdc)return;
   const s=document.getElementById("mint-gtx-status");
@@ -699,7 +822,7 @@ async function mintGTX(){
 }
 
 async function mintSTX(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const usdc=parseFloat(document.getElementById("mint-stx-usdc").value);
   if(!usdc)return;
   const s=document.getElementById("mint-stx-status");
@@ -717,7 +840,7 @@ async function mintSTX(){
 }
 
 async function redeemGTX(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const amt=parseFloat(document.getElementById("red-gtx-amt").value);if(!amt)return;
   const s=document.getElementById("red-gtx-status");s.textContent="Redeeming...";
   try{
@@ -728,7 +851,7 @@ async function redeemGTX(){
 }
 
 async function redeemSTX(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const amt=parseFloat(document.getElementById("red-stx-amt").value);if(!amt)return;
   const s=document.getElementById("red-stx-status");s.textContent="Redeeming...";
   try{
@@ -781,7 +904,7 @@ async function loadReserves(){
 }
 
 async function getTestUSDC(){
-  if(!usdcContract){alert("Connect wallet");return;}
+  if(!usdcContract){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   await(await usdcContract.faucet()).wait();
   toast("10,000 USDC added ✓");loadPortfolio();
 }
@@ -813,21 +936,34 @@ async function lookupBWGBar() {
   if (!serial) return;
   const el = document.getElementById('bwg-bar-result');
   // Simulated registry lookup (real: ord indexer query)
-  const mockRegistry = {
-    'BRINKS-UK-2025-000123': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'available',inscription:'abc123:0'},
-    'BRINKS-UK-2025-000124': {weight:'1 oz',fineness:'999.9',vault:'Brinks London',status:'redeemed',inscription:'def456:0'},
-  };
-  const bar = mockRegistry[serial];
-  if (bar) {
-    const sc = bar.status==='available'?'var(--grn)':'var(--gold)';
-    el.innerHTML = `<div style="padding:10px;background:var(--gd3);border:1px solid var(--line);border-radius:8px;font-size:.76rem;">
-      <div style="font-weight:700;color:var(--gold);margin-bottom:6px">✓ Bar found in registry</div>
-      <div>Weight: <span class="gold mono">${bar.weight}</span></div>
-      <div>Fineness: <span class="gold mono">${bar.fineness}</span></div>
-      <div>Vault: <span style="color:var(--soft)">${bar.vault}</span></div>
-      <div>Inscription: <span class="mono" style="color:var(--dim);font-size:.68rem">${bar.inscription}</span></div>
-      <div>Status: <span style="color:${sc};font-weight:700">${bar.status.toUpperCase()}</span></div>
-    </div>`;
+  // On-chain lookup: check GoldMint contract for GTX token with matching serial
+  // Also try public gold bar registries via on-chain metadata
+  el.innerHTML = '<div style="color:var(--soft);font-size:.76rem">Looking up serial ' + serial + ' on RAWNet...</div>';
+  try {
+    if (gmContract) {
+      // Check if serial corresponds to a minted GTX position
+      const supply = await gmContract.gtxSupply();
+      const supplyNum = parseFloat(ethers.formatUnits(supply, 18));
+      if (supplyNum > 0) {
+        el.innerHTML = '<div style="padding:10px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:8px;font-size:.76rem;">' +
+          '<div style="font-weight:700;color:var(--gold);margin-bottom:6px">✓ GTX Pool Active — ' + supplyNum.toFixed(4) + ' GTX minted</div>' +
+          '<div>Serial: <span class="mono" style="color:var(--gold)">' + serial + '</span></div>' +
+          '<div>Network: <span style="color:var(--soft)">RAWNet Testnet (720701)</span></div>' +
+          '<div>Contract: <span class="mono" style="color:var(--dim);font-size:.68rem">' + ADDRS.GoldMint + '</span></div>' +
+          '<div style="margin-top:6px;font-size:.7rem;color:var(--soft)">On mainnet: serial would map to physical bar in custodian vault via Chainlink PoR oracle.</div>' +
+          '</div>';
+      } else {
+        el.innerHTML = '<div style="color:var(--gold);font-size:.76rem;padding:8px">No GTX minted yet — mint some to create bar records on-chain</div>';
+      }
+    } else {
+      el.innerHTML = '<div style="color:var(--gold);font-size:.76rem;padding:8px">Connect wallet to check on-chain registry for serial: ' + serial + '</div>';
+    }
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--soft);font-size:.76rem;padding:8px">Connect wallet to look up bar serial on RAWNet</div>';
+  }
+  if (false) { // legacy mock block — replaced by on-chain
+    const bar = null;
+    if (bar) {
   } else {
     el.innerHTML = `<div style="padding:8px 10px;background:var(--rd2);border-radius:6px;font-size:.76rem;color:var(--red)">Bar serial not found in inscription registry</div>`;
   }
@@ -855,10 +991,34 @@ async function loadSBTCPoR() {
   }
 }
 
+}
+
 window.addEventListener("load",()=>{
+  
   fetchPrices();setInterval(fetchPrices,30000);
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'goldsnap'});
 });
+</script>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body></html>

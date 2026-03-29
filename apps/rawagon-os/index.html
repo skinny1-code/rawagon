@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
   <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>
+  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,6 +13,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R3WAGON OS — R3NET Command Center</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+<title>RAWagon OS — RAWNet Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:#03030a;--deep:#06060f;--surf:#0b0b18;--panel:#0f0f1e;--card:#141425;
@@ -19,13 +24,13 @@
   --grn:#22c55e;--gn2:rgba(34,197,94,.1);
   --red:#ef4444;--rd2:rgba(239,68,68,.1);
   --blue:#3b82f6;--bl2:rgba(59,130,246,.1);
-  --purp:#8b5cf6;--pr2:rgba(139,92,246,.1);
+  --accent:#8b5cf6;--accent-glow:rgba(139,92,246,.2);--accent-bg:rgba(139,92,246,.04);--purp:#8b5cf6;--pr2:rgba(139,92,246,.1);
   --orng:#f59e0b;--or2:rgba(245,158,11,.1);
   --silver:#94a3b8;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{font-size:15px;}
-body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+body{background:var(--bg);color:var(--wh);font-family:'Geist', sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column;;overflow-x:hidden}
 .mono{font-family:'IBM Plex Mono',monospace;}
 .serif{font-family:'Playfair Display',serif;}
 
@@ -145,7 +150,7 @@ body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-we
 .spark-bar{border-radius:1px 1px 0 0;transition:background .2s;}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'Geist', sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;border:none;outline:none;}
 .btn-gold{background:var(--gold);color:#000;}
 .btn-gold:hover{background:#e8ba60;}
 .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--dim);}
@@ -156,7 +161,7 @@ body{background:var(--bg);color:var(--wh);font-family:'Inter',sans-serif;font-we
 
 /* FORM */
 .fl{display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:5px;}
-.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--wh);font-family:'Inter',sans-serif;font-size:.84rem;outline:none;transition:border-color .18s;}
+.fi{width:100%;background:var(--surf);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--wh);font-family:'Geist',sans-serif;font-size:.84rem;outline:none;transition:border-color .18s;}
 .fi:focus{border-color:var(--gold);}
 .fi::placeholder{color:var(--muted);}
 select.fi option{background:var(--deep);}
@@ -238,11 +243,70 @@ select.fi option{background:var(--deep);}
 /* SHIM */
 .shim{background:linear-gradient(90deg,var(--surf) 25%,var(--panel) 50%,var(--surf) 75%);background-size:200% 100%;animation:shim 1.4s infinite;border-radius:4px;}
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
 <!-- ── RAWAGON WALLET BAR ──────────────────────────────────────── -->
-<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:Inter,sans-serif;font-size:13px;flex-wrap:wrap;">
+<div id="rawagon-wallet-bar" style="display:flex;align-items:center;gap:10px;padding:8px 20px;background:#0a0a18;border-bottom:1px solid rgba(255,255,255,.07);font-family:'Geist', sans-serif;font-size:13px;flex-wrap:wrap;">
   <div style="display:flex;align-items:center;gap:7px;">
     <span style="width:7px;height:7px;border-radius:50%;background:#00d4ff;display:inline-block;animation:wbld 2s infinite;"></span>
     <span style="font-weight:700;color:#00d4ff;letter-spacing:.02em;">WAGON</span>
@@ -252,6 +316,8 @@ select.fi option{background:var(--deep);}
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
     <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
     <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">R3NET Testnet ↗</a>
+    <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
+    <button onclick="window.RWOnboard && window.RWOnboard.showSetupWizard()" style="padding:4px 10px;background:transparent;border:1px solid rgba(255,255,255,.08);color:#444466;border-radius:5px;font-size:11px;cursor:pointer;font-family:inherit" title="Open setup wizard">⚙ Setup</button>
     <span style="font-size:11px;color:#333360;">chainId 720701</span>
   </div>
 </div>
@@ -266,12 +332,12 @@ select.fi option{background:var(--deep);}
   const CHAIN = {
     chainId:"0x14A34",chainName:"R3NET Testnet",
     nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
-    rpcUrls:["https://sepolia.base.org"],
+    rpcUrls:["http://10.117.122.142:8545","http://localhost:8545"],
     blockExplorerUrls:["http://10.117.122.142:3000"]
   };
   const wrap = document.getElementById("rwc-btn-wrap");
   const btn  = document.createElement("button");
-  btn.textContent = "🦊 Connect";
+  btn.textContent = "🔗 Connect";
   wrap.appendChild(btn);
   const chainEl = document.getElementById("rwc-chain");
   const balEl   = document.getElementById("rwc-bal");
@@ -295,7 +361,7 @@ select.fi option{background:var(--deep);}
       }catch(e){}
       document.dispatchEvent(new CustomEvent("rawagon:connected",{detail:{address:addr}}));
     } else {
-      btn.textContent = "🦊 Connect";
+      btn.textContent = "🔗 Connect";
       btn.className = "";
       chainEl.textContent = "";
       balEl.textContent = "";
@@ -303,23 +369,57 @@ select.fi option{background:var(--deep);}
   }
 
   btn.onclick = async function(){
-    if(!window.ethereum){ alert("Install MetaMask to use this app."); return; }
-    btn.textContent = "Connecting..."; btn.disabled = true;
+    if(!window.ethereum){ window.RWOnboard ? window.RWOnboard.showMetaMaskGuide() : (rwToast && rwToast("MetaMask required", true)); return; }
+    btn.textContent = "Connecting…"; btn.disabled = true;
     try{
       await window.ethereum.request({method:"wallet_addEthereumChain",params:[CHAIN]}).catch(()=>{});
       await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:CHAIN.chainId}]}).catch(()=>{});
       const accounts = await window.ethereum.request({method:"eth_requestAccounts"});
       await update(accounts);
-    }catch(e){ btn.textContent="🦊 Connect"; alert(e.message); }
+    }catch(e){ btn.textContent="🔗 Connect"; alert(e.message); }
     btn.disabled = false;
   };
 
   if(window.ethereum){
-    window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
+    loadNetworkProtocols();
+  window.ethereum.request({method:"eth_accounts"}).then(update).catch(()=>{});
+  if(window.RAWNet) {
+    RAWNet.subscribe('*', () => { renderChainActivity(); });
+    const w = RAWNet.getWallet();
+    if(w && w.address && !addr) { addr = w.address; updateWalletUI && updateWalletUI(); }
+  }
     window.ethereum.on("accountsChanged",update);
     window.ethereum.on("chainChanged",()=>location.reload());
   }
 })();
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:  () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:       () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs: () => localStorage.getItem("rawagon-elevenlabs-key") || "",
+};
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) { localStorage.setItem("rawagon-anthropic-key",key); localStorage.setItem("dtr-anthropic",key); }
+  else if (key.startsWith("xi-")) localStorage.setItem("rawagon-elevenlabs-key",key);
+  else if (key.length > 20) localStorage.setItem("rawagon-tmdb-key",key);
+  document.getElementById("global-key-banner").style.display="none";
+  document.getElementById("gkb-key").value="";
+  if(typeof toast==="function") toast("API key saved ✓");
+}
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) { const b=document.getElementById("global-key-banner"); if(b){b.style.display="flex";document.getElementById("gkb-key")?.focus();return false;} } return true;
+}
+function anthropicFetch(messages, maxTokens=800, system="") {
+  const key=RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body={model:"claude-sonnet-4-6",max_tokens:maxTokens,messages};
+  if(system) body.system=system;
+  return fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{if(d.error)throw new Error(d.error.message);return d.content?.[0]?.text||"";});
+}
+
 </script>
 <!-- ── END WALLET BAR ────────────────────────────────────────────── -->
 
@@ -330,12 +430,14 @@ select.fi option{background:var(--deep);}
   <div class="gnav-logo">R3WAGON <span>OS</span></div>
   <div class="gnav-app on" onclick="switchApp('os')"><span class="app-dot" style="background:var(--gold);"></span>OS Hub</div>
   <div class="gnav-app" onclick="switchApp('identity')"><span class="app-dot" style="background:var(--teal);"></span>1.nce · AllCard</div>
-  <div class="gnav-app" onclick="switchApp('pawnsnap')"><span class="app-dot" style="background:var(--grn);"></span>PawnSnap</div>
+  <div class="gnav-app" onclick="switchApp('bitpawn')"><span class="app-dot" style="background:var(--gold);"></span>BitPawn</div>
   <div class="gnav-app" onclick="switchApp('droppa')"><span class="app-dot" style="background:var(--red);"></span>Droppa</div>
   <div class="gnav-app" onclick="switchApp('autoiq')"><span class="app-dot" style="background:var(--blue);"></span>AutoIQ</div>
   <div class="gnav-app" onclick="switchApp('goldsnap')"><span class="app-dot" style="background:var(--gold);"></span>GoldSnap</div>
   <div class="gnav-app" onclick="switchApp('tokens')"><span class="app-dot" style="background:var(--purp);"></span>Token Network</div>
   <div class="gnav-app" onclick="switchApp('profitpilot')"><span class="app-dot" style="background:var(--orng);"></span>ProfitPilot</div>
+  <div class="gnav-app" onclick="switchApp('dropthereel')"><span class="app-dot" style="background:var(--red);"></span>Drop The Reel</div>
+  <div class="gnav-app" onclick="switchApp('orchestrator')"><span class="app-dot" style="background:var(--teal);"></span>AI Orchestrator</div>
   <div class="gnav-right">
     <div class="live-bar">LIVE</div>
     <div class="identity-chip" onclick="openModal('identity-modal')">
@@ -443,13 +545,20 @@ select.fi option{background:var(--deep);}
 
       <!-- LIVE WORKFLOWS -->
       <div class="card" style="margin-bottom:14px;">
-        <div class="card-label" style="margin-bottom:12px;">Cross-app automation — live workflows</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div class="card-label" style="margin:0">Network Health — ProfitPilot Protocol</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.15);color:var(--grn)" id="os-network-rev">$30.2M projected</span>
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);color:var(--purp)" id="os-entities">10 entities</span>
+            <span style="font-size:.68rem;padding:3px 9px;border-radius:20px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.15);color:var(--blue)" id="os-contracts">— live</span>
+          </div>
+        </div>
         <div id="os-workflows"></div>
       </div>
 
       <!-- METRICS GRID -->
       <div class="g4" style="margin-bottom:14px;">
-        <div class="card"><div class="card-label">PawnSnap today</div><div class="metric" id="ps-today">—</div><div class="metric-sub" id="ps-today-sub">tickets · loading...</div></div>
+        <div class="card"><div class="card-label">BitPawn today</div><div class="metric" id="ps-today">—</div><div class="metric-sub" id="ps-today-sub">tickets · loading...</div></div>
         <div class="card"><div class="card-label">Droppa active breaks</div><div class="metric tl" id="droppa-breaks">4</div><div class="metric-sub">2 live · 2 queued</div></div>
         <div class="card"><div class="card-label">AutoIQ titles today</div><div class="metric bl" style="color:var(--blue);" id="iq-titles">8</div><div class="metric-sub">$IQCAR NFTs minted</div></div>
         <div class="card"><div class="card-label">LTN staking yield</div><div class="metric" style="color:var(--purp);">$12.40</div><div class="metric-sub">today · from business revenue</div></div>
@@ -536,13 +645,13 @@ select.fi option{background:var(--deep);}
     </div>
 
     <!-- ─── PAWNSNAP ─── -->
-    <div id="app-pawnsnap" class="view">
-      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">PawnSnap</div>
+    <div id="app-bitpawn" class="view">
+      <div style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">BitPawn — Pawn & Buy Management</div>
 
       <!-- Live gold/silver pricing -->
       <div class="gold-calc" style="margin-bottom:14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-          <div><div class="card-label" style="margin:0 0 4px;">Live precious metals pricing — GoldSnap integration</div><div style="font-size:.72rem;color:var(--dim);">GLD/SLV ETF → spot conversion · Yahoo Finance API · Real-time</div></div>
+          <div><div class="card-label" style="margin:0 0 4px;">Live precious metals pricing — GoldSnap integration</div><div style="font-size:.72rem;color:var(--dim);">PAXG/CoinGecko → spot conversion · Real-time</div></div>
           <span class="badge b-gd" id="ps-price-time">Loading...</span>
         </div>
         <div class="g4" style="margin-bottom:14px;">
@@ -767,7 +876,102 @@ select.fi option{background:var(--deep);}
       </div>
     </div>
 
-  </main>
+  
+<!-- ── SETTINGS VIEW ───────────────────────────────────────────────────── -->
+<div id="app-settings" class="view">
+  <div style="max-width:720px;margin:0 auto">
+
+    <!-- Header -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--wh);margin-bottom:4px">⚙ Settings</div>
+      <div style="font-size:.76rem;color:var(--soft)">API keys, wallet config, and network settings — stored locally on this device only</div>
+    </div>
+
+    <!-- API Keys -->
+    <div class="card" style="margin-bottom:14px;border-left:3px solid var(--purp)">
+      <div class="card-label" style="color:var(--purp);margin-bottom:12px">🤖 API Keys</div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">Anthropic (Claude AI)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-anthropic" placeholder="sk-ant-..." style="flex:1"
+                 oninput="document.getElementById('cfg-anthropic-save').disabled=!this.value.startsWith('sk-ant-')">
+          <button id="cfg-anthropic-save" class="btn btn-purp btn-sm" disabled
+                  onclick="saveConfigKey('anthropic')">Save</button>
+        </div>
+        <div style="font-size:.68rem;color:var(--soft);margin-top:4px" id="cfg-anthropic-status"></div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">ElevenLabs (voice synthesis — Drop The Reel)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-elevenlabs" placeholder="xi-..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('elevenlabs')">Save</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">TMDB (movie database — Drop The Reel)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-tmdb" placeholder="TMDB key..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('tmdb')">Save</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">EasyPost (shipping labels — Droppa)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-easypost" placeholder="EZAK..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('easypost')">Save</button>
+        </div>
+      </div>
+
+      <div>
+        <label style="font-size:.7rem;color:var(--soft);display:block;margin-bottom:4px">Resend (email notifications — Droppa)</label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="cfg-resend" placeholder="re_..." style="flex:1">
+          <button class="btn btn-outline btn-sm" onclick="saveConfigKey('resend')">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet -->
+    <div class="card" style="margin-bottom:14px;border-left:3px solid var(--gold)">
+      <div class="card-label" style="color:var(--gold);margin-bottom:12px">🦊 Wallet</div>
+      <div style="font-size:.78rem;display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)">
+          <span style="color:var(--soft)">Connected address</span>
+          <span style="font-family:monospace;font-size:.72rem" id="cfg-wallet-addr">Not connected</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)">
+          <span style="color:var(--soft)">Network</span>
+          <span style="color:var(--purp)">RAWNet Testnet (720701)</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0">
+          <span style="color:var(--soft)">RPC</span>
+          <span style="font-family:monospace;font-size:.68rem;color:var(--soft)">10.117.122.142:8545</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="RWWallet.connect()">Connect Wallet</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="disconnectWallet()">Disconnect</button>
+      </div>
+    </div>
+
+    <!-- Key status dashboard -->
+    <div class="card" style="border-left:3px solid var(--grn)">
+      <div class="card-label" style="color:var(--grn);margin-bottom:12px">✓ Setup Status</div>
+      <div id="cfg-status-grid" style="display:flex;flex-direction:column;gap:5px;font-size:.76rem"></div>
+      <div style="margin-top:12px">
+        <button class="btn btn-outline btn-sm" onclick="window.RWOnboard && window.RWOnboard.showSetupWizard()">Re-run Setup Wizard</button>
+        <button class="btn btn-outline btn-sm" style="margin-left:8px;color:var(--red)" onclick="clearAllKeys()">Clear All Keys</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</main>
 </div>
 
 <!-- MODAL -->
@@ -786,7 +990,7 @@ select.fi option{background:var(--deep);}
 // REAL API ENDPOINTS
 // ═══════════════════════════════════════════════
 const API = {
-  YAHOO:    sym => `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`,
+  YAHOO:    sym => `https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd`,
   GECKO:    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,usd-coin&vs_currencies=usd&include_24hr_change=true',
   FRED_MORT:'https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US',
   FRED_FED: 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=FEDFUNDS',
@@ -1348,7 +1552,7 @@ function renderTokenNetwork() {
     {id:'ltn',ico:'🟣',lbl:'LTN',x:50,y:50,c:'var(--purp)',size:52},
     {id:'allcard',ico:'🃏',lbl:'AllCard',x:20,y:30,c:'var(--gold)',size:44},
     {id:'identity',ico:'⬡',lbl:'1.nce',x:20,y:70,c:'var(--teal)',size:44},
-    {id:'pawnsnap',ico:'🥇',lbl:'PawnSnap',x:80,y:25,c:'var(--grn)',size:40},
+    {id:'bitpawn',ico:'🏦',lbl:'BitPawn',x:80,y:25,c:'var(--gold)',size:40},
     {id:'droppa',ico:'🎴',lbl:'Droppa',x:80,y:55,c:'var(--orng)',size:40},
     {id:'autoiq',ico:'🚗',lbl:'AutoIQ',x:75,y:80,c:'var(--blue)',size:38},
     {id:'gtx',ico:'🥇',lbl:'GTX',x:50,y:15,c:'var(--gold)',size:36},
@@ -1360,7 +1564,7 @@ function renderTokenNetwork() {
 function renderLTNFlows() {
   const el = document.getElementById('ltn-flows'); if(!el) return;
   const flows = [
-    {from:'PawnSnap',fee:'0.5%',amount:'$214',to:'LTN stakers',c:'var(--grn)'},
+    {from:'BitPawn',fee:'0.5%',amount:'$214',to:'LTN stakers',c:'var(--grn)'},
     {from:'Droppa',fee:'1.0%',amount:'$428',to:'LTN stakers + burn',c:'var(--orng)'},
     {from:'AutoIQ/IQTitle',fee:'0.3%',amount:'$89',to:'LTN stakers',c:'var(--blue)'},
     {from:'AllCard swaps',fee:'0.1%',amount:'$48',to:'LP + burn',c:'var(--gold)'},
@@ -1370,14 +1574,41 @@ function renderLTNFlows() {
 
 function renderChainActivity() {
   const el = document.getElementById('chain-activity'); if(!el) return;
-  const acts = [
-    {type:'LTN burn',hash:'0x7f3...c2b',gas:'$0.001',when:'now'},
-    {type:'IQCAR mint',hash:'0x4e2...7af',gas:'$0.001',when:'2m'},
-    {type:'GTX mint',hash:'0x9d1...3e8',gas:'$0.001',when:'5m'},
-    {type:'LTN stake',hash:'0x2c7...5d9',gas:'$0.001',when:'8m'},
-    {type:'STX redeem',hash:'0x8b5...1f2',gas:'$0.001',when:'12m'},
-  ];
-  el.innerHTML = acts.map(a=>`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:5px;"><div style="flex:1;"><div style="font-size:.74rem;font-weight:500;">${a.type}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--dim);">${a.hash} · ${a.gas}</div></div><div style="font-size:.63rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${a.when}</div></div>`).join('');
+  // Pull from RAWNet shared event bus
+  const events = window.RAWNet ? RAWNet.getEvents(8) : [];
+  if (events.length > 0) {
+    el.innerHTML = events.map(e => {
+      const age = Math.floor((Date.now() - (e.ts||Date.now())) / 60000);
+      const ageStr = age < 1 ? 'now' : age + 'm';
+      const labels = {
+        'break.completed':     '🎴 Break completed',
+        'pawn.ticket.opened':  '🏦 Pawn ticket opened',
+        'autoiq.minted':       '🚗 IQCAR minted',
+        'goldsnap.gtx.minted': '🥇 GTX minted',
+        'qwks.ltn.staked':     '⛓ LTN staked',
+        'dtr.review':          '🎬 Review generated',
+        'pawnvault.ticket':    '💎 PawnVault ticket',
+        'wallet.connected':    '🔐 Wallet connected',
+        'app.opened':          '⬡ App opened',
+      };
+      const label = labels[e.type] || e.type;
+      const detail = e.data ? Object.entries(e.data).slice(0,2).map(([k,v])=>k+': '+v).join(' · ') : '';
+      return `<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:5px;margin-bottom:4px;">
+        <div style="flex:1;">
+          <div style="font-size:.74rem;font-weight:500;">${label}</div>
+          <div style="font-size:.62rem;color:var(--dim);">${detail}</div>
+        </div>
+        <div style="font-size:.63rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;">${ageStr}</div>
+      </div>`;
+    }).join('');
+  } else {
+    // Fallback static display until events come in
+    const acts = [
+      {type:'⬡ RAWNet ready',hash:'Waiting for cross-app events',when:'now'},
+      {type:'📡 SSE connected',hash:'server.js → /api/events',when:'—'},
+    ];
+    el.innerHTML = acts.map(a=>`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:5px;margin-bottom:4px;"><div style="flex:1;"><div style="font-size:.74rem;font-weight:500;">${a.type}</div><div style="font-size:.62rem;color:var(--dim);">${a.hash}</div></div><div style="font-size:.63rem;color:var(--muted);">${a.when}</div></div>`).join('');
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -1397,7 +1628,7 @@ function renderPPKPIs() {
 function renderPPRevenue() {
   const el = document.getElementById('pp-revenue'); if(!el) return;
   const products = [
-    {n:'PawnSnap',v:42840,c:'var(--grn)'},
+    {n:'BitPawn',v:42840,c:'var(--grn)'},
     {n:'Droppa',v:28440,c:'var(--orng)'},
     {n:'AutoIQ',v:8960,c:'var(--blue)'},
     {n:'AllCard fees',v:4000,c:'var(--gold)'},
@@ -1424,10 +1655,11 @@ const SIDEBARS = {
   os: [
     {s:'Overview'},
     {ico:'⊞',lbl:'Dashboard',view:'v-os-dash',on:true},
+    {ico:'⚙',lbl:'Settings',onclick:"switchToSettings()"},
     {ico:'🔄',lbl:'Live workflows'},
     {ico:'📊',lbl:'Activity stream'},
     {s:'Quick actions'},
-    {ico:'🥇',lbl:'Pawn gold item',onclick:"switchApp('pawnsnap')"},
+    {ico:'🏦',lbl:'BitPawn',onclick:"switchApp('bitpawn')"},
     {ico:'🚗',lbl:'Decode VIN',onclick:"switchApp('autoiq')"},
     {ico:'🎴',lbl:'Start break',onclick:"switchApp('droppa')"},
     {ico:'🪙',lbl:'Stake LTN',onclick:"openModal('stake-ltn')"},
@@ -1447,20 +1679,42 @@ const SIDEBARS = {
     {ico:'⚖️',lbl:'Trust & POA'},
     {ico:'🔐',lbl:'Secure vault'},
   ],
-  pawnsnap:[
-    {s:'PawnSnap'},
-    {ico:'🥇',lbl:'New pawn',onclick:"openModal('new-pawn')"},
+  bitpawn:[
+    {s:'BitPawn'},
+    {ico:'🏦',lbl:'New pawn',onclick:"openModal('new-pawn')"},
     {ico:'📋',lbl:'Active tickets'},
     {ico:'📤',lbl:'Police export'},
     {ico:'📊',lbl:'Reports'},
     {s:'Pricing'},
     {ico:'💰',lbl:'Gold calculator'},
     {ico:'🥈',lbl:'Silver calculator'},
-    {ico:'📱',lbl:'Electronics (PhoneMine)'},
+    {ico:'📱',lbl:'Electronics'},
     {s:'Integrations'},
     {ico:'💳',lbl:'AllCard payments'},
     {ico:'🪙',lbl:'GTX/STX accept'},
     {ico:'🔐',lbl:'Customer ID (1.nce)'},
+  ],
+  pawnsnap:[
+    {s:'BitPawn'},
+    {ico:'🏦',lbl:'Open BitPawn',onclick:"switchApp('bitpawn')"},
+  ],
+  dropthereel:[
+    {s:'Drop The Reel'},
+    {ico:'🎬',lbl:'Reviews'},
+    {ico:'📧',lbl:'Email digest'},
+    {ico:'👥',lbl:'Subscribers'},
+    {ico:'🎙',lbl:'Voice critics'},
+    {s:'Revenue'},
+    {ico:'📊',lbl:'$480K/yr target'},
+  ],
+
+  orchestrator:[
+    {s:'AI Orchestrator'},
+    {ico:'🤖',lbl:'Multi-model debate'},
+    {ico:'⚡',lbl:'Claude · GPT · Gemini'},
+    {ico:'📊',lbl:'Response comparison'},
+    {s:'Revenue'},
+    {ico:'📊',lbl:'$240K/yr target'},
   ],
   droppa:[
     {s:'Droppa'},
@@ -1539,6 +1793,7 @@ function switchApp(app) {
   // Map app IDs to server routes
   const APP_URLS = {
     'identity':       '/apps/1nce-allcard/',
+    'bitpawn':        '/apps/bitpawn/',
     'pawnsnap':       '/apps/bitpawn/',
     'droppa':         '/apps/droppa/',
     'autoiq':         '/apps/autoiq/',
@@ -1547,14 +1802,13 @@ function switchApp(app) {
     'profitpilot':    '/apps/profitpilot/',
     'dropthereel':    '/apps/drop-the-reel/',
     'orchestrator':   '/apps/ai-orchestrator/',
-    'pawnvault':      '/apps/pawnvault/',
   };
   if(app !== 'os' && APP_URLS[app]) {
     window.open(APP_URLS[app], '_blank');
     return;
   }
   document.querySelectorAll('.gnav-app').forEach(a=>a.classList.remove('on'));
-  const navApps = ['os','identity','pawnsnap','droppa','autoiq','goldsnap','tokens','profitpilot'];
+  const navApps = ['os','identity','bitpawn','droppa','autoiq','goldsnap','tokens','profitpilot','dropthereel','orchestrator'];
   const idx = navApps.indexOf(app);
   document.querySelectorAll('.gnav-app')[idx]?.classList.add('on');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
@@ -1637,5 +1891,97 @@ document.addEventListener('DOMContentLoaded',()=>{
   setInterval(()=>loadChain().then(()=>renderChainActivity()), 30000);
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
+<script src="/packages/network-sdk/index.js"></script>
+
+<script>
+// ── Settings Panel Functions (global scope) ───────────────────────────────
+function switchToSettings() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+  const el = document.getElementById('app-settings');
+  if (el) { el.classList.add('on'); loadConfigStatus(); }
+  // Update nav highlight
+  document.querySelectorAll('.gnav-app').forEach(a => a.classList.remove('on'));
+  // Restore saved values (masked)
+  const keyMap = {
+    'cfg-anthropic':  'rawagon-anthropic-key',
+    'cfg-elevenlabs': 'rawagon-elevenlabs-key',
+    'cfg-tmdb':       'rawagon-tmdb-key',
+    'cfg-easypost':   'droppa-ps-easypost',
+    'cfg-resend':     'droppa-n-resend-key',
+  };
+  Object.entries(keyMap).forEach(([elId, lsKey]) => {
+    const el = document.getElementById(elId);
+    const val = localStorage.getItem(lsKey);
+    if (el) el.value = val ? val.slice(0,4) + '●●●●●●●●' : '';
+  });
+  const w = window.RWWallet && window.RWWallet.getAddr();
+  const waddrEl = document.getElementById('cfg-wallet-addr');
+  if (waddrEl) waddrEl.textContent = w ? w.slice(0,10)+'…'+w.slice(-6) : 'Not connected';
+}
+
+function saveConfigKey(type) {
+  const keyMap = {
+    anthropic:  { el:'cfg-anthropic',  ls:'rawagon-anthropic-key', also:['dtr-anthropic'] },
+    elevenlabs: { el:'cfg-elevenlabs', ls:'rawagon-elevenlabs-key' },
+    tmdb:       { el:'cfg-tmdb',       ls:'rawagon-tmdb-key', also:['dtr-tmdb'] },
+    easypost:   { el:'cfg-easypost',   ls:'droppa-ps-easypost' },
+    resend:     { el:'cfg-resend',     ls:'droppa-n-resend-key' },
+  };
+  const m = keyMap[type]; if (!m) return;
+  const el = document.getElementById(m.el);
+  const val = el?.value?.trim();
+  if (!val || val.includes('●')) { toast && toast('Enter a new key value', true); return; }
+  localStorage.setItem(m.ls, val);
+  (m.also||[]).forEach(k => localStorage.setItem(k, val));
+  el.value = val.slice(0,4) + '●●●●●●●●';
+  if (typeof toast === 'function') toast(type + ' key saved ✓');
+  loadConfigStatus();
+}
+
+function disconnectWallet() {
+  localStorage.removeItem('rawagon-wallet');
+  if (window.RWWallet) window.RWWallet.addr = null;
+  const el = document.getElementById('cfg-wallet-addr');
+  if (el) el.textContent = 'Not connected';
+  if (typeof toast === 'function') toast('Wallet disconnected');
+}
+
+function clearAllKeys() {
+  if (!confirm('Clear all API keys? This cannot be undone.')) return;
+  ['rawagon-anthropic-key','dtr-anthropic','rawagon-elevenlabs-key',
+   'rawagon-tmdb-key','droppa-ps-easypost','droppa-n-resend-key',
+   'rawagon-setup-done'].forEach(k => localStorage.removeItem(k));
+  if (typeof toast === 'function') toast('All keys cleared');
+  loadConfigStatus();
+}
+
+function loadConfigStatus() {
+  const el = document.getElementById('cfg-status-grid');
+  if (!el) return;
+  const checks = [
+    { label:'Anthropic API key',   ok: !!localStorage.getItem('rawagon-anthropic-key'), note:'Required for all AI features' },
+    { label:'Wallet connected',    ok: !!(window.RWWallet && window.RWWallet.getAddr()),  note:'Required for on-chain features' },
+    { label:'EasyPost (shipping)', ok: !!localStorage.getItem('droppa-ps-easypost'),      note:'Optional — Droppa labels' },
+    { label:'Resend (email)',      ok: !!localStorage.getItem('droppa-n-resend-key'),      note:'Optional — winner emails' },
+    { label:'ElevenLabs (voice)',  ok: !!localStorage.getItem('rawagon-elevenlabs-key'),   note:'Optional — Drop The Reel' },
+  ];
+  el.innerHTML = checks.map(c =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;background:${c.ok?'rgba(52,211,153,.04)':'rgba(255,255,255,.02)'};border-radius:7px;margin-bottom:4px">
+      <span style="font-size:.78rem">${c.ok?'✓ ':'○ '}<span style="color:${c.ok?'var(--grn)':'var(--soft)'}">${c.label}</span></span>
+      <span style="font-size:.68rem;color:var(--dim)">${c.note}</span>
+    </div>`
+  ).join('');
+}
+</script>
+
 </body>
 </html>

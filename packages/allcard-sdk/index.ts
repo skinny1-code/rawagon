@@ -2,7 +2,7 @@
  * @rawagon/allcard-sdk
  * TypeScript implementation of AllCard sovereign identity card.
  * Shifting PAN, ZK credential proofs, multi-mode switching.
- * Patent pending: RAW-2026-PROV-001 · AuraMe provisional filed 2026-03-22
+ * Proprietary — RAWagon Systems LLC · AuraMe biometric system
  */
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 

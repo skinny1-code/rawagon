@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#06b6d4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,6 +12,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>ProfitPilot — R3WAGON Analytics</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>ProfitPilot — RAWagon Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
@@ -21,7 +26,7 @@
   --soft:#2d6e68;--dim:#1a3d3a;--wh:#d4f0ed;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"JetBrains Mono",monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
+body{background:var(--bg);color:var(--wh);font-family:'JetBrains Mono', monospace;font-size:13px;min-height:100vh;overflow-x:hidden;}
 /* scanline overlay */
 body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:1000;}
 
@@ -34,13 +39,13 @@ body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:
 .htab:hover{color:var(--teal);background:var(--tl3);}
 .htab.active{color:var(--teal);background:var(--tl3);border-bottom:2px solid var(--teal);}
 .hdr-right{padding:0 16px;display:flex;align-items:center;gap:12px;margin-left:auto;border-left:1px solid var(--line2);}
-#connect-btn{padding:5px 12px;border-radius:3px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-size:.7rem;font-family:"JetBrains Mono",monospace;font-weight:600;cursor:pointer;letter-spacing:.06em;}
+#connect-btn{padding:5px 12px;border-radius:3px;border:1px solid var(--teal);background:transparent;color:var(--teal);font-size:.7rem;font-family:'JetBrains Mono', monospace;font-weight:600;cursor:pointer;letter-spacing:.06em;}
 #connect-btn.on{border-color:var(--grn);color:var(--grn);}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
 /* panes */
-.pane{display:none;padding:16px 20px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:16px 20px;}
 .pane.active{display:block;}
 
 /* KPI grid */
@@ -103,6 +108,82 @@ input:focus,select:focus{border-color:var(--teal);}
 .terminal .dim{color:var(--dim);}
 .terminal .warn{color:var(--gold);}
 .terminal .err{color:var(--red);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
@@ -127,6 +208,9 @@ input:focus,select:focus{border-color:var(--teal);}
     <span id="block-num" style="font-size:.7rem;color:var(--soft)">block —</span>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">CONNECT</button>
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">CONNECT</button>
   </div>
 </div>
 
@@ -137,6 +221,8 @@ input:focus,select:focus{border-color:var(--teal);}
   <span class="tick-item">QWKS savings vs Visa <span class="grn">99.6%</span></span>
   <span class="tick-item">R3NET gas <span class="grn">$0.0000082/tx</span></span>
   <span class="tick-item">Year 2 EBITDA <span class="grn">84.9%</span></span>
+  <span class="tick-item">RAWNet gas <span class="grn">$0.0000082/tx</span></span>
+  <span class="tick-item">Year 2 EBITDA Target <span class="grn">84.9%</span></span>
   <span class="tick-item">Founder share <span class="gold">15% → Solana</span></span>
   <span class="tick-item">Total LTN burned <span id="tick-burned">0</span></span>
 </div>
@@ -144,9 +230,9 @@ input:focus,select:focus{border-color:var(--teal);}
 <!-- DASHBOARD -->
 <div class="pane active" id="pane-dashboard">
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$29.1M</div><div class="kpi-lbl">Year 2 Revenue</div><div class="kpi-sub">7 entities</div></div>
+    <div class="kpi"><div class="kpi-val teal" id="kpi-rev">$30.2M</div><div class="kpi-lbl">Year 2 Target</div><div class="kpi-sub">Projected · not yet earned</div></div>
     <div class="kpi"><div class="kpi-val grn" id="kpi-ebitda">84.9%</div><div class="kpi-lbl">EBITDA Margin</div><div class="kpi-sub">$24.7M net</div></div>
-    <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.37M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="kpi-founder">$4.53M</div><div class="kpi-lbl">Founder Annual</div><div class="kpi-sub">15% all entities</div></div>
     <div class="kpi"><div class="kpi-val" style="color:#8b5cf6" id="kpi-ltn-stk">$3.44M</div><div class="kpi-lbl">Staker Yield/yr</div><div class="kpi-sub">0.1% of $3.44B vol</div></div>
     <div class="kpi"><div class="kpi-val teal" id="kpi-gas">$0.0000082</div><div class="kpi-lbl">Gas per tx</div><div class="kpi-delta up">304,878x cheaper than Visa</div></div>
     <div class="kpi"><div class="kpi-val gold">$0.084</div><div class="kpi-lbl">LTN Price</div><div class="kpi-sub">1B supply · 0.001 burn/tx</div></div>
@@ -156,7 +242,7 @@ input:focus,select:focus{border-color:var(--teal);}
 
   <div class="panels">
     <div class="panel">
-      <div class="panel-title">Entity Revenue Breakdown (Year 2)</div>
+      <div class="panel-title">Entity Revenue Model Targets (Year 2 Projected)</div>
       <div id="entity-bars"></div>
     </div>
     <div class="panel">
@@ -318,7 +404,7 @@ input:focus,select:focus{border-color:var(--teal);}
     <div class="panel">
       <div class="panel-title">R3WAGON™ Genesis IP Vault</div>
       <div style="font-size:.76rem;color:var(--soft);margin-bottom:14px;line-height:1.7;">
-        R3WAGON has established a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filed March 22, 2026.
+        RAWagon is building a multi-layer IP protection framework covering patents, trademarks, ownership declarations, and NFT governance. Filing in preparation.
       </div>
       <div id="ip-vault-list"></div>
     </div>
@@ -328,8 +414,8 @@ input:focus,select:focus{border-color:var(--teal);}
         <table>
           <thead><tr><th>Application</th><th>Filing Date</th><th>Status</th><th>Inventions</th></tr></thead>
           <tbody>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026-PROV-001</td><td>Mar 22, 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>5 inventions</td></tr>
-            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe-2026-PROV</td><td>Mar 2026</td><td><span style="background:var(--gn2);color:var(--grn);padding:2px 6px;border-radius:3px;font-size:.64rem">FILED</span></td><td>Behavioral biometric</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--teal)">RAW-2026 (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>5 inventions</td></tr>
+            <tr><td class="mono" style="font-size:.72rem;color:var(--purp)">AuraMe (planned)</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">PREPARING</span></td><td>Behavioral biometric</td></tr>
             <tr><td class="mono" style="font-size:.72rem;color:var(--gold)">WaV5-PATENT-DRAFT</td><td>Pending</td><td><span style="background:rgba(245,158,11,.1);color:var(--gold);padding:2px 6px;border-radius:3px;font-size:.64rem">DRAFTING</span></td><td>Wearable audio</td></tr>
           </tbody>
         </table>
@@ -337,10 +423,11 @@ input:focus,select:focus{border-color:var(--teal);}
       <div class="panel">
         <div class="panel-title">12-Month Patent Timeline</div>
         <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
-          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span class="teal">Mar 22, 2026 ✓</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Provisional filed</span><span style="color:var(--gold)">Pending — filing in preparation</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Non-provisional deadline</span><span class="gold">Mar 22, 2027</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Attorney engagement</span><span class="gold">Sep 2026</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Est. prosecution cost</span><span style="color:var(--soft)">$15K–$25K</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)"><span style="color:var(--soft)">Days since filing</span><span id="patent-days-elapsed" class="soft">—</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Days remaining</span><span id="patent-days" class="teal">—</span></div>
         </div>
       </div>
@@ -382,13 +469,13 @@ let provider, signer, addr;
 
 // ── Static data ─────────────────────────────────────────────────
 const ENTITIES = [
-  { name:"QWKS Protocol",       revenue:9344267, icon:"⛓", desc:"Payment processing 0.01% fee" },
-  { name:"BitPawn",              revenue:5280000, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
-  { name:"Droppa",               revenue:4200000, icon:"🎴", desc:"1% of break GMV + vault fees" },
-  { name:"AutoIQ / IQTitle",     revenue:3780000, icon:"🚗", desc:"0.3% of vehicle sale value" },
-  { name:"1.nce AllCard",        revenue:3240000, icon:"🪪", desc:"$49/mo identity subscription" },
-  { name:"GoldSnap / BWG / sBTC",revenue:2162000, icon:"🥇", desc:"0.25% mint + BWG vault custody" },
-  { name:"ProfitPilot",          revenue:1120000, icon:"📊", desc:"$29/mo analytics SaaS" },
+  { name:"QWKS Protocol", revenue:7500000, icon:"⛓", desc:"Payment processing 0.01% fee" },
+  { name:"BitPawn", revenue:961056, icon:"🏦", desc:"$99/mo SaaS + 0.5% volume" },
+  { name:"Droppa", revenue:3744000, icon:"🎴", desc:"1% of break GMV + vault fees" },
+  { name:"AutoIQ / IQTitle", revenue:12960000, icon:"🚗", desc:"0.3% of vehicle sale value" },
+  { name:"1.nce AllCard", revenue:898200, icon:"🪪", desc:"$49/mo identity subscription" },
+  { name:"GoldSnap / BWG / sBTC", revenue:93011, icon:"🥇", desc:"0.25% mint + BWG vault custody" },
+  { name:"ProfitPilot", revenue:2970000, icon:"📊", desc:"$29/mo analytics SaaS" },
   { name:"Drop The Reel",        revenue:480000,  icon:"🎬", desc:"AI film review subscriptions — Claude + ElevenLabs" },
   { name:"PawnVault",            revenue:360000,  icon:"💎", desc:"$99/mo pawn shop SaaS (Postgres)" },
   { name:"AI Orchestrator",      revenue:240000,  icon:"🤖", desc:"Multi-model SaaS — Vercel Edge" },
@@ -726,6 +813,9 @@ function renderIPVault() {
     {n:1,title:"Patents Bundle",desc:"RAW-2026-PROV-001 (5 inventions) + AuraMe + WaV5",status:"Filed"},
     {n:2,title:"Trademark Filings",desc:"R3WAGON™ + all sub-brands (QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap)",status:"Pending"},
     {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, R3WAGON Systems LLC",status:"Filed"},
+    {n:1,title:"Patents Bundle",desc:"Provisional application in preparation — 5 inventions, AuraMe, WaV5",status:"Preparing"},
+    {n:2,title:"Trademark Filings",desc:"RAWagon™ + all sub-brands (QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap)",status:"Pending"},
+    {n:3,title:"Ownership Declarations",desc:"Founder IP rights — Ryan Williams, RAWagon Systems LLC",status:"Drafted"},
     {n:4,title:"Licensing Templates",desc:"Modular licensing for 7 entity products + hardware",status:"Drafted"},
     {n:5,title:"Legal Clearance Summary",desc:"Conflict checks vs prior art — all 5 inventions cleared",status:"Complete"},
     {n:6,title:"NFT Governance Clause",desc:"On-chain IP proof via IQCAR-style NFT minting for each invention",status:"Spec"},
@@ -738,7 +828,7 @@ function renderIPVault() {
     {n:13,title:"AI Orchestrator 4m",desc:"Multi-model SaaS — Vercel Edge, streaming SSE, GPT-5 + Claude + Gemini + Perplexity",status:"Deployed"},
     {n:14,title:"NeuroWave HUD",desc:"FDA Class I/II wearable HUD — retinal projection + EEG. Regulatory pre-notification filed.",status:"Pre-reg"},
   ];
-  const statusColors={Filed:"var(--grn)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
+  const statusColors={Filed:"var(--gold)",Preparing:"var(--gold)",Pending:"var(--gold)",Complete:"var(--grn)",Drafted:"var(--teal)",Spec:"var(--soft)","Phase 1":"var(--gold)",Active:"var(--grn)",Ready:"var(--grn)"};
   document.getElementById("ip-vault-list").innerHTML=items.map(i=>`
     <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2)">
       <div style="width:20px;height:20px;border-radius:50%;background:var(--tl2);border:1px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--teal);flex-shrink:0">${i.n}</div>
@@ -754,29 +844,148 @@ function renderIPVault() {
 
 // ── Hardware Products ─────────────────────────────────────────────────────
 function renderHardware() {
-  const products=[
-    {emoji:"🥽",name:"NeuroWave HUD",status:"Prototype Ready",desc:"AI HUD with retinal-safe microprojection, adaptive metasurface optics, noninvasive EEG/neural sensors. FDA Class I/II wearable. Regulatory pre-notification filed. IEC 60825-1 (laser), ISO 10993 (biocompatibility), FCC Part 15.",specs:["Retinal-safe microprojection","Adaptive metasurface optics","Noninvasive EEG sensors","BLE + WiFi","FDA/IEC/FCC compliance path"],bom_qty:"3-5 working prototypes",color:"#a78bfa"},
-    {emoji:"🤖",name:"Gold-Seeking Robot",status:"BOM Complete",desc:"Autonomous gold detection device. AS7341 11-channel spectrometer identifies spectral signature of gold. ATECC608A signs verified detections on-chain. Triggers GTX mint via GoldSnap API.",specs:["ESP32-WROOM-32E MCU","AS7341 spectrometer 340-1000nm","HX711 load cell ±0.5%","ATECC608A secure signing","PN532 NFC + ADS1115 ADC"],bom_qty:"Pilot qty TBD",color:"#fbbf24"},
-    {emoji:"🎧",name:"WaV⁵ Stealth Node",status:"Pilot Build",desc:"Wearable open-ear audio device. Cartilage-coupled piezo transducer, ESP32-S3, real-time psychoacoustic DSP, binaural spatialization. SnapMod dock for accessory expansion.",specs:["ESP32-S3-WROOM-1-N8R2 MCU","TLV320AIC3206 audio codec","Piezo transducer 12–15mm","USB-C · 3.3V TPS62177","Control: USB CDC JSON API"],bom_qty:"20 boards pilot",color:"#8b5cf6"},
-    {emoji:"👁️",name:"PaperThin™ Display",status:"5-Unit Pilot",desc:"0.35–0.60mm transparent waveguide lens with micro-LED display layer. MIPI input compatible. Optical clarity >95%, haze <1%. AR/HUD integration target.",specs:["Flexible polymer waveguide","Micro-LED tile array","MIPI input (external driver)","60–80mm arc radius","Scratch-resistant coating"],bom_qty:"5 pilot units",color:"#06b6d4"},
-    {emoji:"🔑",name:"TeloKey™ Housing",status:"3-5 First Articles",desc:"6061-T6 aluminum enclosure for Telo key device. Bead-blast anodized finish, ±0.05mm tolerances, button and LED cutouts. 1m drop tested.",specs:["6061-T6 aluminum","Bead-blast + anodize","±0.05mm mating faces","Button/LED cutouts","1m drop test"],bom_qty:"3–5 first articles",color:"#10b981"},
-    {emoji:"🧠",name:"AuraMe Sensor Node",status:"Spec Phase",desc:"Behavioral biometric capture device. Integrates with AllCard for keystroke dynamics, gyro, pressure, and motion capture. Feeds master key derivation.",specs:["Behavioral multi-vector","Keystroke + gyro + pressure","SHA-256 key derivation","BLE + USB-C","AllCard integration"],bom_qty:"TBD",color:"#f59e0b"},
+  const BOM_COMPONENTS = [
+    { ref:'U1', qty:1, part:'ESP32-WROOM-32E',  notes:'MCU — WiFi + BLE + Xtensa LX6 dual-core',     cost:4.50,  status:'sourced',   cat:'MCU' },
+    { ref:'U2', qty:1, part:'ADS1115',           notes:'16-bit I²C ADC — biosignal acquisition',       cost:2.20,  status:'sourced',   cat:'ADC' },
+    { ref:'U3', qty:1, part:'AS7341',            notes:'11-channel spectral sensor / spectrometer',     cost:5.80,  status:'sourced',   cat:'Sensor' },
+    { ref:'U4', qty:1, part:'HX711',             notes:'24-bit load cell amplifier / strain gauge',     cost:1.50,  status:'sourced',   cat:'ADC' },
+    { ref:'U5', qty:1, part:'ATECC608A',         notes:'Secure Element — ECDSA signing for ZK proofs', cost:0.85,  status:'sourced',   cat:'Security' },
+    { ref:'U6', qty:1, part:'MAX30102',          notes:'Pulse ox / heart rate sensor (SpO2)',          cost:3.20,  status:'planned',   cat:'Sensor' },
+    { ref:'U7', qty:1, part:'ICM-42688-P',       notes:'6-axis IMU — accelerometer + gyroscope',       cost:2.80,  status:'planned',   cat:'IMU' },
+    { ref:'U8', qty:1, part:'SGP41',             notes:'VOC/NOx gas index sensor',                     cost:8.50,  status:'planned',   cat:'Sensor' },
+    { ref:'J1', qty:1, part:'USB-C PD Controller','notes':'Power delivery + charging',                 cost:1.20,  status:'sourced',   cat:'Power' },
+    { ref:'BT1',qty:1, part:'LiPo 300mAh',      notes:'3.7V rechargeable — wearable profile',          cost:3.50,  status:'sourced',   cat:'Power' },
   ];
-  document.getElementById("hardware-grid").innerHTML=products.map(p=>`
-    <div class="panel" style="border-top:3px solid ${p.color}">
-      <div style="font-size:2rem;margin-bottom:8px">${p.emoji}</div>
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:3px">${p.name}</div>
-      <div style="margin-bottom:8px"><span style="font-size:.64rem;font-weight:700;color:${p.color};padding:2px 8px;border-radius:10px;border:1px solid currentColor">${p.status}</span></div>
-      <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px;line-height:1.5">${p.desc}</div>
-      <div style="font-size:.7rem;color:var(--dim)">
-        ${p.specs.map(s=>`<div style="padding:2px 0">· ${s}</div>`).join("")}
-      </div>
-      <div style="font-size:.68rem;color:var(--dim);margin-top:8px">Pilot qty: ${p.bom_qty}</div>
-    </div>`).join("");
+  const products=[
+    {emoji:"🥽",name:"NeuroWave HUD",status:"Prototype",desc:"AI HUD with retinal-safe microprojection, adaptive metasurface optics, noninvasive EEG/neural sensors. FDA Class I/II wearable. IEC 60825-1 (laser), ISO 10993 (biocompatibility), FCC Part 15.",specs:["Retinal-safe microprojection","Adaptive metasurface optics","Noninvasive EEG sensors","BLE + WiFi","FDA/IEC/FCC compliance path"],color:"#a78bfa"},
+    {emoji:"👂",name:"WaV⁵ Stealth Node",status:"Patent Draft",desc:"Cartilage-coupled transducer with real-time micro-tonal psychoacoustic processing. Fractional-octave harmonic bands. Safety controller with exposure monitoring. Patent RAW-2026-WaV5.",specs:["Cartilage-coupled driver","DSP + psychoacoustic engine","Bone conduction backup","AllCard ZK identity integration","RAWNet payment gating"],color:"#06b6d4"},
+    {emoji:"📡",name:"RAWNet Node Device",status:"Design",desc:"Physical RAWNet validator node. Runs Ganache equivalent locally, syncs with RAWNet testnet. Plug-in form factor. BreakFactory + PawnRegistry contract host.",specs:["Local Ganache equivalent","RAWNet chainId 720701","USB-C + Ethernet","Always-on validation","LTN staking hardware"],color:"#10b981"},
+  ];
+  const grid = document.getElementById("hardware-grid");
+  if (!grid) return;
+
+  // BOM summary card
+  const bomTotal = BOM_COMPONENTS.reduce((s,c) => s + c.cost, 0);
+  const sourced  = BOM_COMPONENTS.filter(c => c.status === 'sourced').length;
+  let bomHTML = '<div class="panel" style="grid-column:1/-1;margin-bottom:0">' +
+    '<div class="panel-title">\uD83D\uDCC4 Bill of Materials (NeuroWave HUD / WaV\u2075)</div>' +
+    '<div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap">' +
+    '<div style="padding:8px 14px;background:var(--gn2);border-radius:8px;font-size:.76rem"><strong style="color:var(--grn)">' + sourced + '/' + BOM_COMPONENTS.length + '</strong> <span style="color:var(--soft)">parts sourced</span></div>' +
+    '<div style="padding:8px 14px;background:rgba(245,158,11,.08);border-radius:8px;font-size:.76rem"><strong style="color:var(--gold)">$' + bomTotal.toFixed(2) + '</strong> <span style="color:var(--soft)">BOM cost/unit</span></div>' +
+    '<div style="padding:8px 14px;background:rgba(139,92,246,.08);border-radius:8px;font-size:.76rem"><strong style="color:var(--purp)">$' + (bomTotal * 3.5).toFixed(0) + '</strong> <span style="color:var(--soft)">retail target (3.5x)</span></div>' +
+    '</div>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:.74rem">' +
+    '<thead><tr style="border-bottom:1px solid var(--line2)">' +
+    '<th style="text-align:left;padding:5px 0;color:var(--soft)">Ref</th>' +
+    '<th style="text-align:left;padding:5px 0;color:var(--soft)">Part</th>' +
+    '<th style="padding:5px 0;color:var(--soft)">Notes</th>' +
+    '<th style="text-align:right;padding:5px 0;color:var(--soft)">Cost</th>' +
+    '<th style="text-align:right;padding:5px 0;color:var(--soft)">Status</th>' +
+    '</tr></thead><tbody>' +
+    BOM_COMPONENTS.map(c =>
+      '<tr style="border-bottom:1px solid rgba(255,255,255,.04)">' +
+      '<td style="padding:5px 0;font-family:monospace;color:var(--teal)">' + c.ref + '</td>' +
+      '<td style="padding:5px 0;font-weight:600">' + c.part + '</td>' +
+      '<td style="padding:5px 0;color:var(--soft);font-size:.7rem">' + c.notes + '</td>' +
+      '<td style="text-align:right;padding:5px 0;color:var(--gold)">$' + c.cost.toFixed(2) + '</td>' +
+      '<td style="text-align:right;padding:5px 0"><span style="font-size:.66rem;font-weight:700;color:' + (c.status==='sourced'?'var(--grn)':'var(--gold)') + '">' + c.status.toUpperCase() + '</span></td>' +
+      '</tr>'
+    ).join('') +
+    '</tbody></table></div>';
+
+  grid.innerHTML = bomHTML + products.map(p =>
+    '<div class="panel"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+    '<span style="font-size:2rem">' + p.emoji + '</span>' +
+    '<div><div style="font-weight:700;font-size:.9rem;color:var(--wh)">' + p.name + '</div>' +
+    '<span style="font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--gold)">' + p.status + '</span></div></div>' +
+    '<div style="font-size:.76rem;color:var(--soft);margin-bottom:12px;line-height:1.7">' + p.desc + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px">' +
+    p.specs.map(s => '<div style="font-size:.72rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--soft)">→ ' + s + '</div>').join('') +
+    '</div></div>'
+  ).join('');
 }
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:   () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:        () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs:  () => localStorage.getItem("rawagon-elevenlabs-key") || localStorage.getItem("dtr-el") || "",
+  goldapi:     () => localStorage.getItem("rawagon-goldapi-key") || "",
+};
+
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) {
+    localStorage.setItem("rawagon-anthropic-key", key);
+    localStorage.setItem("dtr-anthropic", key); // also set for Drop The Reel
+  } else if (key.startsWith("xi-")) {
+    localStorage.setItem("rawagon-elevenlabs-key", key);
+  } else if (key.length > 20) {
+    localStorage.setItem("rawagon-tmdb-key", key);
+  }
+  document.getElementById("global-key-banner").style.display = "none";
+  document.getElementById("gkb-key").value = "";
+  if (typeof toast === "function") toast("API key saved ✓");
+}
+
+// Show banner if no Anthropic key and user clicks an AI feature
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) {
+    const banner = document.getElementById("global-key-banner");
+    if (banner) { banner.style.display = "flex"; banner.style.removeProperty("display"); 
+      document.getElementById("gkb-key")?.focus(); return false; }
+  }
+  return true;
+}
+
+function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
+  const key = RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body = { model: "claude-sonnet-4-6", max_tokens: maxTokens, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(d => {
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text || "";
+  });
+}
+
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   renderEntityBars();
   renderCompoundBars();
+  fetchLTNPrice();
+  renderHardware();
+  // Patent countdown
+  try {
+    const deadline   = new Date("2027-03-22");
+    const filedDate  = null; // not yet filed
+    const today      = new Date();
+    const daysLeft   = Math.ceil((deadline - today) / 86400000);
+    const daysElapsed= Math.ceil((today - filedDate)  / 86400000);
+    const pdEl = document.getElementById("patent-days");
+    const peEl = document.getElementById("patent-days-elapsed");
+    if (pdEl) { pdEl.textContent = daysLeft + " days"; pdEl.style.color = daysLeft < 90 ? "var(--red)" : daysLeft < 180 ? "var(--gold)" : "var(--teal)"; }
+    if (peEl) peEl.textContent = daysElapsed + " days";
+  } catch(e) {}
   calcCompound();
   renderLTNCompound();
   renderIPVault();
@@ -797,6 +1006,36 @@ window.addEventListener("load",()=>{
     ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
     ethereum.on("accountsChanged",()=>location.reload());
   }
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'profitpilot'});
 });
+</script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body></html>

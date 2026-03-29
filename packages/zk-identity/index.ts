@@ -2,7 +2,7 @@
  * @rawagon/zk-identity
  * ZK proof generation + AuraMe biometric key derivation + Shifting PAN
  * TypeScript version — fully typed
- * Patent pending: RAW-2026-PROV-001
+ * Proprietary — RAWagon Systems LLC
  */
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 

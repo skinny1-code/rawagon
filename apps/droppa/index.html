@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#8b5cf6">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,13 +11,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Droppa™ — Seller OS · R3NET</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Droppa™ — Seller OS · RAWNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#07040f;--s1:#0c0716;--s2:#11091d;--card:#160d22;
   --line:rgba(139,92,246,.2);--ln2:rgba(139,92,246,.07);--ln3:rgba(139,92,246,.04);
   --wh:#f0eaff;--soft:#7c6a9a;--dim:#3d2d5a;
-  --purp:#8b5cf6;--pr2:rgba(139,92,246,.18);--pr3:rgba(139,92,246,.07);
+  --accent:#8b5cf6;--accent-glow:rgba(139,92,246,.2);--accent-bg:rgba(139,92,246,.06);--purp:#8b5cf6;--pr2:rgba(139,92,246,.18);--pr3:rgba(139,92,246,.07);
   --pink:#ec4899;--pk2:rgba(236,72,153,.12);--pk3:rgba(236,72,153,.06);
   --grn:#34d399;--gn2:rgba(52,211,153,.12);--gn3:rgba(52,211,153,.06);
   --gold:#fbbf24;--gd2:rgba(251,191,36,.1);
@@ -23,7 +27,7 @@
   --blue:#60a5fa;--cyan:#22d3ee;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:"Plus Jakarta Sans",sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Plus Jakarta Sans', sans-serif;font-size:14px;min-height:100vh;;overflow-x:hidden}
 body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%);width:800px;height:2px;background:linear-gradient(90deg,transparent,var(--purp),var(--pink),transparent);pointer-events:none;z-index:100;}
 
 /* Header */
@@ -39,7 +43,7 @@ body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%)
 #connect-btn.on{border-color:var(--grn);color:var(--grn);background:var(--gn2);}
 
 /* Layout */
-.pane{display:none;padding:20px 22px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 22px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -48,7 +52,7 @@ body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%)
 /* KPI strip */
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--ln2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:18px;}
 .kpi{background:var(--card);padding:13px 15px;}
-.kpi-val{font-size:1.25rem;font-weight:800;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-val{font-size:1.25rem;font-weight:800;font-family:'Plus Jakarta Sans', sans-serif;line-height:1;}
 .kpi-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.62rem;color:var(--soft);margin-top:2px;}
 .purp{color:var(--purp);}.grn{color:var(--grn);}.gold{color:var(--gold);}.pink{color:var(--pink);}.red{color:var(--red);}.blue{color:var(--blue);}
@@ -170,6 +174,82 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
 .cnb-burn{background:rgba(251,191,36,.1);color:var(--gold);animation:pulse-badge 2s infinite;}
 .cnb-sold{background:var(--bl2);color:var(--blue);}
 .cnb-redeemed{background:rgba(209,213,219,.08);color:var(--soft);}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
@@ -192,11 +272,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
     <div class="nav-item" onclick="show('referrals')">Referrals</div>
     <div class="nav-item" onclick="show('vault')">Card Vault</div>
     <div class="nav-item" onclick="show('vault-tab')">🏦 Card Vault</div>
-    <div class="nav-item" onclick="show('settings')">Settings</div>
+    <div class="nav-item" onclick="show('stream')">🔴 Live Stream</div>
+  <div class="nav-item" onclick="show('winners')">🏆 Winners</div>
+  <div class="nav-item" onclick="show('postage')">📦 Postage</div>
+  <div class="nav-item" onclick="show('notify')">📣 Notify</div>
+  <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <button id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
   </div>
 </div>
 
@@ -494,6 +580,496 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
 </div>
 
 <!-- SETTINGS -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LIVE STREAM TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<!-- ═══════════ COMMAND CENTER ═══════════ -->
+<div class="pane" id="pane-stream">
+
+  <!-- Mission Control top bar -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:10px 16px;">
+    <!-- Platform selector -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft)">Platform</span>
+      <div style="display:flex;gap:4px" id="platform-btns">
+        <button onclick="setPlatform('whatnot')"   class="plat-btn active" data-plat="whatnot"   style="background:rgba(255,60,0,.12);border:1px solid rgba(255,60,0,.3);color:#ff6b35;padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">WhatNot</button>
+        <button onclick="setPlatform('tiktok')"    class="plat-btn"       data-plat="tiktok"    style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">TikTok</button>
+        <button onclick="setPlatform('youtube')"   class="plat-btn"       data-plat="youtube"   style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">YouTube</button>
+        <button onclick="setPlatform('instagram')" class="plat-btn"       data-plat="instagram" style="background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--soft);padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;transition:.12s">Instagram</button>
+      </div>
+    </div>
+
+    <div style="width:1px;height:28px;background:var(--line)"></div>
+
+    <!-- Break selector -->
+    <select id="ls-break" style="flex:1;min-width:160px;margin:0;font-size:.76rem;max-width:260px">
+      <option value="">— Select active break —</option>
+    </select>
+
+    <div style="width:1px;height:28px;background:var(--line)"></div>
+
+    <!-- Agent mode toggle -->
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft)">Mode</span>
+      <button onclick="setAgentMode('assist')"  id="mode-assist"  class="mode-btn active" style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--purp);background:var(--pr2);color:var(--purp);transition:.12s">🤖 Assist</button>
+      <button onclick="setAgentMode('host')"    id="mode-host"    class="mode-btn"        style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--soft);transition:.12s">🎙 Host</button>
+      <button onclick="setAgentMode('auto')"    id="mode-auto"    class="mode-btn"        style="padding:5px 10px;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--soft);transition:.12s">⚡ Auto</button>
+    </div>
+
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <!-- Live session timer -->
+      <div id="session-timer" style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--soft);display:none">
+        <span style="color:var(--red);font-weight:700">● </span><span id="ls-duration-main">0:00</span>
+      </div>
+      <!-- Go Live button -->
+      <button onclick="toggleLiveSession()" id="cc-live-btn" style="padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:.8rem;font-weight:800;cursor:pointer;letter-spacing:.04em;transition:.12s;display:flex;align-items:center;gap:7px">
+        <span id="cc-live-dot" style="width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block"></span>
+        <span id="cc-live-label">GO LIVE</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN COMMAND CENTER GRID -->
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:14px;min-height:calc(100vh - 220px)">
+
+    <!-- ── LEFT COLUMN: Chat + AI Brain ── -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Chat Feed -->
+      <div class="card" style="border-left:3px solid var(--purp);flex:1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0;color:var(--purp)">💬 Chat Feed</div>
+          <div style="display:flex;gap:6px">
+            <button onclick="clearChat()" class="btn btn-outline btn-sm" style="font-size:.66rem">Clear</button>
+            <button onclick="toggleAutoScan()" id="auto-scan-btn" class="btn btn-outline btn-sm" style="font-size:.66rem">Auto-parse: OFF</button>
+          </div>
+        </div>
+
+        <!-- Parsed chat live display -->
+        <div id="chat-feed-display" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:8px;min-height:120px;max-height:180px;overflow-y:auto;font-size:.74rem;font-family:'JetBrains Mono',monospace;margin-bottom:8px;line-height:1.8">
+          <div style="color:var(--dim);text-align:center;padding:24px 0">Chat feed ready — paste messages or enable Auto-parse</div>
+        </div>
+
+        <!-- Input area -->
+        <textarea id="ls-chat-input" style="height:80px;resize:none;font-size:.76rem;font-family:inherit;margin-bottom:8px" placeholder="Paste chat messages here — or use Auto-parse mode to continuously process&#10;&#10;@user1: I want slot 7&#10;@user2: how much per slot?&#10;@user3: is this baseball or football?"></textarea>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <button onclick="parseChatMessages()" class="btn btn-purp btn-sm">🤖 Parse Chat</button>
+          <button onclick="aiAnswerQuestion()"  class="btn btn-outline btn-sm">❓ Answer Q</button>
+          <button onclick="runFullCycle()"      class="btn btn-outline btn-sm" style="color:var(--gold);border-color:rgba(251,191,36,.3)">⚡ Full Cycle</button>
+        </div>
+      </div>
+
+      <!-- AI Agent Response -->
+      <div class="card" style="border-left:3px solid var(--grn)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="card-title" style="margin:0;color:var(--grn)">🧠 Agent Output</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span id="agent-mode-badge" style="font-size:.64rem;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--pr2);color:var(--purp);border:1px solid var(--line)">ASSIST</span>
+            <button onclick="copyAgentOutput()" class="btn btn-outline btn-sm" style="font-size:.66rem">Copy</button>
+          </div>
+        </div>
+        <div id="ls-ai-output" style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.78rem;color:var(--wh);line-height:1.8;min-height:90px;max-height:160px;overflow-y:auto;white-space:pre-wrap">Agent ready. Hit Parse Chat or ask a question to get started.</div>
+      </div>
+
+      <!-- Host Script Generator (Host + Auto modes) -->
+      <div class="card" id="host-script-card" style="border-left:3px solid var(--gold);display:none">
+        <div class="card-title" style="color:var(--gold);margin-bottom:10px">🎙 Host Script</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+          <button onclick="genScript('open')"     class="btn btn-outline btn-sm" style="font-size:.7rem">📣 Open</button>
+          <button onclick="genScript('item')"     class="btn btn-outline btn-sm" style="font-size:.7rem">🎴 Pitch Item</button>
+          <button onclick="genScript('winner')"   class="btn btn-outline btn-sm" style="font-size:.7rem">🏆 Winner</button>
+          <button onclick="genScript('hype')"     class="btn btn-outline btn-sm" style="font-size:.7rem">🔥 Hype</button>
+          <button onclick="genScript('faq')"      class="btn btn-outline btn-sm" style="font-size:.7rem">❓ FAQ</button>
+          <button onclick="genScript('closing')"  class="btn btn-outline btn-sm" style="font-size:.7rem">👋 Close</button>
+          <button onclick="genScript('shipping')" class="btn btn-outline btn-sm" style="font-size:.7rem">📦 Ship Info</button>
+          <button onclick="genScript('tease')"    class="btn btn-outline btn-sm" style="font-size:.7rem">📅 Next Break</button>
+        </div>
+        <div id="host-script-output" style="background:var(--s2);border:1px solid rgba(251,191,36,.15);border-radius:8px;padding:12px;font-size:.8rem;color:var(--wh);line-height:1.9;min-height:70px;white-space:pre-wrap;max-height:140px;overflow-y:auto">Script will appear here — tap a button above</div>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('host-script-output').textContent).then(()=>toast('Script copied ✓'))" class="btn btn-outline btn-sm" style="margin-top:8px;width:100%;font-size:.7rem">Copy Script</button>
+      </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN: Break Status + Winners + OBS ── -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- Active Break Status -->
+      <div class="card" style="border-top:3px solid var(--red)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="card-title" style="margin:0;color:var(--red)">🔴 Break Status</div>
+          <span id="break-live-badge" style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)">OFFLINE</span>
+        </div>
+        <div id="break-status-display">
+          <div style="color:var(--soft);font-size:.76rem;text-align:center;padding:12px">Select a break to start</div>
+        </div>
+      </div>
+
+      <!-- Live Winner Board -->
+      <div class="card" style="flex:1">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="card-title" style="margin:0;color:var(--gold)">🏆 Winner Board</div>
+          <div style="display:flex;gap:5px">
+            <span id="winner-count-badge" style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(251,191,36,.08);color:var(--gold);border:1px solid rgba(251,191,36,.15)">0 winners</span>
+            <button onclick="show('winners')" class="btn btn-outline btn-sm" style="font-size:.64rem">Full View ↗</button>
+          </div>
+        </div>
+        <div id="live-winner-board" style="display:flex;flex-direction:column;gap:5px;max-height:220px;overflow-y:auto">
+          <div style="color:var(--dim);font-size:.74rem;text-align:center;padding:20px">No winners yet this session</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+          <button onclick="addWinnerManual();show('winners')" class="btn btn-outline btn-sm" style="font-size:.68rem">+ Add Winner</button>
+          <button onclick="autoAssignCards()" class="btn btn-outline btn-sm" style="font-size:.68rem">🤖 Auto-Assign</button>
+        </div>
+      </div>
+
+      <!-- OBS Overlay Control -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:8px">📺 Overlay</div>
+        <div style="background:var(--s2);border:1px solid var(--line);border-radius:6px;padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:.66rem;color:var(--gold);margin-bottom:7px;word-break:break-all" id="overlay-url">http://localhost:3000/apps/droppa/overlay.html</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px">
+          <button onclick="copyOverlayUrl()" class="btn btn-outline btn-sm" style="font-size:.68rem">Copy URL</button>
+          <button onclick="window.open(document.getElementById('overlay-url').textContent,'overlay','width=960,height=540')" class="btn btn-outline btn-sm" style="font-size:.68rem">Preview ↗</button>
+        </div>
+        <!-- Overlay controls -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <button onclick="overlayAction('winner_callout')" class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--gold)">🏆 Callout</button>
+          <button onclick="overlayAction('confetti')"       class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--grn)">🎉 Confetti</button>
+          <button onclick="overlayAction('sold_out')"       class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--red)">🔥 Sold Out</button>
+          <button onclick="overlayAction('coming_soon')"    class="btn btn-outline btn-sm" style="font-size:.68rem;color:var(--blue)">📅 Teaser</button>
+        </div>
+      </div>
+
+      <!-- Quick Fulfillment Launcher -->
+      <div class="card" style="border-top:2px solid var(--grn)">
+        <div class="card-title" style="margin-bottom:8px;color:var(--grn)">⚡ Post-Show</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <button onclick="runPostShowWorkflow()" class="btn btn-outline btn-sm" style="font-size:.72rem;color:var(--grn);border-color:rgba(52,211,153,.2)">
+            🚀 Run Full Post-Show (Labels + Notify)
+          </button>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+            <button onclick="show('postage')" class="btn btn-outline btn-sm" style="font-size:.68rem">📦 Labels</button>
+            <button onclick="show('notify')"  class="btn btn-outline btn-sm" style="font-size:.68rem">📣 Notify</button>
+          </div>
+        </div>
+        <div id="postshow-status" style="margin-top:6px;font-size:.7rem;color:var(--soft);min-height:14px"></div>
+      </div>
+
+      <!-- Session Stats -->
+      <div class="card" style="padding:10px 14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;text-align:center">
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--purp)" id="stat-winners-live">0</div><div style="font-size:.6rem;color:var(--soft)">Winners</div></div>
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--gold)" id="stat-revenue-live">$0</div><div style="font-size:.6rem;color:var(--soft)">Revenue</div></div>
+          <div><div style="font-size:1.1rem;font-weight:800;color:var(--grn)" id="stat-msgs-live">0</div><div style="font-size:.6rem;color:var(--soft)">Parsed</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     WINNERS TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-winners">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <div style="font-size:.88rem;font-weight:700">Winner Management</div>
+    <select id="w-break-filter" onchange="loadWinners()" style="width:auto;margin:0;font-size:.76rem">
+      <option value="">All Breaks</option>
+    </select>
+    <button class="btn btn-purp btn-sm" onclick="addWinnerManual()">+ Add Winner</button>
+    <button class="btn btn-outline btn-sm" onclick="exportWinnersCSV()">↓ Export CSV</button>
+    <button class="btn btn-outline btn-sm" onclick="autoAssignCards()">🤖 Auto-Assign Cards</button>
+    <div style="margin-left:auto;font-size:.74rem;color:var(--soft)" id="winners-meta"></div>
+  </div>
+
+  <!-- Add winner panel -->
+  <div id="add-winner-panel" style="display:none;margin-bottom:14px">
+    <div class="card" style="border-left:3px solid var(--gold)">
+      <div class="card-title" style="color:var(--gold)">Add Winner</div>
+      <div class="form-row">
+        <div><label>Username / Name</label><input id="aw-name" placeholder="@username or Full Name"></div>
+        <div><label>Slot(s) Won</label><input id="aw-slots" placeholder="3, 7, 12 (comma separated)"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Platform</label>
+          <select id="aw-platform">
+            <option>WhatNot</option><option>TikTok Live</option><option>YouTube Live</option><option>Direct/Other</option>
+          </select>
+        </div>
+        <div><label>Card(s) Assigned</label><input id="aw-cards" placeholder="Juan Soto /50, Mike Trout Auto"></div>
+      </div>
+      <div class="form-row">
+        <div><label>Email (for shipping notification)</label><input type="email" id="aw-email" placeholder="winner@email.com"></div>
+        <div><label>Phone (for SMS notification)</label><input id="aw-phone" placeholder="+15551234567"></div>
+      </div>
+      <div>
+        <label>Shipping Address</label>
+        <input id="aw-addr1" placeholder="123 Main St" style="margin-bottom:6px">
+        <div class="form-row" style="gap:8px">
+          <input id="aw-city" placeholder="City" style="flex:2">
+          <input id="aw-state" placeholder="ST" style="flex:1;max-width:60px">
+          <input id="aw-zip" placeholder="12345" style="flex:1;max-width:80px">
+        </div>
+      </div>
+      <div class="form-row">
+        <div><label>Payment Status</label>
+          <select id="aw-paid">
+            <option value="paid">Paid ✓</option>
+            <option value="pending">Pending</option>
+            <option value="refunded">Refunded</option>
+          </select>
+        </div>
+        <div><label>Card Value Est. ($)</label><input type="number" id="aw-value" placeholder="45.00"></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btn btn-purp" onclick="saveWinner()">Save Winner</button>
+        <button class="btn btn-outline" onclick="document.getElementById('add-winner-panel').style.display='none'">Cancel</button>
+      </div>
+      <div id="aw-status" style="margin-top:6px;font-size:.72rem;color:var(--soft)"></div>
+    </div>
+  </div>
+
+  <!-- Winners table -->
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl" id="winners-table">
+      <thead>
+        <tr>
+          <th style="padding:10px 12px">Winner</th>
+          <th>Slot(s)</th>
+          <th>Card(s)</th>
+          <th>Platform</th>
+          <th>Payment</th>
+          <th>Label</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="winners-tbody">
+        <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--soft);font-size:.78rem">No winners yet — add from Live Stream tab or manually</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="g3" style="margin-top:14px">
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">TOTAL WINNERS</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--purp);font-family:'Syne',sans-serif" id="w-total">0</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">LABELS NEEDED</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--gold);font-family:'Syne',sans-serif" id="w-labels-needed">0</div>
+    </div>
+    <div class="card" style="margin:0;text-align:center">
+      <div style="font-size:.66rem;color:var(--soft);margin-bottom:3px">SHIPPED</div>
+      <div style="font-size:1.6rem;font-weight:800;color:var(--grn);font-family:'Syne',sans-serif" id="w-shipped">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     POSTAGE TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-postage">
+  <div class="g2">
+    <div>
+      <div class="card" style="border-top:3px solid var(--gold)">
+        <div class="card-title" style="color:var(--gold)">📦 Shipping Settings</div>
+        <label>Preferred Carrier</label>
+        <select id="ps-carrier" onchange="updateCarrierUI()">
+          <option value="USPS">USPS (Priority Mail)</option>
+          <option value="UPS">UPS Ground</option>
+          <option value="USPS_FC">USPS First Class</option>
+          <option value="cheapest">Always Cheapest</option>
+        </select>
+        <label>Default Package Type</label>
+        <select id="ps-pkg">
+          <option value="SMALL_FLAT_RATE_BOX">USPS Small Flat Rate Box</option>
+          <option value="MEDIUM_FLAT_RATE_BOX">USPS Medium Flat Rate Box</option>
+          <option value="bubble_mailer">Bubble Mailer (4x8)</option>
+          <option value="toploader_mailer">Toploader PWE</option>
+          <option value="custom">Custom Dimensions</option>
+        </select>
+        <div id="custom-dims" style="display:none">
+          <div class="form-row">
+            <div><label>Length (in)</label><input type="number" id="ps-len" value="6" step="0.5"></div>
+            <div><label>Width (in)</label><input type="number" id="ps-wid" value="4" step="0.5"></div>
+            <div><label>Height (in)</label><input type="number" id="ps-hgt" value="1" step="0.25"></div>
+          </div>
+        </div>
+        <label>Default Weight (oz)</label>
+        <input type="number" id="ps-weight" value="2" step="0.5">
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input type="checkbox" id="ps-signature" style="width:auto;margin:0">
+          <label style="display:inline;margin:0;text-transform:none;letter-spacing:0;font-size:.76rem;color:var(--wh)">Require signature on delivery</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+          <input type="checkbox" id="ps-insurance" style="width:auto;margin:0" checked>
+          <label style="display:inline;margin:0;text-transform:none;letter-spacing:0;font-size:.76rem;color:var(--wh)">Include insurance (declared value)</label>
+        </div>
+        <button class="btn btn-purp btn-sm" style="margin-top:10px;width:100%" onclick="savePostageSettings()">Save Preferences</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color:var(--gold)">🔑 Shipping API Keys</div>
+        <div style="font-size:.7rem;color:var(--gold);padding:6px 10px;background:rgba(245,158,11,.06);border-radius:6px;margin-bottom:10px">Keys stored locally only</div>
+        <label>EasyPost API Key</label>
+        <input type="password" id="ps-easypost" placeholder="EZAK... (test or live)">
+        <div style="font-size:.68rem;color:var(--soft);margin-bottom:8px">Get free at easypost.com — includes USPS + UPS + FedEx rates</div>
+        <label>Sender Name</label>
+        <input id="ps-sender-name" placeholder="Your Name / Shop Name">
+        <label>Sender Address</label>
+        <input id="ps-addr1" placeholder="123 Main St">
+        <div class="form-row">
+          <input id="ps-city" placeholder="City" style="flex:2">
+          <input id="ps-state" placeholder="ST" style="flex:1;max-width:60px">
+          <input id="ps-zip" placeholder="12345" style="flex:1;max-width:80px">
+        </div>
+        <button class="btn btn-purp" style="width:100%;margin-top:6px" onclick="saveShippingKeys()">Save</button>
+        <div id="ps-key-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Rate Shopper -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title" style="color:var(--gold)">💰 Rate Shopper</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px">Compare USPS vs UPS for a single shipment</div>
+        <label>To Address</label>
+        <input id="rs-to-zip" placeholder="Destination ZIP code">
+        <div class="form-row">
+          <div><label>Weight (oz)</label><input type="number" id="rs-weight" value="2" step="0.5"></div>
+          <div><label>Value ($)</label><input type="number" id="rs-value" placeholder="25.00"></div>
+        </div>
+        <button class="btn btn-outline btn-sm" style="width:100%;margin-top:6px" onclick="shopRates()" id="rs-btn">Get Live Rates</button>
+        <div id="rates-display" style="margin-top:10px"></div>
+      </div>
+
+      <!-- Bulk Label Generation -->
+      <div class="card">
+        <div class="card-title" style="color:var(--grn)">🏷 Bulk Label Generation</div>
+        <div style="font-size:.74rem;color:var(--soft);margin-bottom:10px">Generate shipping labels for all winners without addresses</div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Winners needing labels</span><span id="bulk-count" style="color:var(--gold)">0</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Missing addresses</span><span id="bulk-missing" style="color:var(--red)">0</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span class="soft">Est. postage (USPS)</span><span id="bulk-est" style="color:var(--grn)">$0.00</span></div>
+        <div class="row" style="display:flex;justify-content:space-between;padding:4px 0"><span class="soft">Labels ready</span><span id="bulk-ready" style="color:var(--grn)">0</span></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-purp btn-sm" onclick="generateBulkLabels()" style="flex:1">Generate All Labels</button>
+          <button class="btn btn-outline btn-sm" onclick="downloadAllLabels()" style="flex:1">↓ Download ZIP</button>
+        </div>
+        <div id="bulk-status" style="margin-top:8px;font-size:.72rem;color:var(--soft)"></div>
+        <!-- Label list -->
+        <div id="label-list" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     NOTIFY TAB
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="pane" id="pane-notify">
+  <div class="g2">
+    <div>
+      <!-- Notification Channels Config -->
+      <div class="card" style="border-top:3px solid var(--blue)">
+        <div class="card-title" style="color:var(--blue)">📣 Notification Channels</div>
+        <!-- Email -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">📧</span>
+            <span style="font-size:.8rem;font-weight:700">Email</span>
+            <span id="email-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input type="password" id="n-resend-key" placeholder="Resend API key (re_...)">
+          <input id="n-from-email" placeholder="breaks@yourdomain.com" style="margin-top:4px">
+          <div style="font-size:.68rem;color:var(--soft);margin-bottom:4px">Get free at resend.com · 3,000 emails/mo free</div>
+        </div>
+        <!-- SMS -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">💬</span>
+            <span style="font-size:.8rem;font-weight:700">SMS (Twilio)</span>
+            <span id="sms-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input type="password" id="n-twilio-sid" placeholder="Twilio Account SID">
+          <input type="password" id="n-twilio-token" placeholder="Twilio Auth Token" style="margin-top:4px">
+          <input id="n-twilio-from" placeholder="Your Twilio phone +15551234567" style="margin-top:4px">
+        </div>
+        <!-- Discord -->
+        <div style="padding:10px;background:var(--s2);border-radius:8px;margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1rem">🟣</span>
+            <span style="font-size:.8rem;font-weight:700">Discord</span>
+            <span id="discord-ch-status" style="font-size:.66rem;color:var(--gold);margin-left:auto">not configured</span>
+          </div>
+          <input id="n-discord-webhook" placeholder="Discord webhook URL">
+          <div style="font-size:.68rem;color:var(--soft)">Server Settings → Integrations → Webhooks</div>
+        </div>
+        <button class="btn btn-purp" style="width:100%" onclick="saveNotifyChannels()">Save Channels</button>
+        <div id="n-ch-status" style="margin-top:6px;font-size:.72rem;text-align:center;color:var(--soft)"></div>
+      </div>
+
+      <!-- Customer List -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">👥 Customer List</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input id="n-cust-search" placeholder="Search..." style="flex:1;margin:0" oninput="renderCustomerList()">
+          <button class="btn btn-outline btn-sm" onclick="importCustomersFromWinners()">↑ Import from Winners</button>
+        </div>
+        <div id="customer-list-display" style="font-size:.74rem;max-height:180px;overflow-y:auto"></div>
+        <div style="font-size:.7rem;color:var(--soft);margin-top:6px" id="customer-count">0 customers · 0 with email · 0 with phone</div>
+      </div>
+    </div>
+
+    <div>
+      <!-- Compose & Send -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">✉️ Compose Message</div>
+        <label>Template</label>
+        <select id="n-template" onchange="loadTemplate()">
+          <option value="custom">Custom Message</option>
+          <option value="announce">📅 Upcoming Break Announcement</option>
+          <option value="winner">🏆 You Won! Congratulations</option>
+          <option value="shipped">📦 Your Package Shipped</option>
+          <option value="reminder">⏰ Break Starting Soon Reminder</option>
+          <option value="sold_out">🔥 Break Sold Out!</option>
+          <option value="results">📊 Break Results + Cards</option>
+        </select>
+        <label>Subject (Email)</label>
+        <input id="n-subject" placeholder="🔥 Box Break Tonight at 8pm EST!">
+        <label>Message</label>
+        <textarea id="n-message" style="height:120px;resize:vertical" placeholder="Write your message here...&#10;&#10;Use {name} for winner name&#10;{break_name} for break title&#10;{card} for their card&#10;{tracking} for tracking number"></textarea>
+        <label>Send To</label>
+        <select id="n-send-to">
+          <option value="all">All Customers</option>
+          <option value="winners">Winners Only (current break)</option>
+          <option value="paid">Paid Winners Only</option>
+          <option value="unshipped">Unshipped Winners</option>
+          <option value="test">Test (send to myself only)</option>
+        </select>
+        <label>Send Via</label>
+        <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-email" checked style="width:auto;margin:0"> Email</label>
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-sms" style="width:auto;margin:0"> SMS</label>
+          <label style="display:flex;gap:5px;align-items:center;margin:0;cursor:pointer;color:var(--wh)"><input type="checkbox" id="send-discord" style="width:auto;margin:0"> Discord</label>
+        </div>
+        <button class="btn btn-purp" style="width:100%" id="n-send-btn" onclick="sendNotification()">📣 Send Notification</button>
+        <div id="n-send-status" style="margin-top:8px;font-size:.74rem;text-align:center;color:var(--soft)"></div>
+      </div>
+
+      <!-- Sent History -->
+      <div class="card">
+        <div class="card-title" style="color:var(--blue)">📨 Sent History</div>
+        <div id="notify-history" style="font-size:.74rem;max-height:200px;overflow-y:auto">
+          <div style="color:var(--soft);text-align:center;padding:16px">No messages sent yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="pane" id="pane-settings">
   <div class="g2">
     <div class="card">
@@ -531,11 +1107,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
     <div>
       <div style="font-size:.96rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Droppa Card Vault™</div>
-      <div style="font-size:.7rem;color:var(--soft);">Mail in your graded card → get an on-chain NFT → sell or redeem</div>
+      <div style="font-size:.7rem;color:var(--soft);">Grade card → Register on-chain → Mail to secure lockbox → NFT minted · Regulated · Immutable</div>
     </div>
+    <div style="padding:6px 12px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);border-radius:20px;font-size:.68rem;font-weight:700;color:var(--grn)">🔒 CardVault.sol · On-Chain</div>
     <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
       <div style="padding:6px 14px;border-radius:20px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);font-size:.7rem;font-weight:700;color:var(--grn);">🔒 Secure Vault · Climate Controlled</div>
-      <div style="padding:6px 14px;border-radius:20px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);font-size:.7rem;font-weight:700;color:var(--purp);">📋 Patent Pending</div>
+      <div style="padding:6px 14px;border-radius:20px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);font-size:.7rem;font-weight:700;color:var(--purp);">🔒 Proprietary</div>
     </div>
   </div>
 
@@ -568,7 +1145,32 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   </div>
 
   <!-- SUBMIT CARD -->
-  <div id="vtab-intake-content">
+  
+<!-- Status pipeline -->
+<div style="display:flex;gap:0;background:var(--s2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px">
+  <div style="flex:1;padding:10px 14px;text-align:center;border-right:1px solid var(--line)">
+    <div style="font-size:.62rem;color:var(--soft);margin-bottom:3px">STEP 1</div>
+    <div style="font-size:.76rem;font-weight:700;color:var(--purp)">📝 Register</div>
+    <div style="font-size:.6rem;color:var(--dim);margin-top:2px">Submit details on-chain</div>
+  </div>
+  <div style="flex:1;padding:10px 14px;text-align:center;border-right:1px solid var(--line)">
+    <div style="font-size:.62rem;color:var(--soft);margin-bottom:3px">STEP 2</div>
+    <div style="font-size:.76rem;font-weight:700;color:var(--blue)">📦 Ship Card</div>
+    <div style="font-size:.6rem;color:var(--dim);margin-top:2px">Mail with request ID</div>
+  </div>
+  <div style="flex:1;padding:10px 14px;text-align:center;border-right:1px solid var(--line)">
+    <div style="font-size:.62rem;color:var(--soft);margin-bottom:3px">STEP 3</div>
+    <div style="font-size:.76rem;font-weight:700;color:var(--gold)">🔒 Lockbox</div>
+    <div style="font-size:.6rem;color:var(--dim);margin-top:2px">Climate-controlled vault</div>
+  </div>
+  <div style="flex:1;padding:10px 14px;text-align:center">
+    <div style="font-size:.62rem;color:var(--soft);margin-bottom:3px">STEP 4</div>
+    <div style="font-size:.76rem;font-weight:700;color:var(--grn)">🎴 NFT Minted</div>
+    <div style="font-size:.6rem;color:var(--dim);margin-top:2px">On-chain ownership</div>
+  </div>
+</div>
+
+<div id="vtab-intake-content">
     <div class="g2">
       <div>
         <div class="card">
@@ -1130,7 +1732,7 @@ function previewBreak(){
 }
 
 async function createBreak(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const title=document.getElementById("cb-title").value;
   const slots=parseInt(document.getElementById("cb-slots").value)||30;
   const price=parseFloat(document.getElementById("cb-price").value)||65;
@@ -1231,7 +1833,7 @@ function renderSampleBreaks(){
 }
 
 async function buySlot(breakId,price){
-  if(!signer){alert("Connect wallet to buy slots");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to buy slots", true);return;}
   const commit=ethers.keccak256(ethers.randomBytes(32));
   try{
     const tx=await bfContract.purchaseSlot(breakId,commit);
@@ -1345,7 +1947,7 @@ async function getAIPrice(){
       document.getElementById("ai-price-status").textContent="Set API key in Settings for live AI pricing";
       return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:800,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -1370,7 +1972,7 @@ async function askCoach(){
       output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live coaching.</strong><br><br>Demo tip: Create urgency by announcing "LAST 5 SLOTS" when you have 5+ remaining. Show the box, hype the potential pulls, and use countdowns.</div>`;
       btn.disabled=false;btn.textContent="Ask Coach";return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:600,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -1397,7 +1999,7 @@ async function generateClip(){
       output.innerHTML=`<div class="ai-msg ai"><strong>⚠ Set API key in Settings for live clip generation.</strong><br><br>Demo clip for ${platform}:<br><br><strong>Hook:</strong> "Wait... is this real?! 👀"<br><br><strong>Script:</strong> Just pulled this from the break — [show card] — this is exactly why we do these breaks. Slots still available, link in bio!<br><br><strong>Caption:</strong> ${ctx.slice(0,80)}... #trading cards #cardbreaks #droppa<br><br><strong>CTA:</strong> Join the next break → link in bio</div>`;
       btn.disabled=false;btn.textContent="Generate Script + Hook";return;
     }
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,messages:[{role:"user",content:prompt}]})});
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":getAnthropicKey(),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:700,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
     const text=data.content?.[0]?.text||"No response";
     output.innerHTML=`<div class="ai-msg ai">${text.replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")}</div>`;
@@ -1515,13 +2117,14 @@ async function testConnection(){
 }
 
 async function getTestUSDC(){
-  if(!usdcContract){alert("Connect wallet");return;}
+  if(!usdcContract){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   await(await usdcContract.faucet()).wait();
   toast("10,000 USDC added ✓");
 }
 
 function show(id){
-  const ids=["dashboard","breaks","inventory","pricing","analytics","clips","referrals","vault","settings"];
+  // reordered
+const ids=["stream","winners","postage","notify","breaks","dashboard","inventory","pricing","analytics","clips","referrals","vault","settings"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="dashboard")loadDashboard();
@@ -1861,7 +2464,7 @@ function updateVaultPreview() {
 }
 
 async function submitCardToVault() {
-  if (!signer) { alert("Connect wallet first"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const desc  = document.getElementById("vc-desc").value.trim();
   const grader = document.getElementById("vc-grader").value;
   const grade  = parseInt(document.getElementById("vc-grade").value)||100;
@@ -2074,7 +2677,86 @@ async function loadVaultStats() {
   } catch(e) {}
 }
 
+
+// ── Anthropic Key Manager ─────────────────────────────────────────────────
+function getAnthropicKey() {
+  return localStorage.getItem("rawagon-anthropic-key") ||
+         localStorage.getItem("dtr-anthropic") || "";
+}
+function requireAnthropicKey() {
+  const k = getAnthropicKey();
+  if (!k) {
+    toast("Add your Anthropic API key in Settings → API Keys", true);
+    return null;
+  }
+  return k;
+}
+
+// ── Global API Key Manager ────────────────────────────────────────────────
+const RAW_KEYS = {
+  anthropic:   () => localStorage.getItem("rawagon-anthropic-key") || localStorage.getItem("dtr-anthropic") || "",
+  tmdb:        () => localStorage.getItem("rawagon-tmdb-key") || localStorage.getItem("dtr-tmdb") || "",
+  elevenlabs:  () => localStorage.getItem("rawagon-elevenlabs-key") || localStorage.getItem("dtr-el") || "",
+  goldapi:     () => localStorage.getItem("rawagon-goldapi-key") || "",
+};
+
+function saveGlobalKey() {
+  const key = document.getElementById("gkb-key")?.value?.trim();
+  if (!key) return;
+  if (key.startsWith("sk-ant-")) {
+    localStorage.setItem("rawagon-anthropic-key", key);
+    localStorage.setItem("dtr-anthropic", key); // also set for Drop The Reel
+  } else if (key.startsWith("xi-")) {
+    localStorage.setItem("rawagon-elevenlabs-key", key);
+  } else if (key.length > 20) {
+    localStorage.setItem("rawagon-tmdb-key", key);
+  }
+  document.getElementById("global-key-banner").style.display = "none";
+  document.getElementById("gkb-key").value = "";
+  if (typeof toast === "function") toast("API key saved ✓");
+}
+
+// Show banner if no Anthropic key and user clicks an AI feature
+function checkAndPromptKey() {
+  if (!RAW_KEYS.anthropic()) {
+    const banner = document.getElementById("global-key-banner");
+    if (banner) { banner.style.display = "flex"; banner.style.removeProperty("display"); 
+      document.getElementById("gkb-key")?.focus(); return false; }
+  }
+  return true;
+}
+
+function anthropicFetch(messages, maxTokens = 800, systemPrompt = "") {
+  const key = RAW_KEYS.anthropic();
+  if (!key) { checkAndPromptKey(); return Promise.reject(new Error("No Anthropic API key")); }
+  const body = { model: "claude-sonnet-4-6", max_tokens: maxTokens, messages };
+  if (systemPrompt) body.system = systemPrompt;
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json()).then(d => {
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text || "";
+  });
+}
+
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   previewBreak();
   renderInventory();updateInvStats();
   renderReferrals();
@@ -2096,6 +2778,65 @@ window.addEventListener("load",()=>{
   })();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+  populateBreakSelects();
+  renderWinnersTable();
+  updatePostageStats();
+  loadPostageSettings();
+  loadNotifySettings();
+  renderNotifyHistory();
+  renderCustomerList();
+  // Set overlay URL to actual device IP
+  try {
+    const overlayEl = document.getElementById('overlay-url');
+    if (overlayEl) {
+      const base = window.location.origin;
+      overlayEl.textContent = base + '/apps/droppa/overlay.html';
+    }
+  } catch(e) {}
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'droppa'});
 });
 </script>
+
+<!-- Global API Key Settings (injected into all apps) -->
+<div id="global-key-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:#0d0a14;border-top:1px solid rgba(245,158,11,.3);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <span style="font-size:.72rem;color:#f59e0b;font-weight:700">⚠ AI features need API key</span>
+  <input id="gkb-key" type="password" placeholder="sk-ant-... (Anthropic API key)" 
+    style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 10px;color:#f0eaff;font-family:JetBrains Mono,monospace;font-size:.74rem;outline:none">
+  <button onclick="saveGlobalKey()" style="padding:5px 14px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:JetBrains Mono,monospace">Save</button>
+  <button onclick="document.getElementById('global-key-banner').style.display='none'" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.15);color:#7a6a9a;border-radius:6px;font-size:.72rem;cursor:pointer">×</button>
+</div>
+<script src="/apps/droppa/droppa-live.js"></script>
+<script src="/apps/droppa/droppa-agent.js"></script>
+<script src="/packages/network-sdk/index.js"></script>
+
+<script>
+function importCustomersFromWinners() {
+  const winners=JSON.parse(localStorage.getItem('droppa-winners')||'[]');
+  const existing=JSON.parse(localStorage.getItem('bp-customers')||'[]');
+  let added=0;
+  winners.forEach(w=>{
+    if(!w.name||existing.find(c=>c.name===w.name)) return;
+    existing.push({id:Date.now()+added,name:w.name,phone:w.phone||'',email:w.email||'',ts:Date.now()});
+    added++;
+  });
+  localStorage.setItem('bp-customers',JSON.stringify(existing));
+  if(typeof toast==='function') toast(added+' customers imported to BitPawn ✓');
+}
+</script>
+
+
+<!-- Mobile bottom nav -->
+<div class="rw-bottom-nav" id="mobile-bottom-nav">
+  <div class="rw-bottom-nav-items">
+    <div class="rw-bottom-nav-item" onclick="show('stream')" ontouchstart=""><span class="nav-icon">🔴</span><span>Live</span></div><div class="rw-bottom-nav-item" onclick="show('winners')" ontouchstart=""><span class="nav-icon">🏆</span><span>Winners</span></div><div class="rw-bottom-nav-item" onclick="show('postage')" ontouchstart=""><span class="nav-icon">📦</span><span>Postage</span></div><div class="rw-bottom-nav-item" onclick="show('breaks')" ontouchstart=""><span class="nav-icon">🎴</span><span>Breaks</span></div><div class="rw-bottom-nav-item" onclick="show('settings')" ontouchstart=""><span class="nav-icon">⚙️</span><span>Settings</span></div>
+  </div>
+</div>
+<style>
+@media (max-width: 700px) {
+  .rw-bottom-nav { display: block !important; }
+  /* Active state syncs with show() */
+}
+</style>
+
 </body></html>

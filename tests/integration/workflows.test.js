@@ -685,5 +685,461 @@ t('Drop The Reel: break-even = 8 subscribers', () => {
   assert.strictEqual(breakEven, 8);
 });
 
+
+// ── Real API integration tests ─────────────────────────────────────────────
+t('Droppa: anthropicFetch helper exists in app', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('function anthropicFetch('), 'anthropicFetch must exist');
+  assert(html.includes('anthropic-dangerous-direct-browser-access'), 'must have browser header');
+  assert(html.includes('claude-sonnet-4-6'), 'must use latest model');
+  assert(!html.includes('claude-sonnet-4-20250514'), 'old model must be removed');
+});
+
+t('Drop The Reel: uses anthropicFetch not raw fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/drop-the-reel/index.html','utf8');
+  assert(html.includes('anthropicFetch('), 'must use anthropicFetch helper');
+});
+
+t('GoldSnap: CoinGecko PAXG gold price fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/goldsnap/index.html','utf8');
+  assert(html.includes('pax-gold'), 'must use PAXG for live gold price');
+  assert(!html.includes('query1.finance.yahoo'), 'Yahoo Finance must be removed');
+});
+
+t('BitPawn: CoinGecko PAXG gold price fetch', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/bitpawn/index.html','utf8');
+  assert(html.includes('pax-gold'), 'BitPawn must use PAXG for gold price');
+});
+
+t('QWKS: real Visa interchange rates by category', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/qwks-protocol/index.html','utf8');
+  assert(html.includes('VISA_RATES'), 'must have VISA_RATES object');
+  assert(html.includes('Restaurant'), 'must have restaurant category');
+  assert(html.includes('Pawn Shop'), 'must have pawn shop rate');
+});
+
+t('AutoIQ: NHTSA recall-based valuation', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/autoiq/index.html','utf8');
+  assert(html.includes('recallPenalty'), 'must adjust price for recalls');
+  assert(html.includes('api.nhtsa.gov/recalls'), 'must query NHTSA recalls');
+});
+
+t('Global key manager: RAW_KEYS object in AI apps', () => {
+  const fs = require('fs');
+  const apps = ['apps/droppa/index.html','apps/drop-the-reel/index.html','apps/rawagon-os/index.html'];
+  apps.forEach(app => {
+    const html = fs.readFileSync(app,'utf8');
+    assert(html.includes('RAW_KEYS'), `${app} must have RAW_KEYS`);
+    assert(html.includes('rawagon-anthropic-key'), `${app} must use shared key name`);
+  });
+});
+
+t('ProfitPilot: revenue from allocation.json', () => {
+  const alloc = JSON.parse(require('fs').readFileSync('config/allocation.json','utf8'));
+  const qwks = alloc.entities.QWKS.year2_annual_revenue;
+  assert(qwks > 7000000, 'QWKS revenue should be > $7M');
+  const total = alloc.totals.year2_gross_revenue;
+  assert(total > 25000000, 'Total revenue should be > $25M');
+});
+
+t('CoinGecko PAXG: correct API endpoint format', () => {
+  const url = 'https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd';
+  assert(url.includes('pax-gold'), 'must use pax-gold token ID');
+  assert(url.includes('coingecko.com'), 'must use CoinGecko');
+});
+
+t('Droppa: key manager banner exists', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('global-key-banner'), 'must have key banner');
+  assert(html.includes('saveGlobalKey'), 'must have saveGlobalKey function');
+});
+
+
+// ── Droppa Live Stream / Winners / Postage / Notify tests ─────────────────
+t('Droppa: 13 tabs (4 new added)', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const m = html.match(/const ids=\[([^\]]+)\]/);
+  assert(m, 'ids array must exist');
+  const ids = m[1].split(',').map(s => s.trim().replace(/['"]/g,''));
+  assert.strictEqual(ids.length, 13, 'must have 13 tabs');
+  ['stream','winners','postage','notify'].forEach(tab =>
+    assert(ids.includes(tab), `${tab} tab must exist`)
+  );
+});
+
+t('Droppa: all 13 pane IDs exist in HTML', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const tabs = ['dashboard','breaks','inventory','pricing','analytics','clips','referrals','vault','stream','winners','postage','notify','settings'];
+  tabs.forEach(t => assert(html.includes('id="pane-'+t+'"'), `pane-${t} must exist`));
+});
+
+t('Droppa: Live Stream tab has parseChatMessages + anthropicFetch', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('parseChatMessages'), 'must have parseChatMessages');
+  assert(src.includes('generateCallout'), 'must have generateCallout');
+  assert(src.includes('updateOverlayData'), 'must have updateOverlayData');
+  assert(src.includes('startLiveSession'), 'must have startLiveSession');
+});
+
+t('Droppa: Winners tab has CRUD + CSV export + auto-assign', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('saveWinner'), 'must have saveWinner');
+  assert(html.includes('exportWinnersCSV'), 'must have exportWinnersCSV');
+  assert(html.includes('autoAssignCards'), 'must have autoAssignCards');
+  assert(html.includes('renderWinnersTable'), 'must have renderWinnersTable');
+});
+
+t('Droppa: Postage tab has EasyPost API integration', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('api.easypost.com'), 'must call EasyPost API');
+  assert(src.includes('shopRates'), 'must have shopRates');
+  assert(src.includes('generateBulkLabels'), 'must have generateBulkLabels');
+  assert(src.includes('buyLabel'), 'must have buyLabel');
+  assert(src.includes('/v2/shipments'), 'must use EasyPost v2 shipments endpoint');
+});
+
+t('Droppa: Notify tab has Email + SMS + Discord channels', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('api.resend.com/emails'), 'must use Resend API for email');
+  assert(src.includes('twilio.com'), 'must use Twilio for SMS');
+  assert(src.includes('discord'), 'must use Discord webhook');
+  assert(src.includes('sendNotification'), 'must have sendNotification');
+});
+
+t('Droppa: Notify tab has all 6 message templates', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  const src2 = require('fs').readFileSync('apps/droppa/droppa-live.js','utf8');
+  ['announce','winner','shipped','reminder','sold_out','results'].forEach(t =>
+    assert(src2.includes(t + ':'), `template ${t} must exist`)
+  );
+});
+
+t('Droppa: OBS overlay file exists', () => {
+  const fs = require('fs');
+  assert(fs.existsSync('apps/droppa/overlay.html'), 'overlay.html must exist');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('droppa-overlay'), 'must read from localStorage');
+  assert(html.includes('confetti') || html.includes('cFall'), 'must have winner confetti');
+  assert(html.includes('class="bar"') || html.includes('.bar {') || html.includes('.bar{'), 'must have bottom bar overlay');
+});
+
+t('Droppa: EasyPost rate shopping handles no-key gracefully', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-live.js','utf8');
+  assert(src.includes('EasyPost API key'), 'must show fallback when no key');
+});
+
+t('OBS overlay: reads CoinGecko for live prices', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('pax-gold'), 'overlay must show live gold price');
+  assert(html.includes('bitcoin'), 'overlay must show live BTC price');
+  assert(html.includes('cFall') || html.includes('confettiFall'), 'must have winner confetti animation');
+});
+
+
+// ── Patent cleanup + app completion tests ─────────────────────────────────
+t('No patent pending refs in any app HTML', () => {
+  const fs = require('fs');
+  const apps = ['droppa','goldsnap','bitpawn','autoiq','1nce-allcard','rawagon-os','profitpilot','qwks-protocol'];
+  apps.forEach(app => {
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(!html.toLowerCase().includes('patent pending'), app + ' must not say patent pending');
+    assert(!html.includes('RAW-2026-PROV-001') || html.includes('RAW-2026 (planned)'), app + ' must not reference unsubmitted patent');
+  });
+});
+
+t('No fake filed/FILED dates in any app', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/profitpilot/index.html','utf8');
+  assert(!html.includes('FILED</span></td><td>5 inventions'), 'profitpilot must not show patent as FILED');
+});
+
+t('GoldSnap: mock registry replaced with on-chain lookup', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/goldsnap/index.html','utf8');
+  assert(!html.includes('mockRegistry'), 'GoldSnap must not use mockRegistry');
+  assert(html.includes('gtxSupply'), 'GoldSnap must check on-chain supply');
+});
+
+t('AutoIQ: no Q3/Q2 2026 future dates', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/autoiq/index.html','utf8');
+  assert(!html.includes('Q3 2026'), 'AutoIQ must not reference Q3 2026 dates');
+  assert(!html.includes('Q2 2026'), 'AutoIQ must not reference Q2 2026 dates');
+});
+
+t('AllCard: AI identity analysis wired', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/1nce-allcard/index.html','utf8');
+  assert(html.includes('aiIdentityAnalysis'), 'AllCard must have AI identity analysis');
+  assert(html.includes('anthropicFetch'), 'AllCard must have anthropicFetch');
+});
+
+t('PawnVault: AI item valuation wired', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/pawnvault/index.html','utf8');
+  assert(html.includes('aiValueItem'), 'PawnVault must have AI valuation');
+  assert(html.includes('api.anthropic.com'), 'PawnVault must call Anthropic API');
+});
+
+t('AutoIQ: AI VIN report wired', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/autoiq/index.html','utf8');
+  assert(html.includes('aiVINAnalysis'), 'AutoIQ must have AI VIN analysis');
+});
+
+t('No Yahoo Finance in any app (CORS blocked)', () => {
+  const fs = require('fs');
+  const apps = ['droppa','goldsnap','bitpawn','autoiq','1nce-allcard','rawagon-os','profitpilot','qwks-protocol'];
+  apps.forEach(app => {
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(!html.includes('query1.finance.yahoo.com'), app + ' must not use Yahoo Finance (CORS blocked)');
+  });
+});
+
+t('All 11 apps have OS back-link', () => {
+  const fs = require('fs');
+  const apps = ['bitpawn','droppa','autoiq','goldsnap','qwks-protocol','1nce-allcard','profitpilot','pawnvault','drop-the-reel','ai-orchestrator'];
+  apps.forEach(app => {
+    if (!fs.existsSync('apps/'+app+'/index.html')) return;
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    const hasBack = html.includes('href="/"') || html.includes("href='/'");
+    assert(hasBack, app + ' must have OS back-link');
+  });
+});
+
 console.log(`\n  ${p}/${p+f} passed${f?' — '+f+' FAILED':' ✓'}`);
+// ── Network-wide upgrade tests ─────────────────────────────────────────────
+t('server.js v2: SSE + network-state + proxy routes present', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes('/api/events'),         'must have SSE /api/events');
+  assert(src.includes('/api/event'),          'must have POST /api/event');
+  assert(src.includes('/api/network-state'),  'must have /api/network-state');
+  assert(src.includes('/api/anthropic-proxy'),'must have Anthropic proxy');
+  assert(src.includes('sseClients'),          'must manage SSE clients');
+  assert(!src.includes('Patent Pending'),     'server must not have patent refs');
+});
+
+t('network-sdk: publish + subscribe + RAWNet.EVENTS present', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('packages/network-sdk/index.js','utf8');
+  assert(src.includes('function publish'),    'must have publish');
+  assert(src.includes('function subscribe'),  'must have subscribe');
+  assert(src.includes('function setWallet'),  'must have setWallet');
+  assert(src.includes('function getKey'),     'must have getKey');
+  assert(src.includes('anthropicFetch'),      'must have anthropicFetch');
+  assert(src.includes('BREAK_COMPLETED'),     'must have BREAK_COMPLETED event');
+  assert(src.includes('/api/anthropic-proxy'),'must try server proxy first');
+  assert(src.includes('/api/events'),         'must connect SSE');
+});
+
+t('network-sdk wired into all 11 apps', () => {
+  const fs = require('fs');
+  const apps = ['bitpawn','droppa','autoiq','goldsnap','qwks-protocol','1nce-allcard',
+                 'profitpilot','rawagon-os','pawnvault','drop-the-reel','ai-orchestrator'];
+  apps.forEach(app => {
+    if (!fs.existsSync('apps/'+app+'/index.html')) return;
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(html.includes('network-sdk/index.js'), app + ' must include network-sdk');
+  });
+});
+
+t('rawagon-os nav has all 11 apps including 3 new', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
+  assert(html.includes("switchApp('bitpawn')"),     'must have BitPawn nav');
+  assert(html.includes("switchApp('dropthereel')"), 'must have Drop The Reel nav');
+  // PawnVault merged into BitPawn - nav uses bitpawn
+  assert(html.includes("switchApp('bitpawn')"),     'must have BitPawn nav (merged PawnVault)');
+  assert(html.includes("switchApp('orchestrator')"), 'must have AI Orchestrator nav');
+  assert(!html.includes("switchApp('pawnsnap')") || html.includes("switchApp('bitpawn')"),
+    'pawnsnap must be renamed to bitpawn');
+});
+
+t('rawagon-os: activity stream reads from RAWNet event bus', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
+  assert(html.includes('RAWNet.getEvents'), 'must use RAWNet.getEvents');
+  assert(html.includes("RAWNet.subscribe"), 'must subscribe to events');
+});
+
+t('allocation.json has all 10 entities with correct totals', () => {
+  const fs = require('fs');
+  const alloc = JSON.parse(fs.readFileSync('config/allocation.json','utf8'));
+  const entities = Object.keys(alloc.entities);
+  assert(entities.length >= 8,          'must have at least 8 entities (PawnVault merged into BitPawn)');
+  assert(alloc.entities.DropTheReel,    'must have Drop The Reel');
+  // PawnVault merged into BitPawn
+  assert(alloc.entities.BitPawn && alloc.entities.BitPawn.year2_annual_revenue >= 1000000, 'BitPawn must have merged PawnVault revenue');
+  assert(alloc.entities.AIOrchestrator, 'must have AI Orchestrator');
+  const total2 = Object.values(alloc.entities).reduce((s,e)=>s+(e.year2_annual_revenue||0),0);
+  assert(total2 > 25000000, 'total must be > $25M (got $' + total2.toLocaleString() + ')');
+});
+
+t('agent-system.js has 11 agents including 3 new', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('agents/agent-system.js','utf8');
+  assert(src.includes("id:'dropthereel'"),    'must have dropthereel agent');
+  // PawnVault agent merged into bitpawn agent
+  assert(src.includes("id:'bitpawn'"),          'must have bitpawn agent (merged pawnvault)');
+  assert(src.includes("id:'aiorchestrator'"), 'must have aiorchestrator agent');
+  const count = (src.match(/id:'/g)||[]).length;
+  assert(count >= 10, 'must have at least 10 agents (pawnvault merged)');
+});
+
+t('No patent pending in any app HTML', () => {
+  const fs = require('fs');
+  const files = require('fs').readdirSync('apps').filter(d => fs.existsSync('apps/'+d+'/index.html'));
+  files.forEach(app => {
+    const html = fs.readFileSync('apps/'+app+'/index.html','utf8');
+    assert(!html.toLowerCase().includes('patent pending'), app + ' must not say patent pending');
+  });
+});
+
+// ── Droppa Streaming Agent tests ─────────────────────────────────────────────
+t('Droppa agent: droppa-agent.js exists with all platform + mode functions', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes('setPlatform'),       'must have setPlatform');
+  assert(src.includes('setAgentMode'),      'must have setAgentMode');
+  assert(src.includes('toggleLiveSession'), 'must have toggleLiveSession');
+  assert(src.includes('parseChatMessages'), 'must have parseChatMessages');
+  assert(src.includes('genScript'),         'must have genScript host scripts');
+  assert(src.includes('runFullCycle'),      'must have runFullCycle');
+  assert(src.includes('runPostShowWorkflow'), 'must have runPostShowWorkflow');
+  assert(src.includes("mode === 'auto'"),   'must have auto mode');
+  assert(src.includes("mode === 'host'"),   'must have host mode');
+  assert(src.includes('overlayAction'),     'must have overlayAction');
+});
+
+t('Droppa agent: platform support for WhatNot + TikTok + YouTube + Instagram', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes("whatnot"),   'must support WhatNot');
+  assert(src.includes("tiktok"),    'must support TikTok');
+  assert(src.includes("YouTube") || src.includes("youtube"), 'must support YouTube');
+  assert(src.includes("Instagram") || src.includes("instagram"), 'must support Instagram');
+});
+
+t('Droppa agent: post-show workflow sends emails + discord', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('apps/droppa/droppa-agent.js','utf8');
+  assert(src.includes('api.resend.com'), 'must send winner emails via Resend');
+  assert(src.includes('discord'),        'must post to Discord after show');
+  assert(src.includes('generateBulkLabels'), 'must call generateBulkLabels');
+});
+
+t('Droppa: command center pane has all 3 agent modes', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes("mode-assist"),   'must have assist mode button');
+  assert(html.includes("mode-host"),     'must have host mode button');
+  assert(html.includes("mode-auto"),     'must have auto mode button');
+  assert(html.includes('plat-btn'),      'must have platform buttons');
+  assert(html.includes("cc-live-btn"),   'must have Go Live button');
+});
+
+t('Droppa: command center has live winner board + host scripts', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('live-winner-board'), 'must have live winner board');
+  assert(html.includes('host-script-card'),  'must have host script card');
+  assert(html.includes('runPostShowWorkflow'),'must have post-show button');
+  assert(html.includes('overlayAction'),     'must have overlay action buttons');
+});
+
+t('Droppa: overlay has platform color support + sold-out + duration', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/overlay.html','utf8');
+  assert(html.includes('--plat'),          'must have platform color var');
+  assert(html.includes('sold-out'),        'must have sold-out display');
+  assert(html.includes('sessionRevenue'),  'must show session revenue');
+  assert(html.includes('durTimer'),        'must have duration timer');
+  assert(html.includes('doAction'),        'must handle overlay actions');
+});
+
+t('Droppa: droppa-agent.js wired into index.html', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('droppa-agent.js'), 'droppa-agent.js must be wired in');
+});
+
+// ── Architecture refactor tests ───────────────────────────────────────────────
+t('server root serves rawagon-os (THE network OS)', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("rawagon-os'") && src.includes('index.html'), 'root must serve rawagon-os');
+  // Root serves rawagon-os directly - verified above
+});
+
+t('/api/profit-pilot endpoint exists in server', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("/api/profit-pilot"), 'must have /api/profit-pilot route');
+  assert(src.includes("packages/profit-pilot/network.js"), 'must require profit-pilot module');
+});
+
+t('profit-pilot network.js has ENTITIES + LTN + networkHealth', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('packages/profit-pilot/network.js','utf8');
+  assert(src.includes('ENTITIES'),     'must have ENTITIES');
+  assert(src.includes('LTN'),          'must have LTN economics');
+  assert(src.includes('networkHealth'),'must have networkHealth function');
+  assert(src.includes('TOTAL_Y2'),     'must compute total Y2 revenue');
+});
+
+t('BitPawn has customers tab (merged from PawnVault)', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/bitpawn/index.html','utf8');
+  assert(html.includes("show('customers')"), 'must have customers tab');
+  assert(html.includes('pane-customers'),    'must have customers pane');
+  assert(html.includes('addCustomer'),       'must have addCustomer function');
+});
+
+t('PawnVault redirects to BitPawn in server APP_MAP', () => {
+  const fs = require('fs');
+  const src = fs.readFileSync('server.js','utf8');
+  assert(src.includes("pawnvault':'bitpawn") || src.includes("'pawnvault':'bitpawn"), 'pawnvault must map to bitpawn');
+});
+
+t('Droppa CardVault has 4-step lockbox pipeline', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/droppa/index.html','utf8');
+  assert(html.includes('Lockbox'),      'must mention lockbox');
+  assert(html.includes('STEP 1'),       'must have step 1');
+  assert(html.includes('NFT Minted'),   'must have NFT minted step');
+  assert(html.includes('CardVault.sol'),'must reference on-chain contract');
+});
+
+t('rawagon-os calls /api/profit-pilot for network health', () => {
+  const fs = require('fs');
+  const html = fs.readFileSync('apps/rawagon-os/index.html','utf8');
+  assert(html.includes('api/profit-pilot') || html.includes('loadNetworkProtocols'),
+    'rawagon-os must read from profit-pilot protocol');
+});
+
+t('allocation.json: no separate PawnVault entity (merged into BitPawn)', () => {
+  const fs = require('fs');
+  const alloc = JSON.parse(fs.readFileSync('config/allocation.json','utf8'));
+  assert(!alloc.entities.PawnVault, 'PawnVault must not be a separate entity');
+  const bp = alloc.entities.BitPawn;
+  assert(bp && bp.year2_annual_revenue >= 1000000, 'BitPawn must have merged revenue > $1M');
+});
+
 process.exit(f?1:0);

@@ -1,0 +1,8 @@
+{
+  "name": "@rawagon/network-sdk",
+  "version": "1.0.0",
+  "description": "RAWagon shared network event bus + state for all apps",
+  "main": "index.js",
+  "browser": "index.js",
+  "license": "MIT"
+}

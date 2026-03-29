@@ -2,10 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#040812">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>
 <meta name="theme-color" content="#F5C842">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Orchestrator 4m — R3WAGON · Multi-Model AI</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<title>AI Orchestrator 4m — RAWagon · Multi-Model AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -15,7 +22,7 @@
   --gpt:#00D4FF;--claude:#FF6B35;--gemini:#00FF87;--perp:#B388FF;
   --gold:#F5C842;--synth:#FFD700;--red:#FF4D4D;--green:#00FF87;
 }
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6;overflow-x:hidden}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Share Tech Mono', monospace;font-size:14px;line-height:1.6;overflow-x:hidden}
 ::-webkit-scrollbar{width:3px;background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:#1E1E28;border-radius:99px}
 
@@ -32,7 +39,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'JetBra
 .gate-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:9px;letter-spacing:2px}
 .gate-divider::before,.gate-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .gate-input-wrap{display:flex;gap:8px;margin-bottom:12px}
-#tokenInput{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+#tokenInput{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Share Tech Mono', monospace;font-size:12px;outline:none;transition:border-color .2s}
 #tokenInput:focus{border-color:rgba(245,200,66,.4)}
 #tokenInput::placeholder{color:var(--muted)}
 .btn-verify{padding:10px 18px;background:var(--gold);color:#06060C;border:none;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;white-space:nowrap;transition:all .2s}
@@ -83,8 +90,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'JetBra
 .ctrl-label{font-size:9px;color:var(--muted);letter-spacing:2px}
 .ctrl-select{background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;-webkit-appearance:none}
 .temp-wrap{display:flex;align-items:center;gap:6px}
-.temp-slider{-webkit-appearance:none;width:70px;height:3px;background:linear-gradient(90deg,var(--gpt),var(--perp));border-radius:99px;outline:none;cursor:pointer}
-.temp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--text);cursor:pointer}
+.temp-slider{-webkit-appearance:none;width:70px;height:3px;background:linear-gradient(90deg,var(--gpt),var(--perp));border-radius:99px;outline:none;cursor:pointer;transition:.12s}
+.temp-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--text);cursor:pointer;transition:.12s}
 .temp-val{font-size:9px;color:var(--muted);width:22px}
 
 /* ── INPUT ───────────────────────────────────────────────────────── */
@@ -199,6 +206,82 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'JetBra
   .key-badges{display:none}
   #app{padding:14px 10px 60px}
 }
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
@@ -841,7 +924,26 @@ function exportPDF() {
   if(S.synthesis?.synthesis) { lines.push(`── SYNTHESIS [${S.synthMode.toUpperCase()}] ──`,S.synthesis.synthesis,""); }
   if(Object.keys(S.debate).length) { lines.push("── DEBATE ROUND ──"); Object.entries(S.debate).forEach(([id,d]) => { if(!d?.text) return; lines.push(`${MODELS[id]?.name||id}:\n${d.text}\n`); }); }
   const win = window.open("","_blank");
-  win.document.write(`<!DOCTYPE html><html><head><title>Export</title><style>body{font-family:monospace;font-size:12px;line-height:1.8;background:#07070D;color:#C9D1D9;padding:40px;max-width:900px;margin:0 auto}pre{white-space:pre-wrap}@media print{body{background:white;color:black}}</style></head><body><pre>${lines.map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("\n")}</pre><script>window.onload=()=>window.print();<\/script></body></html>`);
+  win.document.write(`<!DOCTYPE html><html><head><title>Export</title><style>body{font-family:'Share Tech Mono', monospace;font-size:12px;line-height:1.8;background:#07070D;color:#C9D1D9;padding:40px;max-width:900px;margin:0 auto}pre{white-space:pre-wrap}@media print{body{background:white;color:black}}</style></head><body><pre>${lines.map(l=>l.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")).join("\n")}</pre><script>window.onload=()=>window.print();<\/script><script src="/packages/network-sdk/index.js"><\/script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+<\/script>
+</body></html>`);
   win.document.close();
 }
 
@@ -863,6 +965,25 @@ function clearHistory() { S.history = []; localStorage.removeItem("orc4_history"
 // ── TOAST ─────────────────────────────────────────────────────────────
 let toastTimer;
 function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2500); }
+</script>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
 </script>
 </body>
 </html>

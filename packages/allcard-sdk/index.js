@@ -18,7 +18,7 @@ const CARD_VAULT_ABI = [
  * @rawagon/allcard-sdk
  * AllCard sovereign identity card SDK
  * Shifting PAN, ZK credential proofs, multi-mode switching
- * Patent pending: RAW-2026-PROV-001
+ * Proprietary — RAWagon Systems LLC
  */
 const crypto = require('crypto');
 const zk = require('../zk-identity');

@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/apps/shared/rawagon-design.css">
+<script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
   <meta name="theme-color" content="#60a5fa">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,19 +12,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AutoIQ — Vehicle Title OS · R3NET</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>AutoIQ — Vehicle Title OS · RAWNet</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
 :root{
   --bg:#030609;--s1:#050b10;--s2:#080f18;--card:#0c1520;
   --line:rgba(96,165,250,.15);--ln2:rgba(96,165,250,.06);
   --wh:#e8f4ff;--soft:#4a7090;--dim:#1e3a50;
-  --blue:#60a5fa;--bl2:rgba(96,165,250,.15);--bl3:rgba(96,165,250,.06);
+  --accent:#60a5fa;--accent-glow:rgba(96,165,250,.2);--accent-bg:rgba(96,165,250,.06);--blue:#60a5fa;--bl2:rgba(96,165,250,.15);--bl3:rgba(96,165,250,.06);
   --cyan:#22d3ee;--cy2:rgba(34,211,238,.1);
   --grn:#34d399;--gn2:rgba(52,211,153,.1);
   --gold:#fbbf24;--red:#f87171;--purp:#a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--wh);font-family:Inter,sans-serif;font-size:14px;min-height:100vh;}
+body{background:var(--bg);color:var(--wh);font-family:'Rajdhani', sans-serif;font-size:14px;min-height:100vh;;overflow-x:hidden}
 /* road line */
 body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),var(--cyan),transparent);pointer-events:none;z-index:100;}
 
@@ -40,7 +45,7 @@ body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;backgr
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-.pane{display:none;padding:20px 24px 40px;}
+.pane{display:none;animation:rw-fadeUp .2s ease;;padding:20px 24px 40px;}
 .pane.active{display:block;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -49,7 +54,7 @@ body::before{content:"";position:fixed;bottom:0;left:0;right:0;height:2px;backgr
 /* KPI strip */
 .kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px;}
 .kpi{background:var(--card);padding:14px 16px;}
-.kpi-val{font-size:1.3rem;font-weight:700;font-family:"JetBrains Mono",monospace;line-height:1;}
+.kpi-val{font-size:1.3rem;font-weight:700;font-family:'Rajdhani', sans-serif;line-height:1;}
 .kpi-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-top:4px;}
 .kpi-sub{font-size:.64rem;color:var(--soft);margin-top:2px;}
 .blue{color:var(--blue);}.cyan{color:var(--cyan);}.grn{color:var(--grn);}.gold{color:var(--gold);}.red{color:var(--red);}
@@ -115,6 +120,82 @@ input:focus,select:focus{border-color:var(--blue);}
 
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--ln2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ── Design System v2 improvements ── */
+  .btn { transition: all .12s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.97); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, var(--purp, #8b5cf6)) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.12));
+    outline: none;
+  }
+  .card { transition: border-color .15s; }
+  .pane.active { animation: fadeUpPane .18s ease; }
+  @keyframes fadeUpPane { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+  .nav-item { transition: color .12s, background .12s; }
+  .tbl td, .tbl th { transition: background .1s; }
+  .tbl tr:hover td { background: rgba(255,255,255,.025); }
+
+
+  
+  /* ── Mobile + Polish v2 ── */
+  html, body { overflow-x: hidden; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* Responsive grids */
+  @media (max-width: 700px) {
+    .g2, .g3, .g4, .g12 { grid-template-columns: 1fr !important; }
+    .form-row, .frow { grid-template-columns: 1fr !important; }
+    .pane.active { padding-bottom: 80px !important; }
+    .hdr { flex-wrap: nowrap !important; }
+    .hdr-nav { overflow-x: auto !important; scrollbar-width: none !important; flex: 1; }
+    .hdr-nav::-webkit-scrollbar { display: none; }
+    .nav-item { white-space: nowrap; flex-shrink: 0; min-height: 44px; display: flex; align-items: center; }
+    input, select, textarea { min-height: 44px !important; font-size: .9rem !important; padding: 10px 12px !important; }
+    .btn { min-height: 44px !important; padding: 10px 16px !important; }
+    .btn-sm { min-height: 38px !important; padding: 8px 13px !important; }
+    .kpi-strip {
+      display: flex !important; overflow-x: auto !important;
+      gap: 8px !important; padding-bottom: 4px;
+      scrollbar-width: none; background: transparent !important; border: none !important;
+    }
+    .kpi-strip::-webkit-scrollbar { display: none; }
+    .kpi-strip .kpi { min-width: 120px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); }
+  }
+
+  /* Button interactions */
+  .btn { transition: filter .1s, transform .08s !important; }
+  .btn:active:not(:disabled) { transform: scale(.97) !important; }
+  .btn:hover:not(:disabled) { filter: brightness(1.08); }
+  .btn:disabled { opacity: .38; cursor: not-allowed; }
+
+  /* Focus states */
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent, #8b5cf6) !important;
+    box-shadow: 0 0 0 3px var(--accent-glow, rgba(139,92,246,.1)) !important;
+    outline: none !important;
+  }
+
+  /* Card polish */
+  .card { transition: border-color .15s, box-shadow .15s; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+
+  /* Pane animation */
+  .pane.active { animation: paneIn .18s ease; }
+  @keyframes paneIn { from { opacity:0; transform:translateY(5px) } to { opacity:1; transform:none } }
+
+  /* Shimmer for loading */
+  .shim {
+    background: linear-gradient(90deg, var(--s2) 25%, rgba(255,255,255,.04) 50%, var(--s2) 75%);
+    background-size: 400% 100%; border-radius: 6px;
+    animation: shimmer 1.5s ease infinite;
+  }
+  @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+
+  /* Safe modal widths */
+  .modal-box, .gate-box { max-width: min(480px, 92vw) !important; }
+
 </style>
 </head>
 <body>
@@ -138,6 +219,9 @@ input:focus,select:focus{border-color:var(--blue);}
     <span id="nhtsa-status" style="font-size:.68rem;color:var(--soft)">NHTSA Live</span>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
+  id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
   </div>
 </div>
 
@@ -193,7 +277,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Fraud prevention</span><span class="grn">Cryptographic</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">History immutable</span><span class="grn">On-chain forever</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Works across borders</span><span class="grn">Global EVM</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="cyan">On-chain (Q3 2026)</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Lien recording</span><span class="soft">Planned (v2)</span></div>
         </div>
       </div>
     </div>
@@ -257,7 +341,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div>3. NFT minted to buyer wallet on R3NET</div>
           <div>4. 0.3% fee on sale price → LTN stakers</div>
           <div>5. On-chain history: permanent + immutable</div>
-          <div>6. DMV oracle integration: Q3 2026</div>
+          <div>6. DMV oracle integration: Planned (v2)</div>
         </div>
       </div>
     </div>
@@ -389,7 +473,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <tr><td>Fraud risk</td><td class="grn">Cryptographic</td><td class="red">High (forgery)</td></tr>
           <tr><td>Cross-state</td><td class="grn">Works globally</td><td class="red">Re-register required</td></tr>
           <tr><td>History</td><td class="grn">On-chain immutable</td><td class="red">Varies by state</td></tr>
-          <tr><td>Lien recording</td><td class="cyan">Q3 2026</td><td>County recorder</td></tr>
+          <tr><td>Lien recording</td><td class="soft">Planned</td><td>County recorder</td></tr>
           <tr><td>Integration</td><td class="grn">Any EVM dApp</td><td class="red">State-only silo</td></tr>
         </tbody>
       </table>
@@ -402,7 +486,7 @@ input:focus,select:focus{border-color:var(--blue);}
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Avg title fee (0.3% of $35K)</span><span class="pval">$105/title</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">TAM (1% penetration)</span><span class="grn">$157.5M/yr</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">LTN burned @ 1% pen.</span><span class="gold">15,000 LTN/yr</span></div>
-          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M</span></div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="color:var(--soft)">AutoIQ Year 2 rev</span><span class="grn">$3.78M projected</span></div>
         </div>
       </div>
       <div class="card">
@@ -411,8 +495,8 @@ input:focus,select:focus{border-color:var(--blue);}
           <div><span style="color:var(--grn)">✓</span> IQCAR NFT minting + transfer</div>
           <div><span style="color:var(--grn)">✓</span> NHTSA VIN decode + recall lookup</div>
           <div><span style="color:var(--grn)">✓</span> On-chain ownership history</div>
-          <div><span style="color:var(--gold)">Q2 2026</span> Lien recording oracle</div>
-          <div><span style="color:var(--gold)">Q3 2026</span> DMV state integration (pilot)</div>
+          <div><span style="color:var(--soft)">Planned</span> Lien recording oracle</div>
+          <div><span style="color:var(--soft)">Planned</span> DMV state integration</div>
           <div><span style="color:var(--gold)">Q4 2026</span> Insurance hook (AllCard mode 5)</div>
           <div><span style="color:var(--blue)">2027</span> Cross-chain title bridge (Solana)</div>
         </div>
@@ -464,8 +548,8 @@ input:focus,select:focus{border-color:var(--blue);}
         <div style="display:flex;flex-direction:column;gap:5px;font-size:.76rem;">
           <div class="row"><span style="color:var(--soft)">Telo contract</span><span class="mono" style="color:var(--purp);font-size:.7rem">IQTitle.sol via Telo</span></div>
           <div class="row"><span style="color:var(--soft)">Smart title transfer</span><span class="grn">Active</span></div>
-          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--gold)">Q3 2026</span></div>
-          <div class="row"><span style="color:var(--soft)">DMV oracle</span><span style="color:var(--gold)">Q3 2026 pilot</span></div>
+          <div class="row"><span style="color:var(--soft)">Regulatory gateway</span><span style="color:var(--soft)">Planned</span></div>
+          <div class="row"><span style="color:var(--soft)">DMV oracle</span><span style="color:var(--gold)">Planned</span></div>
           <div class="row"><span style="color:var(--soft)">SaaS to govts/dealers</span><span style="color:var(--gold)">Q4 2026</span></div>
         </div>
       </div>
@@ -625,7 +709,7 @@ function previewMint(){
 }
 
 async function mintTitle(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const vin = document.getElementById("m-vin").value.trim().toUpperCase();
   const price = parseFloat(document.getElementById("m-price").value);
   const buyer = document.getElementById("m-buyer").value.trim()||addr;
@@ -670,7 +754,7 @@ async function loadMyTitles(){
 function prefillTransfer(tokenId){show("transfer");document.getElementById("t-tokenid").value=tokenId;}
 
 async function transferTitle(){
-  if(!signer){alert("Connect wallet");return;}
+  if(!signer){rwToast && rwToast("Connect wallet to use this feature", true);return;}
   const tokenId = document.getElementById("t-tokenid").value.trim();
   const to = document.getElementById("t-to").value.trim();
   if(!tokenId||!to){toast("Fill all fields",true);return;}
@@ -776,7 +860,7 @@ async function loadRecentRecalls(){
 }
 
 function show(id){
-  const ids=["decode","mint","mytitles","transfer","history","recalls","integrations","compare"];
+  const ids=["decode","recalls","mint","transfer","mytitles","history","integrations","compare"];
   document.querySelectorAll(".nav-item").forEach((t,i)=>t.classList.toggle("active",ids[i]===id));
   document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+id));
   if(id==="mytitles")loadMyTitles();
@@ -792,7 +876,7 @@ function toast(msg,err=false){
 
 // ── SwiftCash ──────────────────────────────────────────────────────────────
 async function swiftCashTransfer() {
-  if (!signer) { alert("Connect wallet"); return; }
+  if (!signer) { rwToast && rwToast("Connect wallet to use this feature", true); return; }
   const amount = parseFloat(document.getElementById("swift-amount").value);
   const tokenId = document.getElementById("swift-tokenid").value.trim();
   const buyer = document.getElementById("swift-buyer").value.trim();
@@ -813,24 +897,34 @@ async function getAutoListData() {
   const vin = document.getElementById("al-vin").value.trim().toUpperCase();
   if (vin.length < 5) return;
   const el = document.getElementById("al-result");
-  el.innerHTML = "<div style=\'color:var(--soft);font-size:.78rem\'>Fetching NHTSA + market data...</div>";
+  el.innerHTML = "<div style=\'color:var(--soft);font-size:.78rem\'>Fetching NHTSA data...</div>";
   try {
     const r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/${vin}?format=json`);
     const d = await r.json();
     const v = d.Results[0];
     if (!v.Make) { el.innerHTML="<div style=\'color:var(--red);font-size:.78rem\'>VIN not found</div>"; return; }
-    // AutoList pricing model (retail/wholesale/private based on NHTSA decode + market spread)
-    // Realistic price range from NHTSA year + typical model segment
-    const yr = parseInt(v.ModelYear)||2020;
-    const ageFactor = Math.max(0.3, 1 - (2026-yr)*0.08);
-    const basePrice = Math.round(25000 * ageFactor / 1000) * 1000;
+    // NHTSA recalls check for valuation adjustment
+    let recallPenalty = 0, recallCount = 0;
+    try {
+      const rr = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(v.Make)}&model=${encodeURIComponent(v.Model)}&modelYear=${v.ModelYear}`);
+      const rd = await rr.json();
+      recallCount = rd.Count || 0;
+      recallPenalty = Math.min(recallCount * 150, 2000);
+    } catch(e) {}
+    // Market valuation estimate
+    const tiers = {toyota:28000,honda:27000,ford:32000,chevrolet:31000,bmw:52000,mercedes:55000,tesla:48000,audi:47000,nissan:26000,hyundai:24000,kia:23000,subaru:28000,mazda:26000,volkswagen:30000};
+    const makeTier = tiers[v.Make?.toLowerCase()] || 29000;
+    const ageYears = new Date().getFullYear() - parseInt(v.ModelYear || 2020);
+    const depreciation = Math.max(0.3, 1 - (ageYears * 0.12));
+    const basePrice = Math.round(makeTier * depreciation - recallPenalty);
     el.innerHTML = `<div style="font-size:.76rem;display:flex;flex-direction:column;gap:4px;">
       <div style="font-weight:700;color:var(--blue);margin-bottom:6px">${v.ModelYear} ${v.Make} ${v.Model}</div>
-      <div class="row"><span style="color:var(--soft)">AutoList Private</span><span class="mono" style="color:var(--grn)">$${(basePrice*.85).toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">AutoList Retail</span><span class="mono" style="color:var(--blue)">$${basePrice.toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">Dealer Wholesale</span><span class="mono" style="color:var(--soft)">$${(basePrice*.75).toFixed(0)}</span></div>
-      <div class="row"><span style="color:var(--soft)">IQCAR mint fee (0.3%)</span><span class="mono" style="color:var(--gold)">$${(basePrice*.003).toFixed(0)}</span></div>
-      <div style="font-size:.66rem;color:var(--dim);margin-top:4px">AutoList pricing model — NHTSA VIN + market spread · Direct API Q2 2026</div>
+      <div class="row"><span style="color:var(--soft)">Est. Private Party</span><span class="mono" style="color:var(--grn)">$${Math.round(basePrice*.88).toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">Est. Retail (dealer)</span><span class="mono" style="color:var(--blue)">$${basePrice.toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">Est. Wholesale</span><span class="mono" style="color:var(--soft)">$${Math.round(basePrice*.78).toLocaleString()}</span></div>
+      <div class="row"><span style="color:var(--soft)">IQCAR mint fee (0.3%)</span><span class="mono" style="color:var(--gold)">$${Math.round(basePrice*.003)}</span></div>
+      ${recallCount > 0 ? `<div class="row"><span style="color:var(--red)">NHTSA recalls (${recallCount})</span><span class="mono" style="color:var(--red)">-$${recallPenalty}</span></div>` : '<div class="row"><span style="color:var(--grn)">NHTSA recalls</span><span class="mono" style="color:var(--grn)">None found ✓</span></div>'}
+      <div style="font-size:.66rem;color:var(--dim);margin-top:4px">NHTSA data · recallPenalty $150/recall · depreciation 12%/yr</div>
     </div>`;
   } catch(e) { el.innerHTML="<div style=\'color:var(--red);font-size:.78rem\'>" + e.message + "</div>"; }
 }
@@ -852,10 +946,79 @@ async function fraudCheck() {
       : `<div style="padding:8px;background:var(--gn2);border:1px solid rgba(52,211,153,.2);border-radius:6px;font-size:.76rem;color:var(--grn)">✓ ${v.ModelYear} ${v.Make} ${v.Model} — No NHTSA flags detected<br>Full NICB/salvage check: <a href="https://www.nicb.org/vincheck" target="_blank" style="color:var(--grn)">NICB VIN Check →</a></div>`;
   } catch(e) { el.innerHTML = "<div style=\'color:var(--red);font-size:.76rem\'>" + e.message + "</div>"; }
 }
+
+async function aiVINAnalysis() {
+  const vin = (document.getElementById('vin-input')||{}).value||'';
+  const resultEl = document.getElementById('ai-vin-result');
+  if (!vin || vin.length < 10) { toast('Decode a VIN first', true); return; }
+  if (!resultEl) return;
+  resultEl.style.display = 'block';
+  resultEl.textContent = 'Generating AI report…';
+  const make  = document.getElementById('vd-make' )?.textContent||'';
+  const model = document.getElementById('vd-model')?.textContent||'';
+  const year  = document.getElementById('vd-year' )?.textContent||'';
+  const prompt = 'You are an automotive expert. Write a 3-bullet buyer report: (1) Known reliability/issues for ' + year + ' ' + make + ' ' + model + ', (2) What to inspect on VIN ' + vin + ', (3) Is this a good candidate for IQTitle blockchain title. Be specific and practical.';
+  const key = localStorage.getItem('rawagon-anthropic-key') || localStorage.getItem('dtr-anthropic') || '';
+  if (!key) { resultEl.textContent = 'Add Anthropic API key in RAWagon OS for AI reports'; return; }
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:350,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await r.json();
+    resultEl.textContent = d.content?.[0]?.text||'No response';
+  } catch(e) { resultEl.textContent = 'Error: ' + e.message.split('(')[0]; }
+}
+
 window.addEventListener("load",()=>{
+  // Restore wallet from shared state
+  if (window.RWWallet && window.RWWallet.getAddr() && typeof addr !== 'undefined') {
+    const _savedAddr = window.RWWallet.getAddr();
+    if (_savedAddr && !addr) {
+      addr = _savedAddr;
+      if (typeof updateWalletUI === 'function') updateWalletUI();
+      else if (typeof connectWallet === 'function') {} // already handled
+    }
+  }
+  
   loadStats();loadRecentRecalls();
   if(window.ethereum) ethereum.request({method:"eth_accounts"}).then(a=>{if(a[0])connectWallet();});
   ethereum?.on("accountsChanged",()=>location.reload());
+
+  if(window.RAWNet) RAWNet.publish(RAWNet.EVENTS.APP_OPENED, {app: 'autoiq'});
 });
 </script>
+<script src="/packages/network-sdk/index.js"></script>
+<script>
+// ── ProfitPilot Network Protocol (silent background) ────────────────────
+(function() {
+  async function ppSync() {
+    try {
+      const r = await fetch('/api/profit-pilot', { signal: AbortSignal.timeout(5000) });
+      const d = await r.json();
+      const el = document.getElementById('pp-network-pill');
+      if (el && d.totalY2) {
+        el.textContent = '⬡ ' + (d.totalY2/1e6).toFixed(1) + 'M projected'; el.style.display='inline-flex';
+        el.title = d.entities + ' entities · ' + d.contracts + ' contracts live';
+      }
+    } catch {}
+  }
+  ppSync();
+  setInterval(ppSync, 60000);
+})();
+</script>
+
+<!-- Mobile bottom nav -->
+<div class="rw-bottom-nav" id="mobile-bottom-nav">
+  <div class="rw-bottom-nav-items">
+    <div class="rw-bottom-nav-item" onclick="show('decode')" ontouchstart=""><span class="nav-icon">🔍</span><span>Decode</span></div><div class="rw-bottom-nav-item" onclick="show('recalls')" ontouchstart=""><span class="nav-icon">⚠️</span><span>Recalls</span></div><div class="rw-bottom-nav-item" onclick="show('mint')" ontouchstart=""><span class="nav-icon">🪙</span><span>Mint</span></div><div class="rw-bottom-nav-item" onclick="show('mytitles')" ontouchstart=""><span class="nav-icon">📋</span><span>My Titles</span></div><div class="rw-bottom-nav-item" onclick="show('compare')" ontouchstart=""><span class="nav-icon">📊</span><span>Compare</span></div>
+  </div>
+</div>
+<style>
+@media (max-width: 700px) {
+  .rw-bottom-nav { display: block !important; }
+  /* Active state syncs with show() */
+}
+</style>
+
 </body></html>
