@@ -1,7 +1,7 @@
 {
-  "name": "RAWagon OS",
-  "short_name": "RAWagon",
-  "description": "RAWagon Ecosystem — Patent Pending RAW-2026-PROV-001",
+  "name": "R3WAGON OS",
+  "short_name": "R3WAGON",
+  "description": "R3WAGON Ecosystem — Patent Pending RAW-2026-PROV-001",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#07040f",

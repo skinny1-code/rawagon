@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * RAWagon Agent System
+ * R3WAGON Agent System
  * One autonomous agent per entity app.
  *
  * GUARDRAILS:
@@ -29,7 +29,7 @@ const AGENTS = [
   { id:'allcard',   name:'AllCard Agent',    emoji:'🪪', app:'apps/1nce-allcard/index.html',  contract:'contracts/AllCard/EmployeeVault.sol', addr:'0x86072CbFF48dA3C1F01824a6761A03F105BCC697', focus:'ZK identity, shifting PAN, 8 modes, employer enrollment' },
   { id:'qwks',      name:'QWKS Agent',       emoji:'⛓',  app:'apps/qwks-protocol/index.html', contract:'contracts/QWKS/FeeDistributor.sol',  addr:'0x7C728214be9A0049e6a86f2137ec61030D0AA964', focus:'fee routing, LTN staking, savings calculator, business onboarding' },
   { id:'profitpilot', name:'ProfitPilot Agent',  emoji:'📊', app:'apps/profitpilot/index.html',    contract:'contracts/Allocation/EntityAllocation.sol', addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'entity revenue charts, LTN staking projections, compound calculator, IP vault, hardware tracker' },
-  { id:'rawagonos', name:'RAWagon OS Agent', emoji:'⬡',  app:'apps/rawagon-os/index.html',    contract:'contracts/LTN/LivingToken.sol',      addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'OS navigation, LTN stats, wallet connect, app links' },
+  { id:'rawagonos', name:'R3WAGON OS Agent', emoji:'⬡',  app:'apps/rawagon-os/index.html',    contract:'contracts/LTN/LivingToken.sol',      addr:'0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D', focus:'OS navigation, LTN stats, wallet connect, app links' },
 ];
 
 const GUARDRAILS = {
@@ -76,12 +76,12 @@ async function runAgent(agent) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const SYSTEM = `You are ${agent.name}, an autonomous agent for the RAWagon blockchain ecosystem.
+  const SYSTEM = `You are ${agent.name}, an autonomous agent for the R3WAGON blockchain ecosystem.
 Your role: inspect app code, find bugs or missing features, propose minimal surgical patches.
 
 HARD GUARDRAILS:
 - Max 50 lines changed per patch
-- Never change contract addresses (live on RAWNet testnet 720701)  
+- Never change contract addresses (live on R3NET testnet 720701)  
 - Never delete existing functions
 - Confidence must be >= 0.85 to propose a patch
 - Only modify: ${agent.app}
@@ -171,7 +171,7 @@ Respond ONLY with valid JSON:
 
 function dashboard() {
   console.log('\n╔══════════════════════════════════════════════════╗');
-  console.log('║  RAWagon Agent System                            ║');
+  console.log('║  R3WAGON Agent System                            ║');
   console.log('╚══════════════════════════════════════════════════╝');
   AGENTS.forEach(a => {
     const s = state[a.id];
@@ -189,7 +189,7 @@ async function main() {
     console.error('Set ANTHROPIC_API_KEY first:\nexport ANTHROPIC_API_KEY=sk-ant-...');
     process.exit(1);
   }
-  console.log('RAWagon Agent System — 7 entity agents starting');
+  console.log('R3WAGON Agent System — 7 entity agents starting');
   // Stagger first runs
   AGENTS.forEach((a, i) => { state[a.id].lastRun = Date.now() - GUARDRAILS.COOLDOWN_MS + i*8000; });
 

@@ -23,7 +23,7 @@ module.exports = {
       accounts: [PK],
       gasPrice: "auto",
     },
-    // RAWNet Testnet (when live)
+    // R3NET Testnet (when live)
     rawnet_testnet: {
       url:      process.env.RAWNET_RPC_URL || "http://10.117.122.142:8545",
       chainId:  720701,

@@ -1,4 +1,4 @@
-# RAWagon — Network-Layer Fintech Infrastructure
+# R3WAGON — Network-Layer Fintech Infrastructure
 
 
 ## Quick Start (Termux / Local)
@@ -43,7 +43,7 @@ python3 packages/monitors/risk_gatekeeper.py
 ## Apps
 | App | URL | Contract |
 |-----|-----|----------|
-| RAWagon OS | `/apps/rawagon-os/` | LivingToken.sol |
+| R3WAGON OS | `/apps/rawagon-os/` | LivingToken.sol |
 | 1.nce AllCard | `/apps/1nce-allcard/` | EmployeeVault.sol |
 | BitPawn | `/apps/bitpawn/` | PawnRegistry.sol |
 | Droppa | `/apps/droppa/` | BreakFactory.sol |
@@ -52,7 +52,7 @@ python3 packages/monitors/risk_gatekeeper.py
 | QWKS Protocol | `/apps/qwks-protocol/` | FeeDistributor.sol |
 | ProfitPilot | `/apps/profitpilot/` | EntityAllocation.sol |
 
-## Contract Addresses (RAWNet Testnet — chainId 720701)
+## Contract Addresses (R3NET Testnet — chainId 720701)
 ```
 MockUSDC:       0xFC628dd79137395F3C9744e33b1c5DE554D94882
 LivingToken:    0xaD888d0Ade988EbEe74B8D4F39BF29a8d0fe8A8D
@@ -66,7 +66,7 @@ BreakFactory:   0xaf5C4C6C7920B4883bC6252e9d9B8fE27187Cf68
 
 > **One network. Every transaction. Owned by its users.**
 
-RAWagon is a monorepo for the RAWagon ecosystem — a blockchain-native payment and identity network built on Base L2.
+R3WAGON is a monorepo for the R3WAGON ecosystem — a blockchain-native payment and identity network built on Base L2.
 
 [![Base L2](https://img.shields.io/badge/chain-Base%20L2-0052FF)](https://base.org)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
@@ -76,7 +76,7 @@ RAWagon is a monorepo for the RAWagon ecosystem — a blockchain-native payment 
 
 ## What this is
 
-Traditional payment rails charge 2–3.5% per transaction. RAWagon charges **$0.000825 flat** — 3,054x cheaper than Visa — using Base Layer 2 at near-zero marginal cost.
+Traditional payment rails charge 2–3.5% per transaction. R3WAGON charges **$0.000825 flat** — 3,054x cheaper than Visa — using Base Layer 2 at near-zero marginal cost.
 
 | Product | What it does | Status |
 |---------|-------------|--------|
@@ -86,7 +86,7 @@ Traditional payment rails charge 2–3.5% per transaction. RAWagon charges **$0.
 | Droppa | Live commerce break platform | Beta |
 | AutoIQ / IQTitle | Vehicle title NFTs on Base L2 | Beta |
 | GoldSnap / GTX | Gold-backed token (1 GTX = 1/100 troy oz) | Beta |
-| RAWagon OS | Unified operator dashboard | Live |
+| R3WAGON OS | Unified operator dashboard | Live |
 | ProfitPilot | Cross-product analytics + AI pricing | Beta |
 
 ---
@@ -206,19 +206,19 @@ $3.5M SAFE at $18M pre-money. See `docs/investment/` for the full memorandum.
 
 ## License
 
-MIT. Patent-pending technologies are the exclusive property of RAWagon Systems, LLC. The MIT license covers software only and does not convey any license to the patented methods.
+MIT. Patent-pending technologies are the exclusive property of R3WAGON Systems, LLC. The MIT license covers software only and does not convey any license to the patented methods.
 
-- **Web:** rawagon.io
-- **Email:** hello@rawagon.io
-- **Investment:** invest@rawagon.io
+- **Web:** r3wagon.io
+- **Email:** hello@r3wagon.io
+- **Investment:** invest@r3wagon.io
 
 ## Founder
 
-**Ryan Williams** — Founder & CEO, RAWagon Systems LLC
+**Ryan Williams** — Founder & CEO, R3WAGON Systems LLC
 
 - Allocation: **15% of all entity revenue**
 - Distribution wallet: `6obJ9s7159KRG5eGL2AP67Tkcw18pjkZdaSQJuFaeN78` (Solana)
-- Bridge: Wormhole Token Bridge (RAWNet → Solana) · auto-triggers at $1,000 USDC queue
+- Bridge: Wormhole Token Bridge (R3NET → Solana) · auto-triggers at $1,000 USDC queue
 - Contract: `contracts/Allocation/EntityAllocation.sol`
 - Config: `config/allocation.json`
 

@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RAWagon OS — RAWNet Command Center</title>
+<title>R3WAGON OS — R3NET Command Center</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -251,7 +251,7 @@ select.fi option{background:var(--deep);}
   <div id="rwc-chain" style="font-size:11px;color:#444466;font-family:monospace;"></div>
   <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
     <span id="rwc-bal" style="font-family:monospace;font-size:12px;color:#8080aa;"></span>
-    <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">RAWNet Testnet ↗</a>
+    <a href="http://10.117.122.142:3000" target="_blank" style="font-size:11px;color:#444466;text-decoration:none;">R3NET Testnet ↗</a>
     <span style="font-size:11px;color:#333360;">chainId 720701</span>
   </div>
 </div>
@@ -264,7 +264,7 @@ select.fi option{background:var(--deep);}
 <script>
 (function(){
   const CHAIN = {
-    chainId:"0x14A34",chainName:"RAWNet Testnet",
+    chainId:"0x14A34",chainName:"R3NET Testnet",
     nativeCurrency:{name:"Ether",symbol:"ETH",decimals:18},
     rpcUrls:["https://sepolia.base.org"],
     blockExplorerUrls:["http://10.117.122.142:3000"]
@@ -287,7 +287,7 @@ select.fi option{background:var(--deep);}
       const chip = document.querySelector(".identity-chip-name");
       if(chip) chip.textContent = shortAddr;
       btn.className = "connected";
-      chainEl.textContent = "RAWNet Testnet";
+      chainEl.textContent = "R3NET Testnet";
       try{
         const hex = await window.ethereum.request({method:"eth_getBalance",params:[addr,"latest"]});
         const eth = (parseInt(hex,16)/1e18).toFixed(4);
@@ -327,7 +327,7 @@ select.fi option{background:var(--deep);}
 
 <!-- ══════════════════════ GLOBAL NAV ══════════════════════ -->
 <nav class="gnav">
-  <div class="gnav-logo">RAWagon <span>OS</span></div>
+  <div class="gnav-logo">R3WAGON <span>OS</span></div>
   <div class="gnav-app on" onclick="switchApp('os')"><span class="app-dot" style="background:var(--gold);"></span>OS Hub</div>
   <div class="gnav-app" onclick="switchApp('identity')"><span class="app-dot" style="background:var(--teal);"></span>1.nce · AllCard</div>
   <div class="gnav-app" onclick="switchApp('pawnsnap')"><span class="app-dot" style="background:var(--grn);"></span>PawnSnap</div>
@@ -1599,7 +1599,7 @@ function setIDCardMode(mode, btn) {
 // ═══════════════════════════════════════════════
 function openModal(key) {
   const modals = {
-    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Wallet',addr?addr.slice(0,12)+'...':'Not connected'],['Handle','RAWNet'],['ZK ID','—'],['AllCard','Connect to load'],['AuraMe','Set in AllCard'],['Credit','Private — ZK only']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
+    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Wallet',addr?addr.slice(0,12)+'...':'Not connected'],['Handle','R3NET'],['ZK ID','—'],['AllCard','Connect to load'],['AuraMe','Set in AllCard'],['Credit','Private — ZK only']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
     'notifications': {t:'🔔 Notifications',b:`<div style="display:flex;flex-direction:column;gap:0;">${[{dot:'var(--gold)',t:'LTN staking reward distributed',b:'$48.20 from PawnSnap + Droppa fees. Auto-compounding.',ts:'8m ago'},{dot:'var(--grn)',t:'IQCAR NFT minted — Tesla Model 3',b:'#0248 on Base L2. Title transferred. AllCard updated.',ts:'12m ago'},{dot:'var(--orng)',t:'Droppa break #0441 closed',b:'20/20 slots filled. $1,440 gross. Payout to AllCard.',ts:'5m ago'},{dot:'var(--blue)',t:'Gold spot update',b:L.gold?`Gold now $${L.gold.toFixed(2)}/oz. PawnSnap offers auto-recalculated.`:'Gold price updated.',ts:'Live'}].map(n=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;"><div style="width:7px;height:7px;border-radius:50%;background:${n.dot};margin-top:5px;flex-shrink:0;"></div><div><div style="font-size:.8rem;font-weight:500;margin-bottom:2px;">${n.t}</div><div style="font-size:.72rem;color:var(--dim);line-height:1.55;">${n.b}</div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;">${n.ts}</div></div></div>`).join('')}</div>`},
     'new-pawn': {t:'🥇 New Pawn Ticket',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:10px 12px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;font-size:.76rem;color:var(--grn);">✓ Customer identity via 1.nce AllCard tap · Gold spot: $${L.gold?.toFixed(2)||'—'}/oz</div><div><label class="fl">Item description</label><input class="fi" placeholder="e.g. 14K gold ring, approx 5g"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Metal</label><select class="fi"><option>Gold</option><option>Silver</option><option>Platinum</option></select></div><div><label class="fl">Karat</label><select class="fi"><option>24K</option><option>18K</option><option value="14" selected>14K</option><option>10K</option><option>925 Sterling</option></select></div></div><div><label class="fl">Weight (grams)</label><input class="fi" type="number" placeholder="0.0" step="0.1"></div><div style="padding:12px;background:var(--surf);border-radius:8px;"><div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">Live offer preview</div><div style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:1rem;">Enter weight above →</div></div><div><label class="fl">Payment method</label><select class="fi"><option>Cash</option><option>AllCard (instant)</option><option>GTX token</option><option>ACH transfer</option></select></div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Pawn ticket created — photo capture required next','ok')">Create ticket →</button></div>`},
     'new-break': {t:'🎴 New Droppa Break',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div><label class="fl">Break name</label><input class="fi" placeholder="e.g. 2024 Prizm Basketball Hobby"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Total slots</label><input class="fi" type="number" value="20"></div><div><label class="fl">Price per slot ($)</label><input class="fi" type="number" value="72"></div></div><div><label class="fl">Break type</label><select class="fi"><option>Random teams</option><option>Pick your team</option><option>Random hits</option><option>Case break</option></select></div><div><label class="fl">Stream platform</label><select class="fi"><option>TikTok Live</option><option>YouTube Live</option><option>Discord + WhatsApp</option><option>All platforms</option></select></div><div style="padding:10px 12px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;font-size:.73rem;color:var(--purp);">🪙 LTN rewards auto-distributed to top buyers. Seller payment to AllCard on close. ProfitPilot tracking enabled.</div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Break created — configure slots next','ok')">Create break →</button></div>`},

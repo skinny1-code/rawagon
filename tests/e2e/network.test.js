@@ -64,7 +64,7 @@ t('Contract Solidity: all 9 contracts have SPDX+constructor', ()=>{
     'contracts/BitPawn/PawnRegistry.sol','contracts/Droppa/BreakFactory.sol',
     'contracts/RAWNet/RAWNetBridge.sol',
   ];
-  const base = '/home/claude/rawagon-repo';
+  const base = require('path').join(__dirname, '../..');
   contracts.forEach(c=>{
     const src = fs.readFileSync(path.join(base,c),'utf8');
     assert(src.includes('SPDX-License-Identifier'), c+' missing SPDX');

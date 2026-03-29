@@ -1,5 +1,5 @@
 {
-  "name": "RAWNet",
+  "name": "R3NET",
   "chainId": 72070,
   "nativeCurrency": {
     "name": "RAW Ether",
@@ -25,7 +25,7 @@
   "architecture": {
     "type": "ZK-Rollup on OP Stack",
     "settlement": "Base L2",
-    "sequencer": "RAWagon Systems LLC",
+    "sequencer": "R3WAGON Systems LLC",
     "proofGeneration": "SP1/Risc0 ZK-EVM"
   },
   "testnet": {

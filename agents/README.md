@@ -1,4 +1,4 @@
-# RAWagon Agent System
+# R3WAGON Agent System
 
 7 autonomous agents — one per entity app. Each inspects, debugs, and patches its app using Claude claude-sonnet-4-20250514.
 

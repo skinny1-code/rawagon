@@ -1,7 +1,7 @@
 {
   "wallet": "WAGON",
   "created": "2026-03-23",
-  "network": "RAWNet Testnet",
+  "network": "R3NET Testnet",
   "chainId": 720701,
   "rpc": "http://10.117.122.142:8545",
   "explorer": "http://10.117.122.142:3000",
@@ -66,7 +66,7 @@
       "name": "WAGON Sequencer",
       "address": "0xd862b7795249D821681D8070c9bBA83dd8c576d2",
       "path": "m/44'/60'/0'/0/9",
-      "purpose": "RAWNet sequencer node"
+      "purpose": "R3NET sequencer node"
     }
   ]
 }

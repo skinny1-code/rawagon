@@ -3,15 +3,15 @@ pragma solidity ^0.8.24;
 
 
 /**
- * @title RAWNet Bridge
- * @notice Canonical bridge between Ethereum L1 / Base L2 and RAWNet.
- *         RAWNet is a ZK-rollup built on the OP Stack, optimized for
+ * @title R3NET Bridge
+ * @notice Canonical bridge between Ethereum L1 / Base L2 and R3NET.
+ *         R3NET is a ZK-rollup built on the OP Stack, optimized for
  *         sub-cent commerce transactions. Target gas: <$0.0001/tx.
  *
  * Architecture:
- *   ETH L1 ──(bridge)──► Base L2 ──(bridge)──► RAWNet (RAWagon ZK-Rollup)
+ *   ETH L1 ──(bridge)──► Base L2 ──(bridge)──► R3NET (R3WAGON ZK-Rollup)
  *
- * RAWNet key parameters vs Base L2:
+ * R3NET key parameters vs Base L2:
  *   - Block time:     500ms (vs 2s on Base)
  *   - Batch size:     10,000 txns per L2 batch (vs ~100 on Base)
  *   - Gas price:      0.0001 Gwei target (vs 0.006 Gwei on Base)
@@ -21,14 +21,14 @@ pragma solidity ^0.8.24;
  *
  * @dev Patent pending: RAW-2026-PROV-001
  */
-contract RAWNetBridge {
+contract R3NETBridge {
 
     // ── State ──────────────────────────────────────────────
     mapping(address => uint256) public deposits;          // L1 deposits pending finalization
     mapping(bytes32 => bool)    public processedMessages; // prevent replay
     mapping(address => bool)    public approvedTokens;    // USDC, LTN, GTX, STX
 
-    address public sequencer;    // RAWNet sequencer address
+    address public sequencer;    // R3NET sequencer address
     address public zkVerifier;   // ZK batch proof verifier
     uint256 public batchCount;
     uint256 public totalBridged;
@@ -52,18 +52,18 @@ contract RAWNetBridge {
         zkVerifier = _zkVerifier;
     }
 
-    // ── Bridge In (L1/L2 → RAWNet) ─────────────────────────
+    // ── Bridge In (L1/L2 → R3NET) ─────────────────────────
 
     /**
-     * @notice Deposit tokens into RAWNet.
+     * @notice Deposit tokens into R3NET.
      *         User approves this contract, then calls deposit.
-     *         Tokens are locked here; equivalent amount minted on RAWNet.
+     *         Tokens are locked here; equivalent amount minted on R3NET.
      */
     function deposit(address token, uint256 amount, address recipient)
         external returns (bytes32 msgHash)
    {
         if (!approvedTokens[token]) revert NotApprovedToken();
-        require(amount > 0, "RAWNetBridge: zero amount");
+        require(amount > 0, "R3NETBridge: zero amount");
 
         IERC20(token).transferFrom(msg.sender, address(this), amount);
         deposits[msg.sender] += amount;
@@ -72,17 +72,17 @@ contract RAWNetBridge {
         msgHash = keccak256(abi.encodePacked(
             block.chainid, msg.sender, recipient, token, amount, block.timestamp
         ));
-        require(!processedMessages[msgHash], "RAWNetBridge: duplicate");
+        require(!processedMessages[msgHash], "R3NETBridge: duplicate");
         processedMessages[msgHash] = true;
 
         emit Deposited(msg.sender, token, amount, msgHash);
     }
 
     /**
-     * @notice Withdraw tokens from RAWNet back to L1/L2.
-     *         Requires a valid ZK proof that the withdrawal was initiated on RAWNet.
-     * @param proof     ZK proof of withdrawal initiation on RAWNet
-     * @param stateRoot RAWNet state root at time of withdrawal
+     * @notice Withdraw tokens from R3NET back to L1/L2.
+     *         Requires a valid ZK proof that the withdrawal was initiated on R3NET.
+     * @param proof     ZK proof of withdrawal initiation on R3NET
+     * @param stateRoot R3NET state root at time of withdrawal
      */
     function withdraw(
         address token,
@@ -100,7 +100,7 @@ contract RAWNetBridge {
 
         // Verify ZK proof (stub — replace with actual verifier)
         // IZKVerifier(zkVerifier).verify(proof, stateRoot, msgHash)
-        require(proof.length > 0, "RAWNetBridge: invalid proof");
+        require(proof.length > 0, "R3NETBridge: invalid proof");
 
         processedMessages[msgHash] = true;
         IERC20(token).transfer(recipient, amount);
@@ -109,7 +109,7 @@ contract RAWNetBridge {
     }
 
     /**
-     * @notice Sequencer finalizes a batch of RAWNet transactions.
+     * @notice Sequencer finalizes a batch of R3NET transactions.
      *         Submits ZK proof of correct execution + new state root.
      */
     function finalizeBatch(
@@ -118,8 +118,8 @@ contract RAWNetBridge {
         uint256 txCount,
         bytes calldata zkProof
     ) external {
-        require(msg.sender == sequencer, "RAWNetBridge: not sequencer");
-        require(zkProof.length > 0, "RAWNetBridge: no proof");
+        require(msg.sender == sequencer, "R3NETBridge: not sequencer");
+        require(zkProof.length > 0, "R3NETBridge: no proof");
         batchCount++;
         emit BatchFinalized(batchId, newStateRoot, txCount);
     }

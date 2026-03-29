@@ -122,7 +122,7 @@ class AllCard {
       network:      card.network,
       timestamp:    Date.now(),
       gas_cost_usd: 0.0000082,
-      chain:        'RAWNet',
+      chain:        'R3NET',
       chain_id:     720701,
     };
   }
@@ -139,7 +139,7 @@ function createWAGONPayment(wagonfromAddress, toAddress, amount, token = 'USDC')
     gasPrice: '60',    // 60 wei = 0.00006 Gwei
     gas:      65000,
     data:     '0x',
-    network:  'RAWNet Testnet',
+    network:  'R3NET Testnet',
     estimatedCostUSD: 0.0000082,
   };
 }

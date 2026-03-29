@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
   <meta name="theme-color" content="#f59e0b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>BitPawn — Pawn Shop OS · RAWNet</title>
+<title>BitPawn — Pawn Shop OS · R3NET</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
@@ -128,7 +128,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
 <div class="hdr">
   <div class="hdr-brand">
     <div class="hdr-icon">🏦</div>
-    <div><div class="brand-name">BitPawn</div><div class="brand-sub">Pawn Shop OS · RAWNet</div></div>
+    <div><div class="brand-name">BitPawn</div><div class="brand-sub">Pawn Shop OS · R3NET</div></div>
   </div>
   <div class="hdr-nav">
     <div class="nav-item active" onclick="show('dashboard')">Dashboard</div>
@@ -142,8 +142,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
     <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
-    <div class="live"><div class="dot"></div><span id="net-status">RAWNet</span></div>
-    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+    <div class="live"><div class="dot"></div><span id="net-status">R3NET</span></div>
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   </div>
 </div>
@@ -154,7 +154,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
     <div class="kpi"><div class="kpi-val gold" id="d-active">0</div><div class="kpi-lbl">Active Tickets</div><div class="kpi-sub">on-chain</div></div>
     <div class="kpi"><div class="kpi-val grn" id="d-volume">$0</div><div class="kpi-lbl">Total Volume</div><div class="kpi-sub">all time</div></div>
     <div class="kpi"><div class="kpi-val gold" id="d-gold">$4,133.80</div><div class="kpi-lbl">Gold Spot</div><div class="kpi-sub">XAU/USD</div></div>
-    <div class="kpi"><div class="kpi-val grn">$0.0000082</div><div class="kpi-lbl">Gas/tx</div><div class="kpi-sub">RAWNet testnet</div></div>
+    <div class="kpi"><div class="kpi-val grn">$0.0000082</div><div class="kpi-lbl">Gas/tx</div><div class="kpi-sub">R3NET testnet</div></div>
     <div class="kpi"><div class="kpi-val gold" id="d-ltn">0 LTN</div><div class="kpi-lbl">LTN Earned</div><div class="kpi-sub">from transactions</div></div>
   </div>
   <div class="g2">
@@ -270,7 +270,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">PawnMaster/mo</span><span class="red">$299</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">PWCT Software/mo</span><span class="red">$199</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Data breach risk</span><span class="grn">Zero (ZK)</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Settlement time</span><span class="grn">500ms RAWNet</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Settlement time</span><span class="grn">500ms R3NET</span></div>
         </div>
       </div>
     </div>
@@ -316,7 +316,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
       <div class="metal-display">
         <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin-bottom:6px">Gold Spot Price (Live)</div>
         <div class="metal-price" id="gold-spot-display">$4,133.80</div>
-        <div class="metal-sub">per troy oz · XAU/USD · MockOracle.sol on RAWNet</div>
+        <div class="metal-sub">per troy oz · XAU/USD · MockOracle.sol on R3NET</div>
       </div>
       <div class="card">
         <div class="card-title">Melt Value Calculator</div>
@@ -471,7 +471,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 
     <div class="card">
       <div class="card-title">Network Config</div>
       <div style="display:flex;flex-direction:column;gap:6px;font-size:.78rem;">
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Network</span><span class="gold">RAWNet Testnet (720701)</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Network</span><span class="gold">R3NET Testnet (720701)</span></div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">RPC</span><span style="font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--dim)">10.117.122.142:8545</span></div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">PawnRegistry</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--gold)">0x2D8BE6BF...dD0A</span></div>
         <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">FeeDistributor</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">0x7C728214...A964</span></div>
@@ -624,7 +624,7 @@ let goldSpot = 4133.80, silverSpot = 32.50;
 async function connectWallet() {
   if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+    chainId:"0xAFD3D",chainName:"R3NET Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
   }]}).catch(()=>{});

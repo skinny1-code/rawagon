@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Patent Pending RAW-2026-PROV-001">
+<meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
   <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>QWKS Protocol — RAWNet</title>
+<title>QWKS Protocol — R3NET</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <style>
@@ -61,7 +61,7 @@ input:focus,select:focus{border-color:var(--indigo);}
 <div class="hdr">
   <div class="logo-block">
     <span style="font-size:1.3rem">⛓</span>
-    <div><div class="logo-text">QWKS Protocol</div><div class="logo-sub">Payment OS · RAWNet 720701</div></div>
+    <div><div class="logo-text">QWKS Protocol</div><div class="logo-sub">Payment OS · R3NET 720701</div></div>
   </div>
   <div class="tabs">
     <div class="tab active" onclick="showTab('overview')">Overview</div>
@@ -73,7 +73,7 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="tab" onclick="showTab('compliance')">Compliance</div>
     <div class="tab" onclick="showTab('network')">Network</div>
   </div>
-  <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
+  <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
     <button id="connect-btn" onclick="connectWallet()">🦊 Connect Wallet</button>
 </div>
 
@@ -89,7 +89,7 @@ input:focus,select:focus{border-color:var(--indigo);}
     <div class="card">
       <div style="font-size:.86rem;font-weight:700;margin-bottom:14px;color:var(--indigo)">How QWKS Works</div>
       <div class="timeline">
-        <div class="tl-item"><div class="tl-title">Business sends payment on RAWNet</div><div class="tl-desc">Transaction submitted to FeeDistributor. 0.1% of volume automatically routed to LTN stakers.</div></div>
+        <div class="tl-item"><div class="tl-title">Business sends payment on R3NET</div><div class="tl-desc">Transaction submitted to FeeDistributor. 0.1% of volume automatically routed to LTN stakers.</div></div>
         <div class="tl-item"><div class="tl-title">0.001 LTN burned per transaction</div><div class="tl-desc">LivingToken deflationary mechanism. Burns reduce supply, increasing value over time.</div></div>
         <div class="tl-item"><div class="tl-title">Stakers earn proportional yield</div><div class="tl-desc">accRewardPerShare increases with every inflow. Claim anytime in the Staking tab.</div></div>
         <div class="tl-item"><div class="tl-title">Savings 9:1 to customer ratio</div><div class="tl-desc">QWKS keeps 10% of savings vs processor. Customer keeps 90%. Enforced on-chain.</div></div>
@@ -101,7 +101,7 @@ input:focus,select:focus{border-color:var(--indigo);}
         <div class="row"><span style="color:var(--soft)">FeeDistributor</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0x7C728214...AA964</span></span></div>
         <div class="row"><span style="color:var(--soft)">LivingToken</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0xaD888d0A...8A8D</span></span></div>
         <div class="row"><span style="color:var(--soft)">MockUSDC</span><span><span class="badge badge-live">LIVE</span> <span class="mono" style="font-size:.7rem;color:var(--dim)">0xFC628dd7...4882</span></span></div>
-        <div class="row"><span style="color:var(--soft)">Network</span><span style="color:var(--grn);font-family:Fira Code,monospace;font-size:.78rem">RAWNet 720701</span></div>
+        <div class="row"><span style="color:var(--soft)">Network</span><span style="color:var(--grn);font-family:Fira Code,monospace;font-size:.78rem">R3NET 720701</span></div>
         <div class="row"><span style="color:var(--soft)">Gas per tx</span><span class="val">~$0.0000082</span></div>
       </div>
       <div class="card">
@@ -268,7 +268,7 @@ input:focus,select:focus{border-color:var(--indigo);}
 <div class="pane" id="pane-network">
   <div class="g2">
     <div class="card">
-      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">RAWNet Stats</div>
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:14px;">R3NET Stats</div>
       <table><tbody id="net-stats-table"></tbody></table>
       <button class="btn btn-outline" style="margin-top:12px" onclick="loadNetworkStats()">Refresh</button>
     </div>
@@ -432,7 +432,7 @@ let provider, signer, addr, fdContract, ltnContract, usdcContract;
 async function connectWallet() {
   if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+    chainId:"0xAFD3D",chainName:"R3NET Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
   }]}).catch(()=>{});
@@ -503,7 +503,7 @@ async function loadNetworkStats() {
     const [block, fee] = await Promise.all([p.getBlockNumber(), p.getFeeData()]);
     const gwei = parseFloat(ethers.formatUnits(fee.gasPrice||0n,"gwei")).toFixed(6);
     document.getElementById("net-stats-table").innerHTML = [
-      ["Chain ID","720701 (RAWNet Testnet)"],
+      ["Chain ID","720701 (R3NET Testnet)"],
       ["Block",""+block],
       ["Gas price",gwei+" Gwei"],
       ["Tx cost (~65K gas)","$0.0000082"],

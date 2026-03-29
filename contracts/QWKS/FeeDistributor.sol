@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 /**
  * @title FeeDistributor
- * @notice Routes 0.1% of all RAWagon network transaction volume to LTN stakers.
+ * @notice Routes 0.1% of all R3WAGON network transaction volume to LTN stakers.
  *         Burns 0.001 LTN per transaction for deflation.
  *         Calculates QWKS savings vs Visa baseline on-chain.
  *
@@ -136,7 +136,7 @@ contract FeeDistributor {
      * @param baselineBps Verified processor rate in basis points
      */
     function recordSavings(address biz, uint256 annualVol, uint256 baselineBps) external onlyOwner {
-        uint256 qwksRateBps   = 1; // ~0.01% effective on RAWNet
+        uint256 qwksRateBps   = 1; // ~0.01% effective on R3NET
         uint256 savings       = (annualVol * (baselineBps - qwksRateBps)) / BPS_DENOM;
         uint256 qwksFee       = (savings * QWKS_FEE_BPS) / BPS_DENOM;
         businesses[biz].totalSaved += savings;

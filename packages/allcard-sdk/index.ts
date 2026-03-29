@@ -84,7 +84,7 @@ export class AllCard {
       nonce,
       mode,
       timestamp: Date.now(),
-      chainId:   720701,   // RAWNet
+      chainId:   720701,   // R3NET
     };
   }
 

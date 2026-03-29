@@ -1,11 +1,11 @@
 /**
  * @rawagon/allcard-sdk/wallet-connect
- * Shared MetaMask / EIP-1193 wallet connector for all RAWagon apps.
+ * Shared MetaMask / EIP-1193 wallet connector for all R3WAGON apps.
  * Zero dependencies — uses window.ethereum directly.
  *
  * Usage in any app:
  *   <script src="../../packages/allcard-sdk/wallet-connect.js"></script>
- *   const wc = new RAWagonWallet();
+ *   const wc = new R3WAGONWallet();
  *   await wc.connect();
  *
  * Or import in Node/bundler:
@@ -29,14 +29,14 @@ const CHAINS = {
   },
   rawnet_testnet: {
     chainId:    "0xAFD3D",  // 720701
-    chainName:  "RAWNet Testnet",
+    chainName:  "R3NET Testnet",
     nativeCurrency: { name: "RAW Ether", symbol: "rETH", decimals: 18 },
     rpcUrls:         ["http://10.117.122.142:8545"],
     blockExplorerUrls: ["http://localhost:3000"],
   },
 };
 
-class RAWagonWallet {
+class R3WAGONWallet {
   constructor(targetNetwork = "rawnet_testnet") {
     this.targetNetwork = targetNetwork;
     this.address     = null;
@@ -212,5 +212,5 @@ class RAWagonWallet {
 }
 
 // Make available globally in browser AND as CommonJS module
-if (typeof window !== "undefined") window.RAWagonWallet = RAWagonWallet;
-if (typeof module !== "undefined") module.exports = { RAWagonWallet, CHAINS };
+if (typeof window !== "undefined") window.R3WAGONWallet = R3WAGONWallet;
+if (typeof module !== "undefined") module.exports = { R3WAGONWallet, CHAINS };

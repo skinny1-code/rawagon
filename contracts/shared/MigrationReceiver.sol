@@ -10,7 +10,7 @@ pragma solidity ^0.8.24;
  *
  *         Migration flow:
  *         1. Business submits their processor statements (off-chain)
- *         2. RAWagon verifier attests to the baseline rate
+ *         2. R3WAGON verifier attests to the baseline rate
  *         3. MigrationReceiver records the verified rate on-chain
  *         4. FeeDistributor uses this rate for savings calculation
  *         5. Business receives QWKS subscription credit for their first 30 days
@@ -25,7 +25,7 @@ contract MigrationReceiver {
         uint256 baselineRateBps;   // e.g. 250 = 2.50% Visa rate
         address processor;         // previous processor address or bytes32 name hash
         uint256 migratedAt;
-        bool    verified;          // attested by RAWagon oracle
+        bool    verified;          // attested by R3WAGON oracle
         uint256 trialCreditsUSD;   // free trial credit granted (in cents)
     }
 
@@ -33,7 +33,7 @@ contract MigrationReceiver {
     mapping(address => bool)            public migrated;
     address[] public allMigrants;
 
-    address public oracle;           // RAWagon rate oracle
+    address public oracle;           // R3WAGON rate oracle
     uint256 public totalMigrations;
     uint256 public totalVolumeOnboarded;
 
