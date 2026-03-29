@@ -49,12 +49,17 @@ rawagon/
 │   ├── src/                      # Solidity source files (moved here to avoid node_modules glob)
 │   │   ├── LTN/LivingToken.sol
 │   │   ├── QWKS/FeeDistributor.sol
+│   │   ├── QWKS/IYieldStrategy.sol   # Pluggable DeFi yield adapter interface
 │   │   ├── AllCard/EmployeeVault.sol
 │   │   ├── GoldSnap/GoldMint.sol
-│   │   └── AutoIQ/IQTitle.sol
+│   │   ├── AutoIQ/IQTitle.sol
+│   │   └── mocks/                    # Test-only contracts
+│   │       ├── MockERC20.sol
+│   │       ├── MockOracle.sol
+│   │       └── MockYieldStrategy.sol
 │   ├── scripts/
 │   │   └── deploy.js             # Hardhat deploy script (all 5 contracts, ordered)
-│   ├── test/                     # Hardhat/Mocha/Chai contract tests (86 tests)
+│   ├── test/                     # Hardhat/Mocha/Chai contract tests (122 tests)
 │   │   ├── LivingToken.test.js
 │   │   ├── FeeDistributor.test.js
 │   │   ├── EmployeeVault.test.js
@@ -114,7 +119,7 @@ cd contracts && npm install   # Hardhat, OpenZeppelin, Chainlink, dotenv
 ### All root scripts
 
 ```bash
-npm test               # vitest run — 42 tests across 5 packages
+npm test               # vitest run — 66 tests across 5 packages
 npm run test:watch     # vitest watch mode
 npm run lint:fix       # eslint --fix .
 npm run format         # prettier --write .
@@ -126,11 +131,18 @@ npm run build          # alias for compile
 ### Run tests
 
 ```bash
-npm test               # all packages via vitest
+npm test               # all packages via vitest (66 tests)
 npm run test:watch     # interactive re-run on save
 ```
 
 Test files live at `packages/<name>/test/index.test.js`. They are CJS files (use `require()`) — vitest globals (`describe`, `it`, `expect`, `vi`, etc.) are injected automatically via `globals: true` in `vitest.config.mjs`. Do **not** `require('vitest')` in test files.
+
+Contract tests run separately via Hardhat (122 tests):
+
+```bash
+cd contracts && npm test                 # compile-local.js + hh-artifacts.js + hardhat test
+cd contracts && npx hardhat test --no-compile  # skip recompile if artifacts are fresh
+```
 
 ### Compile contracts
 
@@ -192,7 +204,7 @@ GitHub Actions runs on push to `main`/`develop` and PRs to `main`:
 2. `npm run lint:fix` — ESLint
 3. `npx prettier --check .` — format check
 4. `npm run typecheck` — tsc
-5. `npm test` — vitest (42 tests, all blocking)
+5. `npm test` — vitest (66 tests, all blocking)
 6. `npm run compile` — compile-local.js (bundled solc@0.8.26, no binary download)
 
 ---
@@ -264,7 +276,34 @@ const { gold, silver, pawn } = require('@rawagon/gold-oracle');
 
 ### `packages/ltn-token`
 
-Placeholder stub. Exports `{}`. Will implement LTN staking/governance client once contracts are deployed.
+On-chain read client for LivingToken (LTN) and FeeDistributor. Uses raw JSON-RPC `eth_call`
+with pre-computed 4-byte selectors — no ethers.js dependency.
+
+```js
+const ltn = require('@rawagon/ltn-token');
+```
+
+**Constants:** `MAX_SUPPLY`, `INITIAL_SUPPLY`, `BURN_PER_TX`, `FEE_BPS`
+
+**ABI exports (string arrays for ethers/wagmi/viem):** `LTN_ABI`, `FD_ABI`
+
+**On-chain reads (async, Base mainnet by default):**
+
+| Function                 | Description                     |
+| ------------------------ | ------------------------------- |
+| `getBalance(addr, rpc?)` | LTN balance as float            |
+| `getStaked(addr, rpc?)`  | Amount staked in FeeDistributor |
+| `getPending(addr, rpc?)` | Unclaimed reward balance        |
+| `getTotalStaked(rpc?)`   | Total LTN staked pool-wide      |
+
+**Pure-math utilities:**
+
+| Function                                                                | Description                                    |
+| ----------------------------------------------------------------------- | ---------------------------------------------- |
+| `apy(annualVol, totalStaked, ltnPrice)`                                 | Estimated APY for stakers given network volume |
+| `burnProjection(txPerMonth, months)`                                    | Projected LTN burned over time                 |
+| `stakingBreakeven(stakeAmt, monthlyVol, totalStaked, ltnPrice)`         | Months until staking rewards cover fees        |
+| `projectedRewards(stakeAmt, monthlyVol, totalStaked, ltnPrice, months)` | Projected reward accumulation                  |
 
 ---
 
@@ -274,17 +313,30 @@ All contracts in `contracts/src/`, target **Solidity ^0.8.24**, deploy on **Base
 
 ### `LivingToken.sol` (LTN) — `contracts/src/LTN/`
 
-- ERC20, max supply 1 billion LTN
+- ERC20, max supply 1 billion LTN; 400M minted to admin at deploy
 - Admin mints up to cap (`DEFAULT_ADMIN_ROLE`)
-- Burns 0.001 LTN per transaction via `burnOnTx()` (requires `BURNER_ROLE`)
-- Tracks `totalBurned` and `txCount`
+- `burnOnTx()` burns `burnPerTx` LTN from caller (requires `BURNER_ROLE`); tracks `totalBurned` and `txCount`
+- **Epoch-adaptive burn rate**: `burnPerTx` is a mutable variable (default `0.001 LTN`); clamped to `[MIN_BURN=0.0001, MAX_BURN=0.01]`
+- `settleEpoch()` — public; adjusts `burnPerTx` ±10% based on `epochTxCount` vs `highTxThreshold`/`lowTxThreshold`; resets counter
+- `setBurnRate(rate)` — admin manual override; `setEpochDuration(d)`; `setTxThresholds(high, low)`
+- Backwards-compat: `BURN_PER_TX` constant (= `1e15`) preserved alongside mutable `burnPerTx`
 
 ### `FeeDistributor.sol` — `contracts/src/QWKS/`
 
-- Accumulates 0.1% (10 bps) of reported network volume via `inflow(vol)`
-- Distributes proportionally to LTN stakers via reward-per-token (RPT) accounting
+- Accumulates network volume fees via `inflow(vol)` (approved reporters only)
+- Reward-per-token (RPT) accounting distributes rewards proportionally to LTN stakers
 - Interface: `stake(amount)`, `unstake(amount)`, `claim()`
-- Approved senders report volume; approval via `approve(addr)` (owner only)
+- **Dynamic fee split**: `feeBps` [5–20 bps, default 10] and `stakersSharePct` [50–95%, default 80]; remainder goes to `treasury`; `settleEpoch()` auto-rebalances share based on staking utilization
+- **Auto-compound**: `setAutoCompound(bool)` — when enabled, `claim()` re-stakes rewards instead of transferring to wallet
+- **DeFi yield strategy**: `setYieldStrategy(addr)` plugs in an `IYieldStrategy`; idle LTN (up to 80% of `totalStaked`) is deployed to strategy each epoch; yield harvested on `settleEpoch()` and added to RPT; `unstake()` pulls from strategy when contract balance is insufficient
+- `unstake()` is `nonReentrant` (OpenZeppelin `ReentrancyGuard`)
+- Owner setters: `setTreasury`, `setFeeBps`, `setStakersSharePct`, `setEpochDuration`, `setYieldStrategy`
+
+### `IYieldStrategy.sol` — `contracts/src/QWKS/`
+
+- Interface for pluggable DeFi yield adapters
+- `deposit(amount)`, `withdraw(amount) returns (actual)`, `harvest() returns (yieldAmount)`, `totalDeposited() view`
+- `MockYieldStrategy.sol` in `contracts/src/mocks/` simulates 1% yield per harvest for tests
 
 ### `EmployeeVault.sol` — `contracts/src/AllCard/`
 
@@ -347,7 +399,7 @@ NODE_ENV=development
 - Vitest globals (`describe`, `it`, `expect`, `vi`, `beforeAll`, etc.) are injected automatically — **do not** `require('vitest')`
 - To mock `fetch` in tests, use `vi.stubGlobal('fetch', mockFn)` before calling the function under test
 - Gold-oracle has a module-level cache (`C = {}`); tests work because the cache is empty on first import and `fetch` is stubbed before any test runs
-- Contract tests live in `contracts/test/` — 86 Hardhat/Mocha/Chai tests across all 5 contracts
+- Contract tests live in `contracts/test/` — 122 Hardhat/Mocha/Chai tests across all 5 contracts
 
 ### Solidity
 
@@ -376,13 +428,13 @@ NODE_ENV=development
 
 ## Known Incomplete Areas
 
-| Area                          | Status                                                                                     |
-| ----------------------------- | ------------------------------------------------------------------------------------------ |
-| `apps/`                       | All frontend apps are directory stubs — no implementation                                  |
-| `packages/ltn-token/index.js` | Empty stub — exports `{}`                                                                  |
-| `ltn-token` SDK               | JS client for LTN staking/governance — implement after first deploy                        |
-| GoldMint on Base Sepolia      | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live |
-| Deploy to mainnet             | `EmployeeVault.verify()` uses commitment-hash check only — upgrade before mainnet          |
+| Area                     | Status                                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/`                  | All frontend apps are directory stubs — no implementation; no frontend framework chosen yet                                     |
+| GoldMint on Base Sepolia | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live                                      |
+| Deploy to mainnet        | Contracts untested on live network; `EmployeeVault.verify()` uses hash-check only                                               |
+| `IYieldStrategy` adapter | Interface defined; no production adapter (Aave/Compound) implemented yet — mock only                                            |
+| LTN burn-rate cross-call | `FeeDistributor.settleEpoch()` does not yet call `LivingToken.setBurnRate()` — epoch volume tracked separately in each contract |
 
 ---
 
