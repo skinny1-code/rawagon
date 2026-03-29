@@ -1,7 +1,7 @@
 /**
- * R3NET Testnet Deployment Script
- * Deploys all R3WAGON contracts to R3NET testnet (chainId 720701)
- * or Base Sepolia for testing while R3NET spins up.
+ * RAWNet Testnet Deployment Script
+ * Deploys all RAWagon contracts to RAWNet testnet (chainId 720701)
+ * or Base Sepolia for testing while RAWNet spins up.
  *
  * Usage:
  *   NETWORK=base_sepolia node network/scripts/deploy-rawnet.js
@@ -27,8 +27,8 @@ const DEPLOY_ORDER = [
   { name: 'IQTitle',           path: 'contracts/AutoIQ/IQTitle.sol',           args: [DEPLOYER] },
   // 7. MigrationReceiver (needs oracle)
   { name: 'MigrationReceiver', path: 'contracts/shared/MigrationReceiver.sol', args: [DEPLOYER, DEPLOYER] },
-  // 8. R3NET Bridge (needs ZKVerifier)
-  { name: 'R3NETBridge',      path: 'contracts/R3NET/R3NETBridge.sol',      args: [DEPLOYER, '$ZKVerifier', DEPLOYER] },
+  // 8. RAWNet Bridge (needs ZKVerifier)
+  { name: 'RAWNetBridge',      path: 'contracts/RAWNet/RAWNetBridge.sol',      args: [DEPLOYER, '$ZKVerifier', DEPLOYER] },
 ];
 
 const GAS_ESTIMATES = {
@@ -39,7 +39,7 @@ const GAS_ESTIMATES = {
   GoldMint:          1_400_000,
   IQTitle:           1_600_000,
   MigrationReceiver:   900_000,
-  R3NETBridge:      1_500_000,
+  RAWNetBridge:      1_500_000,
 };
 
 const NETWORK_GAS = {
@@ -58,7 +58,7 @@ function estimateCost(contractName, network) {
 
 function printDeployPlan() {
   console.log('\n╔══════════════════════════════════════════════════════════════╗');
-  console.log('║  R3NET Deployment Plan                                      ║');
+  console.log('║  RAWNet Deployment Plan                                      ║');
   console.log('╚══════════════════════════════════════════════════════════════╝\n');
   console.log(`Network: ${NETWORK}`);
   console.log(`Deployer: ${DEPLOYER}\n`);
@@ -72,7 +72,7 @@ function printDeployPlan() {
   });
 
   console.log(`\n  ${'TOTAL'.padEnd(20)} ~${totalGas.toLocaleString()} gas  $${totalUSD.toFixed(4)}`);
-  console.log(`\n  On R3NET: $${(totalUSD * 60/6000).toFixed(6)} total (100x cheaper)`);
+  console.log(`\n  On RAWNet: $${(totalUSD * 60/6000).toFixed(6)} total (100x cheaper)`);
   console.log(`  On Visa:   N/A (can't even compare)\n`);
 }
 

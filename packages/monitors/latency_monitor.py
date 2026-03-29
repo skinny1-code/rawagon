@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-R3WAGON Latency Monitor
+RAWagon Latency Monitor
 Watches API endpoints; switches to backup feeds on threshold breach.
 Covers: Ganache RPC, NHTSA API, CoinGecko, Gold oracle.
 """

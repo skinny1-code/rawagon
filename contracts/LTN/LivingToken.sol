@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 /**
  * @title LivingToken (LTN)
- * @notice ERC-20 governance + utility token for the R3WAGON network.
+ * @notice ERC-20 governance + utility token for the RAWagon network.
  *         Fixed supply: 1,000,000,000 LTN
  *         Deflationary: burns 0.001 LTN per network transaction
  *         Staking: FeeDistributor routes 0.1% of network volume to stakers

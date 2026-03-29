@@ -1,6 +1,6 @@
 /**
  * @rawagon/contracts-sdk
- * Shared contract addresses + ABIs for all R3WAGON apps.
+ * Shared contract addresses + ABIs for all RAWagon apps.
  * Single source of truth — update deployed-addresses.json after each deploy.
  *
  * Browser: include as <script> → window.RAWContracts
@@ -135,7 +135,7 @@ const RAWContracts = {
   getAddr(chainId, name) {
     return ADDR[chainId]?.[name] || null;
   },
-  /** Get address for R3NET testnet (720701) */
+  /** Get address for RAWNet testnet (720701) */
   rawnet(name) {
     return ADDR[720701][name] || null;
   },

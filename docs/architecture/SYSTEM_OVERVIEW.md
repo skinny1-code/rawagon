@@ -1,4 +1,4 @@
-# R3WAGON System Architecture
+# RAWagon System Architecture
 
 ## Network Overview
 
@@ -65,4 +65,4 @@ At $2,116 ETH, 0.006 Gwei gas. All costs < $0.002.
 | AutoIQ | NHTSA API | YES |
 | GoldSnap | Yahoo Finance, Chainlink | YES |
 | ProfitPilot | Reads from other products | Partial |
-| R3WAGON OS | All products optional | YES |
+| RAWagon OS | All products optional | YES |

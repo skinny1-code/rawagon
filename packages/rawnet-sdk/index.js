@@ -1,9 +1,9 @@
 /**
  * @rawagon/rawnet-sdk
- * R3NET ZK-Rollup SDK — connects apps to R3NET testnet/mainnet.
+ * RAWNet ZK-Rollup SDK — connects apps to RAWNet testnet/mainnet.
  * 100x cheaper than Base L2. 304,878x cheaper than Visa.
  *
- * R3NET specs:
+ * RAWNet specs:
  *   Chain ID:    720701 (testnet) / 72070 (mainnet)
  *   Block time:  500ms
  *   Gas target:  0.00006 Gwei (60 wei)
@@ -17,7 +17,7 @@
 
 const NETWORKS = {
   testnet: {
-    name:     'R3NET Testnet',
+    name:     'RAWNet Testnet',
     chainId:  720701,
     rpc:      process.env.RAWNET_RPC || 'http://10.117.122.142:8545',
     explorer: 'http://10.117.122.142:3000', // local explorer placeholder
@@ -25,7 +25,7 @@ const NETWORKS = {
     gasPrice: 60, // wei (0.00006 Gwei)
   },
   mainnet: {
-    name:     'R3NET',
+    name:     'RAWNet',
     chainId:  72070,
     rpc:      process.env.RAWNET_MAINNET_RPC || 'http://10.117.122.142:8545', // mainnet when live
     explorer: 'http://10.117.122.142:3000',
@@ -61,7 +61,7 @@ const GAS_ESTIMATES = {
 
 const ETH_PRICE_USD = 2061; // updated by fetchEthPrice()
 
-class R3NETSDK {
+class RAWNetSDK {
   constructor(network = 'testnet') {
     this.network = NETWORKS[network] || NETWORKS.testnet;
     this._ethPrice = ETH_PRICE_USD;
@@ -97,7 +97,7 @@ class R3NETSDK {
       .reduce((acc, [k, v]) => { acc[k] = v; return acc; }, {});
   }
 
-  /** Make a JSON-RPC call to R3NET */
+  /** Make a JSON-RPC call to RAWNet */
   async rpc(method, params = []) {
     const res = await fetch(this.network.rpc, {
       method: 'POST',
@@ -166,4 +166,4 @@ class R3NETSDK {
   }
 }
 
-module.exports = { R3NETSDK, NETWORKS, GAS_ESTIMATES };
+module.exports = { RAWNetSDK, NETWORKS, GAS_ESTIMATES };

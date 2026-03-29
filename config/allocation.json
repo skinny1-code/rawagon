@@ -1,10 +1,10 @@
 {
-  "_comment": "R3WAGON Systems \u2014 Revenue Allocation Configuration",
+  "_comment": "RAWagon Systems \u2014 Revenue Allocation Configuration",
   "_version": "1.0.0",
   "_updated": "2026-03-28",
   "founder": {
     "name": "Ryan Williams",
-    "title": "Founder & CEO, R3WAGON Systems LLC",
+    "title": "Founder & CEO, RAWagon Systems LLC",
     "allocation_pct": 15,
     "wallets": {
       "solana": {
@@ -13,11 +13,11 @@
         "chain_id": 101,
         "wormhole_chain_id": 1,
         "purpose": "Primary founder distribution wallet",
-        "currency": "USDC (bridged via Wormhole from R3NET)"
+        "currency": "USDC (bridged via Wormhole from RAWNet)"
       },
       "evm_bridge_relay": {
         "address": "0xC4ac99474A0839369E75D864Be39bdB927b7fcFa",
-        "chain": "R3NET / Base L2",
+        "chain": "RAWNet / Base L2",
         "path": "m/44'/60'/0'/0/1",
         "seed": "FOUNDER seed (separate from WAGON)",
         "purpose": "Bridge relay \u2014 auto-bridges USDC to Solana via Wormhole when \u2265 $1,000",
@@ -25,7 +25,7 @@
       },
       "evm_main": {
         "address": "0x1eA5d26F9aaEFcc8A3684fB27D0005ABFbdA83d8",
-        "chain": "R3NET / Base L2",
+        "chain": "RAWNet / Base L2",
         "path": "m/44'/60'/0'/0/0",
         "seed": "FOUNDER seed (separate from WAGON)",
         "purpose": "Primary EVM receiving wallet \u2014 receives 15% USDC from EntityAllocation.sol"
@@ -477,7 +477,7 @@
   },
   "network": {
     "evm": {
-      "name": "R3NET Testnet",
+      "name": "RAWNet Testnet",
       "chain_id": 720701,
       "rpc": "http://10.117.122.142:8545"
     },

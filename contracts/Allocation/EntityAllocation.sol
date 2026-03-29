@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 
 /**
  * @title EntityAllocation
- * @notice On-chain revenue allocation contract for the R3WAGON ecosystem.
+ * @notice On-chain revenue allocation contract for the RAWagon ecosystem.
  *         Every dollar of protocol revenue is split 5 ways automatically.
  *
  * Allocation structure (applied to ALL 7 entities equally):
@@ -18,9 +18,9 @@ pragma solidity ^0.8.24;
  *
  * @dev Founder distributions bridge to Solana via Wormhole.
  *      Bridging is triggered automatically when founderBalance >= BRIDGE_THRESHOLD.
- *      R3NET (chainId 720701) → Wormhole → Solana mainnet.
+ *      RAWNet (chainId 720701) → Wormhole → Solana mainnet.
  *
- * @author R3WAGON Systems LLC
+ * @author RAWagon Systems LLC
  * @notice Patent pending: RAW-2026-PROV-001
  */
 contract EntityAllocation {

@@ -514,7 +514,7 @@ class AllCard {
     const d = String(raw % 9000000000000000n + 1000000000000000n);
     return {
       pan: `${prefix}${d.slice(4,8)} ${d.slice(8,12)} ${d.slice(12,16)}`,
-      mode, nonce: this._nonce - 1, network: 'R3NET'
+      mode, nonce: this._nonce - 1, network: 'RAWNet'
     };
   }
 

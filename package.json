@@ -1,7 +1,7 @@
 {
   "name": "rawagon",
   "version": "0.1.0",
-  "description": "R3WAGON ecosystem monorepo \u2014 QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap, ProfitPilot",
+  "description": "RAWagon ecosystem monorepo \u2014 QWKS, BitPawn, Droppa, AutoIQ, AllCard, GoldSnap, ProfitPilot",
   "private": true,
   "scripts": {
     "test": "node scripts/run-all-tests.js",

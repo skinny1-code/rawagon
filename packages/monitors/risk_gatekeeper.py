@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-R3WAGON Risk Gatekeeper
+RAWagon Risk Gatekeeper
 Monitors drawdowns, enforces kill switches, stop-loss logic.
 Wired to ProfitPilot analytics + GoldSnap price oracle.
 """
@@ -67,7 +67,7 @@ class RiskGatekeeper:
             return
         try:
             import urllib.request
-            payload = json.dumps({"text": f"[R3WAGON RiskGatekeeper] {title}", "data": data}).encode()
+            payload = json.dumps({"text": f"[RAWagon RiskGatekeeper] {title}", "data": data}).encode()
             req = urllib.request.Request(self.alert_webhook, data=payload, headers={"Content-Type": "application/json"})
             urllib.request.urlopen(req, timeout=5)
         except Exception as e:

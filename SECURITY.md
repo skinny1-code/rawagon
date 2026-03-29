@@ -1,20 +1,20 @@
-# R3WAGON Security Policy
+# RAWagon Security Policy
 
 ## Supported Releases
 | App | Version | Supported |
 |-----|---------|-----------|
-| R3WAGON OS | current main | ✓ |
+| RAWagon OS | current main | ✓ |
 | All entity apps | current main | ✓ |
 | Smart contracts | deployed v1 | ✓ |
 
 ## Scope
 - Smart contracts: PawnRegistry, BreakFactory, GoldMint, IQTitle, EmployeeVault, FeeDistributor, LivingToken, CardVault
 - App frontends: all apps in `/apps/`
-- R3NET node / Ganache config
+- RAWNet node / Ganache config
 - AllCard ZK identity system
 
 ## Reporting a Vulnerability
-Email: **hello@r3wagon.io** with subject `[SECURITY] <brief title>`
+Email: **hello@rawagon.io** with subject `[SECURITY] <brief title>`
 
 Include:
 - Description and reproduction steps

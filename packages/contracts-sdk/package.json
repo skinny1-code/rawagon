@@ -1,7 +1,7 @@
 {
   "name": "@rawagon/contracts-sdk",
   "version": "1.0.0",
-  "description": "R3WAGON shared contract addresses + ABIs — single source of truth",
+  "description": "RAWagon shared contract addresses + ABIs — single source of truth",
   "main": "contracts.js",
   "browser": "contracts.js",
   "scripts": {
