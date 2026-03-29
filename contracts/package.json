@@ -1,7 +1,7 @@
 {
   "name": "@rawagon/contracts",
   "version": "0.1.0",
-  "description": "RAWagon smart contracts \u2014 fully standalone, no external imports",
+  "description": "R3WAGON smart contracts \u2014 fully standalone, no external imports",
   "scripts": {
     "compile:ganache": "node ../scripts/compile-ganache.js",
     "deploy:ganache": "node ../scripts/deploy-ganache.js",

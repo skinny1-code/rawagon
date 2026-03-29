@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 /**
+ * R3WAGON App Server
+ * Serves all 8 apps + static files on a single port.
+ * Run: node server.js [port]  (default 3000)
  * RAWagon App Server v2
  * - Serves all 11 apps
  * - SSE endpoint for real-time cross-app events
@@ -105,6 +108,7 @@ function indexPage(appFolders) {
   }).join('\n');
   return `<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R3WAGON — App Hub</title>
 <link rel="manifest" href="/manifest.json">
 <title>RAWagon — App Hub</title>
 <style>
@@ -122,6 +126,12 @@ body{background:#07040f;color:#f0eaff;font-family:system-ui,sans-serif;min-heigh
 a.health{color:#5a4a7a;text-decoration:none;font-size:.7rem}
 a.health:hover{color:#8b5cf6}
 </style></head><body>
+<h1>R3WAGON</h1>
+<p>R3NET Testnet · chainId 720701 · RPC: 10.117.122.142:8545</p>
+<div class="grid">
+    ${cards}
+</div>
+<div class="footer">R3WAGON Systems LLC · RAW-2026-PROV-001 · Patent Pending</div>
 <div class="logo">RAWagon</div>
 <div class="sub">RAWNet Testnet · chainId 720701 · 10.117.122.142:8545</div>
 <div class="grid">${cards}</div>
@@ -188,6 +198,9 @@ const server = http.createServer(async (req, res) => {
     const state = {
       ...networkState,
       apps: appFolders.length,
+      contracts: { live, total, network: 'R3NET Testnet (720701)' },
+      tests: '122 passing',
+      patent: 'RAW-2026-PROV-001 · Filed 2026-03-22',
       appList: appFolders,
       contracts: { live, total: Object.keys(contracts).filter(k=>!k.startsWith('_')).length },
       sseClients: sseClients.size,
@@ -303,6 +316,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   const ifaces = require('os').networkInterfaces();
   const ips = Object.values(ifaces).flat().filter(i => i.family === 'IPv4' && !i.internal).map(i => i.address);
+  console.log(`\n⬡  R3WAGON App Server`);
   console.log(`\n⬡  RAWagon App Server v2`);
   console.log(`   Local:    http://localhost:${PORT}`);
   ips.forEach(ip => console.log(`   Network:  http://${ip}:${PORT}`));

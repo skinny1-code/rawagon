@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * RAWagon — Ganache deploy script (no Hardhat needed)
+ * R3WAGON — Ganache deploy script (no Hardhat needed)
  * Uses ethers.js + solc to compile + deploy all contracts.
  *
  * Usage: node scripts/deploy-ganache.js
@@ -35,7 +35,7 @@ async function main() {
   const network  = await provider.getNetwork();
   const block    = await provider.getBlockNumber();
 
-  console.log('\n⬡  RAWagon Ganache Deploy');
+  console.log('\n⬡  R3WAGON Ganache Deploy');
   console.log(`   RPC:     ${RPC}`);
   console.log(`   Chain:   ${network.chainId}`);
   console.log(`   Block:   ${block}`);
@@ -58,7 +58,7 @@ async function main() {
 
   // Save addresses
   const out = {
-    _comment: 'Live Ganache addresses — RAWNet Testnet chainId 720701',
+    _comment: 'Live Ganache addresses — R3NET Testnet chainId 720701',
     _rpc: RPC,
     _deployed: new Date().toISOString(),
     rawnet_testnet: { network: 'RAWNet Testnet', chainId: Number(network.chainId), rpc: RPC, ...KNOWN }

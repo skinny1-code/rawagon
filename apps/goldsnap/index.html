@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">  <meta name="description" content="R3WAGON Systems · R3NET Testnet · Patent Pending RAW-2026-PROV-001">
 <meta charset="UTF-8">
 <link rel="stylesheet" href="/apps/shared/rawagon-design.css">
 <script src="/apps/shared/rawagon-onboard.js"></script>  <meta name="description" content="RAWagon Systems · RAWNet Testnet · Proprietary Technology">
@@ -9,6 +10,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GoldSnap — GTX/STX · R3NET</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <title>GoldSnap — GTX/STX · RAWNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
@@ -187,7 +190,7 @@ input:focus{border-color:var(--gold);}
 <div class="hdr">
   <div class="hdr-brand">
     <div class="brand-coin">Au</div>
-    <div><div class="brand-name">GoldSnap</div><div class="brand-sub">GTX/STX Token OS · RAWNet</div></div>
+    <div><div class="brand-name">GoldSnap</div><div class="brand-sub">GTX/STX Token OS · R3NET</div></div>
   </div>
   <div class="hdr-nav">
     <div class="nav-item active" onclick="show('prices')">Live Prices</div>
@@ -215,7 +218,7 @@ input:focus{border-color:var(--gold);}
     <div class="kpi"><div class="kpi-val silver" id="kpi-xag">$32.50</div><div class="kpi-lbl">Silver XAG/USD</div><div class="kpi-sub">per troy oz</div></div>
     <div class="kpi"><div class="kpi-val gold" id="kpi-gtx">$41.34</div><div class="kpi-lbl">GTX Price</div><div class="kpi-sub">1/100 oz gold</div></div>
     <div class="kpi"><div class="kpi-val silver" id="kpi-stx">$32.50</div><div class="kpi-lbl">STX Price</div><div class="kpi-sub">1 oz silver</div></div>
-    <div class="kpi"><div class="kpi-val grn" id="kpi-block">—</div><div class="kpi-lbl">RAWNet Block</div></div>
+    <div class="kpi"><div class="kpi-val grn" id="kpi-block">—</div><div class="kpi-lbl">R3NET Block</div></div>
   </div>
   <div class="g2">
     <div class="price-card price-card-gold">
@@ -450,7 +453,7 @@ input:focus{border-color:var(--gold);}
     <div class="card">
       <div class="card-title gold-t">GTX — Gold Snap Token</div>
       <div style="font-size:.8rem;color:var(--soft);line-height:1.9;margin-bottom:14px;">
-        GTX is a gold-backed ERC-20 token deployed on RAWNet. Each GTX represents 1/100 troy oz of gold. Price tracks the XAU/USD oracle. 100% USDC collateralized.
+        GTX is a gold-backed ERC-20 token deployed on R3NET. Each GTX represents 1/100 troy oz of gold. Price tracks the XAU/USD oracle. 100% USDC collateralized.
       </div>
       <table class="tbl">
         <tbody>
@@ -678,7 +681,7 @@ let txHistory=[];
 
 async function connectWallet(){
   if(!window.ethereum){alert("Open in MetaMask browser");return;}
-  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"RAWNet Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"R3NET Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
   const accs=await ethereum.request({method:"eth_requestAccounts"});
   addr=accs[0];
   provider=new ethers.BrowserProvider(window.ethereum);

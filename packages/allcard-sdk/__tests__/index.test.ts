@@ -80,7 +80,7 @@ describe('paymentRecord()', () => {
   it('has commitment field', () => {
     expect(new AllCard().paymentRecord(10)).toHaveProperty('commitment');
   });
-  it('chainId is RAWNet (720701)', () => {
+  it('chainId is R3NET (720701)', () => {
     expect(new AllCard().paymentRecord(1).chainId).toBe(720701);
   });
 });
@@ -99,7 +99,7 @@ describe('MODES', () => {
 });
 
 describe('createWAGONPayment()', () => {
-  it('creates valid payment record on RAWNet', () => {
+  it('creates valid payment record on R3NET', () => {
     const c   = new AllCard();
     const rec = createWAGONPayment(c, 99.99);
     expect(rec.chainId).toBe(720701);

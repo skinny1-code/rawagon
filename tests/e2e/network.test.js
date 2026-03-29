@@ -64,6 +64,8 @@ t('Contract Solidity: all 9 contracts have SPDX+constructor', ()=>{
     'contracts/BitPawn/PawnRegistry.sol','contracts/Droppa/BreakFactory.sol',
     'contracts/RAWNet/RAWNetBridge.sol',
   ];
+  const base = require('path').join(__dirname, '../..');
+  contracts.forEach(c=>{
   // Find repo root relative to test file
   const base = path.resolve(__dirname, '../..');
   const present = SOLS.filter(c => fs.existsSync(path.join(base, c)));

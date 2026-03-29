@@ -9,6 +9,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="/manifest.json">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Droppa™ — Seller OS · R3NET</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <title>Droppa™ — Seller OS · RAWNet</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
@@ -277,6 +279,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   <div class="nav-item" onclick="show('settings')">Settings</div>
   </div>
   <div class="hdr-right">
+    <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
+    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
     <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
   </div>
@@ -287,7 +291,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
   <div class="kpi-strip">
     <div class="kpi"><div class="kpi-val purp" id="d-gmv">$0</div><div class="kpi-lbl">Total GMV</div><div class="kpi-sub" id="d-gmv-sub">on-chain</div></div>
     <div class="kpi"><div class="kpi-val grn" id="d-net">$0</div><div class="kpi-lbl">Net Earned</div><div class="kpi-sub">after 1% fee</div></div>
-    <div class="kpi"><div class="kpi-val gold" id="d-breaks">0</div><div class="kpi-lbl">Breaks Run</div><div class="kpi-sub">on RAWNet</div></div>
+    <div class="kpi"><div class="kpi-val gold" id="d-breaks">0</div><div class="kpi-lbl">Breaks Run</div><div class="kpi-sub">on R3NET</div></div>
     <div class="kpi"><div class="kpi-val pink" id="d-inv">0</div><div class="kpi-lbl">Inventory</div><div class="kpi-sub">items tracked</div></div>
     <div class="kpi"><div class="kpi-val grn" id="d-refs">0</div><div class="kpi-lbl">Referrals</div><div class="kpi-sub">active sellers</div></div>
   </div>
@@ -317,7 +321,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
         <div class="card-title blue-t">Platform Status</div>
         <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">BreakFactory.sol</span><span class="grn">● Live</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">RAWNet chainId</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">720701</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">R3NET chainId</span><span style="font-family:JetBrains Mono,monospace;color:var(--purp)">720701</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Block</span><span id="d-block" style="font-family:JetBrains Mono,monospace;color:var(--dim)">—</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Break fee</span><span class="grn">1.0%</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Settlement</span><span class="grn">Instant · AllCard</span></div>
@@ -1086,7 +1090,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
     <div class="card">
       <div class="card-title blue-t">Network Config</div>
       <div style="font-size:.78rem;display:flex;flex-direction:column;gap:5px;">
-        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Network</span><span class="purp">RAWNet Testnet (720701)</span></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Network</span><span class="purp">R3NET Testnet (720701)</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">RPC</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">10.117.122.142:8545</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">BreakFactory</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--purp)">0xaf5C4C6C...Cf68</span></div>
         <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">MockUSDC</span><span style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--dim)">0xFC628dd7...4882</span></div>
@@ -1238,7 +1242,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
             <div style="margin-bottom:6px;color:var(--wh);font-weight:700;">After submitting, mail your card to:</div>
             <div style="padding:12px;background:var(--s2);border:1px solid var(--line);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:2;margin-bottom:10px;">
               Droppa Card Vault<br>
-              c/o RAWagon Systems LLC<br>
+              c/o R3WAGON Systems LLC<br>
               [VAULT ADDRESS - TBD]<br>
               <span style="color:var(--purp)">ATTN: VAULT-ID-{your intake ID}</span>
             </div>
@@ -1252,12 +1256,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
         <div class="card">
           <div class="card-title pink-t">What Gets Minted</div>
           <div style="font-size:.76rem;display:flex;flex-direction:column;gap:5px;">
-            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">NFT standard</span><span style="color:var(--purp)">ERC-721 on RAWNet</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">NFT standard</span><span style="color:var(--purp)">ERC-721 on R3NET</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Token name</span><span style="color:var(--purp)">DCV (Droppa Card Vault)</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Metadata</span><span style="color:var(--grn)">IPFS scan + cert data</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Transferable</span><span style="color:var(--grn)">Yes — sell like any NFT</span></div>
             <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ln2)"><span style="color:var(--soft)">Redeemable</span><span style="color:var(--grn)">Yes — burn for physical card</span></div>
-            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Contract</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--dim)">CardVault.sol · RAWNet</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--soft)">Contract</span><span style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--dim)">CardVault.sol · R3NET</span></div>
           </div>
         </div>
       </div>
@@ -1322,7 +1326,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
           <div><label>Country</label><input id="vr-country" placeholder="US"></div>
         </div>
         <div style="padding:10px;background:var(--rd2);border:1px solid rgba(248,113,113,.15);border-radius:8px;margin-bottom:10px;font-size:.74rem;color:var(--soft);">
-          ⚠ Your shipping address is encrypted locally (AES-256). Only the keccak256 hash is stored on-chain. RAWagon staff sees the encrypted address via a separate secure channel.
+          ⚠ Your shipping address is encrypted locally (AES-256). Only the keccak256 hash is stored on-chain. R3WAGON staff sees the encrypted address via a separate secure channel.
         </div>
         <div style="padding:10px;background:var(--pr3);border:1px solid var(--line);border-radius:8px;margin-bottom:12px;font-size:.78rem;">
           <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Redemption fee</span><span class="pval">$19.00 USDC</span></div>
@@ -1370,7 +1374,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
           </div>
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--pr2);border:1px solid var(--purp);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--purp);flex-shrink:0;font-size:.8rem;">4</div>
-            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">DCV NFT minted to your wallet</div><div style="font-size:.74rem;color:var(--soft);">ERC-721 NFT on RAWNet with scan metadata on IPFS. The NFT IS the card — sell it on Droppa marketplace, transfer to any wallet, or use as collateral.</div></div>
+            <div><div style="font-size:.84rem;font-weight:700;margin-bottom:2px;">DCV NFT minted to your wallet</div><div style="font-size:.74rem;color:var(--soft);">ERC-721 NFT on R3NET with scan metadata on IPFS. The NFT IS the card — sell it on Droppa marketplace, transfer to any wallet, or use as collateral.</div></div>
           </div>
           <div style="display:flex;gap:14px;align-items:flex-start;">
             <div style="width:28px;height:28px;border-radius:50%;background:var(--gn2);border:1px solid var(--grn);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--grn);flex-shrink:0;font-size:.8rem;">5</div>
@@ -1389,7 +1393,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
               <tr><td style="color:var(--soft)">On-chain NFT</td><td class="grn">✓</td><td class="red">✗</td><td class="red">✗</td></tr>
               <tr><td style="color:var(--soft)">Sell without shipping</td><td class="grn">✓ NFT transfer</td><td style="color:var(--gold)">Partial</td><td class="red">✗</td></tr>
               <tr><td style="color:var(--soft)">Redemption fee</td><td class="grn">$19</td><td class="red">$15-30</td><td class="red">$20+</td></tr>
-              <tr><td style="color:var(--soft)">Instant settlement</td><td class="grn">500ms RAWNet</td><td class="red">Days</td><td class="red">Days</td></tr>
+              <tr><td style="color:var(--soft)">Instant settlement</td><td class="grn">500ms R3NET</td><td class="red">Days</td><td class="red">Days</td></tr>
             </tbody>
           </table>
         </div>
@@ -1416,12 +1420,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
     <div style="font-size:3rem;flex-shrink:0">🏛️</div>
     <div>
       <div style="font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--purp),var(--grn));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;">Droppa Card Vault</div>
-      <div style="font-size:.78rem;color:var(--soft);line-height:1.6;max-width:600px">Mail your physical graded cards to the RAWagon Vault. We digitize, photograph, and store them securely. Your card becomes an on-chain NFT you can sell instantly — or burn anytime to get the physical card shipped back.</div>
+      <div style="font-size:.78rem;color:var(--soft);line-height:1.6;max-width:600px">Mail your physical graded cards to the R3WAGON Vault. We digitize, photograph, and store them securely. Your card becomes an on-chain NFT you can sell instantly — or burn anytime to get the physical card shipped back.</div>
     </div>
     <div style="margin-left:auto;text-align:right;flex-shrink:0">
       <div style="font-size:.68rem;color:var(--dim);margin-bottom:4px">Vault address</div>
       <div style="font-family:JetBrains Mono,monospace;font-size:.68rem;color:var(--purp)" id="vault-contract-addr">Loading...</div>
-      <div style="font-size:.64rem;color:var(--dim);margin-top:4px">CardVault.sol · RAWNet</div>
+      <div style="font-size:.64rem;color:var(--dim);margin-top:4px">CardVault.sol · R3NET</div>
     </div>
   </div>
 
@@ -1521,7 +1525,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--purp);}
         <div class="card" style="margin-bottom:14px;">
           <div class="card-title">Vault Mailing Address</div>
           <div style="background:var(--s2);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:.8rem;line-height:2;font-family:JetBrains Mono,monospace;">
-            <div style="color:var(--wh);font-weight:700">RAWagon Card Vault</div>
+            <div style="color:var(--wh);font-weight:700">R3WAGON Card Vault</div>
             <div style="color:var(--soft)">[Physical address on file]</div>
             <div style="color:var(--soft)">Attn: Vault Intake</div>
             <div style="color:var(--soft)">REF: Your Request ID</div>
@@ -1651,7 +1655,7 @@ let breakIds = [];
 // ── Wallet ──────────────────────────────────────────────────────────
 async function connectWallet(){
   if(!window.ethereum){alert("Open in MetaMask browser");return;}
-  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"RAWNet Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
+  await ethereum.request({method:"wallet_addEthereumChain",params:[{chainId:"0xAFD3D",chainName:"R3NET Testnet",nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},rpcUrls:["http://10.117.122.142:8545"]}]}).catch(()=>{});
   const accs=await ethereum.request({method:"eth_requestAccounts"});
   addr=accs[0];
   provider=new ethers.BrowserProvider(window.ethereum);
@@ -2347,7 +2351,7 @@ function loadVaultMarket() {
           <div style="display:flex;justify-content:space-between"><span style="color:var(--soft)">Token</span><span style="font-family:JetBrains Mono,monospace;color:var(--dim)">#${l.tokenId}</span></div>
           <div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--ln2);margin-top:3px"><span style="color:var(--soft)">Ask price</span><span style="color:var(--grn);font-weight:700;font-family:JetBrains Mono,monospace">$${l.askPrice.toLocaleString()}</span></div>
         </div>
-        <button class="btn btn-purp btn-sm" style="width:100%;margin-top:8px" onclick="toast('NFT purchase — deploying to RAWNet Q3 2026')">Buy NFT · $${l.askPrice.toLocaleString()}</button>
+        <button class="btn btn-purp btn-sm" style="width:100%;margin-top:8px" onclick="toast('NFT purchase — deploying to R3NET Q3 2026')">Buy NFT · $${l.askPrice.toLocaleString()}</button>
       </div>
     </div>`).join('') :
     "<div style='color:var(--soft);text-align:center;padding:30px;grid-column:1/-1'>No listings match your search</div>";

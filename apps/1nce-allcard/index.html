@@ -209,6 +209,8 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
     <div class="nav-item" onclick="show('modes')">8 Modes</div>
     <div class="nav-item" onclick="show('patent')">Patent</div>
   </div>
+  <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="R3WAGON OS">⬡ OS</a>
+    <button id="connect-btn" onclick="connectWallet()">🦊 Connect</button>
   <a href="/" style="padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);font-size:.7rem;font-weight:600;text-decoration:none;white-space:nowrap;letter-spacing:.04em;" title="RAWagon OS">⬡ OS</a>
     <button <span id="pp-network-pill" style="font-size:.6rem;color:var(--dim);padding:3px 8px;background:rgba(255,255,255,.03);border-radius:20px;cursor:default;white-space:nowrap;display:none" title="ProfitPilot network health"></span>
   id="connect-btn" data-rw-connect onclick="if(window.RWWallet)RWWallet.connect();else if(typeof connectWallet==='function')connectWallet()">🔗 Connect</button>
@@ -239,7 +241,7 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
             <div class="card-name" id="card-holder">NOT CONNECTED</div>
             <div class="card-nonce" id="card-nonce">Nonce: 0</div>
           </div>
-          <div id="card-network" class="card-network">RAWNet</div>
+          <div id="card-network" class="card-network">R3NET</div>
         </div>
       </div>
       <div style="margin-top:8px;text-align:center;font-size:.7rem;color:var(--dim)">Tap card to generate new PAN — each tap is unique</div>
@@ -539,6 +541,7 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
     <div class="card">
       <div class="card-title">IP Portfolio</div>
       <div style="font-size:.78rem;font-weight:600;margin-bottom:6px;">Zero-Knowledge Commerce System with Behavioral Biometric Key Derivation and Sovereign Identity</div>
+      <div style="font-size:.7rem;color:var(--soft);margin-bottom:10px;">RAW-2026-PROV-001 · Filed March 22, 2026 · R3WAGON Systems LLC · 5 core inventions</div>
       <div style="font-size:.7rem;color:var(--soft);margin-bottom:10px;">RAWagon Systems LLC · IP filing in preparation · 5 core inventions</div>
       <div style="font-size:.74rem;color:var(--soft);line-height:1.9;">
         <div><strong style="color:var(--purp)">Claim 1.</strong> Shifting PAN — payment card number derived from HD path per transaction; each spend produces unique PAN cryptographically linked to master key</div>
@@ -629,7 +632,7 @@ let canvasDrawing = false;
 const MODES = [
   { id:'identity',  icon:'🪪', name:'Identity',   net:'Visa',    prefix:'4532', color:'#8b5cf6', desc:'Government & corporate ID verification — ZK attests identity without revealing PII' },
   { id:'debit',     icon:'💳', name:'Debit',      net:'MC',      prefix:'5412', color:'#3b82f6', desc:'Bank-linked payments — shifting PAN prevents card skimming and replay attacks' },
-  { id:'crypto',    icon:'₿',  name:'Crypto',     net:'Visa',    prefix:'4111', color:'#f59e0b', desc:'On-chain payments — routes through RAWNet/QWKS Protocol at 0.01% fee' },
+  { id:'crypto',    icon:'₿',  name:'Crypto',     net:'Visa',    prefix:'4111', color:'#f59e0b', desc:'On-chain payments — routes through R3NET/QWKS Protocol at 0.01% fee' },
   { id:'health',    icon:'🏥', name:'Health',     net:'Amex',    prefix:'3714', color:'#10b981', desc:'Insurance & medical authorization — HIPAA-compatible ZK credential proofs' },
   { id:'vehicle',   icon:'🚗', name:'Vehicle',    net:'Disc',    prefix:'6011', color:'#06b6d4', desc:'DMV title & insurance verification — links to IQCAR NFT via AutoIQ' },
   { id:'gov',       icon:'🏛', name:'Gov',        net:'Amex',    prefix:'3782', color:'#6366f1', desc:'Federal & state credential layer — works with REAL ID Act compliance framework' },
@@ -641,7 +644,7 @@ const MODES = [
 async function connectWallet() {
   if (!window.ethereum) { alert("Open in MetaMask browser"); return; }
   await ethereum.request({method:"wallet_addEthereumChain",params:[{
-    chainId:"0xAFD3D",chainName:"RAWNet Testnet",
+    chainId:"0xAFD3D",chainName:"R3NET Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
   }]}).catch(()=>{});

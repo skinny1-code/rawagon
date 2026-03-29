@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-RAWagon Secret Manager
+R3WAGON Secret Manager
 Loads secrets from env vars with fallback to .env file.
 Never logs secret values. Validates required keys on startup.
 """

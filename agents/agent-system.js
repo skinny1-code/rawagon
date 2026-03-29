@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * RAWagon Agent System
+ * R3WAGON Agent System
  * One autonomous agent per entity app.
  *
  * GUARDRAILS:
@@ -78,12 +78,12 @@ async function runAgent(agent) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  const SYSTEM = `You are ${agent.name}, an autonomous agent for the RAWagon blockchain ecosystem.
+  const SYSTEM = `You are ${agent.name}, an autonomous agent for the R3WAGON blockchain ecosystem.
 Your role: inspect app code, find bugs or missing features, propose minimal surgical patches.
 
 HARD GUARDRAILS:
 - Max 50 lines changed per patch
-- Never change contract addresses (live on RAWNet testnet 720701)  
+- Never change contract addresses (live on R3NET testnet 720701)  
 - Never delete existing functions
 - Confidence must be >= 0.85 to propose a patch
 - Only modify: ${agent.app}
@@ -173,7 +173,7 @@ Respond ONLY with valid JSON:
 
 function dashboard() {
   console.log('\n╔══════════════════════════════════════════════════╗');
-  console.log('║  RAWagon Agent System                            ║');
+  console.log('║  R3WAGON Agent System                            ║');
   console.log('╚══════════════════════════════════════════════════╝');
   AGENTS.forEach(a => {
     const s = state[a.id];
@@ -191,7 +191,7 @@ async function main() {
     console.error('Set ANTHROPIC_API_KEY first:\nexport ANTHROPIC_API_KEY=sk-ant-...');
     process.exit(1);
   }
-  console.log('RAWagon Agent System — 7 entity agents starting');
+  console.log('R3WAGON Agent System — 7 entity agents starting');
   // Stagger first runs
   AGENTS.forEach((a, i) => { state[a.id].lastRun = Date.now() - GUARDRAILS.COOLDOWN_MS + i*8000; });
 

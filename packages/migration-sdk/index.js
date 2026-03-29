@@ -52,7 +52,7 @@ class QWKSMigration {
 
   /**
    * Generate a full migration plan with savings projections, step-by-step guide,
-   * and RAWNet vs Base L2 comparison.
+   * and R3NET vs Base L2 comparison.
    */
   generateMigrationPlan() {
     const ratePct = this.rateBps / 100;
@@ -60,7 +60,7 @@ class QWKSMigration {
     const ltnPerMonth = Math.ceil(this.txPerMonth * 0.001); // 0.001 LTN reward per tx
     const transitionData = transition(savingsData.qwksFee, ltnPerMonth, 0.084);
 
-    // RAWNet vs Base cost comparison
+    // R3NET vs Base cost comparison
     const baseL2TxCost   = 0.000825;  // $
     const rawnetTxCost   = 0.0000082; // $
     const baseL2Annual   = this.txPerMonth * 12 * baseL2TxCost;
@@ -80,7 +80,7 @@ class QWKSMigration {
         fiveYear: savingsData.toCustomer * 5,
       },
       network: {
-        recommended: 'RAWNet Testnet',
+        recommended: 'R3NET Testnet',
         chainId: 720701,
         rpc: 'http://10.117.122.142:8545',
         baseL2AnnualCost: parseFloat(baseL2Annual.toFixed(4)),
@@ -161,10 +161,10 @@ class QWKSMigration {
         break;
 
       case 6: // Go live
-        result.action = 'Process test transaction on RAWNet Testnet';
+        result.action = 'Process test transaction on R3NET Testnet';
         result.testTx = {
           amount: 1.00,
-          network: 'RAWNet Testnet (chainId 720701)',
+          network: 'R3NET Testnet (chainId 720701)',
           gasCost: '$0.0000082',
           expectedTime: '500ms',
           faucet: 'http://10.117.122.142:8545',
@@ -217,7 +217,7 @@ class QWKSMigration {
       youKeep:           `$${(saved * 0.90).toLocaleString('en', { maximumFractionDigits: 0 })} per year`,
       onboardingTime:    '60 minutes',
       riskNote:          'Keep your existing processor. QWKS runs in parallel. Cancel only when ready.',
-      network:           `RAWNet (${Math.round(baseL2TxCost / 0.0000082)}x cheaper than Base L2 · ${Math.round(annualVisa / annualQwks)}x cheaper than ${this.processor.name})`,
+      network:           `R3NET (${Math.round(baseL2TxCost / 0.0000082)}x cheaper than Base L2 · ${Math.round(annualVisa / annualQwks)}x cheaper than ${this.processor.name})`,
     };
   }
 }
