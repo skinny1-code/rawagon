@@ -669,7 +669,7 @@ input:focus{border-color:var(--gold);}
 
 <script>
 const ADDRS={GoldMint:"0xFF6049B87215476aBf744eaA3a476cBAd46fB1cA",MockUSDC:"0xFC628dd79137395F3C9744e33b1c5DE554D94882",MockOracleXAU:"0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",MockOracleXAG:"0xD86C8F0327494034F60e25074420BcCF560D5610"};
-const GM_ABI=["function mintGTX(uint256 usdc) returns (uint256)","function mintSTX(uint256 usdc) returns (uint256)","function redeemGTX(uint256 amt)","function redeemSTX(uint256 amt)","function goldPriceUSD() view returns (uint256)","function silverPriceUSD() view returns (uint256)","function gtxPrice() view returns (uint256)","function stxPrice() view returns (uint256)","function gtxBalance(address) view returns (uint256)","function stxBalance(address) view returns (uint256)","function gtxSupply() view returns (uint256)","function stxSupply() view returns (uint256)","function usdcReserve() view returns (uint256)"];
+const GM_ABI=["function mintGTX(uint256 usdc) returns (uint256)","function mintSTX(uint256 usdc) returns (uint256)","async function redeemGTX(uint256 amt)","async function redeemSTX(uint256 amt)","function goldPriceUSD() view returns (uint256)","function silverPriceUSD() view returns (uint256)","function gtxPrice() view returns (uint256)","function stxPrice() view returns (uint256)","function gtxBalance(address) view returns (uint256)","function stxBalance(address) view returns (uint256)","function gtxSupply() view returns (uint256)","function stxSupply() view returns (uint256)","function usdcReserve() view returns (uint256)"];
 const ORC_ABI=["function latestAnswer() view returns (int256)"];
 const ERC20_ABI=["function balanceOf(address) view returns (uint256)","function approve(address,uint256) returns (bool)","function faucet()"];
 

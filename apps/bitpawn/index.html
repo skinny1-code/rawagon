@@ -705,8 +705,8 @@ const ADDRS = {
   MockOracleXAU:  "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
 };
 const PR_ABI = [
-  "function openTicket(bytes32 custCommit,uint256 loan,uint256 intBps,uint256 termDays,string calldata itemHash) returns (bytes32)",
-  "function redeemTicket(bytes32 id)",
+  "async function openTicket(bytes32 custCommit,uint256 loan,uint256 intBps,uint256 termDays,string calldata itemHash) returns (bytes32)",
+  "async function redeemTicket(bytes32 id)",
   "function forfeit(bytes32 id)",
   "function calcDue(bytes32 id) view returns (uint256 total,uint256 interest)",
   "function tickets(bytes32) view returns (bytes32,address,uint256,uint256,uint256,uint256,uint256,uint8)",
@@ -881,11 +881,11 @@ async function loadTickets() {
   } catch(e){}
 }
 
-async function redeemTicket(id){
+async function redeemTicket(id){ if(!signer){rwToast&&rwToast("Connect wallet first",true);return;}
   try{await (await prContract.redeemTicket(id)).wait();toast("Redeemed ✓");loadTickets();loadDashboard();}
   catch(e){toast(e.message.split("(")[0],true);}
 }
-async function forfeitTicket(id){
+async function forfeitTicket(id){ if(!signer){rwToast&&rwToast("Connect wallet first",true);return;}
   if(!confirm("Forfeit this ticket?"))return;
   try{await (await prContract.forfeit(id)).wait();toast("Forfeited");loadTickets();}
   catch(e){toast(e.message.split("(")[0],true);}

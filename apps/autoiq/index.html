@@ -251,7 +251,8 @@ input:focus,select:focus{border-color:var(--blue);}
             <div style="background:rgba(52,211,153,.1);border:1px solid var(--grn);padding:4px 6px;border-radius:3px;" id="v-vis" title="Vehicle Identifier Section">VIS</div>
           </div>
         </div>
-        <div id="decode-result"></div>
+        <div id="ai-vin-result" style="display:none"></div>
+      <div id="decode-result"></div>
       </div>
     </div>
     <div>
@@ -663,7 +664,7 @@ async function decodeVIN() {
       ["Fuel",v.FuelTypePrimary||"—"],["Plant",v.PlantCity+", "+v.PlantCountry||"—"],["GVWR",v.GVWR||"—"],
     ];
     el.innerHTML = `<div class="vin-result">
-      <div class="vin-header">
+      <span id="vd-make" style="display:none"></span><span id="vd-model" style="display:none"></span><span id="vd-year" style="display:none"></span><div class="vin-header">
         <div>
           <div class="vin-make">${v.ModelYear} ${v.Make} ${v.Model}</div>
           <div style="font-size:.72rem;color:var(--soft)">${v.BodyClass||""} · ${v.DriveType||""}</div>

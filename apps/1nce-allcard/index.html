@@ -485,7 +485,9 @@ input[type=range]{margin:0;padding:0;height:4px;accent-color:var(--purp);}
 </div>
 
 <!-- VAULT -->
-<div class="pane" id="pane-vault">
+<div class="pane" <div id="ai-identity-out" style="display:none"></div>
+
+    id="pane-vault">
   <div class="g2">
     <div>
       <div class="card" style="margin-bottom:14px;">
@@ -605,7 +607,7 @@ function anthropicFetch(messages, maxTokens=600) {
 const ADDRS = { EmployeeVault: "0x86072CbFF48dA3C1F01824a6761A03F105BCC697" };
 const EV_ABI = [
   "function enroll(address employee, bytes32 commitment)",
-  "function verifyEmployment(address employee, bytes32 proofHash, address claimedEmployer) returns (bool)",
+  "async function verifyEmployment(address employee, bytes32 proofHash, address claimedEmployer) returns (bool)",
   "function getCommitment(address) view returns (bytes32)",
   "function isEnrolled(address) view returns (bool)",
   "function employees(address) view returns (bytes32,address,uint256,bool,uint256)",
