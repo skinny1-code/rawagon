@@ -48,15 +48,20 @@ rawagon/
 ├── contracts/                    # Solidity smart contracts (Hardhat project)
 │   ├── src/                      # Solidity source files (moved here to avoid node_modules glob)
 │   │   ├── LTN/LivingToken.sol
+│   │   ├── LTN/VeLTN.sol             # Vote-escrow lock for boosted rewards + governance
+│   │   ├── LTN/StakedLTN.sol         # Liquid staking receipt token (sLTN)
 │   │   ├── QWKS/FeeDistributor.sol
 │   │   ├── QWKS/IYieldStrategy.sol   # Pluggable DeFi yield adapter interface
+│   │   ├── QWKS/BondDepository.sol   # Protocol-owned liquidity bonds (Olympus-style)
+│   │   ├── QWKS/ParticipationRegistry.sol  # Activity-based staking multiplier source
 │   │   ├── AllCard/EmployeeVault.sol
 │   │   ├── GoldSnap/GoldMint.sol
 │   │   ├── AutoIQ/IQTitle.sol
 │   │   └── mocks/                    # Test-only contracts
 │   │       ├── MockERC20.sol
 │   │       ├── MockOracle.sol
-│   │       └── MockYieldStrategy.sol
+│   │       ├── MockYieldStrategy.sol
+│   │       └── MockPriceOracle.sol   # Fixed-price oracle for BondDepository tests
 │   ├── scripts/
 │   │   └── deploy.js             # Hardhat deploy script (all 5 contracts, ordered)
 │   ├── test/                     # Hardhat/Mocha/Chai contract tests (122 tests)
@@ -324,13 +329,14 @@ All contracts in `contracts/src/`, target **Solidity ^0.8.24**, deploy on **Base
 ### `FeeDistributor.sol` — `contracts/src/QWKS/`
 
 - Accumulates network volume fees via `inflow(vol)` (approved reporters only)
-- Reward-per-token (RPT) accounting distributes rewards proportionally to LTN stakers
+- **Virtual balance RPT accounting**: RPT denominator uses `totalVirtualStaked` (Σ `staked[user] × combinedMultiplier / 100`); backward-compatible when no multiplier sources are set (virtual == actual)
 - Interface: `stake(amount)`, `unstake(amount)`, `claim()`
+- **Multiplier sources**: `setVeLTN(addr)` and `setParticipationRegistry(addr)` plug in `IMultiplierSource` contracts; `refreshMultiplier(user)` re-computes a staker's virtual balance; combined multiplier capped at `MAX_MULTIPLIER = 500` (5×)
 - **Dynamic fee split**: `feeBps` [5–20 bps, default 10] and `stakersSharePct` [50–95%, default 80]; remainder goes to `treasury`; `settleEpoch()` auto-rebalances share based on staking utilization
 - **Auto-compound**: `setAutoCompound(bool)` — when enabled, `claim()` re-stakes rewards instead of transferring to wallet
 - **DeFi yield strategy**: `setYieldStrategy(addr)` plugs in an `IYieldStrategy`; idle LTN (up to 80% of `totalStaked`) is deployed to strategy each epoch; yield harvested on `settleEpoch()` and added to RPT; `unstake()` pulls from strategy when contract balance is insufficient
 - `unstake()` is `nonReentrant` (OpenZeppelin `ReentrancyGuard`)
-- Owner setters: `setTreasury`, `setFeeBps`, `setStakersSharePct`, `setEpochDuration`, `setYieldStrategy`
+- Owner setters: `setTreasury`, `setFeeBps`, `setStakersSharePct`, `setEpochDuration`, `setYieldStrategy`, `setVeLTN`, `setParticipationRegistry`
 
 ### `IYieldStrategy.sol` — `contracts/src/QWKS/`
 
@@ -360,6 +366,38 @@ All contracts in `contracts/src/`, target **Solidity ^0.8.24**, deploy on **Base
 - Immutable metadata: VIN, make, model, year, recalls, salvage flag, timestamp
 - 0.001 ETH mint fee; 17-char VIN validation; no duplicate VINs
 - `vinToId(vin)`, `setFee(fee)` (owner), `withdraw()` (owner)
+
+### `VeLTN.sol` — `contracts/src/LTN/`
+
+- Non-transferable vote-escrow lock; 4 tiers (90d / 180d / 1y / 4y)
+- Multipliers (basis-100): `[100, 125, 150, 175, 250]` — tier 0 = no lock = 1×
+- `lock(amount, tier)` — lock LTN; `extend(newTier)` — upgrade an active lock; `withdraw()` — reclaim after expiry
+- `multiplierOf(user)` — returns basis-100 multiplier consumed by `FeeDistributor`
+- `votingPower(user)` — `lockAmount × multiplier / 100` for governance
+
+### `StakedLTN.sol` (sLTN) — `contracts/src/LTN/`
+
+- Liquid staking receipt ERC20; exchange-rate model (sLTN redeems for more LTN as rewards compound)
+- `wrap(ltnAmount)` → deposit LTN, receive sLTN; `unwrap(sLtnAmount)` → burn sLTN, receive LTN
+- `compound()` — keeper-callable; harvests FeeDistributor rewards and re-stakes, increasing exchange rate
+- `exchangeRate()` — LTN per 1e18 sLTN; `previewUnwrap(sLtnAmount)` — view
+- Holds a single pooled stake in `FeeDistributor` on behalf of all sLTN holders
+
+### `BondDepository.sol` — `contracts/src/QWKS/`
+
+- Olympus-style protocol-owned liquidity; owner creates bond terms with a pay token, oracle, discount, vesting cliff, and LTN capacity
+- `bond(termId, payAmount)` — user deposits payToken, receives a discounted LTN bond vesting after cliff
+- `redeem(bondIndex)` — claim vested LTN; `previewBond(termId, payAmount)` — quote
+- `createTerm(payToken, oracle, discountBps, vestingDays, capacityLTN)` — max 50% discount, 1–365 day vesting
+- `fund(amount)` — owner deposits LTN reserve; `setTreasury(addr)` — receives deposited payToken
+
+### `ParticipationRegistry.sol` — `contracts/src/QWKS/`
+
+- Activity-based staking multiplier source; authorized reporters record per-wallet QWKS volume each epoch
+- Score decays 50% per epoch — continuous participation required to maintain boost
+- Multiplier tiers (basis-100): `>$10K/epoch` → 125, `>$100K/epoch` → 150, `>$1M/epoch` → 200
+- `recordActivity(user, vol)` — reporter-only; `settleEpoch()` — advances epoch (lazy per-user via `_settleUser`)
+- `multiplierOf(user)` — consumed by `FeeDistributor.refreshMultiplier()`
 
 ---
 
@@ -428,13 +466,15 @@ NODE_ENV=development
 
 ## Known Incomplete Areas
 
-| Area                     | Status                                                                                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/`                  | All frontend apps are directory stubs — no implementation; no frontend framework chosen yet                                     |
-| GoldMint on Base Sepolia | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live                                      |
-| Deploy to mainnet        | Contracts untested on live network; `EmployeeVault.verify()` uses hash-check only                                               |
-| `IYieldStrategy` adapter | Interface defined; no production adapter (Aave/Compound) implemented yet — mock only                                            |
-| LTN burn-rate cross-call | `FeeDistributor.settleEpoch()` does not yet call `LivingToken.setBurnRate()` — epoch volume tracked separately in each contract |
+| Area                                     | Status                                                                                                                          |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/`                                  | All frontend apps are directory stubs — no implementation; no frontend framework chosen yet                                     |
+| GoldMint on Base Sepolia                 | No Chainlink XAU/USD oracle on Base Sepolia — `price()` will revert until oracle goes live                                      |
+| Deploy to mainnet                        | Contracts untested on live network; `EmployeeVault.verify()` uses hash-check only                                               |
+| `IYieldStrategy` adapter                 | Interface defined; no production adapter (Aave/Compound) implemented yet — mock only                                            |
+| LTN burn-rate cross-call                 | `FeeDistributor.settleEpoch()` does not yet call `LivingToken.setBurnRate()` — epoch volume tracked separately in each contract |
+| VeLTN / StakedLTN / BondDepository tests | No Hardhat tests written yet for these 3 new contracts (+ `ParticipationRegistry`)                                              |
+| `BondDepository` oracle                  | Requires an `IPriceOracle` implementation per pay token — only `MockPriceOracle` exists today                                   |
 
 ---
 
