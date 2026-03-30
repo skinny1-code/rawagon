@@ -491,14 +491,14 @@ function anthropicFetch(messages, maxTokens=800, system="") {
             </div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;">
-            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--grn);">98</div><div style="font-size:.6rem;color:var(--dim);">AuraMe score</div></div>
-            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--gold);">847</div><div style="font-size:.6rem;color:var(--dim);">Credit score</div></div>
+            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--grn);">—</div><div style="font-size:.6rem;color:var(--dim);">AuraMe score</div></div>
+            <div style="text-align:center;padding:8px;background:rgba(0,0,0,.2);border-radius:6px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:.92rem;color:var(--gold);">—</div><div style="font-size:.6rem;color:var(--dim);">Credit score</div></div>
           </div>
           <!-- Biometric signals mini -->
           <div style="margin-top:10px;display:flex;flex-direction:column;gap:4px;">
-            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Keystroke</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:91%;background:var(--teal);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--teal);">91%</span></div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Voice print</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:78%;background:var(--blue);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--blue);">78%</span></div>
-            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Gait</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:85%;background:var(--grn);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--grn);">85%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Keystroke</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:0%;background:var(--teal);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--teal);">91%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Voice print</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:0%;background:var(--blue);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--blue);">78%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:.68rem;"><span style="color:var(--dim);width:80px;">Gait</span><div class="prog" style="flex:1;margin:0;"><div class="prog-f" style="width:0%;background:var(--grn);height:3px;"></div></div><span style="font-family:'IBM Plex Mono',monospace;color:var(--grn);">85%</span></div>
           </div>
         </div>
 
@@ -521,13 +521,13 @@ function anthropicFetch(messages, maxTokens=800, system="") {
         <!-- Net worth -->
         <div class="card gc3">
           <div class="card-label">Total net worth</div>
-          <div class="metric lg gd" id="os-networth">$284,391</div>
-          <div class="metric-sub" style="color:var(--grn);">▲ +$3,241 this month</div>
+          <div class="metric lg gd" id="os-networth">—</div>
+          <div class="metric-sub" style="color:var(--grn);">Connect wallet to view</div>
           <div style="margin-top:12px;display:flex;flex-direction:column;gap:5px;">
-            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Chase checking</span><span style="font-family:'IBM Plex Mono',monospace;">$12,440</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Ally savings</span><span style="font-family:'IBM Plex Mono',monospace;">$42,650</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Fidelity IRA</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--gold);">$184,200</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Crypto holdings</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--purp);">$7,821</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">ETH balance</span><span style="font-family:'IBM Plex Mono',monospace;">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">USDC balance</span><span style="font-family:'IBM Plex Mono',monospace;">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">Network</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--gold);">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.72rem;"><span style="color:var(--dim);">LTN balance</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--purp);">—</span></div>
           </div>
         </div>
 
@@ -608,7 +608,7 @@ function anthropicFetch(messages, maxTokens=800, system="") {
           <div class="card-label">AuraMe behavioral score</div>
           <div style="display:flex;align-items:center;gap:14px;margin-top:8px;">
             <div style="text-align:center;">
-              <div style="font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:700;color:var(--grn);">98</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:2rem;font-weight:700;color:var(--grn);">—</div>
               <div style="font-size:.62rem;color:var(--dim);">Identity confidence</div>
             </div>
             <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
@@ -1425,7 +1425,7 @@ function renderDroppaSync() {
 function renderDroppaAnalytics() {
   const el = document.getElementById('droppa-analytics'); if(!el) return;
   el.innerHTML = `<div style="display:flex;flex-direction:column;gap:7px;">
-    ${[['Gross revenue 30d','$42,840','var(--orng)'],['Avg margin','18.4%','var(--grn)'],['Break fill rate','94%','var(--teal)'],['LTN rewards earned','1,240 LTN','var(--purp)'],['AllCard payments','73%','var(--gold)'],['Top category','2024 Prizm Basketball','var(--wh)']].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--surf);border-radius:6px;"><span style="font-size:.74rem;color:var(--dim);">${l}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:${c};">${v}</span></div>`).join('')}
+    ${[['Gross revenue 30d','—','var(--orng)'],['Avg margin','—','var(--grn)'],['Break fill rate','—','var(--teal)'],['LTN rewards earned','—','var(--purp)'],['AllCard payments','—','var(--gold)'],['Top category','—','var(--wh)']].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:8px 10px;background:var(--surf);border-radius:6px;"><span style="font-size:.74rem;color:var(--dim);">${l}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:${c};">${v}</span></div>`).join('')}
   </div>`;
   setEl('droppa-stats','');
 }
@@ -1604,8 +1604,7 @@ function renderChainActivity() {
   } else {
     // Fallback static display until events come in
     const acts = [
-      {type:'⬡ RAWNet ready',hash:'Waiting for cross-app events',when:'now'},
-      {type:'📡 SSE connected',hash:'server.js → /api/events',when:'—'},
+      {type:'⬡ Network ready',hash:'No transactions yet — connect wallet to begin',when:'now'},
     ];
     el.innerHTML = acts.map(a=>`<div style="display:flex;align-items:center;gap:9px;padding:7px 10px;background:var(--surf);border-radius:5px;margin-bottom:4px;"><div style="flex:1;"><div style="font-size:.74rem;font-weight:500;">${a.type}</div><div style="font-size:.62rem;color:var(--dim);">${a.hash}</div></div><div style="font-size:.63rem;color:var(--muted);">${a.when}</div></div>`).join('');
   }
@@ -1617,10 +1616,10 @@ function renderChainActivity() {
 function renderPPKPIs() {
   const el = document.getElementById('pp-kpis'); if(!el) return;
   const kpis = [
-    {l:'30d Revenue',v:'$84,240',c:'var(--orng)',sub:'All products'},
-    {l:'Net Margin',v:'22.4%',c:'var(--grn)',sub:'+3.2% vs last month'},
-    {l:'LTN Earned',v:'2,840 LTN',c:'var(--purp)',sub:'From business fees'},
-    {l:'AllCard Txns',v:'847',c:'var(--gold)',sub:'vs 312 cash'},
+    {l:'30d Revenue',v:'—',c:'var(--orng)',sub:'All products'},
+    {l:'Net Margin',v:'—',c:'var(--grn)',sub:'+3.2% vs last month'},
+    {l:'LTN Earned',v:'—',c:'var(--purp)',sub:'From business fees'},
+    {l:'AllCard Txns',v:'—',c:'var(--gold)',sub:'vs 312 cash'},
   ];
   el.innerHTML = kpis.map(k=>`<div class="card"><div class="card-label">${k.l}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:${k.c};margin:4px 0;">${k.v}</div><div style="font-size:.68rem;color:var(--dim);">${k.sub}</div></div>`).join('');
 }
@@ -1853,7 +1852,7 @@ function setIDCardMode(mode, btn) {
 // ═══════════════════════════════════════════════
 function openModal(key) {
   const modals = {
-    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score 98/100 · ZK proof active</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Wallet',addr?addr.slice(0,12)+'...':'Not connected'],['Handle','R3NET'],['ZK ID','—'],['AllCard','Connect to load'],['AuraMe','Set in AllCard'],['Credit','Private — ZK only']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
+    'identity-modal': {t:'⬡ Identity · 1.nce ZK',b:`<div style="display:flex;flex-direction:column;gap:10px;"><div style="padding:13px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:.8rem;color:var(--grn);">✓ Identity verified · AuraMe score — · Not yet verified</div><div class="pf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${[['Wallet',addr?addr.slice(0,12)+'...':'Not connected'],['Handle','R3NET'],['ZK ID','—'],['AllCard','Connect to load'],['AuraMe','Set in AllCard'],['Credit','Private — ZK only']].map(([l,v])=>`<div style="background:var(--surf);border-radius:6px;padding:10px;"><div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">${l}</div><div style="font-size:.8rem;margin-top:2px;">${v}</div></div>`).join('')}</div><button class="btn btn-gold btn-full" onclick="closeModal();switchApp('identity')">Manage identity →</button></div>`},
     'notifications': {t:'🔔 Notifications',b:`<div style="display:flex;flex-direction:column;gap:0;">${[{dot:'var(--gold)',t:'LTN staking reward distributed',b:'$48.20 from PawnSnap + Droppa fees. Auto-compounding.',ts:'8m ago'},{dot:'var(--grn)',t:'IQCAR NFT minted — Tesla Model 3',b:'#0248 on Base L2. Title transferred. AllCard updated.',ts:'12m ago'},{dot:'var(--orng)',t:'Droppa break #0441 closed',b:'20/20 slots filled. $1,440 gross. Payout to AllCard.',ts:'5m ago'},{dot:'var(--blue)',t:'Gold spot update',b:L.gold?`Gold now $${L.gold.toFixed(2)}/oz. PawnSnap offers auto-recalculated.`:'Gold price updated.',ts:'Live'}].map(n=>`<div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;"><div style="width:7px;height:7px;border-radius:50%;background:${n.dot};margin-top:5px;flex-shrink:0;"></div><div><div style="font-size:.8rem;font-weight:500;margin-bottom:2px;">${n.t}</div><div style="font-size:.72rem;color:var(--dim);line-height:1.55;">${n.b}</div><div style="font-size:.62rem;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;">${n.ts}</div></div></div>`).join('')}</div>`},
     'new-pawn': {t:'🥇 New Pawn Ticket',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div style="padding:10px 12px;background:var(--gn2);border:1px solid rgba(34,197,94,.15);border-radius:7px;font-size:.76rem;color:var(--grn);">✓ Customer identity via 1.nce AllCard tap · Gold spot: $${L.gold?.toFixed(2)||'—'}/oz</div><div><label class="fl">Item description</label><input class="fi" placeholder="e.g. 14K gold ring, approx 5g"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Metal</label><select class="fi"><option>Gold</option><option>Silver</option><option>Platinum</option></select></div><div><label class="fl">Karat</label><select class="fi"><option>24K</option><option>18K</option><option value="14" selected>14K</option><option>10K</option><option>925 Sterling</option></select></div></div><div><label class="fl">Weight (grams)</label><input class="fi" type="number" placeholder="0.0" step="0.1"></div><div style="padding:12px;background:var(--surf);border-radius:8px;"><div style="font-size:.68rem;color:var(--dim);margin-bottom:4px;">Live offer preview</div><div style="font-family:'IBM Plex Mono',monospace;color:var(--gold);font-size:1rem;">Enter weight above →</div></div><div><label class="fl">Payment method</label><select class="fi"><option>Cash</option><option>AllCard (instant)</option><option>GTX token</option><option>ACH transfer</option></select></div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Pawn ticket created — photo capture required next','ok')">Create ticket →</button></div>`},
     'new-break': {t:'🎴 New Droppa Break',b:`<div style="display:flex;flex-direction:column;gap:12px;"><div><label class="fl">Break name</label><input class="fi" placeholder="e.g. 2024 Prizm Basketball Hobby"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"><div><label class="fl">Total slots</label><input class="fi" type="number" value="20"></div><div><label class="fl">Price per slot ($)</label><input class="fi" type="number" value="72"></div></div><div><label class="fl">Break type</label><select class="fi"><option>Random teams</option><option>Pick your team</option><option>Random hits</option><option>Case break</option></select></div><div><label class="fl">Stream platform</label><select class="fi"><option>TikTok Live</option><option>YouTube Live</option><option>Discord + WhatsApp</option><option>All platforms</option></select></div><div style="padding:10px 12px;background:var(--pr2);border:1px solid rgba(139,92,246,.2);border-radius:7px;font-size:.73rem;color:var(--purp);">🪙 LTN rewards auto-distributed to top buyers. Seller payment to AllCard on close. ProfitPilot tracking enabled.</div><button class="btn btn-gold btn-full" onclick="closeModal();toast('Break created — configure slots next','ok')">Create break →</button></div>`},

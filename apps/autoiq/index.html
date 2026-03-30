@@ -603,12 +603,12 @@ let myTokenIds = JSON.parse(localStorage.getItem('iq-tokens')||'[]');
 
 async function connectWallet() {
   if (!window.ethereum){alert("Open in MetaMask browser");return;}
-  await ethereum.request({method:"wallet_addEthereumChain",params:[{
+  const accs = await ethereum.request({method:"eth_requestAccounts"});
+  try { await ethereum.request({method:"wallet_addEthereumChain",params:[{
     chainId:"0xAFD3D",chainName:"R3NET Testnet",
     nativeCurrency:{name:"rETH",symbol:"rETH",decimals:18},
     rpcUrls:["http://10.117.122.142:8545"]
-  }]}).catch(()=>{});
-  const accs = await ethereum.request({method:"eth_requestAccounts"});
+  }]}); } catch(ce) { console.debug("RAWNet chain:", ce.message); }
   addr = accs[0];
   provider = new ethers.BrowserProvider(window.ethereum);
   signer = await provider.getSigner();

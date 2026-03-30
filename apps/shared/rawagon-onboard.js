@@ -42,9 +42,16 @@ window.RWWallet = {
     const btns = document.querySelectorAll('[data-rw-connect], #connect-btn');
     btns.forEach(b => { b.textContent = 'Connecting…'; b.disabled = true; });
     try {
-      await window.ethereum.request({ method:'wallet_addEthereumChain', params:[CHAIN] }).catch(()=>{});
-      await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:CHAIN.chainId}] }).catch(()=>{});
+      // Request accounts first - works on any network
       const accounts = await window.ethereum.request({ method:'eth_requestAccounts' });
+      // Try to add/switch RAWNet chain (optional - continues even if fails)
+      try {
+        await window.ethereum.request({ method:'wallet_addEthereumChain', params:[CHAIN] });
+        await window.ethereum.request({ method:'wallet_switchEthereumChain', params:[{chainId:CHAIN.chainId}] });
+      } catch(chainErr) {
+        // Chain switch optional - user can still use AI features
+        console.debug('RAWNet chain not available:', chainErr.message);
+      }
       const addr = accounts[0];
       if (!addr) throw new Error('No accounts');
       this.addr = addr;
