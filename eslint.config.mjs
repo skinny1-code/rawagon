@@ -6,12 +6,12 @@ export default [
     languageOptions: {
       ecmaVersion: 2022,
       globals: {
+        // Node.js
         require: 'readonly',
         module: 'writable',
         exports: 'writable',
         __dirname: 'readonly',
         __filename: 'readonly',
-        fetch: 'readonly',
         process: 'readonly',
         console: 'readonly',
         Buffer: 'readonly',
@@ -19,6 +19,15 @@ export default [
         clearTimeout: 'readonly',
         setInterval: 'readonly',
         clearInterval: 'readonly',
+        // Web / Next.js API route globals
+        fetch: 'readonly',
+        Response: 'readonly',
+        Request: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        Headers: 'readonly',
+        FormData: 'readonly',
+        crypto: 'readonly',
       },
     },
     rules: {
